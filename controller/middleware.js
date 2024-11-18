@@ -18,10 +18,10 @@ function verifyToken(req, res, next) {
                 }
             } else {
                 // Extract userId and organizationId from authData
-                const { id: userId, organizationId, userName } = authData;
+                const { id: userId , userName } = authData;
                 
                 // Attach userId and organizationId to req object
-                req.user = { id: userId, organizationId, userName };
+                req.user = { id: userId, userName };
                 
                 next();  // Pass control to the next middleware or route handler
             }

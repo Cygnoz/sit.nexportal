@@ -6,7 +6,8 @@ const cors = require('cors')
 
 const server = express()
 
-const customerRouter = require("./router/customerRouter")
+
+const Router = require("./router/Router")
 
 require('./database/connection/connection')
 
@@ -14,16 +15,16 @@ server.use(cors())
 
 server.use(express.json())
 
-server.use(customerRouter)
+server.use(Router)
 
-const PORT = 5002
+const PORT = 3002
 
 server.get('/',(req,res)=>{
-    res.status(200).json("Bill BIZZ server started - Customer")
+    res.status(200).json("BillBizz Sales and Support server started - Staff")
 })
 
 server.listen(PORT,()=>{
-    console.log(`BillBIZZ server Customer started at port : ${PORT}`);
+    console.log(`BillBizz Sales and Support server Staff started at port : ${PORT}`);
 
 })
 
