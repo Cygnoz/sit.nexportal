@@ -4,6 +4,8 @@ import { useRole } from './context/RoleContext';
 import Layout from './layout/Layout'; 
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
+import RegionHome from './modules/Region/RegionHome';
+import AreaHome from './modules/Area/AreaHome';
 
 const App: React.FC = () => {
   const { role } = useRole(); // Access the role from context
@@ -16,6 +18,8 @@ const App: React.FC = () => {
           <Route path="/*" element={<Layout />}>
             {/* Define authenticated routes inside Layout */}
             <Route path="dashboard" element={<DashboardPage />} />
+            <Route path="regions" element={<RegionHome />} />
+            <Route path="area" element={<AreaHome />} />
             {/* Add more authenticated routes as needed */}
           </Route>
         ) : (
