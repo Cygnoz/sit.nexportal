@@ -4,8 +4,8 @@ import { useRole } from './context/RoleContext';
 import Layout from './layout/Layout'; 
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-import RegionHome from './modules/Region/RegionHome';
-import AreaHome from './modules/Area/AreaHome';
+import RegionHome from './modules/SaleArea&Region/Region/RegionHome';
+import AreaHome from './modules/SaleArea&Region/Area/AreaHome';
 
 const App: React.FC = () => {
   const { role } = useRole(); // Access the role from context
