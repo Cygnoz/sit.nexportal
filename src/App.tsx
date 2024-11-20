@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import RegionHome from './modules/SaleArea&Region/Region/RegionHome';
 import AreaHome from './modules/SaleArea&Region/Area/AreaHome';
+import LeadHome from './modules/Customers/Lead/LeadHome';
 
 const App: React.FC = () => {
   const { role } = useRole(); // Access the role from context
@@ -20,6 +21,7 @@ const App: React.FC = () => {
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="regions" element={<RegionHome />} />
             <Route path="area" element={<AreaHome />} />
+            <Route path="lead" element={<LeadHome />} />
             {/* Add more authenticated routes as needed */}
           </Route>
         ) : (
