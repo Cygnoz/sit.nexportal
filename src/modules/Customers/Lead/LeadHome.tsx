@@ -19,7 +19,7 @@ function LeadHome({}: Props) {
     <div className="flex justify-between items-center">
       <h1>Lead Home</h1>
       <Button variant="primary" size="sm" onClick={handleModalToggle}>
-        <span>+</span>Create Lead
+        <span className="text-xl">+</span>Create Lead
       </Button>
 
       {/* Modal controlled by state */}

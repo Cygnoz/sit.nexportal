@@ -2,18 +2,17 @@ import React from 'react';
 
 type Props = {
   color: string;
-  height?: number;
-  width?: number;
+  size?: number;
   bold?:number;
   className?: string;
 };
 
-const ChevronDown: React.FC<Props> = ({ color, height, width,bold, className }) => {
+const ChevronDown: React.FC<Props> = ({ color,size,bold, className }) => {
   return (
     <div>
       <svg
-        height={height ? height : 24}
-        width={width ? width : 24}
+        height={size ? size : 24}
+        width={size ? size : 24}
         viewBox="0 0 24 24"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
