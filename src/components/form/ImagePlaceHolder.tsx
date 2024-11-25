@@ -1,4 +1,4 @@
-import AvtarImg from "../../assets/image/AvatarImg.png";
+import AvtarImg from "../../assets/Images/AvatarImg.png";
 type Props = {}
 
 function ImagePlaceHolder({}: Props) {

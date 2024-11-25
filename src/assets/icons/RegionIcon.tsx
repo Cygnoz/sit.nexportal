@@ -2,15 +2,14 @@
 
 interface Props {
     color?: string;
-    width?: number;
-    height?: number;
+    size?: number;
   }
 
-const RegionIcon = ({color, width = 18, height = 20 }: Props) => {
+const RegionIcon = ({color, size = 19 }: Props) => {
   return (
     <svg
-      width={width}
-      height={height}
+      width={size}
+      height={size}
       viewBox="0 0 19 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"

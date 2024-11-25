@@ -21,8 +21,8 @@ interface NewRegionFormProps {
 const validationSchema = Yup.object({
   regionName: Yup.string().required("Region name is required"),
   regionCode: Yup.string()
-    .required("Region code is required")
-    .matches(/^[A-Z]{2,3}$/, "Region code must be 2-3 uppercase letters"),
+    .required("Region code is required"),
+    // .matches(/^[A-Z]{2,3}$/, "Region code must be 2-3 uppercase letters"),
   description: Yup.string(),
   country: Yup.string().required("Country is required"),
 });
@@ -42,37 +42,37 @@ const NewRegionForm: React.FC<NewRegionFormProps> = ({ onClose }) => {
   };
 
   return (
-    <div className="p-5 bg-white rounded shadow-md">
+    <div className="p-5 bg-white rounded shadow-md space-y-3">
       {/* Close button */}
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-lg font-bold">Create Region</h1>
-        <button
-          type="button"
-          onClick={onClose}
-          className="text-gray-600 hover:text-gray-900 font-bold"
-        >
-          X
-        </button>
+      <div className="flex justify-between">
+        <div>
+          <h3 className="text-[#303F58] font-bold text-lg">Create Region</h3>
+          <p className="text-[11px] text-[#8F99A9] mt-1">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit
+          </p>
+        </div>
+        <p onClick={onClose} className="text-3xl cursor-pointer">
+          &times;
+        </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <Input
           label="Region Name"
+          placeholder="Enter Region Name"
           error={errors.regionName?.message}
           {...register("regionName")}
         />
         <Input
+          placeholder="Enter Region Code"
           label="Region Code"
           error={errors.regionCode?.message}
           {...register("regionCode")}
         />
-        <Input
-          label="Description"
-          error={errors.description?.message}
-          {...register("description")}
-        />
+    
         <Select
           label="Country"
+          placeholder="Select Country"
           error={errors.country?.message}
           options={[
             { value: "US", label: "United States" },
@@ -81,11 +81,27 @@ const NewRegionForm: React.FC<NewRegionFormProps> = ({ onClose }) => {
           ]}
           {...register("country")}
         />
-        <div className="flex gap-2 justify-end">
-          <Button variant="tertiary" size="xl" onClick={onClose} >
+        <Input
+          placeholder="Enter Description"
+          label="Description"
+          error={errors.description?.message}
+          {...register("description")}
+        />
+        <div className="flex gap-2 justify-end mt-4">
+        <Button
+            variant="tertiary"
+            className="h-8 text-sm border rounded-lg"
+            size="lg"
+            onClick={onClose}
+          >
             Cancel
           </Button>
-          <Button variant="primary" size="xl" type="submit">
+          <Button
+            variant="primary"
+            className="h-8 text-sm border rounded-lg"
+            size="lg"
+            type="submit"
+          >
             Done
           </Button>
         </div>

@@ -12,3 +12,15 @@ body{
   background-color: #f5f5f8;
 }
 
+.custom-scrollbar {
+  /* For Firefox */
+  scrollbar-width: none;
+
+  /* For Webkit-based browsers (Chrome, Edge, Safari, etc.) */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+

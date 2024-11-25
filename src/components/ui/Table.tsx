@@ -1,18 +1,40 @@
 import React, { useState, useMemo } from "react";
 import SearchBar from "./SearchBar";
+import SortBy from "./SortBy";
+import PreviousIcon from "../../assets/icons/PreviousIcon";
+import NextIcon from "../../assets/icons/NextIcon";
+import UpwardIcon from "../../assets/icons/UpwardIcon";
+import PencilLine from "../../assets/icons/PencilLine";
+import Eye from "../../assets/icons/Eye";
+import Trash from "../../assets/icons/Trash";
+import { useNavigate } from "react-router-dom";
 
 interface TableProps<T> {
-  data: T[]; // Table data as an array of objects
-  columns: { key: keyof T; label: string }[]; // Columns config
-  title: string; // Table title
+  data: T[];
+  columns: { key: keyof T; label: string }[];
+  headerContents: {
+    title?: string;
+    search?: { placeholder: string };
+    sort?: {
+      sortHead: string;
+      sortList: { label: string; icon: React.ReactNode }[];
+    }[];
+  };
+  actionList?: ("edit" | "view" | "delete")[];
 }
 
-const Table = <T extends object>({ data, columns, title }: TableProps<T>) => {
+const Table = <T extends object>({
+  data,
+  columns,
+  headerContents,
+  actionList = ["edit", "view", "delete"],
+}: TableProps<T>) => {
+  const navigate=useNavigate()
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
-  // Filtered and paginated data
+  // Filter data based on the search value
   const filteredData = useMemo(() => {
     return data.filter((row) =>
       Object.values(row).some((value) =>
@@ -21,6 +43,7 @@ const Table = <T extends object>({ data, columns, title }: TableProps<T>) => {
     );
   }, [data, searchValue]);
 
+  // Paginate the filtered data
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
     return filteredData.slice(start, start + rowsPerPage);
@@ -30,64 +53,121 @@ const Table = <T extends object>({ data, columns, title }: TableProps<T>) => {
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to the first page
+    setCurrentPage(1);
   };
+
+  // Function to determine row styles based on `status`
+  const getStatusClass = (status: string | undefined) => {
+    switch (status) {
+      case "New":
+        return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
+      case "Contacted":
+        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+      case "Closed":
+        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
+      default:
+        return "";
+    }
+  };
+
+  // Render table header
+  const renderHeader = () => (
+    <div className="flex justify-between items-center mb-4">
+      {headerContents.title && (
+        <h2 className="text-lg font-bold">{headerContents.title}</h2>
+      )}
+      {headerContents.search && (
+        <div className={`w-[440px] ${headerContents.title && "ms-auto me-2"}`}>
+          <SearchBar
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            placeholder={headerContents.search.placeholder}
+          />
+        </div>
+      )}
+      {headerContents.sort && (
+        <div className="flex gap-2">
+          {headerContents.sort.map((sort, index) => (
+            <SortBy key={index} sort={sort} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
+  const handleView=(id:any)=>{
+    headerContents.title=='Region'?
+    navigate(`/regionView/${id}`):
+    headerContents.title=='Lead Details'&&
+    navigate(`/leadView/${id}`)
+  }
 
   return (
     <div className="w-full bg-white rounded-lg p-4">
-      <h2 className="text-xl font-semibold mb-4">{title}</h2>
-
-      <div className="flex justify-between items-center mb-4">
-        <SearchBar
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          placeholder="Search table..."
-        />
-
-        <select
-          value={rowsPerPage}
-          onChange={handleRowsPerPageChange}
-          className="border border-gray-300 rounded-md p-2 text-sm"
-        >
-          {[5, 10, 20, 50].map((option) => (
-            <option key={option} value={option}>
-              Show {option}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <table className="w-full border-collapse border border-gray-300 text-left">
+      {renderHeader()}
+      <table className="w-full border-collapse border text-left">
         <thead>
           <tr>
+            <th className="border p-4 bg-[#F6F9FC] text-sm text-center text-[#303F58] font-medium">
+              SI No.
+            </th>
             {columns.map((col) => (
               <th
                 key={String(col.key)}
-                className="border border-gray-300 px-4 py-2 bg-gray-100"
+                className="border p-4 bg-[#F6F9FC] text-sm text-center text-[#303F58] font-medium"
               >
                 {col.label}
               </th>
             ))}
+            <th className="border p-4 bg-[#F6F9FC] text-center text-sm text-[#303F58] font-medium">
+              Action
+            </th>
           </tr>
         </thead>
         <tbody>
           {paginatedData.length > 0 ? (
             paginatedData.map((row, rowIndex) => (
               <tr key={rowIndex} className="hover:bg-gray-50">
+                <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+                  {rowIndex + 1}
+                </td>
                 {columns.map((col) => (
                   <td
                     key={String(col.key)}
-                    className="border border-gray-300 px-4 py-2"
+                    className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
                   >
-                    {row[col.key] as any}
+                   <div className={` flex justify-center`}>
+                      <p className={`${
+                      col.key === "status" ? getStatusClass(row[col.key] as string) : ""
+                    }`}>{row[col.key] as string}</p>
+                    </div>
                   </td>
                 ))}
+                <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+                  <div className="flex justify-center gap-2">
+                    {actionList.includes("edit") && (
+                      <p  className="cursor-pointer">
+                        <PencilLine color="#4B5C79" size={16} />
+                      </p>
+                    )}
+                    {actionList.includes("view") && (
+                      <p onClick={()=>handleView(1)} className="cursor-pointer">
+                        <Eye color="#4B5C79" size={16} />
+                      </p>
+                    )}
+                    {actionList.includes("delete") && (
+                      <p className="cursor-pointer">
+                        <Trash color="#4B5C79" size={16} />
+                      </p>
+                    )}
+                  </div>
+                </td>
               </tr>
             ))
           ) : (
             <tr>
               <td
-                colSpan={columns.length}
+                colSpan={columns.length + 2}
                 className="text-center py-4 text-gray-500"
               >
                 No results found.
@@ -98,27 +178,41 @@ const Table = <T extends object>({ data, columns, title }: TableProps<T>) => {
       </table>
 
       <div className="flex justify-between items-center mt-4">
-        <p className="text-sm">
-          Showing {currentPage} of {totalPages || 1} | Rows {rowsPerPage}
-        </p>
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            className="px-3 py-1 border border-gray-300 rounded-md"
-            disabled={currentPage === 1}
+        <div className="text-xs text-[#71736B] font-medium flex gap-2">
+          Showing {currentPage} of {totalPages || 1}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+            >
+              <PreviousIcon size={20} color="#71736B" />
+            </button>
+            <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
+              {currentPage}
+            </button>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              <NextIcon size={20} color="#71736B" />
+            </button>
+          </div>
+        </div>
+        <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
+          Rows per page
+          <select
+            value={rowsPerPage}
+            onChange={handleRowsPerPageChange}
+            className="border border-gray-300 rounded-md p-1 text-sm"
           >
-            Previous
-          </button>
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-            }
-            className="px-3 py-1 border border-gray-300 rounded-md"
-            disabled={currentPage === totalPages || totalPages === 0}
-          >
-            Next
-          </button>
+            {[5, 10, 20, 50].map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
     </div>

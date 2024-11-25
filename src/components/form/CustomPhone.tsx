@@ -7,7 +7,7 @@ interface CustomPhoneInputProps {
   error?: string;
   placeholder?: string;
   value?: string;
-  onChange?: (value: string) => void;  
+  onChange?: (value: string) => void;
   name?: string;
 }
 
@@ -19,6 +19,12 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
   onChange,
   ...props
 }) => {
+  const handlePhoneChange = (value: string) => {
+    if (onChange) {
+      onChange(value); // Pass the value to parent component to update form state
+    }
+  };
+
   return (
     <div>
       <label
@@ -32,8 +38,8 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
         inputStyle={{ height: "38px", width: "100%" }}
         containerStyle={{ width: "100%" }}
         country={"in"}
-        value={value || ""} 
-        onChange={onChange}  
+        value={value || ""} // Controlled component value
+        onChange={handlePhoneChange} // Propagate change to parent
         placeholder={placeholder}
         {...props}
       />
@@ -41,5 +47,6 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
     </div>
   );
 };
+
 
 export default CustomPhoneInput;

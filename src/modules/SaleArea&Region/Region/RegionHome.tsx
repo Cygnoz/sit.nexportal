@@ -7,6 +7,8 @@ import UserIcon from "../../../assets/icons/UserIcon";
 import AreaManagerIcon from '../../../assets/icons/AreaMangerIcon';
 import RegionIcon from '../../../assets/icons/RegionIcon';
 import Table from "../../../components/ui/Table";
+import CalenderDays from "../../../assets/icons/CalenderDays";
+import AreaIcon from "../../../assets/icons/AreaIcon";
 
 // Define the type for data items
 interface RegionData {
@@ -28,12 +30,43 @@ const RegionHome = () => {
 
   // Data for HomeCards
   const homeCardData = [
-    { icon: <UserIcon color="red" />, number: "28", title: "Total Users" },
-    { icon: <RegionIcon color="blue" />, number: "15", title: "Total Regions" },
-    { icon: <AreaManagerIcon color="green" />, number: "5", title: "Area Managers" },
-    { icon: <UserIcon color="yellow" />, number: "28", title: "Total Users" },
+    { 
+      icon: <RegionIcon size={24}/>, 
+      number: "8", 
+      title: "Total Users", 
+      iconFrameColor: "#F9A51A", 
+      iconFrameBorderColor: "#FFF2DDCC" 
+    },
+    { 
+      icon: <AreaIcon size={24}/>, 
+      number: "167", 
+      title: "Total Area", 
+      iconFrameColor: "#30B777", 
+      iconFrameBorderColor: "#B3F0D3CC" 
+    },
+    { 
+      icon: <UserIcon size={24}/>, 
+      number: "46", 
+      title: "Total Region Manager", 
+      iconFrameColor: "#51BFDA", 
+      iconFrameBorderColor: "#C1E7F1CC" 
+    },
+    { 
+      icon: <UserIcon size={24}/>, 
+      number: "88", 
+      title: "Total Area Manager", 
+      iconFrameColor: "#1A9CF9", 
+      iconFrameBorderColor: "#BBD8EDCC" 
+    },
+    { 
+      icon: <AreaManagerIcon size={24} />, 
+      number: "98", 
+      title: "Total BDA's", 
+      iconFrameColor: "#D786DD", 
+      iconFrameBorderColor: "#FADDFCCC" 
+    },
   ];
-
+  
   // Data for the table
   const data: RegionData[] = [
   { regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", country: "USA", description: "Regions across North America." },
@@ -63,23 +96,25 @@ const RegionHome = () => {
     { key: "regionName", label: "Region Name" },
     { key: "country", label: "Country" },
     { key: "description", label: "Discription" },
-    { key: "createdDate", label: "Craete Date" },
+    { key: "createdDate", label: "Created Date" },
   ];
 
   return (
-    <div>
+    <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1>Region Home</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create Region
+          <span className="font-bold text-xl">+</span> Create Region
         </Button>
       </div>
 
       {/* HomeCards Section */}
-      <div className="flex gap-3 py-2 justify-between mt-6">
+      <div className="flex gap-3 py-2 justify-between">
         {homeCardData.map((card, index) => (
-          <HomeCard 
+          <HomeCard
+            iconFrameColor={card.iconFrameColor}
+            iconFrameBorderColor={card.iconFrameBorderColor}
             key={index} 
             icon={card.icon} 
             number={card.number} 
@@ -90,11 +125,27 @@ const RegionHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<RegionData> data={data} columns={columns} title="Region" />
+        <Table<RegionData> data={data} columns={columns} headerContents={{
+          title:'Region',
+          search:{placeholder:'Search Region By Name Country'},
+          sort: [
+                {
+                  sortHead: "Filter",
+                  sortList: [
+                    { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
+                    { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
+                    { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
+                    { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
+                  ]
+                }
+          ]
+        }}
+        actionList={['edit','view']} 
+         />
       </div>
 
       {/* Modal Section */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
+      <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[35%]">
         <NewRegionForm onClose={handleModalToggle} />
       </Modal>
     </div>
