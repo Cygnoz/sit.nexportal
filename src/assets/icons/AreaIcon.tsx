@@ -1,13 +1,14 @@
 type AreaIconProps = {
     color?: string;
     width?: number;
+    size?:number
   };
   
-  const AreaIcon = ({ color, width }: AreaIconProps) => {
+  const AreaIcon = ({ color, width,size=19 }: AreaIconProps) => {
     return (
       <svg
-        width="19"
-        height="18"
+        width={size}
+        height={size}
         viewBox="0 0 19 18"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

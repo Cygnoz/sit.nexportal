@@ -6,13 +6,14 @@ import Button from "../../../components/ui/Button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import CustomPhoneInput from "../../../components/form/CustomPhone";
 
 type Props = {
   onClose: () => void;
 };
 
 interface NewLeadFormData {
-  leadImage?:any
+  leadImage?: any;
   salutation?: string;
   firstName: string;
   lastName: string;
@@ -100,7 +101,7 @@ function NewLeadForm({ onClose }: Props) {
               id="file-upload"
               type="file"
               className="hidden"
-              {...register('leadImage')}
+              {...register("leadImage")}
             />
             <ImagePlaceHolder />
           </label>
@@ -138,14 +139,18 @@ function NewLeadForm({ onClose }: Props) {
               {...register("email")}
               onChange={() => handleInputChange("email")}
             />
-            <Input
-              label="Phone"
-              type="number"
-              placeholder="Enter Phone Number"
+            <CustomPhoneInput
+              label="Phone Number"
+              name="phone"
               error={errors.phone?.message}
-              {...register("phone")}
-              onChange={() => handleInputChange("phone")}
+              placeholder="Enter phone number"
+              value={watch("phone")} // Watch phone field for changes
+              onChange={(value) => {
+                handleInputChange("phone");
+                setValue("phone", value); // Update the value of the phone field in React Hook Form
+              }}
             />
+
             <Input
               label="Website"
               placeholder="Enter Website URL"
