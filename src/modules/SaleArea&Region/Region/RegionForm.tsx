@@ -1,4 +1,4 @@
-// src/features/regions/NewRegionForm.tsx
+// src/features/regions/RegionForm.tsx
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -7,15 +7,16 @@ import Input from "../../../components/form/Input";
 import Select from "../../../components/form/Select";
 import Button from "../../../components/ui/Button";
 
-interface NewRegionFormData {
+interface RegionFormData {
   regionName: string;
   regionCode: string;
   description?: string;
   country: string;
 }
 
-interface NewRegionFormProps {
+interface RegionFormProps {
   onClose: () => void; // Prop for handling modal close
+  editId:any
 }
 
 const validationSchema = Yup.object({
@@ -27,19 +28,20 @@ const validationSchema = Yup.object({
   country: Yup.string().required("Country is required"),
 });
 
-const NewRegionForm: React.FC<NewRegionFormProps> = ({ onClose }) => {
+const RegionForm: React.FC<RegionFormProps> = ({ onClose,editId }) => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<NewRegionFormData>({
+  } = useForm<RegionFormData>({
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<NewRegionFormData> = (data) => {
+  const onSubmit: SubmitHandler<RegionFormData> = (data) => {
     console.log(data);
     // Submission logic
   };
+  console.log(editId)
 
   return (
     <div className="p-5 bg-white rounded shadow-md space-y-3">
@@ -110,4 +112,4 @@ const NewRegionForm: React.FC<NewRegionFormProps> = ({ onClose }) => {
   );
 };
 
-export default NewRegionForm;
+export default RegionForm;

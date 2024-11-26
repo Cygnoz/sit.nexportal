@@ -8,11 +8,17 @@ import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import NewLeadForm from "./NewLeadForm";
+import LeadForm from './LeadForm'
+import { useNavigate } from "react-router-dom";
 
 type Props = {}
 
 function LeadHome({}: Props) {
+  const navigate=useNavigate()
+  const [id,setId]=useState({
+    edit:'',
+    delete:''
+  })
   interface LeadData {
     leadID: string;
     leadName: string;
@@ -24,11 +30,22 @@ function LeadHome({}: Props) {
 
    // State to manage modal visibility
    const [isModalOpen, setIsModalOpen] = useState(false);
-
    // Function to toggle modal visibility
    const handleModalToggle = () => {
      setIsModalOpen((prev) => !prev);
    };
+
+   const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+    if(viewId){
+      navigate(`/leadView/${viewId}`)
+    }else if(editId){
+      console.log(editId)
+      setId({...id,edit:editId})
+    }else{
+      console.log(deleteId)
+      setId({...id,delete:deleteId})
+    }
+  }
 
    const homeCardData = [
     { icon: <CalenderDays  />, number: "110", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
@@ -118,11 +135,16 @@ const columns: { key: keyof LeadData; label: string }[] = [
     //   }
     // ]
   }}
+  actionList={[
+    { label: 'edit', function:handleEditDeleteView },
+    { label: 'delete', function: handleEditDeleteView },
+    { label: 'view', function: handleEditDeleteView },
+  ]}
 />
       </div>
       {/* Modal controlled by state */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-      <NewLeadForm onClose={handleModalToggle}/>
+      <LeadForm  onClose={handleModalToggle}/>
       </Modal>
     </div>
   )

@@ -10,9 +10,10 @@ import CustomPhoneInput from "../../../components/form/CustomPhone";
 
 type Props = {
   onClose: () => void;
+  editId?:string
 };
 
-interface NewLeadFormData {
+interface LeadFormData {
   leadImage?: any;
   salutation?: string;
   firstName: string;
@@ -40,7 +41,7 @@ const validationSchema = Yup.object({
   phone: Yup.string().required("Phone is required"),
 });
 
-function NewLeadForm({ onClose }: Props) {
+function LeadForm({ onClose ,editId}: Props) {
   const {
     register,
     handleSubmit,
@@ -48,14 +49,14 @@ function NewLeadForm({ onClose }: Props) {
     clearErrors,
     watch,
     setValue,
-  } = useForm<NewLeadFormData>({
+  } = useForm<LeadFormData>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
       salutation: "mr", // Default value for salutation
     },
   });
 
-  const onSubmit: SubmitHandler<NewLeadFormData> = (data) => {
+  const onSubmit: SubmitHandler<LeadFormData> = (data) => {
     console.log("Form Data", data);
     // Submission logic
   };
@@ -72,8 +73,9 @@ function NewLeadForm({ onClose }: Props) {
     { value: "ms", label: "Ms." },
     { value: "dr", label: "Dr." },
   ];
+  console.log(editId)
 
-  const handleInputChange = (field: keyof NewLeadFormData) => {
+  const handleInputChange = (field: keyof LeadFormData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
@@ -246,4 +248,4 @@ function NewLeadForm({ onClose }: Props) {
   );
 }
 
-export default NewLeadForm;
+export default LeadForm;
