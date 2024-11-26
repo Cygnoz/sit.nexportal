@@ -14,17 +14,21 @@ const Sidebar: React.FC = () => {
   const sidebarOptions = getSidebarOptions(role); // Get sidebar options based on the role
 
   return (
-    <aside className="sidebar bg-primary h-[100vh] hide-scrollbar w-[12%]">
+    <aside className="sidebar bg-primary min-h-screen overflow-y-auto custom-scrollbar w-[12%]">
+      {/* Logo */}
       <div className="flex p-5 items-center gap-3">
         <img src={BillBizz} alt="billbizz logo" className="w-6" />
-        <h1 className="text-secondary">BILL BIZZ</h1>
+        <h1 className="text-secondary">NEXSELL</h1>
       </div>
+
+      {/* Sidebar Links */}
       <Link to={"/dashboard"}>
         <div className="mt-8 pl-6 flex gap-3">
           <DashboardIcon />
-          <h3 className="text-secondary  text-sm font-medium">Dashboard</h3>
+          <h3 className="text-secondary text-sm font-medium">Dashboard</h3>
         </div>
       </Link>
+      
       {Object.entries(sidebarOptions).map(
         ([category, options]) =>
           options.length > 0 && (
@@ -37,7 +41,7 @@ const Sidebar: React.FC = () => {
                   return (
                     <li
                       key={option}
-                      className="text-secondary text-sm my-3 font-medium"
+                      className="text-secondary text-sm my-4 font-medium"
                     >
                       <Link to={route} className="flex items-center gap-3">
                         <Icon />
@@ -55,3 +59,5 @@ const Sidebar: React.FC = () => {
 };
 
 export default Sidebar;
+
+

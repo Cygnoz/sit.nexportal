@@ -1,24 +1,20 @@
 import { useState } from "react";
-// import Modal from "../../components/modal/Modal";
-// import Button from "../../components/ui/Button";
-// import RegionManagerHome from "./RegionManagerHome";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import AddRegionManager from "./AddRegionManager";
 import HomeCard from "../../../components/ui/HomeCards";
 import UserIcon from "../../../assets/icons/UserIcon";
-//import RegionIcon from "../../../assets/icons/RegionIcon";
-//import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import MutiUserIcon from "../../../assets/icons/MultiUserIcon";
 import Table from "../../../components/ui/Table";
-//import NewRegionForm from "../../SaleArea&Region/Region/NewRegionForm";
-
+import RegionIcon from "../../../assets/icons/RegionIcon";
+import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
+import CalenderDays from "../../../assets/icons/CalenderDays";
 
 
 // Define the type for data items
 interface RegionManagerData {
-    serialNo: string;
+   
     regionCode: string;
     regionName: string;
     createdDate: string;
@@ -50,24 +46,24 @@ const RegionManagerHome = () => {
   
   // Data for the table
   const data:  RegionManagerData[] = [
-    { serialNo:"1", regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", country: "USA", description: "Regions across North America." },
-    { serialNo:"1",regionCode: "R002", regionName: "Europe", createdDate: "2022-05-21", country: "Germany", description: "European market regions." },
-    { serialNo:"1", regionCode: "R003", regionName: "Asia Pacific", createdDate: "2023-03-02", country: "China", description: "Regions covering Asia-Pacific." },
-    { serialNo:"1", regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", country: "Brazil", description: "South American markets." },
-    { serialNo:"1", regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", country: "Brazil", description: "South American markets." },
-    { serialNo:"1", regionCode: "R005", regionName: "Middle East", createdDate: "2022-10-16", country: "UAE", description: "Middle East region with a focus on technology." },
-    { serialNo:"1", regionCode: "R006", regionName: "Africa", createdDate: "2020-12-01", country: "South Africa", description: "African market regions and operations." },
-    { serialNo:"1", regionCode: "R007", regionName: "Australia", createdDate: "2023-06-10", country: "Australia", description: "Regions within Australia." },
-    { serialNo:"1", regionCode: "R008", regionName: "India", createdDate: "2021-07-04", country: "India", description: "Indian subcontinent markets." },
-    { serialNo:"1", regionCode: "R009", regionName: "Canada", createdDate: "2023-02-17", country: "Canada", description: "Canadian market operations." },
-    { serialNo:"1", regionCode: "R010", regionName: "UK & Ireland", createdDate: "2022-11-25", country: "UK", description: "United Kingdom and Ireland regions." },
-    { serialNo:"1", regionCode: "R011", regionName: "South East Asia", createdDate: "2021-09-19", country: "Singapore", description: "Markets in South East Asia." },
-    { serialNo:"1", regionCode: "R012", regionName: "Latin America", createdDate: "2023-05-05", country: "Mexico", description: "Latin American region operations." },
+    {  regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", country: "USA", description: "Regions across North America." },
+    { regionCode: "R002", regionName: "Europe", createdDate: "2022-05-21", country: "Germany", description: "European market regions." },
+    {  regionCode: "R003", regionName: "Asia Pacific", createdDate: "2023-03-02", country: "China", description: "Regions covering Asia-Pacific." },
+    {  regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", country: "Brazil", description: "South American markets." },
+    {  regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", country: "Brazil", description: "South American markets." },
+    {  regionCode: "R005", regionName: "Middle East", createdDate: "2022-10-16", country: "UAE", description: "Middle East region with a focus on technology." },
+    {   regionCode: "R006", regionName: "Africa", createdDate: "2020-12-01", country: "South Africa", description: "African market regions and operations." },
+    {   regionCode: "R007", regionName: "Australia", createdDate: "2023-06-10", country: "Australia", description: "Regions within Australia." },
+    {   regionCode: "R008", regionName: "India", createdDate: "2021-07-04", country: "India", description: "Indian subcontinent markets." },
+    {   regionCode: "R009", regionName: "Canada", createdDate: "2023-02-17", country: "Canada", description: "Canadian market operations." },
+    {   regionCode: "R010", regionName: "UK & Ireland", createdDate: "2022-11-25", country: "UK", description: "United Kingdom and Ireland regions." },
+    {   regionCode: "R011", regionName: "South East Asia", createdDate: "2021-09-19", country: "Singapore", description: "Markets in South East Asia." },
+    {   regionCode: "R012", regionName: "Latin America", createdDate: "2023-05-05", country: "Mexico", description: "Latin American region operations." },
    
   ];
     // Define the columns with strict keys
     const columns: { key: keyof  RegionManagerData; label: string }[] = [
-        { key: "serialNo", label: "Sl No" },
+       
       { key: "regionCode", label: "Name" },
       { key: "regionName", label: "Email Address" },
       { key: "country", label: "Phone No" },
@@ -105,7 +101,22 @@ const RegionManagerHome = () => {
 
        {/* Table Section */}
        <div>
-        <Table< RegionManagerData> data={data} columns={columns} title="Region" />
+        <Table< RegionManagerData> data={data} columns={columns} headerContents={{
+          
+          search:{placeholder:'Search Region By Name Country'},
+          sort: [
+                {
+                  sortHead: "Filter",
+                  sortList: [
+                    { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
+                    { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
+                    { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
+                    { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
+                  ]
+                }
+          ]
+        }}
+        actionList={['edit','view',]}  />
       </div>
 
       {/* Modal Section */}
