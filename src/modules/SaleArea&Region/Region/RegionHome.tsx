@@ -2,11 +2,12 @@ import { useState } from "react";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import NewRegionForm from "./NewRegionForm";
-import HomeCard from "../../../components/ui/HomeCards";
+//import HomeCard from "../../../components/ui/HomeCards";
 import UserIcon from "../../../assets/icons/UserIcon";
 import AreaManagerIcon from '../../../assets/icons/AreaMangerIcon';
 import RegionIcon from '../../../assets/icons/RegionIcon';
 import Table from "../../../components/ui/Table";
+import HomeCard from "../../../components/ui/HomeCards";
 
 // Define the type for data items
 interface RegionData {
@@ -15,6 +16,7 @@ interface RegionData {
   createdDate: string;
   country: string;
   description: string;
+  
 }
 
 const RegionHome = () => {
@@ -64,6 +66,7 @@ const RegionHome = () => {
     { key: "country", label: "Country" },
     { key: "description", label: "Discription" },
     { key: "createdDate", label: "Craete Date" },
+   
   ];
 
   return (
@@ -83,7 +86,9 @@ const RegionHome = () => {
             key={index} 
             icon={card.icon} 
             number={card.number} 
-            title={card.title} 
+            title={card.title}
+            iconFrameColor=""
+            iconFrameBorderColor="" 
           />
         ))}
       </div>
