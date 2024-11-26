@@ -7,12 +7,14 @@ import axios from 'axios';
 import useApi from '../../Hooks/useApi';
 import { endPoints } from '../../services/apiEndpoints';
 import LoginBgRight from './LoginBgRight';
+import { useRole } from '../../context/RoleContext';
 // import { useAuth } from '../../context/AuthContext'; // Import the authentication context
 
 type Props = {}
 
 function Otp({}: Props) {
   const navigate = useNavigate();
+  const {setRole}=useRole()
   const location = useLocation();
   const { request: verifyOtp } = useApi("post", 5004);
   // const { setIsAuthenticated } = useAuth(); // Get the setIsAuthenticated function from context
@@ -79,6 +81,7 @@ function Otp({}: Props) {
 
   // Handle OTP submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    setRole('superAdmin')
     navigate('/dashboard')
     e.preventDefault();
     setIsLoading(true);
