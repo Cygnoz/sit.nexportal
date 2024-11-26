@@ -8,6 +8,7 @@ import PencilLine from "../../assets/icons/PencilLine";
 import Eye from "../../assets/icons/Eye";
 import Trash from "../../assets/icons/Trash";
 import { useNavigate } from "react-router-dom";
+import { string } from "yup";
 
 interface TableProps<T> {
   data: T[];
@@ -20,16 +21,18 @@ interface TableProps<T> {
       sortList: { label: string; icon: React.ReactNode }[];
     }[];
   };
-  actionList?: ("edit" | "view" | "delete")[];
+  actionList?: {
+    label: string;
+    function: (editId?: any, viewId?: any, deleteId?: any) => void;
+  }[];
 }
 
 const Table = <T extends object>({
   data,
   columns,
   headerContents,
-  actionList = ["edit", "view", "delete"],
+  actionList,
 }: TableProps<T>) => {
-  const navigate=useNavigate()
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
@@ -72,7 +75,7 @@ const Table = <T extends object>({
 
   // Render table header
   const renderHeader = () => (
-    <div className="flex justify-between items-center mb-4">
+    <div className={`flex  ${headerContents.search?"justify-start":'justify-between'} items-center mb-4`}>
       {headerContents.title && (
         <h2 className="text-lg font-bold">{headerContents.title}</h2>
       )}
@@ -94,13 +97,6 @@ const Table = <T extends object>({
       )}
     </div>
   );
-
-  const handleView=(id:any)=>{
-    headerContents.title=='Region'?
-    navigate(`/regionView/${id}`):
-    headerContents.title=='Lead Details'&&
-    navigate(`/leadView/${id}`)
-  }
 
   return (
     <div className="w-full bg-white rounded-lg p-4">
@@ -136,29 +132,56 @@ const Table = <T extends object>({
                     key={String(col.key)}
                     className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
                   >
-                   <div className={` flex justify-center`}>
-                      <p className={`${
-                      col.key === "status" ? getStatusClass(row[col.key] as string) : ""
-                    }`}>{row[col.key] as string}</p>
+                    <div className={` flex justify-center`}>
+                      <p
+                        className={`${
+                          col.key === "status"
+                            ? getStatusClass(row[col.key] as string)
+                            : ""
+                        }`}
+                      >
+                        {row[col.key] as string}
+                      </p>
                     </div>
                   </td>
                 ))}
                 <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
                   <div className="flex justify-center gap-2">
-                    {actionList.includes("edit") && (
-                      <p  className="cursor-pointer">
-                        <PencilLine color="#4B5C79" size={16} />
-                      </p>
+                    {actionList?.map(
+                      (action, index) =>
+                        action.label === "edit" && (
+                          <p
+                            key={index}
+                            className="cursor-pointer"
+                            onClick={() => action.function(1, null, null)}
+                          >
+                            <PencilLine color="#4B5C79" size={16} />
+                          </p>
+                        )
                     )}
-                    {actionList.includes("view") && (
-                      <p onClick={()=>handleView(1)} className="cursor-pointer">
-                        <Eye color="#4B5C79" size={16} />
-                      </p>
+                    {actionList?.map(
+                      (action, index) =>
+                        action.label === "view" && (
+                          <p
+                            key={index}
+                            className="cursor-pointer"
+                            onClick={() => action.function(null, 1, null)}
+                          >
+                            <Eye color="#4B5C79" size={16} />
+                          </p>
+                        )
                     )}
-                    {actionList.includes("delete") && (
-                      <p className="cursor-pointer">
-                        <Trash color="#4B5C79" size={16} />
-                      </p>
+                    {actionList?.map(
+                      (action, index) =>
+                        action.label === "delete" && (
+                          <p
+                            key={index}
+                            className="cursor-pointer"
+                            onClick={() => action.function(null, null, 2)}
+                          >
+                            <Trash color="#4B5C79" size={16} />
+                          </p>
+                        )
                     )}
                   </div>
                 </td>
