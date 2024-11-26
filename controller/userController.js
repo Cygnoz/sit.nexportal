@@ -1,4 +1,6 @@
 // v1.0
+const ActivityLog = require('../database/model/activityLog'); 
+const moment = require("moment-timezone");
 
 const User = require('../database/model/user');
 const bcrypt = require('bcrypt');
@@ -146,6 +148,22 @@ exports.verifyOtp = [otpRateLimiter, async (req, res) => {
           role: user.role,
         },
       });
+      const generatedDateTime = generateTimeAndDateForDB(
+        "Asia/Kolkata",
+        "DD/MM/YY",
+        "/"
+      );
+      const actionTime = generatedDateTime.dateTime;
+
+      const activity = new ActivityLog({
+        userId: user._id, // Assuming your User model has a username field
+        activity: `${user.userName} logged in successfully .`, // Log the note associated with the permission
+        timestamp: actionTime,
+        action: "Login",
+        status: "allowed"
+      });
+      await activity.save();
+
 
       // Invalidate the OTP after successful verification
       otpCache.del(email);
@@ -157,6 +175,43 @@ exports.verifyOtp = [otpRateLimiter, async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 }];
+
+
+function generateTimeAndDateForDB(
+  timeZone,
+  dateFormat,
+  dateSplit,
+  baseTime = new Date(),
+  timeFormat = "HH:mm:ss",
+  timeSplit = ":"
+) {
+  // Convert the base time to the desired time zone
+  const localDate = moment.tz(baseTime, timeZone);
+
+  // Format date and time according to the specified formats
+  let formattedDate = localDate.format(dateFormat);
+
+  // Handle date split if specified
+  if (dateSplit) {
+    // Replace default split characters with specified split characters
+    formattedDate = formattedDate.replace(/[-/]/g, dateSplit); // Adjust regex based on your date format separators
+  }
+
+  const formattedTime = localDate.format(timeFormat);
+  const timeZoneName = localDate.format("z"); // Get time zone abbreviation
+
+  // Combine the formatted date and time with the split characters and time zone
+  const dateTime = `${formattedDate} ${formattedTime
+    .split(":")
+    .join(timeSplit)} (${timeZoneName})`;
+
+  return {
+    date: formattedDate,
+    time: `${formattedTime} (${timeZoneName})`,
+    dateTime: dateTime,
+  };
+}
+
 
 
 

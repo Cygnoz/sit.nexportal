@@ -3,10 +3,11 @@
 const mongoose = require('mongoose');
 
 const activityLogSchema = new mongoose.Schema({
-  userName: { type: String},
-  activity: { type: String },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  activity: { type: String},
+  status: {type: String, required: true, enum: ['allowed', 'denied']},
   timestamp: { type: String },
-  reqBody: { type: String },
+  action:{type : String}
 });
 
 module.exports = mongoose.model('ActivityLog', activityLogSchema);

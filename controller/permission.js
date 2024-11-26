@@ -1,7 +1,6 @@
 // v1.0
 
 const User = require('../database/model/user');
-// const Role = require('../database/model/role');
 const ActivityLog = require('../database/model/activityLog');
 const moment = require("moment-timezone");
 
@@ -78,7 +77,7 @@ function generateTimeAndDateForDB(
   // Handle date split if specified
   if (dateSplit) {
     // Replace default split characters with specified split characters
-    formattedDate = formattedDate.replace(/[-/]/g, dateSplit); // Adjust regex based on your date format separators
+    formattedDate = formattedDate.replace(/[-/]/g, dateSplit); 
   }
 
   const formattedTime = localDate.format(timeFormat);
