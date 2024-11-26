@@ -29,6 +29,7 @@ function Otp({}: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+ 
   const inputRefs = Array.from({ length: 6 }, () => useRef<HTMLInputElement>(null));
 
   // Handle OTP change

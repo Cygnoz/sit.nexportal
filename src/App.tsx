@@ -7,10 +7,12 @@ import RegionHome from './modules/SaleArea&Region/Region/RegionHome';
 import AreaHome from './modules/SaleArea&Region/Area/AreaHome';
 import LeadHome from './modules/Customers/Lead/LeadHome';
 import SupportagentHome from './modules/Support/SupportAgent/SupportAgentHome';
+import RegionManagerHome from './modules/RegionalManager/RegionManager/RegionManagerHome';
 import RegionView from './modules/SaleArea&Region/Region/RegionView';
 import LeadView from './modules/Customers/Lead/LeadView';
 import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
+import UserHome from './modules/Users/User/UserHome';
 import { Toaster } from 'react-hot-toast';
 
 const App: React.FC = () => {
@@ -39,6 +41,10 @@ const App: React.FC = () => {
             <Route path="area" element={<AreaHome />} />
             <Route path="support-agent" element={<SupportagentHome />} />
             <Route path="lead" element={<LeadHome />} />
+            <Route path="region-manager" element={<RegionManagerHome />} />
+
+            <Route path="user" element={<UserHome/>} />
+           
             {/* Add more authenticated routes as needed */}
           </Route>
         ) : ( 
