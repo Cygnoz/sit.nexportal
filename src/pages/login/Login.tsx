@@ -3,7 +3,6 @@ import { useState } from 'react';
 import Button from "../../components/ui/Button";
 import Eye from '../../assets/icons/Eye';
 import EyeOffIcon from '../../assets/icons/EyeOffIcon';
-
 import { useNavigate } from 'react-router-dom';
 import useApi from '../../Hooks/useApi';
 import { endPoints } from '../../services/apiEndpoints';
@@ -19,8 +18,7 @@ function Login({}: Props) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  const { request: CheckLogin } = useApi("post", 5004);
+  const { request: CheckLogin } = useApi("post", 3003);
   const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
@@ -30,42 +28,49 @@ function Login({}: Props) {
   const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
-    setError(""); // Reset error message
-    toast.success( 'Login successful! Redirecting...');
-        navigate("/otp", { state: { email } }); // Pass email via navigate state
-
-    try {
-      const response = await CheckLogin(endPoints.LOGIN, { email, password });
-      
-      // Log the response to verify its structure
-      console.log("Login response:", response.response?.data.success);
-
-      // Check if login is successful
-      if (response.response?.data.success) {
-        // Display success message and navigate to OTP
-        toast.success(response.response?.data.message || 'Login successful! Redirecting...');
-        navigate("/otp", { state: { email } }); // Pass email via navigate state
-      } else {
-        // Show an error message if login fails
-        const errorMessage = response.response?.data.message || "Invalid email or password";
-        setError(errorMessage);
-        toast.error(errorMessage);
-      }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Handle Axios error
-        const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
-        setError(errorMessage);
-        toast.error(errorMessage);
-      } else {
-        // Handle non-Axios error
-        setError("Login failed. Please try again.");
-        toast.error("Login failed. Please try again.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    setError(""); // Reset the error message
+    navigate("/otp", { state: { email } });
+    // try {
+    //   // Call the login API
+    //   const result = await CheckLogin(endPoints.LOGIN, { email, password });
+  
+    //   // Log the result for debugging purposes
+    //   console.log("Login response:", result);
+  
+    //   if (result?.response) {
+    //     // Login is successful
+    //     const successMessage = result.response?.data?.message || 'Login successful! Redirecting...';
+    //     toast.success(successMessage);
+  
+    //     // Navigate to the OTP page, passing email as state
+    //     navigate("/otp", { state: { email } });
+    //   } else if (result?.error) {
+    //     // Handle login failure
+    //     const errorMessage = result.error?.response?.data?.message || "Invalid email or password";
+    //     setError(errorMessage);
+    //     toast.error(errorMessage);
+    //   } else {
+    //     // Handle unexpected scenarios where neither response nor error is returned
+    //     const fallbackMessage = "Unexpected error occurred. Please try again.";
+    //     setError(fallbackMessage);
+    //     toast.error(fallbackMessage);
+    //   }
+    // } catch (error) {
+    //   // Handle exceptions (e.g., network issues)
+    //   if (axios.isAxiosError(error)) {
+    //     const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+    //     setError(errorMessage);
+    //     toast.error(errorMessage);
+    //   } else {
+    //     const fallbackMessage = "An error occurred. Please try again.";
+    //     setError(fallbackMessage);
+    //     toast.error(fallbackMessage);
+    //   }
+    // } finally {
+    //   setIsLoading(false); // Ensure loading state is reset
+    // }
   };
+  
 
   return (
     <div   className="h-[100vh] flex text-[#303F58]">

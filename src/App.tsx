@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { useRole } from './context/RoleContext';
 import Layout from './layout/Layout'; 
-import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import RegionHome from './modules/SaleArea&Region/Region/RegionHome';
 import AreaHome from './modules/SaleArea&Region/Area/AreaHome';
@@ -14,9 +13,16 @@ import LeadView from './modules/Customers/Lead/LeadView';
 import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
 import UserHome from './modules/Users/User/UserHome';
+import { Toaster } from 'react-hot-toast';
 
 const App: React.FC = () => {
-  const { role } = useRole(); // Access the role from context
+  const { role,setRole} = useRole(); // Access the role from context
+  // useEffect(()=>{
+  //   if(localStorage.getItem('role')){
+  //     setRole(localStorage.getItem('role'))
+  //   }
+  // },[])
+
 
   return (
     <Router>
@@ -41,11 +47,12 @@ const App: React.FC = () => {
            
             {/* Add more authenticated routes as needed */}
           </Route>
-        ) : (
-          // If not authenticated, show the login page
+        ) : ( 
+           // If not authenticated, show the login page 
           <Route path="*" element={<Login />} />
-        )}
+        )} 
       </Routes>
+        <Toaster reverseOrder={false}/>
     </Router>
   );
 };

@@ -43,6 +43,16 @@ const RegionManagerHome = () => {
     setIsModalOpen((prev) => !prev);
   };
 
+  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+    if(viewId){
+      console.log(viewId);
+      
+    }else if(editId){
+      console.log(editId)
+     
+    }
+  }
+
   
   // Data for the table
   const data:  RegionManagerData[] = [
@@ -116,7 +126,10 @@ const RegionManagerHome = () => {
                 }
           ]
         }}
-        actionList={['edit','view',]}  />
+        actionList={[
+          { label: 'edit', function:handleEditDeleteView },
+          { label: 'view', function: handleEditDeleteView },
+        ]} />
       </div>
 
       {/* Modal Section */}

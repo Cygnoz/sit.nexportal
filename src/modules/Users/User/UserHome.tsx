@@ -47,6 +47,14 @@ const UserHome = () => {
   };
 
   
+  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+    if(editId){
+     console.log(editId);
+     
+    }
+  }
+
+  
   // Data for the table
   const data:  RegionManagerData[] = [
     {  regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", country: "USA",  roll: "Regions across North America." },
@@ -119,7 +127,12 @@ const UserHome = () => {
                 }
           ]
         }}
-        actionList={['edit',]}  />
+        actionList={[
+            { label: 'edit', function:handleEditDeleteView },
+           
+          ]}  />
+
+
       </div>
 
       {/* Modal Section */}
