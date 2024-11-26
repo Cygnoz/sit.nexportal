@@ -1,7 +1,6 @@
 // v1.0
 
 const User = require('../database/model/user');
-// const Role = require('../database/model/role');
 const ActivityLog = require('../database/model/activityLog');
 const moment = require("moment-timezone");
 
@@ -28,7 +27,7 @@ const checkPermission = (...role) => {
       if (role.includes(user.role)){
         const activity = new ActivityLog({
           userId: req.user.id, // Assuming your User model has a username field
-          activity: `${req.user.userName} successfully ${permissionAction}.`, // Log the note associated with the permission
+          activity: `${req.user.userName} ${permissionAction} successfully .`, // Log the note associated with the permission
           timestamp: actionTime,
           action: Action,
           status: "allowed"
