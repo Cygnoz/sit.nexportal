@@ -4,11 +4,11 @@ const router = new express.Router()
 
 const userController = require('../controller/userController')
 
-const checkPermission = require('../controller/AuthController/permission');
+const checkPermission = require('../controller/authController/permission');
 
-const { verifyToken } = require('../controller/AuthController/middleware');
+const { verifyToken } = require('../controller/authController/middleware');
 
-const ActivityLogGeneration = require('../controller/AuthController/activityLogController');
+const ActivityLogGeneration = require('../controller/authController/activityLogController');
 
 
 router.post('/user',verifyToken,checkPermission('Super Admin','Add User'),userController.addUser,ActivityLogGeneration('user','Add User'))

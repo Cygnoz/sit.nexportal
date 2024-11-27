@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const activityLogSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  operationId: { type: String},
+  operationId: { type: String, default: undefined},
   activity: { type: String},
   status: {type: String},
   timestamp: { type: String },

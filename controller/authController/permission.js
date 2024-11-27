@@ -26,15 +26,6 @@ const checkPermission = (...role) => {
       const actionTime = generatedDateTime.dateTime;
 
       if (role.includes(user.role)){
-        // const activity = new ActivityLog({
-        //   userId: req.user.id, // Assuming your User model has a username field
-        //   activity: `${req.user.userName} successfully ${permissionAction}.`, // Log the note associated with the permission
-        //   timestamp: actionTime,
-        //   action: Action,
-        //   status: "allowed"
-        // });
-        // await activity.save();
-        
         return next();
 
       } else {
