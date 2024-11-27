@@ -10,16 +10,17 @@ import CalenderDays from "../../../assets/icons/CalenderDays";
 import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
 import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
-import AddSupportAgent from "./AddSupportAgent";
+import AddSupervisor from "./AddSupervisor";
 
 
 
 interface SupervisorData {
-    supportAgentId: string;
-    name:string;
+    supervisorCode: string;
+    supervisorName:string;
     emailAdrees: string;
     phoneNo: string;
-    assignedSupervisor:string;
+    assignedAgents:string;
+    roles: string;
   }
   
 const SupervisorHome = () => {
@@ -32,6 +33,7 @@ const SupervisorHome = () => {
 
       // Data for HomeCards
   const homeCardData = [
+    { icon: <AreaManagerIcon />, number: "8", title: "Total Supervisors",iconFrameColor:'#F9A51A',iconFrameBorderColor:'#FFF2DDCC' },
     { icon: <UserIcon />, number: "167", title: "Total Support Agents",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
     { icon: <TicketCardIcon size={40}/>, number: "46", title: "Total Tickets",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
     { icon: <EscalatedTicket/>, number: "86", title: "Total Escalated Tickets",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
@@ -40,25 +42,26 @@ const SupervisorHome = () => {
 
     // Data for the table
     const data: SupervisorData[] = [
-        { supportAgentId: "Devid Billie",name:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Sudeep Kumar",name:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Kathryn Murphy",name:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",  },
-        { supportAgentId: "Darrell Steward",name:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
-        { supportAgentId: "Ronald Richards", name:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
-        { supportAgentId: "Jane Cooper", name:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
-        { supportAgentId: "Sudeep Kumar", name:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Kathryn Murphy", name:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
-        { supportAgentId: "Darrell Steward", name:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Ronald Richards", name:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Jane Cooper", name:"Von hue", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
+        { supervisorCode: "Devid Billie",supervisorName:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
+        { supervisorCode: "Sudeep Kumar",supervisorName:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
+        { supervisorCode: "Kathryn Murphy",supervisorName:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
+        { supervisorCode: "Darrell Steward",supervisorName:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2",},
+        { supervisorCode: "Ronald Richards", supervisorName:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2",},
+        { supervisorCode: "Jane Cooper", supervisorName:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
+        { supervisorCode: "Sudeep Kumar", supervisorName:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
+        { supervisorCode: "Kathryn Murphy", supervisorName:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
+        { supervisorCode: "Darrell Steward", supervisorName:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
+        { supervisorCode: "Ronald Richards", supervisorName:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2",},
+        { supervisorCode: "Jane Cooper", supervisorName:"Von hue", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
       ];
         // Define the columns with strict keys
         const columns: { key: keyof SupervisorData; label: string }[] = [
-          { key: "supportAgentId", label: "Support Agent Id" },
-          { key: "name", label: "Name" },
+          { key: "supervisorCode", label: "Supervisor Code" },
+          { key: "supervisorName", label: "Supervisor Name" },
           { key: "emailAdrees", label: "Email" },
           { key: "phoneNo", label: "Phone" },
-          { key: "assignedSupervisor", label: "Assigned Supervisor" },
+          { key: "assignedAgents", label: "Assigned agents" },
+          { key: "roles", label: "Roles" },
 
         ];
       
@@ -67,9 +70,9 @@ const SupervisorHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1>Support Agent</h1>
+        <h1>Supervisor</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create Support Agent
+          + Create Supervisor
         </Button>
       </div>
 
@@ -109,7 +112,7 @@ const SupervisorHome = () => {
 
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <AddSupportAgent onClose={handleModalToggle} />
+        <AddSupervisor onClose={handleModalToggle} />
       </Modal>
     </div>
   )
