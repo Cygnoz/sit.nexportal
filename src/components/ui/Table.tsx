@@ -1,14 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import SearchBar from "./SearchBar";
 import SortBy from "./SortBy";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
 import NextIcon from "../../assets/icons/NextIcon";
-import UpwardIcon from "../../assets/icons/UpwardIcon";
 import PencilLine from "../../assets/icons/PencilLine";
 import Eye from "../../assets/icons/Eye";
 import Trash from "../../assets/icons/Trash";
-import { useNavigate } from "react-router-dom";
-import { string } from "yup";
 
 interface TableProps<T> {
   data: T[];
@@ -27,6 +24,12 @@ interface TableProps<T> {
   }[];
 }
 
+const isWebpBase64 = (str: string): boolean => {
+  return str?.startsWith('data:image/webp;base64,');
+};
+
+
+
 const Table = <T extends object>({
   data,
   columns,
@@ -36,7 +39,7 @@ const Table = <T extends object>({
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-
+  const [base64Key,setBase64Key]=useState()
   // Filter data based on the search value
   const filteredData = useMemo(() => {
     return data.filter((row) =>
@@ -98,6 +101,30 @@ const Table = <T extends object>({
     </div>
   );
 
+  useEffect(() => {
+    const getWebpBase64Keys = (data: any) => {
+      const webpBase64Keys = new Set<string>();
+
+      data.forEach(user => {
+        for (const key in user) {
+          if (typeof user[key] === 'string' && isWebpBase64(user[key])) {
+            webpBase64Keys.add(key);
+          }
+        }
+      });
+
+      setBase64Key(Array.from(webpBase64Keys)[0])
+
+      // console.log(`${stateName} webp base64 keys:`, Array.from(webpBase64Keys));
+    };
+
+    // Check and log webp base64 keys for allUsers
+    getWebpBase64Keys(data);
+  }, [data]);
+
+  console.log(base64Key);
+  
+
   return (
     <div className="w-full bg-white rounded-lg p-4">
       {renderHeader()}
@@ -127,24 +154,38 @@ const Table = <T extends object>({
                 <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
                   {rowIndex + 1}
                 </td>
-                {columns.map((col) => (
-                  <td
-                    key={String(col.key)}
-                    className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
-                  >
-                    <div className={` flex justify-center`}>
-                      <p
-                        className={`${
-                          col.key === "status"
-                            ? getStatusClass(row[col.key] as string)
-                            : ""
-                        }`}
-                      >
-                        {row[col.key] as string}
-                      </p>
-                    </div>
-                  </td>
-                ))}
+                {columns.map((col) => {
+              return (
+                <td
+                  key={String(col.key)}
+                  className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
+                >
+                  <div className={`flex justify-center`}>
+  {col.key.endsWith('Name') ? (
+    <p>
+      {/* Assuming base64Key is dynamically obtained from the row data */}
+      {Object.keys(row).some(key => isWebpBase64(row[key])) && (
+        <img
+          src={Object.values(row).find(value => isWebpBase64(value))}
+          alt="profile"
+          className="inline-block mr-2"
+        />
+      )}
+      {row[col.key] as string}
+    </p>
+  ) : (
+    <p
+      className={`${
+        col.key === 'status' ? getStatusClass(row[col.key] as string) : ''
+      }`}
+    >
+      {row[col.key] as string}
+    </p>
+  )}
+</div>
+                </td>
+              );
+            })}
                 <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
                   <div className="flex justify-center gap-2">
                     {actionList?.map(

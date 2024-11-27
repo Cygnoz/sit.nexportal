@@ -10,31 +10,35 @@ import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import { useRef } from "react";
+import toast from "react-hot-toast";
 
 type Props = {
   onClose: () => void;
 };
 
 interface UserData {
-  userImage?: File; // For file input
-  firstName: string;
+  userImage: string; // Base64 string
+  userName: string;
   email: string;
-  phone?: string;
-  password?: string;
-  confirmPassword?:string;
-  role?: string;
+  phoneNo: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
 }
 
 const validationSchema = Yup.object({
-  firstName: Yup.string().required("First name is required"),
-  email: Yup.string()
-    .email("Invalid email format")
-    .required("Email is required")
+  userName: Yup.string().required("Full name is required"),
+  email: Yup.string().email("Invalid email format").required("Email is required"),
+  phoneNo: Yup.string(),
+  password: Yup.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match'),
+  role: Yup.string().required("Role is required"),
 });
 
 function UserForm({ onClose }: Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const {request:addUser}=useApi('post',3002)
+  const { request: addUser } = useApi('post', 3002);
+
   const {
     register,
     handleSubmit,
@@ -46,20 +50,28 @@ function UserForm({ onClose }: Props) {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<UserData> =async (data,event) => {
-    event.preventDefault();
+  const onSubmit: SubmitHandler<UserData> = async (data, event) => {
+    event?.preventDefault();
     console.log("Form Data:", data);
-    try{
-      const url=endPoints.ADD_USER
-      const {}=addUser(url,data)
-    }catch(errr){
-
+    try {
+      const url = endPoints.ADD_USER;
+      const { response, error } = await addUser(url, data);
+      console.log(response);
+      console.log(error);
+      if (response && !error) {
+        toast.success(response.data.message)
+        onClose()
+      }else{
+        toast.error(error.response.data.message)
+      }
+    } catch (err) {
+      console.error('Error:', err);
     }
   };
 
   const Role = [
-    { label: "Manager", value: "manager" },
-    { label: "Developer", value: "developer" },
+    { label: "Support Admin", value: "Support Admin" },
+    { label: "Sales Admin", value: "Sales Admin" },
   ];
 
   const handleInputChange = (field: keyof UserData) => {
@@ -70,12 +82,10 @@ function UserForm({ onClose }: Props) {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
- 
       reader.onloadend = () => {
         const base64String = reader.result as string;
         setValue("userImage", base64String);
       };
- 
       reader.readAsDataURL(file);
     }
   };
@@ -96,93 +106,91 @@ function UserForm({ onClose }: Props) {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-12">
-        <div className="col-span-3">
-          <label className="cursor-pointer text-center" htmlFor="file-upload">
-            <input
-              id="file-upload"
-              type="file"
-              className="hidden"
-              onChange={(e) => handleFileChange(e)}
-            />
-            <ImagePlaceHolder 
-            uploadedImage={watch('userImage')}
-            value={watch('userImage')}
-        setValue={setValue}
-        fileInputRef={fileInputRef} />
-          </label>
-        </div>
-        <div className="col-span-9 my-2">
-          <div className="mx-3 gap-4 space-y-2 max-w-lg">
-            <Input
-              label="Full Name"
-              type="text"
-              placeholder="Enter Full Name"
-              error={errors.firstName?.message}
-              {...register("firstName")}
-              onChange={() => handleInputChange("firstName")}
-            />
-            <Input
-              label="Email Address"
-              type="email"
-              placeholder="Enter Email"
-              error={errors.email?.message}
-              {...register("email")}
-              onChange={() => handleInputChange("email")}
-            />
-            <CustomPhoneInput
-              label="Phone Number"
-              name="phone"
-              error={errors.phone?.message}
-              placeholder="Enter phone number"
-              value={watch("phone")} // Watch phone field for changes
-              onChange={(value) => {
-                handleInputChange("phone");
-                setValue("phone", value); // Update the value of the phone field in React Hook Form
-              }}
-            />
-            <InputPasswordEye
-              label="Password"
-              // name="password"
-              placeholder="Enter your password"
-              error={errors.password?.message}
-              {...register("password")}
-            />
-            <InputPasswordEye
-              label="Confirm Password"
-
-              placeholder="Confirm your password"
-              error={errors.password?.message}
-              {...register("confirmPassword")}
-            />
-            <Select
-              label="Role"
-              placeholder="Select Role"
-              options={Role}
-              {...register("role")}
-            />
+          <div className="col-span-3">
+            <label className="cursor-pointer text-center" htmlFor="file-upload">
+              <input
+                id="file-upload"
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <ImagePlaceHolder 
+                uploadedImage={watch('userImage')}
+                value={watch('userImage')}
+                setValue={setValue}
+                fileInputRef={fileInputRef} />
+            </label>
+          </div>
+          <div className="col-span-9 my-2">
+            <div className="mx-3 gap-4 space-y-2 max-w-lg">
+              <Input
+                label="Full Name"
+                type="text"
+                placeholder="Enter Full Name"
+                error={errors.userName?.message}
+                {...register("userName")}
+                onChange={() => handleInputChange("userName")}
+              />
+              <Input
+                label="Email Address"
+                type="email"
+                placeholder="Enter Email"
+                error={errors.email?.message}
+                {...register("email")}
+                onChange={() => handleInputChange("email")}
+              />
+              <CustomPhoneInput
+                label="Phone Number"
+                name="phoneNo"
+                error={errors.phoneNo?.message}
+                placeholder="Enter phone number"
+                value={watch("phoneNo")} // Watch phone field for changes
+                onChange={(value) => {
+                  handleInputChange("phoneNo");
+                  setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
+                }}
+              />
+              <InputPasswordEye
+                label="Password"
+                placeholder="Enter your password"
+                error={errors.password?.message}
+                {...register("password")}
+              />
+              <InputPasswordEye
+                label="Confirm Password"
+                placeholder="Confirm your password"
+                error={errors.confirmPassword?.message}
+                {...register("confirmPassword")}
+              />
+              <Select
+                label="Role"
+                placeholder="Select Role"
+                options={Role}
+                error={errors.role?.message}
+                {...register("role")}
+              />
+            </div>
           </div>
         </div>
+        <div className="flex justify-end gap-2 mt-3 pb-2">
+          <Button
+            variant="tertiary"
+            className="h-8 text-sm border rounded-lg"
+            size="lg"
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            className="h-8 text-sm border rounded-lg"
+            size="lg"
+            type="submit"
+          >
+            Submit
+          </Button>
         </div>
-        <div className=" flex justify-end gap-2 mt-3 pb-2">
-        <Button
-          variant="tertiary"
-          className="h-8 text-sm border rounded-lg"
-          size="lg"
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          className="h-8 text-sm border rounded-lg"
-          size="lg"
-          type="submit"
-        >
-          Submit
-        </Button>
-      </div>
       </form>
-      
     </div>
   );
 }
