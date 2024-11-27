@@ -4,10 +4,16 @@ const router = new express.Router()
 
 
 
-const checkPermission = require('../controller/permission');
-const { verifyToken } = require('../controller/middleware');
+// const checkPermission = require('../controller/authController/permission');
 
+// const { verifyToken } = require('../controller/authController/middleware');
 
+// const ActivityLogGeneration = require('../controller/authController/activityLogController');
+
+const leadController = require('../controller/leadsController')
+
+//add lead
+router.post('/add-lead',leadController.addLead)
 
 
 module.exports = router
