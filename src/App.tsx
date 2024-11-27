@@ -19,6 +19,7 @@ import LicensorHome from './modules/Customers/Licensor/LicensorHome';
 import UserHome from './modules/Users/User/UserHome';
 import { Toaster } from 'react-hot-toast';
 import AreaManagerHome from './modules/SalesTeams/AreaManager/AreaManagerHome';
+import UserLogHome from './modules/Users/UserLog/UserLogHome';
 
 const App: React.FC = () => {
   const { role,setRole} = useRole(); // Access the role from context
@@ -55,6 +56,7 @@ const App: React.FC = () => {
             <Route path="region-manager" element={<RegionManagerHome />} />
 
             <Route path="user" element={<UserHome/>} />
+            <Route path="user-log" element={<UserLogHome/>} />
            
             {/* Add more authenticated routes as needed */}
           </Route>

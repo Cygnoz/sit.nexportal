@@ -4,6 +4,8 @@ import { useRole } from "../context/RoleContext";
 import BillBizz from "../assets/logo/BillBizzLogo.png";
 import { sidebarRoutes, sidebarIcons } from "../types/rolePermissions";
 import DashboardIcon from "../assets/icons/DashboardIcon";
+import SettingsIcon from "../assets/icons/SettingsIcon";
+import Settings from "../assets/icons/Settings";
 const Sidebar: React.FC = () => {
   const { role } = useRole(); // Get the role from context
 
@@ -14,7 +16,7 @@ const Sidebar: React.FC = () => {
   const sidebarOptions = getSidebarOptions(role); // Get sidebar options based on the role
 
   return (
-    <aside className="sidebar bg-primary min-h-screen overflow-y-auto custom-scrollbar w-[12%]">
+    <aside className="sidebar bg-primary min-h-screen  overflow-y-auto custom-scrollbar w-[12%]">
       {/* Logo */}
       <div className="flex p-5 items-center gap-3">
         <img src={BillBizz} alt="billbizz logo" className="w-6" />
@@ -54,6 +56,12 @@ const Sidebar: React.FC = () => {
             </div>
           )
       )}
+       <Link  to={"/settings"}>
+        <div className="mt-3 mb-3 pl-6 flex gap-3">
+          <Settings />
+          <h3 className="text-secondary text-sm font-medium">Settings</h3>
+        </div>
+      </Link>
     </aside>
   );
 };

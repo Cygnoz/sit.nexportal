@@ -3,7 +3,7 @@ import ChevronDown from "../../assets/icons/ChevronDown";
 
 interface SelectProps
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label: string;
+  label?: string;
   options: { value: string; label: string }[];
   error?: string;
   placeholder?: string;
@@ -14,7 +14,7 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, options, error, placeholder = "Select an option...", ...props }, ref) => {
     return (
       <div className="relative w-full">
-        <label htmlFor={props.name} className="block text-sm font-medium mb-2">
+        <label htmlFor={props.name} className={`block text-sm font-medium ${label&&'mb-2'}`}>
           {label}
         </label>
         <div className="relative cursor-pointer">
