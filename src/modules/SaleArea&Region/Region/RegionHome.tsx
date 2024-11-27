@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
-import NewRegionForm from "./NewRegionForm";
+import RegionForm from "./RegionForm";
 import HomeCard from "../../../components/ui/HomeCards";
 import UserIcon from "../../../assets/icons/UserIcon";
 import AreaManagerIcon from '../../../assets/icons/AreaMangerIcon';
@@ -9,6 +9,7 @@ import RegionIcon from '../../../assets/icons/RegionIcon';
 import Table from "../../../components/ui/Table";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import AreaIcon from "../../../assets/icons/AreaIcon";
+import { useNavigate } from "react-router-dom";
 
 // Define the type for data items
 interface RegionData {
@@ -20,6 +21,11 @@ interface RegionData {
 }
 
 const RegionHome = () => {
+  const navigate=useNavigate()
+  const [id,setId]=useState({
+    edit:'',
+    delete:''
+  })
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -27,6 +33,18 @@ const RegionHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
+
+  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+    if(viewId){
+      navigate(`/regionView/${viewId}`)
+    }else if(editId){
+      console.log(editId)
+      setId({...id,edit:editId})
+    }else{
+      console.log(deleteId)
+      setId({...id,delete:deleteId})
+    }
+  }
 
   // Data for HomeCards
   const homeCardData = [
@@ -125,7 +143,7 @@ const RegionHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<RegionData> data={data} columns={columns} headerContents={{
+        <Table<RegionData> data={data} columns={columns}  headerContents={{
           title:'Region',
           search:{placeholder:'Search Region By Name Country'},
           sort: [
@@ -140,13 +158,17 @@ const RegionHome = () => {
                 }
           ]
         }}
-        actionList={['edit','view']} 
+        actionList={[
+          { label: 'edit', function:handleEditDeleteView },
+          { label: 'delete', function: handleEditDeleteView },
+          { label: 'view', function: handleEditDeleteView },
+        ]}
          />
       </div>
 
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[35%]">
-        <NewRegionForm onClose={handleModalToggle} />
+        <RegionForm editId={id?.edit} onClose={handleModalToggle} />
       </Modal>
     </div>
   );

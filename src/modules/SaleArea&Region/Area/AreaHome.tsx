@@ -28,6 +28,16 @@ const AreaHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
+  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+    if(viewId){
+      // navigate(`/leadView/${viewId}`)
+      console.log(viewId);
+      
+    }else if(editId){
+      console.log(editId)
+      // setId({...id,edit:editId})
+    }
+  }
 
   // Data for HomeCards
   const homeCardData = [
@@ -98,7 +108,7 @@ const AreaHome = () => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1>Area Home</h1>
+        <h1 className="text-[#303F58] text-base font-bold">Area Home</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
           <span className="font-bold text-xl">+</span> Create Area
         </Button>
@@ -135,7 +145,10 @@ const AreaHome = () => {
                 }
           ]
         }}
-        actionList={['edit','view']} 
+        actionList={[
+          { label: 'edit', function:handleEditDeleteView },
+          { label: 'view', function: handleEditDeleteView },
+        ]}
          />
       </div>
 

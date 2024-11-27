@@ -30,6 +30,18 @@ const SupervisorHome = () => {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
+      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+        if(viewId){
+          console.log(viewId);
+          // navigate(`/leadView/${viewId}`)
+        }else if(editId){
+          console.log(editId)
+          // setId({...id,edit:editId})
+        }else{
+          console.log(deleteId)
+          // setId({...id,delete:deleteId})
+        }
+      }
 
       // Data for HomeCards
   const homeCardData = [
@@ -70,7 +82,7 @@ const SupervisorHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1>Supervisor</h1>
+        <h1 className="text-[#303F58] text-base font-bold">Supervisor</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
           + Create Supervisor
         </Button>
@@ -94,7 +106,7 @@ const SupervisorHome = () => {
       <div>
         <Table<SupervisorData> data={data} columns={columns} headerContents={{
           title:'Supervisor Overview',
-          search:{placeholder:'Search Invoice by client supervisorCode, invoice number, or date'},
+          search:{placeholder:'Search Supervisor'},
           sort: [
                 {
                   sortHead: "Filter",
@@ -107,7 +119,11 @@ const SupervisorHome = () => {
                 }
           ]
         }}
-        actionList={['edit','view', 'delete']}  />
+        actionList={[
+          { label: 'edit', function:handleEditDeleteView },
+          { label: 'delete', function: handleEditDeleteView },
+          { label: 'view', function: handleEditDeleteView },
+        ]}  />
       </div>
 
       {/* Modal Section */}

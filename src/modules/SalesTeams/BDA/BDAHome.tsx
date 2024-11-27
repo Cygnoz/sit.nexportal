@@ -31,6 +31,15 @@ const BDAHome = () => {
         setIsModalOpen((prev) => !prev);
       };
 
+      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+        if(viewId){
+          // navigate(`/leadView/${viewId}`)
+          console.log(viewId);
+          
+        }
+      }
+    
+
       // Data for HomeCards
   const homeCardData = [
     { icon: <AreaManagerIcon />, number: "101", title: "Total BDA'S",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
@@ -69,7 +78,7 @@ const BDAHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1>BDA</h1>
+        <h1 className="text-[#303F58] text-base font-bold">BDA</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
           + Create BDA
         </Button>
@@ -106,7 +115,10 @@ const BDAHome = () => {
                 }
           ]
         }}
-        actionList={['edit','view']}  />
+        actionList={[
+          
+          { label: 'view', function: handleEditDeleteView },
+        ]}  />
       </div>
 
       {/* Modal Section */}

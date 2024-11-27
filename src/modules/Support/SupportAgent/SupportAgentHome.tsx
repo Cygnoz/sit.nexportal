@@ -30,6 +30,21 @@ const SupervisorHome = () => {
         setIsModalOpen((prev) => !prev);
       };
 
+      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+        if(viewId){
+          // navigate(`/leadView/${viewId}`)
+          console.log(viewId);
+          
+        }else if(editId){
+          console.log(editId)
+          // setId({...id,edit:editId})
+        }else{
+          console.log(deleteId)
+          // setId({...id,delete:deleteId})
+        }
+      }
+    
+
       // Data for HomeCards
   const homeCardData = [
     { icon: <UserIcon />, number: "167", title: "Total Support Agents",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
@@ -91,7 +106,7 @@ const SupervisorHome = () => {
       <div>
         <Table<SupervisorData> data={data} columns={columns} headerContents={{
           title:'Supervisor Overview',
-          search:{placeholder:'Search Invoice by client supervisorCode, invoice number, or date'},
+          search:{placeholder:'Search Support Agent'},
           sort: [
                 {
                   sortHead: "Filter",
@@ -104,7 +119,11 @@ const SupervisorHome = () => {
                 }
           ]
         }}
-        actionList={['edit','view', 'delete']}  />
+        actionList={[
+          { label: 'edit', function:handleEditDeleteView },
+          { label: 'delete', function: handleEditDeleteView },
+          { label: 'view', function: handleEditDeleteView },
+        ]}  />
       </div>
 
       {/* Modal Section */}

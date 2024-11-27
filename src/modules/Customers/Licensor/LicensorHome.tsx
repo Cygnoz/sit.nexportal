@@ -3,23 +3,27 @@ import Button from "../../../components/ui/Button";
 import Modal from "../../../components/modal/Modal";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import Licensor from "../../../assets/icons/Licensor";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
+import PackageMinus from "../../../assets/icons/PackageMinus";
+import Boxes from "../../../assets/icons/Boxes";
+import Package from "../../../assets/icons/Package";
+import PackageCheck from "../../../assets/icons/PackageCheck";
 import TrialIcon from "../../../assets/icons/TrialIcon";
+import LeadIcon from "../../../assets/icons/LeadIcon";
+import AddLicenser from "./AddLicenser";
 
 
 
-interface BDAData {
-    name: string;
-    emailAdrees: string;
-    phoneNo: string;
-    region:string;
-    area: string;
-    dateOfJoining:string;
+interface LicenserData {
+    licenserId: string;
+    licenserName: string;
+    startDate: string;
+    endDate:string;
+    plan: string;
+    status:string;
   }
   
 const LicensorHome = () => {
@@ -29,37 +33,49 @@ const LicensorHome = () => {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
+      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+        if(viewId){
+          // navigate(`/leadView/${viewId}`)
+          console.log(viewId);
+          
+        }else if(editId){
+          console.log(editId)
+          // setId({...id,edit:editId})
+        }
+      }
+    
 
       // Data for HomeCards
   const homeCardData = [
-    { icon: <AreaManagerIcon />, number: "101", title: "Total Licenser",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
-    { icon: <LeadsCardIcon />, number: "676", title: "Total Leads (Handled by BDA'S)",iconFrameColor:'#9C75D3',iconFrameBorderColor:'#DAC9F1' },
-    { icon: <TrialIcon width={26} height={26}/>, number: "398", title: "Total Trails (Handled by BDA'S)",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
-    { icon: <Licensor />, number: "200", title: "Total Licensers(Handled by BDA'S)",iconFrameColor:'#8695DD',iconFrameBorderColor:'#CAD1F1CC' },
+    { icon: <Boxes />, number: "526", title: "Total Licenser",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
+    { icon: <CalenderDays />, number: "110", title: "Licenser Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
+    { icon: <Package />, number: "56", title: "Closed Licenser",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
+    { icon: <PackageCheck />, number: "100", title: "Converted Licenser",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
+    { icon: <PackageMinus />, number: "147", title: "Licenser Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
     // Data for the table
-    const data: BDAData[] = [
-        { name: "Devid Billie", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14"},
-        { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    const data: LicenserData[] = [
+        { licenserId: "Devid Billie",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Active" },
+        { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Expired" },
+        { licenserId: "Kathryn Murphy",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/3/2014", plan: "Quaterly",status:"Pending Renewal" },
+        { licenserId: "Darrell Steward",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
+        { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/3/2014", plan:"Quaterly",status:"Active" },
+        { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Pending Renewal" },
+        { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
+        { licenserId: "Kathryn Murphy",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
+        { licenserId: "Darrell Steward",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
+        { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Pending Renewal"},
+        { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
       ];
         // Define the columns with strict keys
-        const columns: { key: keyof BDAData; label: string }[] = [
-          { key: "name", label: "Name" },
-          { key: "emailAdrees", label: "Email Address" },
-          { key: "phoneNo", label: "Phone No" },
-          { key: "region", label: "Region" },
-          { key: "area", label: "Area" },
-          { key: "dateOfJoining", label: "Date of Joining" },
+        const columns: { key: keyof LicenserData; label: string }[] = [
+          { key: "licenserId", label: "Licenser Id" },
+          { key: "licenserName", label: "Email Address" },
+          { key: "startDate", label: "Start Date" },
+          { key: "endDate", label: "End Date" },
+          { key: "plan", label: "Plan" },
+          { key: "status", label: "Status" },
 
         ];
       
@@ -68,9 +84,9 @@ const LicensorHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1>Licensor</h1>
+        <h1 className="text-[#303F58] text-base font-bold">Licenser</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create Licensor
+          + Create Licenser
         </Button>
       </div>
 
@@ -90,28 +106,48 @@ const LicensorHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<BDAData> data={data} columns={columns} headerContents={{
-          // title:'Region',
-          search:{placeholder:'Search Invoice by client name, invoice number, or date'},
+        <Table<LicenserData> data={data} columns={columns} headerContents={{
+          title:'Licenser Details',
+          search:{placeholder:'Search BDA by Name'},
           sort: [
                 {
-                  sortHead: "Filter",
+                  sortHead: "Status",
                   sortList: [
-                    { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
+                    { label: "All", icon: <UserIcon size={14} color="#4B5C79"/> },
+                    { label: "Active", icon: <TrialIcon width={16} height={16} color="#4B5C79"/> },
+                    { label: "Expired", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
+                    { label: "Pending Renewal", icon: <CalenderDays size={14} color="#4B5C79"/> }
                   ]
-                }
+                },
+                {
+                    sortHead: "License",
+                    sortList: [
+                      { label: "All", icon: <UserIcon size={14} color="#4B5C79"/> },
+                      { label: "Pro", icon: <RegionIcon size={14} color="#4B5C79"/> },
+                      { label: "Basic", icon: <LeadIcon width={18} color="#4B5C79"/> },
+                      { label: "Enterprise", icon: <CalenderDays size={14} color="#4B5C79"/> }
+                    ]
+                  },
+                  {
+                    sortHead: "Plan",
+                    sortList: [
+                      { label: "All", icon: <UserIcon size={14} color="#4B5C79"/> },
+                      { label: "Monthly", icon: <RegionIcon size={14} color="#4B5C79"/> },
+                      { label: "Yearly", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
+                    ]
+                  }
           ]
         }}
-        actionList={['edit','view']}  />
+        actionList={[
+            { label: 'edit', function:handleEditDeleteView },
+            { label: 'view', function: handleEditDeleteView },
+          ]}  />
       </div>
 
       {/* Modal Section */}
-      {/* <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <NewBDAForm onClose={handleModalToggle} />
-      </Modal> */}
+      <Modal open={isModalOpen} onClose={handleModalToggle}>
+        <AddLicenser onClose={handleModalToggle} />
+      </Modal>
     </div>
   )
 }

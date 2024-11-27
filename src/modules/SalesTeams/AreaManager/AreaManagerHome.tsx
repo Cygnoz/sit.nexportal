@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Button from "../../../components/ui/Button";
-import AddAreaManager from "./AddAreaManager"
 import Modal from "../../../components/modal/Modal";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
@@ -10,6 +9,7 @@ import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import Licensor from "../../../assets/icons/Licensor";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
+import AddAreaManager from "../../SalesTeams/AreaManager/AddAreaManager";
 
 
 
@@ -29,7 +29,16 @@ const AreaManagerHome = () => {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
-
+      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+        if(viewId){
+          // navigate(`/leadView/${viewId}`)
+          console.log(viewId);
+          
+        }else if(editId){
+          console.log(editId)
+          // setId({...id,edit:editId})
+        }
+      }
       // Data for HomeCards
   const homeCardData = [
     { icon: <UserIcon />, number: "189", title: "Total Area Manager",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
@@ -105,7 +114,10 @@ const AreaManagerHome = () => {
                 }
           ]
         }}
-        actionList={['edit','view']}  />
+        actionList={[
+          { label: 'edit', function:handleEditDeleteView },
+          { label: 'view', function: handleEditDeleteView },
+        ]}  />
       </div>
 
       {/* Modal Section */}
