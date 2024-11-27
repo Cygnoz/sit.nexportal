@@ -75,7 +75,7 @@ const Table = <T extends object>({
 
   // Render table header
   const renderHeader = () => (
-    <div className={`flex  ${headerContents.search?"justify-start":'justify-between'} items-center mb-4`}>
+    <div className={`flex  ${headerContents.search&&!headerContents.title&&!headerContents.sort?"justify-start":'justify-between'} items-center mb-4`}>
       {headerContents.title && (
         <h2 className="text-lg font-bold">{headerContents.title}</h2>
       )}
