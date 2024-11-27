@@ -5,6 +5,7 @@ const BASE_URLS: Record<number, string> = {
   // 5002: import.meta.env.VITE_REACT_APP_CUSTOMERS,
   // 5003: import.meta.env.VITE_REACT_APP_INVENTORY,
    3003: import.meta.env.VITE_REACT_APP_LOGIN,
+   3002: import.meta.env.VITE_REACT_APP_USER,
   // 5006: import.meta.env.VITE_REACT_APP_REPORT,
   // 5007: import.meta.env.VITE_REACT_APP_SALES,
   // 5008: import.meta.env.VITE_REACT_APP_STAFF,

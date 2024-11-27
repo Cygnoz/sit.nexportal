@@ -7,6 +7,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import { useRef } from "react";
 
 type Props = {
   onClose: () => void;
@@ -29,7 +32,9 @@ const validationSchema = Yup.object({
     .required("Email is required")
 });
 
-function CreateUser({ onClose }: Props) {
+function UserForm({ onClose }: Props) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const {request:addUser}=useApi('post',3002)
   const {
     register,
     handleSubmit,
@@ -41,8 +46,15 @@ function CreateUser({ onClose }: Props) {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<UserData> = (data) => {
+  const onSubmit: SubmitHandler<UserData> =async (data,event) => {
+    event.preventDefault();
     console.log("Form Data:", data);
+    try{
+      const url=endPoints.ADD_USER
+      const {}=addUser(url,data)
+    }catch(errr){
+
+    }
   };
 
   const Role = [
@@ -52,6 +64,20 @@ function CreateUser({ onClose }: Props) {
 
   const handleInputChange = (field: keyof UserData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+ 
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setValue("userImage", base64String);
+      };
+ 
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -76,9 +102,13 @@ function CreateUser({ onClose }: Props) {
               id="file-upload"
               type="file"
               className="hidden"
-              {...register("userImage")}
+              onChange={(e) => handleFileChange(e)}
             />
-            <ImagePlaceHolder />
+            <ImagePlaceHolder 
+            uploadedImage={watch('userImage')}
+            value={watch('userImage')}
+        setValue={setValue}
+        fileInputRef={fileInputRef} />
           </label>
         </div>
         <div className="col-span-9 my-2">
@@ -157,4 +187,4 @@ function CreateUser({ onClose }: Props) {
   );
 }
 
-export default CreateUser;
+export default UserForm;
