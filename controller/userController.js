@@ -1,6 +1,7 @@
 // v1.0
 const ActivityLog = require('../database/model/activityLog'); 
 const moment = require("moment-timezone");
+const Role = require('../database/model/role'); 
 
 const User = require('../database/model/user');
 const bcrypt = require('bcrypt');
@@ -289,3 +290,112 @@ function generateTimeAndDateForDB(
 //     return false;
 //   }
 // };
+
+
+
+
+// Hardcoded roles data
+const roles = [
+  {
+    roleName: 'Super Admin',
+    permissions: [
+      // Region
+      { action: "Add Region", note: "Add Region" },
+      { action: "View Region", note: "View Region" },
+      { action: "Edit Region", note: "Edit Region" },
+      { action: "Delete Region", note: "Delete Region" },
+
+      // Area
+      { action: "Add Area", note: "Add Area" },
+      { action: "View Area", note: "View Area" },
+      { action: "Edit Area", note: "Edit Area" },
+      { action: "Delete Area", note: "Delete Area" },
+    ],
+  },
+  {
+    roleName: 'Sales Admin',
+    permissions: [
+      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+    ],
+  },
+  {
+    roleName: 'Support Admin',
+    permissions: [
+      { action: "OrganizationView", note: "Viewed Organization Details" },
+      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+    ],
+  },
+  {
+    roleName: 'Region Manager',
+    permissions: [
+      { action: "OrganizationView", note: "Viewed Organization Details" },
+      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+    ],
+  },
+  {
+    roleName: 'Area Manager',
+    permissions: [
+      { action: "OrganizationView", note: "Viewed Organization Details" },
+      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+    ],
+  },
+  {
+    roleName: 'BDAs',
+    permissions: [
+      { action: "OrganizationView", note: "Viewed Organization Details" },
+      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+    ],
+  },
+  {
+    roleName: 'Supervisor',
+    permissions: [
+      { action: "OrganizationView", note: "Viewed Organization Details" },
+      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+    ],
+  },
+  {
+    roleName: 'Support Agent',
+    permissions: [
+      { action: "OrganizationView", note: "Viewed Organization Details" },
+      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+      { action: "SettingView", note: "Viewed Setting details" },
+      { action: "CurrencyView", note: "Viewed Currency Details" },
+    ],
+  }
+];
+
+// Controller function to add or update roles
+exports.addOrUpdateRoles = async (req, res) => {
+  try {
+    for (const roleData of roles) {
+      // Update the role if it exists, or insert a new one
+      await Role.updateOne(
+        { roleName: roleData.roleName }, // Find by roleName
+        { $set: { permissions: roleData.permissions } }, // Update permissions
+        { upsert: true } // Insert the role if it doesn't exist
+      );
+    }
+    // Return success response
+    res.status(200).json({ message: 'Roles have been added or updated successfully.' });
+  } catch (error) {
+    console.error('Error adding or updating roles:', error);
+    // Return error response
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};

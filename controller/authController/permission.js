@@ -1,12 +1,66 @@
 // v1.0
 
+// const User = require('../../database/model/user');
+// const ActivityLog = require('../../database/model/activityLog');
+// const moment = require("moment-timezone");
+
+
+
+// const checkPermission = (...role) => {
+//   return async (req, res, next) => {
+//     try {
+
+//       const user = await User.findById(req.user.id);
+//       if (!user) {
+//         return res.status(401).json({ message: 'User not found' });
+//       }
+//       const permissionAction = role[role.length - 1];
+//       const Action = permissionAction.split(' ')[0];
+//       const Screen = permissionAction.split(' ')[1]
+
+//        const generatedDateTime = generateTimeAndDateForDB(
+//         "Asia/Kolkata",
+//         "DD/MM/YY",
+//         "/"
+//       );
+//       const actionTime = generatedDateTime.dateTime;
+
+//       if (role.includes(user.role)){
+//         return next();
+
+//       } else {
+//           // Log the unauthorized access attempt
+//           const unauthorizedActivity = new ActivityLog({
+//             userId: req.user.id,
+//             activity: `${req.user.userName} Tried to  ${permissionAction} without proper permission.`,
+//             timestamp: actionTime,
+//             action: Action,
+//             status: "denied",
+//             screen: Screen
+//           });
+//           await unauthorizedActivity.save();
+  
+//           // Permission not found, deny access
+//           return res.status(403).json({ message: `Access denied: Insufficient permissions to perform ${permissionAction}` });
+//         }
+      
+     
+//     } catch (err) {
+//       console.error('Error in checkPermission:', err);
+//       return res.status(500).json({ message: 'Internal server error' });
+//     }
+//   };
+// };
+
+
 const User = require('../../database/model/user');
 const ActivityLog = require('../../database/model/activityLog');
 const moment = require("moment-timezone");
+const Role = require('../../database/model/role'); 
 
 
 
-const checkPermission = (...role) => {
+const checkPermission = (permissionAction) => {
   return async (req, res, next) => {
     try {
 
@@ -14,10 +68,12 @@ const checkPermission = (...role) => {
       if (!user) {
         return res.status(401).json({ message: 'User not found' });
       }
-      const permissionAction = role[role.length - 1];
-      const Action = permissionAction.split(' ')[0];
-      const Screen = permissionAction.split(' ')[1]
 
+      const role = await Role.findOne({ roleName: user.role });
+      if (!role) {
+        return res.status(401).json({ message: 'Role not found' });
+      }
+      
        const generatedDateTime = generateTimeAndDateForDB(
         "Asia/Kolkata",
         "DD/MM/YY",
@@ -25,7 +81,12 @@ const checkPermission = (...role) => {
       );
       const actionTime = generatedDateTime.dateTime;
 
-      if (role.includes(user.role)){
+      const permission = role.permissions.find(p => p.action === permissionAction);
+      const Action = permissionAction.split(' ')[0];
+      const Screen = permissionAction.split(' ')[1]
+
+
+      if (permission){
         return next();
 
       } else {
@@ -51,7 +112,6 @@ const checkPermission = (...role) => {
     }
   };
 };
-
 
 
 // // Function to generate time and date for storing in the database

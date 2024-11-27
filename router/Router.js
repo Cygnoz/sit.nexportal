@@ -17,29 +17,28 @@ const ActivityLogGeneration = require('../controller/authController/activityLogC
 router.post('/login',userController.login)
 
 router.post('/verify-otp',userController.verifyOtp)
+router.post('/roles',userController.addOrUpdateRoles)
 
 // region
-router.post("/region",verifyToken,checkPermission('Super Admin','Add Region'), regionController.addRegion,ActivityLogGeneration('Super Admin','Add Region'));
+router.post("/region",verifyToken,checkPermission('Add Region'), regionController.addRegion,ActivityLogGeneration('Add Region'));
 
-router.get("/region/:regionId",verifyToken,checkPermission('Super Admin','View Region'), regionController.getRegion);
+router.get("/region/:regionId",verifyToken,checkPermission('View Region'), regionController.getRegion);
 
-router.get("/regions",verifyToken,checkPermission('Super Admin','View Region'), regionController.getAllRegions);
+router.get("/regions",verifyToken,checkPermission('View Region'), regionController.getAllRegions);
 
-router.put("/region/:regionId",verifyToken,checkPermission('Super Admin','Edit Region'), regionController.updateRegion,ActivityLogGeneration('Super Admin','Edit Region'));
+router.put("/region/:regionId",verifyToken,checkPermission('Edit Region'), regionController.updateRegion,ActivityLogGeneration('Edit Region'));
 
-router.delete("/region/:regionId",verifyToken,checkPermission('Super Admin','Delete Region'), regionController.deleteRegion,ActivityLogGeneration('Super Admin','Delete Region'));
+router.delete("/region/:regionId",verifyToken,checkPermission('Delete Region'), regionController.deleteRegion,ActivityLogGeneration('Delete Region'));
 
 // area
-router.post("/area",verifyToken,checkPermission('Super Admin','Add Area'), areaController.addArea,ActivityLogGeneration('Super Admin','Add Area'));
+router.post("/area",verifyToken,checkPermission('Add Area'), areaController.addArea,ActivityLogGeneration('Add Area'));
 
-router.get("/area/:areaId",verifyToken,checkPermission('Super Admin','View Area'), areaController.getArea);
+router.get("/area/:areaId",verifyToken,checkPermission('View Area'), areaController.getArea);
 
-router.get("/areas",verifyToken,checkPermission('Super Admin','View Area'), areaController.getAllAreas);
+router.get("/areas",verifyToken,checkPermission('View Area'), areaController.getAllAreas);
 
-router.put("/area/:areaId",verifyToken,checkPermission('Super Admin','Edit Area'), areaController.updateArea,ActivityLogGeneration('Super Admin','Edit Area'));
+router.put("/area/:areaId",verifyToken,checkPermission('Edit Area'), areaController.updateArea,ActivityLogGeneration('Edit Area'));
 
-router.delete("/area/:areaId",verifyToken,checkPermission('Super Admin','Delete Area'), areaController.deleteArea,ActivityLogGeneration('Super Admin','Delete Area'));
+router.delete("/area/:areaId",verifyToken,checkPermission('Delete Area'), areaController.deleteArea,ActivityLogGeneration('Delete Area'));
 
-// router.post("/region",verifyToken,checkPermission('Super Admin','Area Manager','Region Manager','Sales Admin','Support Admin','BDAs','Supervisor','Support Agent','Add Region'), regionController.addRegion,ActivityLogGeneration('Super Admin','Area Manager','Region Manager','Sales Admin','Support Admin','BDAs','Supervisor','Support Agent','Add Region'));
-// router.post("/region",verifyToken,checkPermission('SuperA','AM','RM','SalesA','SupportA','BDAs','Supervisor','SupportA','Add Region'), regionController.addRegion,ActivityLogGeneration('SuperA','AM','RM','SalesA','SupportA','BDAs','Supervisor','SupportA','Add Region'));
 module.exports = router
