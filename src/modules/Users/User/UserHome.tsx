@@ -10,7 +10,7 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import { useState } from "react";
-import CreateUser from "./CreateUser";
+import UserForm from "./UserForm";
 
 
 // Define the type for data items
@@ -91,7 +91,7 @@ const UserHome = () => {
 
       {/* Modal controlled by state */}
       <Modal className="w-[40%]" open={isModalOpen} onClose={handleModalToggle}>
-      <CreateUser onClose={handleModalToggle} />
+      <UserForm onClose={handleModalToggle} />
       </Modal>
     </div>
 
