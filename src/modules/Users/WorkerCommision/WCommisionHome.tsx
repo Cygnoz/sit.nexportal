@@ -1,41 +1,29 @@
 
+
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 
 
-import UserIcon from "../../../assets/icons/UserIcon";
+//import UserIcon from "../../../assets/icons/UserIcon";
 
 import Table from "../../../components/ui/Table";
-import RegionIcon from "../../../assets/icons/RegionIcon";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays";
+
 import { useState } from "react";
 import CreateUser from "./CreateUser";
 
 
 // Define the type for data items
 interface RegionManagerData {
+   regionCode:string;
+   regionName: string;
+   createdDate: string;
+   country: string;
+   roll: string;
    
-    regionCode: string;
-    regionName: string;
-    createdDate: string;
-    country: string;
-    roll: string;
   }
 
 
-
-  // Data for HomeCards
-//   const homeCardData = [
-//     { icon: <UserIcon  />, number: "46", title: "Total Regional Manager" ,iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
-//     { icon: <AreaIcon  />, number: "147", title: "Total Area Managed" ,iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC'},
-//     { icon: <UserIcon  />, number: "256", title: "Total Area Managed" ,iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-//     { icon: <MutiUserIcon  />, number: "498", title: "Total BDA's" ,iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC'},
-//   ];
-
-
-
-const UserHome = () => {
+const WCommisionHome = () => {
   // State to manage modal visibility
  const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -46,8 +34,8 @@ const UserHome = () => {
 
   
   const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(editId){
-     console.log(editId);
+    if(deleteId){
+     console.log(deleteId);
      
     }
   }
@@ -74,19 +62,19 @@ const UserHome = () => {
     const columns: { key: keyof  RegionManagerData; label: string }[] = [
        
       { key: "regionCode", label: "Name" },
-      { key: "regionName", label: "Email Address" },
-      { key: "country", label: "Phone No" },
-      { key: "roll", label: "Roll" },
+      { key: "regionName", label: "Value(%)" },
+      { key: "createdDate", label: "Thrushold amt" },
+      { key: "country", label: "Creted Date" },
 
     ];
 
   return (
     <div>
          <div className="flex justify-between items-center">
-      <h1>User</h1>
+      <h1>Worker Commission Profile</h1>
      
       <Button variant="primary" size="sm" onClick={handleModalToggle}>
-        + Create User
+        + Add Commission Profile
       </Button>
 
       {/* Modal controlled by state */}
@@ -112,21 +100,11 @@ const UserHome = () => {
        <div className=" py-2 mt-3">
         <Table< RegionManagerData> data={data} columns={columns} headerContents={{
           
-          search:{placeholder:'Search User'},
-          sort: [
-                {
-                  sortHead: "Filter",
-                  sortList: [
-                    { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
-                  ]
-                }
-          ]
+          search:{placeholder:'Search BDA By Name'},
+        
         }}
         actionList={[
-            { label: 'edit', function:handleEditDeleteView },
+            { label: 'delete', function:handleEditDeleteView },
            
           ]}  />
 
@@ -144,4 +122,4 @@ const UserHome = () => {
   );
 };
 
-export default UserHome;
+export default WCommisionHome;
