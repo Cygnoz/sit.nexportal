@@ -1,6 +1,6 @@
-type Props = {color:string}
+type Props = {color?:string}
 
-function EyeOffIcon({color}: Props) {
+function EyeOffIcon({color='#A3A9B3'}: Props) {
   return (
     <div>
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

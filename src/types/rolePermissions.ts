@@ -9,6 +9,7 @@ import TicketsIcon from '../assets/icons/TicketsIcon';
 import RegionIcon from '../assets/icons/RegionIcon';
 import TrialIcon from '../assets/icons/TrialIcon';
 import Licensor from '../assets/icons/Licensor';
+import Trophy from '../assets/icons/Trophy';
 
 // Define the available roles
 export type Role =
@@ -39,8 +40,11 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
     "Trial": TrialIcon,
     "Licenser": Licensor,
     "Tickets": TicketsIcon,
-    "User": TicketsIcon,
-    "User Log": TicketsIcon,
+    "User": UserIcon,
+    "User Log": UserIcon,
+    "Work Commission":UserIcon,
+    "Prise":Trophy,
+
   };
 
 // Define routes for each sidebar option
@@ -58,6 +62,10 @@ const sidebarRoutes: { [key: string]: string } = {
     "Tickets": "/tickets",
     "User": "/user",
     "User Log": "/user-log",
+    "Work Commission":'/worker-commission',
+    "Prise":'/prises',
+    
+    
   };
 
 // Define permissions for each role based on the new categorization
@@ -76,6 +84,8 @@ const rolePermissions: RolePermissions = {
     "Tickets",
     "User",
     "User Log",
+    "Work Commission",
+    "Prise",
   ],
   saleAdmin: [
     "Regions",

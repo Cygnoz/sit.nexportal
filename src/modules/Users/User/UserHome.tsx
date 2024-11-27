@@ -90,7 +90,7 @@ const UserHome = () => {
       </Button>
 
       {/* Modal controlled by state */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
+      <Modal className="w-[40%]" open={isModalOpen} onClose={handleModalToggle}>
       <CreateUser onClose={handleModalToggle} />
       </Modal>
     </div>

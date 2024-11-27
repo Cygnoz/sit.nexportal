@@ -7,7 +7,6 @@ const Layout = () => {
     <div className="flex h-screen text-[#303F58]">
       {/* Sidebar */}
       <Sidebar />
-      
       {/* Main Content (Header + Outlet) */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
