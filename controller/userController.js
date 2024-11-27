@@ -299,6 +299,15 @@ const roles = [
   {
     roleName: 'Super Admin',
     permissions: [
+      // User
+      { action: "Add User", note: "Add User" },
+      { action: "View User", note: "View User" },
+      { action: "Edit User", note: "Edit User" },
+      { action: "Delete User", note: "Delete User" },
+
+      // Activity log
+      { action: "View logs", note: "View logs" },
+
       // Region
       { action: "Add Region", note: "Add Region" },
       { action: "View Region", note: "View Region" },

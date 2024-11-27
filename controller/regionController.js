@@ -17,7 +17,6 @@ exports.addRegion = async (req, res, next) => {
       if (existingRegion) {
         return res.status(400).json({ message: "Region code or name already exists" });
       }
-  
       // Create a new region entry
       const newRegion = new Region({ regionCode, regionName, country, description });
   
