@@ -1,7 +1,7 @@
 // v1.0
 
-const User = require('../database/model/user');
-const ActivityLog = require('../database/model/activityLog');
+const User = require('../../database/model/user');
+const ActivityLog = require('../../database/model/activityLog');
 const moment = require("moment-timezone");
 
 
@@ -15,7 +15,8 @@ const checkPermission = (...role) => {
         return res.status(401).json({ message: 'User not found' });
       }
       const permissionAction = role[role.length - 1];
-      const Action = permissionAction.split(' ')[0].slice(0, -2);
+      const Action = permissionAction.split(' ')[0];
+      const Screen = permissionAction.split(' ')[1]
 
        const generatedDateTime = generateTimeAndDateForDB(
         "Asia/Kolkata",
@@ -25,24 +26,17 @@ const checkPermission = (...role) => {
       const actionTime = generatedDateTime.dateTime;
 
       if (role.includes(user.role)){
-        const activity = new ActivityLog({
-          userId: req.user.id, // Assuming your User model has a username field
-          activity: `${req.user.userName} ${permissionAction} successfully .`, // Log the note associated with the permission
-          timestamp: actionTime,
-          action: Action,
-          status: "allowed"
-        });
-        await activity.save();
         return next();
 
       } else {
           // Log the unauthorized access attempt
           const unauthorizedActivity = new ActivityLog({
             userId: req.user.id,
-            activity: `${req.user.userName} Tried to  ${permissionAction} without proper permission and access denied`,
+            activity: `${req.user.userName} Tried to  ${permissionAction} without proper permission.`,
             timestamp: actionTime,
             action: Action,
-            status: "denied"
+            status: "denied",
+            screen: Screen
           });
           await unauthorizedActivity.save();
   
@@ -57,6 +51,7 @@ const checkPermission = (...role) => {
     }
   };
 };
+
 
 
 // // Function to generate time and date for storing in the database
