@@ -14,6 +14,8 @@ import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
 import UserHome from './modules/Users/User/UserHome';
 import { Toaster } from 'react-hot-toast';
+import WCommisionHome from './modules/Users/WorkerCommision/WCommisionHome';
+import TicketsHome from './modules/Tickets/TicketsHome';
 
 const App: React.FC = () => {
   const { role,setRole} = useRole(); // Access the role from context
@@ -44,6 +46,8 @@ const App: React.FC = () => {
             <Route path="region-manager" element={<RegionManagerHome />} />
 
             <Route path="user" element={<UserHome/>} />
+            <Route path="worker-commission" element={<WCommisionHome/>} />
+            <Route path="tickets" element={<TicketsHome/>} />
            
             {/* Add more authenticated routes as needed */}
           </Route>
