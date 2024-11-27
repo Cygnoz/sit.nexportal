@@ -12,8 +12,13 @@ import RegionView from './modules/SaleArea&Region/Region/RegionView';
 import LeadView from './modules/Customers/Lead/LeadView';
 import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
+import BDAHome from './modules/SalesTeams/BDA/BDAHome';
+import SupervisorHome from './modules/Support/Supervisor/SupervisorHome';
+import TrialHome from './modules/Customers/Trial/TrialHome';
+import LicensorHome from './modules/Customers/Licensor/LicensorHome';
 import UserHome from './modules/Users/User/UserHome';
 import { Toaster } from 'react-hot-toast';
+import AreaManagerHome from './modules/SalesTeams/AreaManager/AreaManagerHome';
 import UserLogHome from './modules/Users/UserLog/UserLogHome';
 
 const App: React.FC = () => {
@@ -42,6 +47,12 @@ const App: React.FC = () => {
             <Route path="area" element={<AreaHome />} />
             <Route path="support-agent" element={<SupportagentHome />} />
             <Route path="lead" element={<LeadHome />} />
+            <Route path="area-manager" element={<AreaManagerHome />} />
+            <Route path="bda" element={<BDAHome />} />
+            <Route path="supervisor" element={<SupervisorHome />} />
+            <Route path="trial" element={<TrialHome />} />
+            <Route path="licenser" element={<LicensorHome />} />
+
             <Route path="region-manager" element={<RegionManagerHome />} />
 
             <Route path="user" element={<UserHome/>} />
