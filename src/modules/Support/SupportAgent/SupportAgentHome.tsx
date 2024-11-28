@@ -11,6 +11,7 @@ import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
 import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
 import AddSupportAgent from "./AddSupportAgent";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -29,10 +30,10 @@ const SupervisorHome = () => {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
-
+      const navigate=useNavigate()
       const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
         if(viewId){
-          // navigate(`/leadView/${viewId}`)
+          navigate(`/supportAgentView/${viewId}`)
           console.log(viewId);
           
         }else if(editId){
@@ -82,7 +83,7 @@ const SupervisorHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1>Support Agent</h1>
+        <h1 className="text-[#303F58] text-base font-bold">Support Agent</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
           + Create Support Agent
         </Button>
