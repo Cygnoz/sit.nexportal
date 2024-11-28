@@ -9,8 +9,8 @@ pipeline {
         IMAGE_NAME = 'nexsell/staff'
         AWS_CREDENTIALS_ID = '2157424a-b8a7-45c0-90c2-bc0d407f6cea'
         AWS_ACCOUNT_ID = '654654462146' // Add your AWS account ID here
-        SONARQUBE_PROJECT_KEY = 'backend'
-        SONARQUBE_SCANNER_CREDENTIALS_ID = 'eae93d9b-c38e-4f51-8700-09533901aca5' // Jenkins credentials ID for SonarQube token
+        SONARQUBE_PROJECT_KEY = 'nexsell-staff'
+        SONARQUBE_SCANNER_CREDENTIALS_ID = '5f133838-9d2b-4704-8fe6-f152b44afc22' // Jenkins credentials ID for SonarQube token
         ECS_CLUSTER_NAME = 'nexsell' // Replace with your ECS cluster name
         ECS_SERVICE_NAME = 'nexsell-staff' // Replace with your ECS service name
         ECS_TASK_DEFINITION_NAME = 'nexsell-staff' // Replace with your ECS task definition name
