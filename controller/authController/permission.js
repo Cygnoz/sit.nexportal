@@ -1,12 +1,12 @@
 // v1.0
-
 const User = require('../../database/model/user');
 const ActivityLog = require('../../database/model/activityLog');
 const moment = require("moment-timezone");
+const Role = require('../../database/model/role'); 
 
 
 
-const checkPermission = (...role) => {
+const checkPermission = (permissionAction) => {
   return async (req, res, next) => {
     try {
 
@@ -14,10 +14,12 @@ const checkPermission = (...role) => {
       if (!user) {
         return res.status(401).json({ message: 'User not found' });
       }
-      const permissionAction = role[role.length - 1];
-      const Action = permissionAction.split(' ')[0];
-      const Screen = permissionAction.split(' ')[1]
 
+      const role = await Role.findOne({ roleName: user.role });
+      if (!role) {
+        return res.status(401).json({ message: 'Role not found' });
+      }
+      
        const generatedDateTime = generateTimeAndDateForDB(
         "Asia/Kolkata",
         "DD/MM/YY",
@@ -25,7 +27,12 @@ const checkPermission = (...role) => {
       );
       const actionTime = generatedDateTime.dateTime;
 
-      if (role.includes(user.role)){
+      const permission = role.permissions.find(p => p.action === permissionAction);
+      const Action = permissionAction.split(' ')[0];
+      const Screen = permissionAction.split(' ')[1]
+
+
+      if (permission){
         return next();
 
       } else {
@@ -51,7 +58,6 @@ const checkPermission = (...role) => {
     }
   };
 };
-
 
 
 // // Function to generate time and date for storing in the database
