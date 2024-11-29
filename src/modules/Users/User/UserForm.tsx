@@ -19,7 +19,7 @@ interface UserData {
   userImage?: File; // For file input
   firstName: string;
   email: string;
-  phone?: string;
+  phoneNo?: string;
   password?: string;
   confirmPassword?:string;
   role?: string;
@@ -58,7 +58,7 @@ function UserForm({ onClose }: Props) {
   };
 
   const Role = [
-    { label: "Manager", value: "manager" },
+    { label: "Manager", value: "Region Manager" },
     { label: "Developer", value: "developer" },
   ];
 
@@ -95,6 +95,7 @@ function UserForm({ onClose }: Props) {
         </p>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
+       
         <div className="grid grid-cols-12">
         <div className="col-span-3">
           <label className="cursor-pointer text-center" htmlFor="file-upload">
