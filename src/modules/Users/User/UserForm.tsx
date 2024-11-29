@@ -1,3 +1,4 @@
+import React, { useRef } from "react";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
 import Input from "../../../components/form/Input";
 import Select from "../../../components/form/Select";
@@ -9,7 +10,6 @@ import CustomPhoneInput from "../../../components/form/CustomPhone";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
-import { useRef } from "react";
 import toast from "react-hot-toast";
 
 type Props = {
@@ -17,10 +17,10 @@ type Props = {
 };
 
 interface UserData {
-  userImage: string; // Base64 string
+  userImage?: any; // Base64 string
   userName: string;
   email: string;
-  phoneNo: string;
+  phoneNo?: string; // Make phoneNo optional
   password: string;
   confirmPassword: string;
   role: string;
@@ -29,15 +29,17 @@ interface UserData {
 const validationSchema = Yup.object({
   userName: Yup.string().required("Full name is required"),
   email: Yup.string().email("Invalid email format").required("Email is required"),
-  phoneNo: Yup.string(),
-  password: Yup.string().min(6, "Password must be at least 6 characters"),
-  confirmPassword: Yup.string().oneOf([Yup.ref('password')], 'Passwords must match'),
+  phoneNo: Yup.string(), // No need to make this required since it's optional in the interface
+  password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
   role: Yup.string().required("Role is required"),
 });
 
 function UserForm({ onClose }: Props) {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { request: addUser } = useApi('post', 3002);
+  const { request: addUser } = useApi("post", 3002);
 
   const {
     register,
@@ -59,13 +61,13 @@ function UserForm({ onClose }: Props) {
       console.log(response);
       console.log(error);
       if (response && !error) {
-        toast.success(response.data.message)
-        onClose()
-      }else{
-        toast.error(error.response.data.message)
+        toast.success(response.data.message);
+        onClose();
+      } else {
+        toast.error(error.response.data.message);
       }
     } catch (err) {
-      console.error('Error:', err);
+      console.error("Error:", err);
     }
   };
 
@@ -114,11 +116,12 @@ function UserForm({ onClose }: Props) {
                 className="hidden"
                 onChange={handleFileChange}
               />
-              <ImagePlaceHolder 
-                uploadedImage={watch('userImage')}
-                value={watch('userImage')}
+              <ImagePlaceHolder
+                uploadedImage={watch("userImage")}
+                value={watch("userImage")}
                 setValue={setValue}
-                fileInputRef={fileInputRef} />
+                fileInputRef={fileInputRef}
+              />
             </label>
           </div>
           <div className="col-span-9 my-2">

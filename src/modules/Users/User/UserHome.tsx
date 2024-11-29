@@ -1,12 +1,6 @@
-
-//import { useState } from "react";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
-
-//port HomeCard from "../../../components/ui/HomeCards";
 import UserIcon from "../../../assets/icons/UserIcon";
-// import AreaIcon from "../../../assets/icons/AreaIcon";
-// import MutiUserIcon from "../../../assets/icons/MultiUserIcon";
 import Table from "../../../components/ui/Table";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
@@ -28,13 +22,7 @@ interface UserHomeData {
 
 
 
-  // Data for HomeCards
-//   const homeCardData = [
-//     { icon: <UserIcon  />, number: "46", title: "Total Regional Manager" ,iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
-//     { icon: <AreaIcon  />, number: "147", title: "Total Area Managed" ,iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC'},
-//     { icon: <UserIcon  />, number: "256", title: "Total Area Managed" ,iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-//     { icon: <MutiUserIcon  />, number: "498", title: "Total BDA's" ,iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC'},
-//   ];
+
 
   
 
@@ -42,7 +30,7 @@ interface UserHomeData {
 
 const UserHome = () => {
   const {request:getUsers}=useApi('get',3002)
-  const [allUsers, setAllUsers] = useState<UserHomeData>([]);
+  const [allUsers, setAllUsers] = useState<UserHomeData[]>([]);
   // State to manage modal visibility
  const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -55,7 +43,10 @@ const UserHome = () => {
   const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
     if(editId){
      console.log(editId);
-     
+    }else if(viewId){
+      console.log(viewId)
+    }else{
+      console.log(deleteId)
     }
   }
 
@@ -101,7 +92,7 @@ const UserHome = () => {
   // ];
     // Define the columns with strict keys
     const columns: { key: keyof  UserHomeData; label: string }[] = [
-      { key: "userImage", label: "User Image" }, 
+      // { key: "userImage", label: "User Image" }, 
       { key: "userName", label: "Name" },
       { key: "email", label: "Email Address" },
       { key: "phoneNo", label: "Phone No" },
@@ -141,7 +132,7 @@ const UserHome = () => {
 
        {/* Table Section */}
        <div className=" py-2 mt-3">
-        <Table< UserHomeData> data={allUsers} columns={columns} headerContents={{
+        <Table data={allUsers} columns={columns} headerContents={{
           
           search:{placeholder:'Search User'},
           sort: [

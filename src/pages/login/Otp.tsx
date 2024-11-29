@@ -7,14 +7,11 @@ import axios from 'axios';
 import useApi from '../../Hooks/useApi';
 import { endPoints } from '../../services/apiEndpoints';
 import LoginBgRight from './LoginBgRight';
-import { useRole } from '../../context/RoleContext';
-// import { useAuth } from '../../context/AuthContext'; // Import the authentication context
 
 type Props = {}
 
 function Otp({}: Props) {
   const navigate = useNavigate();
-  const {setRole}=useRole()
   const location = useLocation();
   const { request: verifyOtp } = useApi("post", 3003);
   // const { setIsAuthenticated } = useAuth(); // Get the setIsAuthenticated function from context
@@ -97,10 +94,10 @@ function Otp({}: Props) {
         // OTP verified successfully
         const successMessage = result.response.data?.message || 'OTP verified successfully!';
         toast.success(successMessage);
-        
+        console.log(result.response.data);
         // Save the token and update the authentication state
         localStorage.setItem('authToken', result.response.data.token);
-        localStorage.setItem('role', result.response.data.role);
+        localStorage.setItem('role', result.response.data.user.role);
         // Example: Set role and navigate to the dashboard
         navigate('/dashboard');
       } else {
