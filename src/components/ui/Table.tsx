@@ -76,6 +76,12 @@ const Table = <T extends object>({
         return "bg-blue-300 text-white py-2 px-2 rounded-lg";
         case "Pending Renewal":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        case "High":
+        return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
+      case "Medium":
+        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+      case "Low":
+        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
       default:
         return "";
         

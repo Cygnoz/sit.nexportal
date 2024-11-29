@@ -41,6 +41,8 @@ const AreaManagerHome = () => {
           console.log(editId)
           // setId({...id,edit:editId})
         }
+        console.log(deleteId);
+        
       }
       // Data for HomeCards
   const homeCardData = [

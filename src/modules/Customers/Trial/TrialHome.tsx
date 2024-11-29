@@ -33,6 +33,10 @@ const TrialHome = () => {
         if(viewId){
           // navigate(`/leadView/${viewId}`)
           console.log(viewId);  
+          console.log(editId);
+          console.log(deleteId);
+          
+          
         }
       }
     

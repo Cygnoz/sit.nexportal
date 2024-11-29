@@ -23,6 +23,7 @@ import UserLogHome from './modules/Users/UserLog/UserLogHome';
 import AreaManagerView from './modules/SalesTeams/AreaManager/AreaManagerView';
 import BDAView from './modules/SalesTeams/BDA/BDAView';
 import SupportAgentView from './modules/Support/SupportAgent/SupportAgentView';
+import Licensers from './components/ui/Licensers';
 
 const App: React.FC = () => {
   const { role,setRole} = useRole(); // Access the role from context
