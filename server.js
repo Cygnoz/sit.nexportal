@@ -15,6 +15,14 @@ server.use(cors())
 
 server.use(express.json())
 
+
+// Increase the limit for JSON payloads
+server.use(express.json({ limit: '10mb' })); // Set limit to 10MB
+
+// Increase the limit for URL-encoded payloads
+server.use(express.urlencoded({ limit: '10mb', extended: true }));
+
+
 server.use(Router)
 
 const PORT = 3002
