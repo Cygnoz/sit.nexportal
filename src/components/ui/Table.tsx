@@ -1,14 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
+import Eye from "../../assets/icons/Eye";
+import NextIcon from "../../assets/icons/NextIcon";
+import PencilLine from "../../assets/icons/PencilLine";
+import PreviousIcon from "../../assets/icons/PreviousIcon";
+import Trash from "../../assets/icons/Trash";
 import SearchBar from "./SearchBar";
 import SortBy from "./SortBy";
-import PreviousIcon from "../../assets/icons/PreviousIcon";
-import NextIcon from "../../assets/icons/NextIcon";
-import UpwardIcon from "../../assets/icons/UpwardIcon";
-import PencilLine from "../../assets/icons/PencilLine";
-import Eye from "../../assets/icons/Eye";
-import Trash from "../../assets/icons/Trash";
-import { useNavigate } from "react-router-dom";
-import { string } from "yup";
 
 interface TableProps<T> {
   data: T[];
