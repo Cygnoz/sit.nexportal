@@ -3,7 +3,7 @@ const Leads = require("../database/model/leads")
 // const Area = require('../database/model/area')
 
 
-exports.addLead = async (req, res ) => {
+exports.addLead = async (req, res , next ) => {
   try {
     const { firstName, lastName, email, phone } = req.body;
 
@@ -24,12 +24,15 @@ exports.addLead = async (req, res ) => {
     await newLead.save();
     res.status(201).json({ message: "Lead added successfully", lead: newLead });
 
-
+  // Pass operation details to middleware
+  ActivityLog(req, "successfully", newLead._id);
+  next();
 
   } catch (error) {
     console.error("Error adding lead:", error);
     res.status(500).json({ message: "Internal server error" });
-   
+    ActivityLog(req, "Failed");
+    next();
   }
 };
 
@@ -141,4 +144,16 @@ exports.deleteLead = async (req, res, next) => {
     // ActivityLog(req, "Failed");
     // next();
   }
+};
+
+
+const ActivityLog = (req, status, operationId = null) => {
+  const { id, userName } = req.user;
+  const log = { id, userName, status };
+
+  if (operationId) {
+    log.operationId = operationId;
+  }
+
+  req.user = log;
 };

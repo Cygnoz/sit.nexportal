@@ -8,12 +8,12 @@ const checkPermission = require('../controller/authController/permission');
 
 const { verifyToken } = require('../controller/authController/middleware');
 
-// const ActivityLogGeneration = require('../controller/authController/activityLogController');
+const ActivityLogGeneration = require('../controller/authController/activityLogController');
 
 const leadController = require('../controller/leadsController')
 
 //add lead
-router.post('/add-lead',verifyToken,checkPermission('Add User'),leadController.addLead)
+router.post('/add-lead',verifyToken,checkPermission('Add User'),leadController.addLead,ActivityLogGeneration('Add Lead'))
 
 router.get('/get-all-lead',leadController.getAllLeads)
 
