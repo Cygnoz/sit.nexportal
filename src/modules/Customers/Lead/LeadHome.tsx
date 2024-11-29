@@ -96,7 +96,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
       </div>
       {/* HomeCards Section */}
       <div className="flex gap-3 py-2 justify-between">
-        {homeCardData.map((card, index) => (
+        {homeCardData?.map((card, index) => (
           <HomeCard 
             iconFrameColor={card.iconFrameColor}
             iconFrameBorderColor={card.iconFrameBorderColor}

@@ -1,37 +1,31 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import { Toaster } from 'react-hot-toast';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import { useRole } from './context/RoleContext';
-import Layout from './layout/Layout'; 
-import DashboardPage from './pages/DashboardPage';
-import RegionHome from './modules/SaleArea&Region/Region/RegionHome';
-import AreaHome from './modules/SaleArea&Region/Area/AreaHome';
+import Layout from './layout/Layout';
 import LeadHome from './modules/Customers/Lead/LeadHome';
-import SupportagentHome from './modules/Support/SupportAgent/SupportAgentHome';
-import RegionManagerHome from './modules/RegionalManager/RegionManager/RegionManagerHome';
-import RegionView from './modules/SaleArea&Region/Region/RegionView';
 import LeadView from './modules/Customers/Lead/LeadView';
+import LicensorHome from './modules/Customers/Licensor/LicensorHome';
+import TrialHome from './modules/Customers/Trial/TrialHome';
+import RegionManagerHome from './modules/RegionalManager/RegionManager/RegionManagerHome';
+import AreaHome from './modules/SaleArea&Region/Area/AreaHome';
+import RegionHome from './modules/SaleArea&Region/Region/RegionHome';
+import RegionView from './modules/SaleArea&Region/Region/RegionView';
+import AreaManagerHome from './modules/SalesTeams/AreaManager/AreaManagerHome';
+import AreaManagerView from './modules/SalesTeams/AreaManager/AreaManagerView';
+import BDAHome from './modules/SalesTeams/BDA/BDAHome';
+import BDAView from './modules/SalesTeams/BDA/BDAView';
+import SupervisorHome from './modules/Support/Supervisor/SupervisorHome';
+import SupportagentHome from './modules/Support/SupportAgent/SupportAgentHome';
+import SupportAgentView from './modules/Support/SupportAgent/SupportAgentView';
+import UserHome from './modules/Users/User/UserHome';
+import UserLogHome from './modules/Users/UserLog/UserLogHome';
+import DashboardPage from './pages/DashboardPage';
 import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
-import BDAHome from './modules/SalesTeams/BDA/BDAHome';
-import SupervisorHome from './modules/Support/Supervisor/SupervisorHome';
-import TrialHome from './modules/Customers/Trial/TrialHome';
-import LicensorHome from './modules/Customers/Licensor/LicensorHome';
-import UserHome from './modules/Users/User/UserHome';
-import { Toaster } from 'react-hot-toast';
-import AreaManagerHome from './modules/SalesTeams/AreaManager/AreaManagerHome';
-import UserLogHome from './modules/Users/UserLog/UserLogHome';
-import AreaManagerView from './modules/SalesTeams/AreaManager/AreaManagerView';
-import BDAView from './modules/SalesTeams/BDA/BDAView';
-import SupportAgentView from './modules/Support/SupportAgent/SupportAgentView';
-import Licensers from './components/ui/Licensers';
 
 const App: React.FC = () => {
-  const { role,setRole} = useRole(); // Access the role from context
-  // useEffect(()=>{
-  //   if(localStorage.getItem('role')){
-  //     setRole(localStorage.getItem('role'))
-  //   }
-  // },[])
+  const { role} = useRole(); // Access the role from context
 
 
   return (

@@ -51,6 +51,9 @@ const RegionManagerHome = () => {
       console.log(editId)
      
     }
+    else{
+      console.log(deleteId)
+    }
   }
 
   

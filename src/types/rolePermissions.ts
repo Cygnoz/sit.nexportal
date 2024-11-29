@@ -13,14 +13,14 @@ import Trophy from '../assets/icons/Trophy';
 
 // Define the available roles
 export type Role =
-  | "superAdmin"
-  | "saleAdmin"
-  | "supportAdmin"
-  | "regionManager"
-  | "areaManager"
-  | "bda"
-  | "supervisor"
-  | "support";
+  | "Super Admin"
+  | "Sales Admin"
+  | "Support Admin"
+  | "Region Manager"
+  | "Area Manager"
+  | "BDAs"
+  | "Supervisor"
+  | "Support Agent";
 
 // Define an interface for role permissions
 interface RolePermissions {
@@ -70,7 +70,7 @@ const sidebarRoutes: { [key: string]: string } = {
 
 // Define permissions for each role based on the new categorization
 const rolePermissions: RolePermissions = {
-  superAdmin: [
+  'Super Admin': [
     "Regions",
     "Area",
     "Region Manager",

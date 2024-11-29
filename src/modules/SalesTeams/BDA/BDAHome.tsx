@@ -36,6 +36,9 @@ const BDAHome = () => {
         if(viewId){
           navigate(`/bdaView/${viewId}`)
           console.log(viewId);
+          console.log(editId);
+          console.log(deleteId);
+          
           
         }
       }

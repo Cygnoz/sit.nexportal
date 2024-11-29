@@ -7,14 +7,11 @@ import axios from 'axios';
 import useApi from '../../Hooks/useApi';
 import { endPoints } from '../../services/apiEndpoints';
 import LoginBgRight from './LoginBgRight';
-import { useRole } from '../../context/RoleContext';
-// import { useAuth } from '../../context/AuthContext'; // Import the authentication context
 
 type Props = {}
 
 function Otp({}: Props) {
   const navigate = useNavigate();
-  const {setRole}=useRole()
   const location = useLocation();
   const { request: verifyOtp } = useApi("post", 3003);
   // const { setIsAuthenticated } = useAuth(); // Get the setIsAuthenticated function from context
@@ -85,44 +82,44 @@ function Otp({}: Props) {
     e.preventDefault();
     setIsLoading(true);
     setError(null);
-    setRole('superAdmin')
-    navigate('/dashboard');
+    // setRole('superAdmin')
+    // navigate('/dashboard');
     const enteredOtp = otp.join('');
-    // try {
-    //   // Send the OTP verification request
-    //   const result = await verifyOtp(endPoints.GET_OTP, { email, otp: enteredOtp });
+    try {
+      // Send the OTP verification request
+      const result = await verifyOtp(endPoints.GET_OTP, { email, otp: enteredOtp });
   
-    //   if (result?.response) {
-    //     console.log(result.response)
-    //     // OTP verified successfully
-    //     const successMessage = result.response.data?.message || 'OTP verified successfully!';
-    //     toast.success(successMessage);
-        
-    //     // Save the token and update the authentication state
-    //     localStorage.setItem('authToken', result.response.data.token);
-    //     localStorage.setItem('role', result.response.data.role);
-    //     // Example: Set role and navigate to the dashboard
-    //     navigate('/dashboard');
-    //   } else {
-    //     // Handle error response
-    //     const errorMessage = result.error?.response?.data?.message || 'OTP verification failed.';
-    //     setError(errorMessage);
-    //     toast.error(errorMessage);
-    //   }
-    // } catch (error) {
-    //   // Handle exceptions (e.g., network errors)
-    //   if (axios.isAxiosError(error)) {
-    //     const errorMessage = error.response?.data?.message || 'OTP verification failed. Please try again.';
-    //     setError(errorMessage);
-    //     toast.error(errorMessage);
-    //   } else {
-    //     const fallbackMessage = 'OTP verification failed. Please try again.';
-    //     setError(fallbackMessage);
-    //     toast.error(fallbackMessage);
-    //   }
-    // } finally {
-    //   setIsLoading(false);
-    // }
+      if (result?.response) {
+        console.log(result.response)
+        // OTP verified successfully
+        const successMessage = result.response.data?.message || 'OTP verified successfully!';
+        toast.success(successMessage);
+        console.log(result.response.data);
+        // Save the token and update the authentication state
+        localStorage.setItem('authToken', result.response.data.token);
+        localStorage.setItem('role', result.response.data.user.role);
+        // Example: Set role and navigate to the dashboard
+        navigate('/dashboard');
+      } else {
+        // Handle error response
+        const errorMessage = result.error?.response?.data?.message || 'OTP verification failed.';
+        setError(errorMessage);
+        toast.error(errorMessage);
+      }
+    } catch (error) {
+      // Handle exceptions (e.g., network errors)
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || 'OTP verification failed. Please try again.';
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } else {
+        const fallbackMessage = 'OTP verification failed. Please try again.';
+        setError(fallbackMessage);
+        toast.error(fallbackMessage);
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
   
 
