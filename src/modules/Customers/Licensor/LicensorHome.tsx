@@ -42,6 +42,8 @@ const LicensorHome = () => {
           console.log(editId)
           // setId({...id,edit:editId})
         }
+        console.log(deleteId);
+        
       }
     
 

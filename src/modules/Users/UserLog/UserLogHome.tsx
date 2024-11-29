@@ -1,22 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react'
-import PencilLine from '../../../assets/icons/PencilLine'
-import Trash from '../../../assets/icons/Trash'
-import Eye from '../../../assets/icons/Eye'
-import PreviousIcon from '../../../assets/icons/PreviousIcon'
 import NextIcon from '../../../assets/icons/NextIcon'
+import PreviousIcon from '../../../assets/icons/PreviousIcon'
+import SearchIcon from '../../../assets/icons/SearchIcon'
 import Input from '../../../components/form/Input'
 import Select from '../../../components/form/Select'
-import SearchIcon from '../../../assets/icons/SearchIcon'
 import useApi from '../../../Hooks/useApi'
 import { endPoints } from '../../../services/apiEndpoints'
 
 type Props = {}
-interface UserLogData {
-    screen: string;
-    date: string;
-    time: string;
-    remarks: string;
-  }
+
 
   interface User {
     _id: string;

@@ -9,7 +9,10 @@ import RegionManagerHome from './modules/RegionalManager/RegionManager/RegionMan
 import AreaHome from './modules/SaleArea&Region/Area/AreaHome';
 import RegionHome from './modules/SaleArea&Region/Region/RegionHome';
 import RegionView from './modules/SaleArea&Region/Region/RegionView';
+import AreaManagerView from './modules/SalesTeams/AreaManager/AreaManagerView';
+import BDAView from './modules/SalesTeams/BDA/BDAView';
 import SupportagentHome from './modules/Support/SupportAgent/SupportAgentHome';
+import SupportAgentView from './modules/Support/SupportAgent/SupportAgentView';
 import UserHome from './modules/Users/User/UserHome';
 import UserLogHome from './modules/Users/UserLog/UserLogHome';
 import DashboardPage from './pages/DashboardPage';
@@ -40,10 +43,16 @@ const App: React.FC = () => {
             <Route path="leadView/:id" element={<LeadView />} />
             <Route path="lead" element={<LeadHome />} />
             <Route path="area" element={<AreaHome />} />
+            {/* Support Agent */}
             <Route path="support-agent" element={<SupportagentHome />} />
+            <Route path='supportAgentView/:id' element={<SupportAgentView />} />
             <Route path="lead" element={<LeadHome />} />
+            {/* Area Manager */}
             <Route path="area-manager" element={<AreaManagerHome />} />
+            <Route path="amView/:id" element={<AreaManagerView/>} />
+            {/* BDA */}
             <Route path="bda" element={<BDAHome />} />
+            <Route path="bdaView/:id" element={<BDAView />} />
             <Route path="supervisor" element={<SupervisorHome />} />
             <Route path="trial" element={<TrialHome />} />
             <Route path="licenser" element={<LicensorHome />} />
