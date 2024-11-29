@@ -15,6 +15,17 @@ import UserLogHome from './modules/Users/UserLog/UserLogHome';
 import DashboardPage from './pages/DashboardPage';
 import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
+<<<<<<< HEAD
+=======
+import BDAHome from './modules/SalesTeams/BDA/BDAHome';
+import SupervisorHome from './modules/Support/Supervisor/SupervisorHome';
+import TrialHome from './modules/Customers/Trial/TrialHome';
+import LicensorHome from './modules/Customers/Licensor/LicensorHome';
+import UserHome from './modules/Users/User/UserHome';
+import { Toaster } from 'react-hot-toast';
+import AreaManagerHome from './modules/SalesTeams/AreaManager/AreaManagerHome';
+import UserLogHome from './modules/Users/UserLog/UserLogHome';
+>>>>>>> d10ff31a7fbeeb3fa64ef977a91e21e075efc141
 
 const App: React.FC = () => {
   const { role} = useRole(); // Access the role from context
@@ -37,6 +48,12 @@ const App: React.FC = () => {
             <Route path="area" element={<AreaHome />} />
             <Route path="support-agent" element={<SupportagentHome />} />
             <Route path="lead" element={<LeadHome />} />
+            <Route path="area-manager" element={<AreaManagerHome />} />
+            <Route path="bda" element={<BDAHome />} />
+            <Route path="supervisor" element={<SupervisorHome />} />
+            <Route path="trial" element={<TrialHome />} />
+            <Route path="licenser" element={<LicensorHome />} />
+
             <Route path="region-manager" element={<RegionManagerHome />} />
 
             <Route path="user" element={<UserHome/>} />
