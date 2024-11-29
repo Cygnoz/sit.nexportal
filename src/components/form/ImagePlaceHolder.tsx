@@ -2,27 +2,10 @@ import AvtarImg from "../../assets/Images/AvatarImg.png";
  
 type Props = {
   uploadedImage?: string;
-  setValue?: any;
-  value?:any
-  onRemoveImage?: () => void;
-  fileInputRef?: React.RefObject<HTMLInputElement>; // Add ref to input for resetting
 };
  
-function ImagePlaceHolder({ uploadedImage, setValue,value, onRemoveImage, fileInputRef }: Props) {
-  const handleRemoveImage = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent click propagation
- 
-    // Clear the leadImage value
-    setValue(value,"")
- 
-    // Reset the file input value
-    if (fileInputRef?.current) {
-      fileInputRef.current.value = ""; // Clear the input field
-    }
- 
-    // Execute the remove function if passed
-    if (onRemoveImage) onRemoveImage();
-  };
+function ImagePlaceHolder({ uploadedImage }: Props) {
+  
  
   return (
     <div
@@ -48,14 +31,6 @@ function ImagePlaceHolder({ uploadedImage, setValue,value, onRemoveImage, fileIn
             </p>
           </div>
         </>
-      )}
-      {uploadedImage && (
-        <div
-          onClick={handleRemoveImage} // Remove image handler
-          className="bg-[#e2e1e1] border-t-2 w-full rounded-b-lg h-6 flex items-center justify-end px-4 cursor-pointer"
-        >
-          <div>&times;</div>
-        </div>
       )}
     </div>
   );

@@ -1,50 +1,88 @@
-import React, { useMemo, useState } from 'react'
-import PencilLine from '../../../assets/icons/PencilLine'
-import Trash from '../../../assets/icons/Trash'
-import Eye from '../../../assets/icons/Eye'
-import PreviousIcon from '../../../assets/icons/PreviousIcon'
+import React, { useEffect, useMemo, useState } from 'react'
 import NextIcon from '../../../assets/icons/NextIcon'
+import PreviousIcon from '../../../assets/icons/PreviousIcon'
+import SearchIcon from '../../../assets/icons/SearchIcon'
 import Input from '../../../components/form/Input'
 import Select from '../../../components/form/Select'
-import SearchIcon from '../../../assets/icons/SearchIcon'
+import useApi from '../../../Hooks/useApi'
+import { endPoints } from '../../../services/apiEndpoints'
 
 type Props = {}
-interface UserLogData {
-    screen: string;
-    date: string;
-    time: string;
-    remarks: string;
+
+
+  interface User {
+    _id: string;
+    userId: {
+      _id: string;
+      userName: string;
+      role: string;
+    };
+    activity: string;
+    status: string;
+    date:string;
+    time:string
+    action: string;
+    __v: number;
   }
 
 function UserLogHome({}: Props) {
-    
+  const {request:getActivityLog}=useApi('get',3002)
+  const [allUserLog,setAllUserLog]=useState<User[]>([])
+  const getAllActivityLog = async () => {
+    try {
+      const { response, error } = await getActivityLog(endPoints.GET_ACTIVITY_LOGS);
+      console.log("res", response);
+      console.log("err", error);
+  
+      if (response && !error) {
+        const logs = response?.data?.logs || [];
+        
+        const formattedLogs = logs.map((log: any) => {
+          // Extract the timestamp and split it into date and time
+          const timestamp = log.timestamp;
+          const [date, time] = timestamp.split(" "); // Split into date and time
+          
+          return {
+            ...log, // Retain all other properties
+            date,    // Date part (27/11/24)
+            time     // Time part (15:18:14 (IST))
+          };
+        });
+  
+        setAllUserLog(formattedLogs.reverse()); // Set the formatted logs in state
+      }
+    } catch (err) {
+      console.error('Error fetching activity logs:', err);
+    }
+  };
 
-    const UserLogData: UserLogData[] = [
-        { screen: "lead", date: "12-2-24", time: "9.30", remarks: "filed login" },
-        { screen: "salesManager", date: "12-2-24", time: "10.00", remarks: "meeting scheduled" },
-        { screen: "lead", date: "12-2-24", time: "11.15", remarks: "call made" },
-        { screen: "lead", date: "12-2-24", time: "12.30", remarks: "email sent" },
-        { screen: "salesManager", date: "12-2-24", time: "13.45", remarks: "proposal reviewed" },
-        { screen: "lead", date: "12-2-24", time: "14.00", remarks: "follow-up call" },
-        { screen: "lead", date: "12-2-24", time: "15.30", remarks: "filed login" },
-        { screen: "salesManager", date: "12-2-24", time: "16.00", remarks: "meeting concluded" },
-        { screen: "lead", date: "12-2-24", time: "17.15", remarks: "contract signed" },
-        { screen: "salesManager", date: "12-2-24", time: "18.30", remarks: "project kickoff" },
-        { screen: "lead", date: "12-2-24", time: "19.45", remarks: "client feedback" },
-        { screen: "lead", date: "12-2-24", time: "20.00", remarks: "filed login" },
-        { screen: "salesManager", date: "12-2-24", time: "21.30", remarks: "final review" },
-        { screen: "lead", date: "12-2-24", time: "22.00", remarks: "call made" },
-        { screen: "lead", date: "12-2-24", time: "23.15", remarks: "email sent" },
-        { screen: "salesManager", date: "12-2-24", time: "00.30", remarks: "meeting scheduled" },
-      ];
+  console.log(allUserLog);
+  function getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((acc, part) => acc?.[part], obj);
+  }
+
+  useEffect(()=>{
+    getAllActivityLog()
+  },[])
+
       
 
-      const columns: { key: keyof UserLogData; label: string }[] = [
-        { key: "screen", label: "Screen" },
+      const columns: { key: keyof User | string; label: string }[] = [
+        { key: "userId.role", label: "Screen" },
+        { key: "action", label: "Action" },
         { key: "date", label: "Date" },
         { key: "time", label: "Time" },
-        { key: "remarks", label: "Remarks" },
+        { key: "activity", label: "Remarks" },
       ];
+
+      const actionColorMap: { [key: string]: string } = {
+        Add: "text-green-700",      // Green for "Add"
+        Edit: "text-orange-400",    // Orange for "Edit"
+        Delete: "text-red-700",     // Red for "Delete"
+        Login: "text-blue-600",
+        View: "text-yellow-800",      // Rose color for "Login"
+      };
+      
 
       const [currentPage, setCurrentPage] = useState<number>(1);
     const [rowsPerPage, setRowsPerPage] = useState<number>(10);
@@ -52,10 +90,10 @@ function UserLogHome({}: Props) {
      // Paginate the filtered data
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return UserLogData.slice(start, start + rowsPerPage);
-  }, [UserLogData, currentPage, rowsPerPage]);
+    return allUserLog.slice(start, start + rowsPerPage);
+  }, [allUserLog, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(UserLogData.length / rowsPerPage);
+  const totalPages = Math.ceil(allUserLog.length / rowsPerPage);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -94,8 +132,8 @@ function UserLogHome({}: Props) {
               options={leadSource}/>
         </div>
         
-        <div className='p-[18px] rounded-lg flex justify-center items-center border  -mt-4'>
-           <SearchIcon/>
+        <div className='p-[10px] rounded-lg flex justify-center items-center border  -mt-4'>
+           <p><SearchIcon className="size-4 text-gray-200"/></p>
         </div>
        </div>
     
@@ -113,75 +151,54 @@ function UserLogHome({}: Props) {
                 {col.label}
               </th>
             ))}
-            <th className="border p-4 bg-[#F6F9FC] text-center text-sm text-[#303F58] font-medium">
-              Action
-            </th>
           </tr>
         </thead>
         <tbody>
-          {paginatedData.length > 0 ? (
-            paginatedData.map((row, rowIndex) => (
-              <tr key={rowIndex} className="hover:bg-gray-50">
-                <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-                  {rowIndex + 1}
-                </td>
-                {columns.map((col) => (
-                  <td
-                    key={String(col.key)}
-                    className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
-                  >
-                    <div className={` flex justify-center`}>
-                      <p
-                      >
-                        {row[col.key] as string}
-                      </p>
-                    </div>
-                  </td>
-                ))}
-                <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-                  <div className="flex justify-center gap-2">
-                    
-                          <p
-                         
-                            className="cursor-pointer"
-                            // onClick={() => action.function(1, null, null)}
-                          >
-                            <PencilLine color="#4B5C79" size={16} />
-                          </p>
-                        
-                    
-                          <p
-                            
-                            className="cursor-pointer"
-                            // onClick={() => action.function(null, 1, null)}
-                          >
-                            <Eye color="#4B5C79" size={16} />
-                          </p>
-                       
-                   
-                          <p
-                         
-                            className="cursor-pointer"
-                            // onClick={() => action.function(null, null, 2)}
-                          >
-                            <Trash color="#4B5C79" size={16} />
-                          </p>
+  {paginatedData.length > 0 ? (
+    paginatedData.map((row, rowIndex) => (
+      <tr key={rowIndex} className="hover:bg-gray-50">
+        {/* Update SI No based on currentPage and rowsPerPage */}
+        <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+          { (currentPage - 1) * rowsPerPage + rowIndex + 1 }
+        </td>
+        {columns.map((col) => (
+          <td
+            key={String(col.key)}
+            className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center"
+          >
+            <div className="flex justify-center">
+              <p>
+                {/* Accessing the value using getNestedValue if col.key is a string */}
+                {typeof col.key === 'string' ? (
+                  // Check if the key is "action" and apply color
+                  col.key === 'action' ? (
+                    <span className={actionColorMap[row[col.key]] || ""}>
+                      {row[col.key]}
+                    </span>
+                  ) : (
+                    getNestedValue(row, col.key)
+                  )
+                ) : (
+                  row[col.key]
+                )}
+              </p>
+            </div>
+          </td>
+        ))}
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td
+        colSpan={columns.length + 2}
+        className="text-center py-4 text-gray-500"
+      >
+        No results found.
+      </td>
+    </tr>
+  )}
+</tbody>
 
-                  </div>
-                </td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={columns.length + 2}
-                className="text-center py-4 text-gray-500"
-              >
-                No results found.
-              </td>
-            </tr>
-          )}
-        </tbody>
       </table>
 
       <div className="flex justify-between items-center mt-4">

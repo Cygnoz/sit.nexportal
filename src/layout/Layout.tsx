@@ -10,7 +10,7 @@ const Layout = () => {
       {/* Main Content (Header + Outlet) */}
       <div className="flex flex-col flex-1 overflow-hidden">
         <Header />
-        <div className="flex-1 overflow-y-auto px-6 pt-4">
+        <div className="flex-1 overflow-y-auto custom-scrollbar px-6 pt-4">
           <Outlet />
         </div>
       </div>
