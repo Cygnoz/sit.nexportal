@@ -29,46 +29,46 @@ function Login({}: Props) {
     event.preventDefault();
     setIsLoading(true);
     setError(""); // Reset the error message
-    navigate("/otp", { state: { email } });
-    // try {
-    //   // Call the login API
-    //   const result = await CheckLogin(endPoints.LOGIN, { email, password });
+    // navigate("/otp", { state: { email } });
+    try {
+      // Call the login API
+      const result = await CheckLogin(endPoints.LOGIN, { email, password });
   
-    //   // Log the result for debugging purposes
-    //   console.log("Login response:", result);
+      // Log the result for debugging purposes
+      console.log("Login response:", result);
   
-    //   if (result?.response) {
-    //     // Login is successful
-    //     const successMessage = result.response?.data?.message || 'Login successful! Redirecting...';
-    //     toast.success(successMessage);
+      if (result?.response) {
+        // Login is successful
+        const successMessage = result.response?.data?.message || 'Login successful! Redirecting...';
+        toast.success(successMessage);
   
-    //     // Navigate to the OTP page, passing email as state
-    //     navigate("/otp", { state: { email } });
-    //   } else if (result?.error) {
-    //     // Handle login failure
-    //     const errorMessage = result.error?.response?.data?.message || "Invalid email or password";
-    //     setError(errorMessage);
-    //     toast.error(errorMessage);
-    //   } else {
-    //     // Handle unexpected scenarios where neither response nor error is returned
-    //     const fallbackMessage = "Unexpected error occurred. Please try again.";
-    //     setError(fallbackMessage);
-    //     toast.error(fallbackMessage);
-    //   }
-    // } catch (error) {
-    //   // Handle exceptions (e.g., network issues)
-    //   if (axios.isAxiosError(error)) {
-    //     const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
-    //     setError(errorMessage);
-    //     toast.error(errorMessage);
-    //   } else {
-    //     const fallbackMessage = "An error occurred. Please try again.";
-    //     setError(fallbackMessage);
-    //     toast.error(fallbackMessage);
-    //   }
-    // } finally {
-    //   setIsLoading(false); // Ensure loading state is reset
-    // }
+        // Navigate to the OTP page, passing email as state
+        navigate("/otp", { state: { email } });
+      } else if (result?.error) {
+        // Handle login failure
+        const errorMessage = result.error?.response?.data?.message || "Invalid email or password";
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } else {
+        // Handle unexpected scenarios where neither response nor error is returned
+        const fallbackMessage = "Unexpected error occurred. Please try again.";
+        setError(fallbackMessage);
+        toast.error(fallbackMessage);
+      }
+    } catch (error) {
+      // Handle exceptions (e.g., network issues)
+      if (axios.isAxiosError(error)) {
+        const errorMessage = error.response?.data?.message || "Login failed. Please try again.";
+        setError(errorMessage);
+        toast.error(errorMessage);
+      } else {
+        const fallbackMessage = "An error occurred. Please try again.";
+        setError(fallbackMessage);
+        toast.error(fallbackMessage);
+      }
+    } finally {
+      setIsLoading(false); // Ensure loading state is reset
+    }
   };
   
 
