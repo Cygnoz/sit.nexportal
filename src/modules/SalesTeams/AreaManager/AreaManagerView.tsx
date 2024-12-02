@@ -7,6 +7,9 @@ import UserIcon from "../../../assets/icons/UserIcon";
 import Licensers from "../../../components/ui/Licensers";
 import Table from "../../../components/ui/Table";
 import ViewCard from "../../../components/ui/ViewCard";
+import BackgroundView from '../../../assets/Images/AMView.png'
+import ChevronRight from "../../../assets/icons/ChevronRight";
+import { useParams } from "react-router-dom";
 
 interface AMViewData {
   BDAname: string;
@@ -70,9 +73,15 @@ const AreaManagerView = ({ }: Props) => {
     { plan: "2", name: "Jessica Davis", startDate: "2023-08-05", endDate: "2024-08-04", status: "Expired", buttonValue: "Renew" }
   ];
 
+  const {id} =useParams()
   return (
-    <div>
-      <div className="bg-[#000000] text-white rounded-lg shadow-lg p-6 flex items-center">
+    <div >
+       <div className="flex items-center text-[16px] my-2 space-x-2">
+       <p className="font-bold text-[#820000] ">Aria</p>
+        <ChevronRight color="#4B5C79" size={18}/>
+        <p className="font-bold text-[#303F58] ">Aria {id}</p>
+      </div>
+      <div className="rounded-xl p-6 flex items-center"  style={{backgroundImage:`url(${BackgroundView})`}}>
         <div className="items-center space-x-6">
           {/* Profile Picture */}
           <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden">
@@ -96,7 +105,7 @@ const AreaManagerView = ({ }: Props) => {
             </div>
             <div className="">
               <p className="my-1 mx-3">Area</p>
-              <p className="my-1 mx-3">AE6-NE001</p>
+              <p className="my-1 mx-3 underline">AE6-NE001</p>
             </div>
             <div className="mx-8 -mt-5">
               <p>Role</p>

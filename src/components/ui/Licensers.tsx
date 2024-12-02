@@ -80,7 +80,7 @@ const Licensers = ({headerContents,cardContents}: LicenserProps) => {
       {/* Title and Number */}
       {cardContents.map((card)=>(
               <div className="p-4 border w-60 h-52 bg-[#F7FBFE] rounded-lg">
-              <p className={`gap-2 w-[72%] text-center ${getStatusClass(card.status)}`}>{card.status}</p>
+              <p className={`gap-2 w-fit text-center ${getStatusClass(card.status)}`}>{card.status}</p>
               <p className="text-sm font-normal text-[#8392A9] gap-2 my-1">{card.name}</p>
               <p className="text-sm font-bold text-[]#4B5C79 mb-1">Plan {card.plan}</p>
               <p className="text-sm font-medium text-[#72829D] mb-1">StartDate: {card.startDate}</p>
