@@ -6,28 +6,13 @@ import Input from '../../../components/form/Input'
 import Select from '../../../components/form/Select'
 import useApi from '../../../Hooks/useApi'
 import { endPoints } from '../../../services/apiEndpoints'
+import { UserLog } from '../../../Interfaces/UserLog'
 
 type Props = {}
 
-
-  interface User {
-    _id: string;
-    userId: {
-      _id: string;
-      userName: string;
-      role: string;
-    };
-    activity: string;
-    status: string;
-    date:string;
-    time:string
-    action: string;
-    __v: number;
-  }
-
-function UserLogHome({}: Props) {
+function UserLogLogHome({}: Props) {
   const {request:getActivityLog}=useApi('get',3002)
-  const [allUserLog,setAllUserLog]=useState<User[]>([])
+  const [allUserLogLog,setAllUserLogLog]=useState<UserLog[]>([])
   const getAllActivityLog = async () => {
     try {
       const { response, error } = await getActivityLog(endPoints.GET_ACTIVITY_LOGS);
@@ -49,14 +34,14 @@ function UserLogHome({}: Props) {
           };
         });
   
-        setAllUserLog(formattedLogs.reverse()); // Set the formatted logs in state
+        setAllUserLogLog(formattedLogs.reverse()); // Set the formatted logs in state
       }
     } catch (err) {
       console.error('Error fetching activity logs:', err);
     }
   };
 
-  console.log(allUserLog);
+  console.log(allUserLogLog);
   function getNestedValue(obj: any, path: string): any {
     return path.split('.').reduce((acc, part) => acc?.[part], obj);
   }
@@ -67,8 +52,8 @@ function UserLogHome({}: Props) {
 
       
 
-      const columns: { key: keyof User | string; label: string }[] = [
-        { key: "userId.role", label: "Screen" },
+      const columns: { key: keyof UserLog | string; label: string }[] = [
+        { key: "UserLogId.role", label: "Screen" },
         { key: "action", label: "Action" },
         { key: "date", label: "Date" },
         { key: "time", label: "Time" },
@@ -90,10 +75,10 @@ function UserLogHome({}: Props) {
      // Paginate the filtered data
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return allUserLog.slice(start, start + rowsPerPage);
-  }, [allUserLog, currentPage, rowsPerPage]);
+    return allUserLogLog.slice(start, start + rowsPerPage);
+  }, [allUserLogLog, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(allUserLog.length / rowsPerPage);
+  const totalPages = Math.ceil(allUserLogLog.length / rowsPerPage);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -108,7 +93,7 @@ function UserLogHome({}: Props) {
 
   return (
     <div className="text-[#303F58] space-y-4">
-    <h1 className="text-2xl font-bold">User Log</h1>
+    <h1 className="text-2xl font-bold">UserLog Log</h1>
     <p className='text-xs'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque natus iusto maiores ducimus optio</p>
     <div className="w-full bg-white rounded-lg p-4">
        <div  className='flex  items-center gap-2'>
@@ -122,7 +107,7 @@ function UserLogHome({}: Props) {
               type='date'
             />
         <Select  
-              placeholder="Select User"
+              placeholder="Select UserLog"
               options={leadSource}/>
               <Select  
               placeholder="Select Screen"
@@ -244,4 +229,4 @@ function UserLogHome({}: Props) {
   )
 }
 
-export default UserLogHome
+export default UserLogLogHome

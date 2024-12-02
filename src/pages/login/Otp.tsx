@@ -1,16 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import Button from "../../components/ui/Button";
-
 import { useNavigate, useLocation } from 'react-router-dom';
 import toast  from 'react-hot-toast';
 import axios from 'axios';
 import useApi from '../../Hooks/useApi';
 import { endPoints } from '../../services/apiEndpoints';
 import LoginBgRight from './LoginBgRight';
+import { useRole } from '../../context/RoleContext';
 
 type Props = {}
 
 function Otp({}: Props) {
+  const {setRole}=useRole()
   const navigate = useNavigate();
   const location = useLocation();
   const { request: verifyOtp } = useApi("post", 3003);
@@ -93,13 +94,14 @@ function Otp({}: Props) {
         console.log(result.response)
         // OTP verified successfully
         const successMessage = result.response.data?.message || 'OTP verified successfully!';
-        toast.success(successMessage);
-        console.log(result.response.data);
-        // Save the token and update the authentication state
         localStorage.setItem('authToken', result.response.data.token);
-        localStorage.setItem('role', result.response.data.user.role);
-        // Example: Set role and navigate to the dashboard
-        navigate('/dashboard');
+        setRole(result.response.data.user.role)
+        setTimeout(() => {
+          setIsLoading(false)
+          toast.success(successMessage);
+          navigate('/dashboard')
+        }, 1500);
+        // Save the token and update the authentication state
       } else {
         // Handle error response
         const errorMessage = result.error?.response?.data?.message || 'OTP verification failed.';
@@ -117,8 +119,6 @@ function Otp({}: Props) {
         setError(fallbackMessage);
         toast.error(fallbackMessage);
       }
-    } finally {
-      setIsLoading(false);
     }
   };
   

@@ -13,21 +13,14 @@ import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { Role } from "../../../types/rolePermissions";
+import { UserData } from "../../../Interfaces/User";
 
 type Props = {
   onClose: () => void;
   editId?:any;
 };
 
-interface UserData {
-  userImage?: any; // Base64 string
-  userName: string;
-  email: string;
-  phoneNo?: string; // Make phoneNo optional
-  password?: string;
-  confirmPassword?: string;
-  role: string;
-}
+
 
 
 
@@ -77,7 +70,7 @@ function UserForm({ onClose,editId }: Props) {
 
   const getOneUser=async()=>{
     try{
-      const {response,error}=await getAUser(`${endPoints.ADD_USER}/${editId}`)
+      const {response,error}=await getAUser(`${endPoints.USER}/${editId}`)
       if(response && !error){
        const res=response.data
        console.log(res);
@@ -99,9 +92,9 @@ function UserForm({ onClose,editId }: Props) {
       let response, error;
   
       if (editId) {
-        ({ response, error } = await fun(`${endPoints.ADD_USER}/${editId}`, data));
+        ({ response, error } = await fun(`${endPoints.USER}/${editId}`, data));
       } else {
-        ({ response, error } = await fun(endPoints.ADD_USER, data));
+        ({ response, error } = await fun(endPoints.USER, data));
       }
   
       console.log(response);
