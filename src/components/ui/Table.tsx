@@ -1,14 +1,11 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo, useState } from "react";
+import Eye from "../../assets/icons/Eye";
+import NextIcon from "../../assets/icons/NextIcon";
+import PencilLine from "../../assets/icons/PencilLine";
+import PreviousIcon from "../../assets/icons/PreviousIcon";
+import Trash from "../../assets/icons/Trash";
 import SearchBar from "./SearchBar";
 import SortBy from "./SortBy";
-import PreviousIcon from "../../assets/icons/PreviousIcon";
-import NextIcon from "../../assets/icons/NextIcon";
-import UpwardIcon from "../../assets/icons/UpwardIcon";
-import PencilLine from "../../assets/icons/PencilLine";
-import Eye from "../../assets/icons/Eye";
-import Trash from "../../assets/icons/Trash";
-import { useNavigate } from "react-router-dom";
-import { string } from "yup";
 
 interface TableProps<T> {
   data: T[];
@@ -23,7 +20,7 @@ interface TableProps<T> {
   };
   actionList?: {
     label: string;
-    function: (editId?: any, viewId?: any, deleteId?: any) => void;
+    function: (editId?: any, viewId?: any, deleteId?: any,) => void;
   }[];
   noAction?:boolean;
 }
@@ -51,7 +48,7 @@ const Table = <T extends object>({
   // Paginate the filtered data
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return filteredData.slice(start, start + rowsPerPage);
+    return filteredData.reverse().slice(start, start + rowsPerPage);
   }, [filteredData, currentPage, rowsPerPage]);
 
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -82,6 +79,12 @@ const Table = <T extends object>({
           return "bg-green-400 text-white py-2 px-2 rounded-lg";
           case "Pending":
             return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        case "High":
+        return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
+      case "Medium":
+        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+      case "Low":
+        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
       default:
         return "";
         
@@ -136,83 +139,85 @@ const Table = <T extends object>({
           </tr>
         </thead>
         <tbody>
-          {paginatedData.length > 0 ? (
-            paginatedData.map((row, rowIndex) => (
-              <tr key={rowIndex} className="hover:bg-gray-50">
-                <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-                  {rowIndex + 1}
-                </td>
-                {columns.map((col) => (
-                  <td
-                    key={String(col.key)}
-                    className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
-                  >
-                    <div className={` flex justify-center`}>
-                      <p
-                        className={`${
-                          col.key === "status"
-                            ? getStatusClass(row[col.key] as string)
-                            : ""
-                        }`}
-                      >
-                        {row[col.key] as string}
-                      </p>
-                    </div>
-                  </td>
-                ))}
-               {!noAction&& <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-                  <div className="flex justify-center gap-2">
-                    {actionList?.map(
-                      (action, index) =>
-                        action.label === "edit" && (
-                          <p
-                            key={index}
-                            className="cursor-pointer"
-                            onClick={() => action.function(1, null, null)}
-                          >
-                            <PencilLine color="#4B5C79" size={16} />
-                          </p>
-                        )
-                    )}
-                    {actionList?.map(
-                      (action, index) =>
-                        action.label === "view" && (
-                          <p
-                            key={index}
-                            className="cursor-pointer"
-                            onClick={() => action.function(null, 1, null)}
-                          >
-                            <Eye color="#4B5C79" size={16} />
-                          </p>
-                        )
-                    )}
-                    {actionList?.map(
-                      (action, index) =>
-                        action.label === "delete" && (
-                          <p
-                            key={index}
-                            className="cursor-pointer"
-                            onClick={() => action.function(null, null, 2)}
-                          >
-                            <Trash color="#4B5C79" size={16} />
-                          </p>
-                        )
-                    )}
-                  </div>
-                </td>}
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td
-                colSpan={columns.length + 2}
-                className="text-center py-4 text-gray-500"
+  {paginatedData.length > 0 ? (
+    paginatedData.map((row:any, rowIndex) => (
+      <tr key={rowIndex} className="hover:bg-gray-50">
+        <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+          {/* Adjusted SI No. calculation */}
+          {(currentPage - 1) * rowsPerPage + rowIndex + 1}
+        </td>
+        {columns.map((col) => (
+          <td
+            key={String(col.key)}
+            className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
+          >
+            <div className={`flex justify-center`}>
+              <p
+                className={`${
+                  col.key === "status"
+                    ? getStatusClass(row[col.key] as string)
+                    : ""
+                }`}
               >
-                No results found.
-              </td>
-            </tr>
-          )}
-        </tbody>
+                {row[col.key] as string}
+              </p>
+            </div>
+          </td>
+        ))}
+      {!noAction&& <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+          <div className="flex justify-center gap-2">
+            {actionList?.map(
+              (action, index) =>
+                action.label === "edit" && (
+                  <p
+                    key={index}
+                    className="cursor-pointer"
+                    onClick={() => action.function(row?._id, null, null)}
+                  >
+                    <PencilLine color="#4B5C79" size={16} />
+                  </p>
+                )
+            )}
+            {actionList?.map(
+              (action, index) =>
+                action.label === "view" && (
+                  <p
+                    key={index}
+                    className="cursor-pointer"
+                    onClick={() => action.function(null, 1, null)}
+                  >
+                    <Eye color="#4B5C79" size={16} />
+                  </p>
+                )
+            )}
+            {actionList?.map(
+              (action, index) =>
+                action.label === "delete" && (
+                  <p
+                    key={index}
+                    className="cursor-pointer"
+                    onClick={() => action.function(null, null, 2)}
+                  >
+                    <Trash color="#4B5C79" size={16} />
+                  </p>
+                )
+            )}
+          </div>
+        </td>}
+      </tr>
+    ))
+  ) : (
+    <tr>
+      <td
+        colSpan={columns.length + 2}
+        className="text-center py-4 text-gray-500"
+      >
+        No results found.
+      </td>
+    </tr>
+  )}
+</tbody>
+
       </table>
 
       <div className="flex justify-between items-center mt-4">

@@ -11,6 +11,7 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import TrialIcon from "../../../assets/icons/TrialIcon";
 import NewBDAForm from "./NewBDAForm";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -30,11 +31,14 @@ const BDAHome = () => {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
-
+      const navigate=useNavigate()
       const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
         if(viewId){
-          // navigate(`/leadView/${viewId}`)
+          navigate(`/bdaView/${viewId}`)
           console.log(viewId);
+          console.log(editId);
+          console.log(deleteId);
+          
           
         }
       }

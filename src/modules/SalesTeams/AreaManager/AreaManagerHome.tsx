@@ -10,6 +10,7 @@ import Licensor from "../../../assets/icons/Licensor";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import AddAreaManager from "../../SalesTeams/AreaManager/AddAreaManager";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -26,18 +27,22 @@ const AreaManagerHome = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const navigate = useNavigate()
+
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
       const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
         if(viewId){
-          // navigate(`/leadView/${viewId}`)
+        navigate(`/amView/${viewId}`)
           console.log(viewId);
           
         }else if(editId){
           console.log(editId)
           // setId({...id,edit:editId})
         }
+        console.log(deleteId);
+        
       }
       // Data for HomeCards
   const homeCardData = [
@@ -77,7 +82,7 @@ const AreaManagerHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1>Area Manager</h1>
+        <h1 className="text-[#303F58] text-base font-bold">Area Manager</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
           + Create AM
         </Button>

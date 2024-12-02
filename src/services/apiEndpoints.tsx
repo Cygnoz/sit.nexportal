@@ -5,6 +5,9 @@ export const endPoints={
   GET_OTP: "/verify-otp",
 
   //User
-  ADD_USER:'/user' 
+  ADD_USER:'/user',
+  GET_USERS:'/users',
+  // Activity Logs
+  GET_ACTIVITY_LOGS:'/get-activity-logs'
 
 }

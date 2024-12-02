@@ -4,7 +4,6 @@ import { useRole } from "../context/RoleContext";
 import BillBizz from "../assets/logo/BillBizzLogo.png";
 import { sidebarRoutes, sidebarIcons } from "../types/rolePermissions";
 import DashboardIcon from "../assets/icons/DashboardIcon";
-import SettingsIcon from "../assets/icons/SettingsIcon";
 import Settings from "../assets/icons/Settings";
 const Sidebar: React.FC = () => {
   const { role } = useRole(); // Get the role from context
@@ -12,6 +11,9 @@ const Sidebar: React.FC = () => {
   if (!role) {
     return <div>Please log in to access the sidebar.</div>;
   }
+
+  console.log("dd",role);
+  
 
   const sidebarOptions = getSidebarOptions(role); // Get sidebar options based on the role
 

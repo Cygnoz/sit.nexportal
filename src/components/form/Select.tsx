@@ -11,7 +11,7 @@ interface SelectProps
 
 // Forward ref to allow react-hook-form to control this component
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, options, error, placeholder = "Select an option...", ...props }, ref) => {
+  ({ label, options, error, placeholder,...props }, ref) => {
     return (
       <div className="relative w-full">
         <label htmlFor={props.name} className={`block text-sm font-medium ${label&&'mb-2'}`}>
@@ -27,9 +27,9 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(
                         ${error ? "border-red-500" : "border-gray-300"}`}
             {...props}
           >
-            <option value="">
+            {placeholder&&<option value="">
               {placeholder}
-            </option>
+            </option>}
             {options.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}

@@ -57,6 +57,9 @@ const RegionManagerHome = () => {
       
      
     }
+    else{
+      console.log(deleteId)
+    }
   }
 
   
