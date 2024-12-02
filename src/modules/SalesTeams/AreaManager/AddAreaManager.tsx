@@ -447,9 +447,8 @@ className="hidden"
             </div>
           </div>
         )}
-
-        
-<div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
+      </form>
+      <div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
           <Button variant="tertiary" size="sm" onClick={onClose}>
             Cancel
           </Button>
@@ -463,7 +462,7 @@ className="hidden"
           </Button>
         )}
         </div>
-      </form>
+
     </div>
   );
 };

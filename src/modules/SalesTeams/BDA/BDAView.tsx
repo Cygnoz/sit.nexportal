@@ -1,9 +1,13 @@
+import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 // import Button from "../../../components/ui/Button";
 import Licensers from "../../../components/ui/Licensers";
 import Table from "../../../components/ui/Table";
 import ViewCard from "../../../components/ui/ViewCard"
 import GraphTable from "./GraphTable";
+import backGroundView from '../../../assets/Images/BDAView.png'
+import ChevronRight from "../../../assets/icons/ChevronRight";
+import { useParams } from "react-router-dom";
 interface BDAViewData {
   leadId:string;
   leadName: string;
@@ -19,7 +23,11 @@ type Props = {}
 
 const BDAView = ({}: Props) => {
   const viewCardData = [
-    { icon: <UserIcon />, number: "189", title: "Total Area Managed", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+    { icon: <LeadsCardIcon />, number: "32", title: "Total Leads Assigned", iconFrameColor: '#DD9F86', iconFrameBorderColor: '#F6DCD2' },
+    { icon: <UserIcon />, number: "17", title: "Total Licenses Sold", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+    { icon: <LeadsCardIcon />, number: "₹89,567", title: "Total Revenue Generated", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
+    { icon: <LeadsCardIcon />, number: "6", title: "Pending Tasks", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
+
     // { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
   ];
 
@@ -60,13 +68,19 @@ const BDAView = ({}: Props) => {
     { plan: "2", name: "Jessica Davis", startDate: "2023-08-05", endDate: "2024-08-04", status: "Expired", buttonValue: "Renew" }
   ];
 
-
+const {id}=useParams()
   return (
     <div>
+       <div className="flex items-center text-[16px] my-2 space-x-2">
+       <p className="font-bold text-[#820000] ">BDa</p>
+        <ChevronRight color="#4B5C79" size={18}/>
+        <p className="font-bold text-[#303F58] ">BDA {id}</p>
+      </div>
       <div className="grid grid-cols-12">
         <div className="col-span-2">
         <div className="mt-4">
             {viewCardData.map((card, index) => (
+              <div className="mb-3">
               <ViewCard
                 iconFrameColor={card.iconFrameColor}
                 iconFrameBorderColor={card.iconFrameBorderColor}
@@ -75,49 +89,63 @@ const BDAView = ({}: Props) => {
                 number={card.number}
                 title={card.title}
               />
-            ))}
-          </div>
-          <div className="mt-3">
-            {viewCardData.map((card, index) => (
-              <ViewCard
-                iconFrameColor={card.iconFrameColor}
-                iconFrameBorderColor={card.iconFrameBorderColor}
-                key={index}
-                icon={card.icon}
-                number={card.number}
-                title={card.title}
-              />
-            ))}
-          </div>
-          <div className="mt-3">
-            {viewCardData.map((card, index) => (
-              <ViewCard
-                iconFrameColor={card.iconFrameColor}
-                iconFrameBorderColor={card.iconFrameBorderColor}
-                key={index}
-                icon={card.icon}
-                number={card.number}
-                title={card.title}
-              />
-            ))}
-          </div>
-          <div className="mt-3">
-            {viewCardData.map((card, index) => (
-              <ViewCard
-                iconFrameColor={card.iconFrameColor}
-                iconFrameBorderColor={card.iconFrameBorderColor}
-                key={index}
-                icon={card.icon}
-                number={card.number}
-                title={card.title}
-              />
+              </div>
             ))}
           </div>
 
         </div>
-        <div className="col-span-5">
+        <div className="col-span-6">
         </div>
-        <div className="col-span-5"></div>
+        <div className="col-span-4 rounded-xl"  style={{backgroundImage:`url(${backGroundView})`}}>
+          <div className="w-full h-96 p-4 rounded-xl">
+            <div className="flex">
+            <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white">
+          <img
+            src="https://via.placeholder.com/150" // Replace with the actual image URL
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+        </div>
+          <p className="text-[#FFFEFB] text-2xl font-normal p-4">Darrell Steward</p>
+            </div>
+            <div className="flex -mt-4 ms-20 mb-6">
+            <div className="border-r">
+          <p className="mx-4 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
+          <p className="mx-4 text-[#FFFFFF] text-sm font-medium">+91 9834546756</p>
+        </div>
+        <div>
+          <p className="text-[#D4D4D4] text-xs font-medium mx-4">Email</p>
+          <p className="text-[#FFFFFF] text-sm font-medium mx-4">dean@example.com</p>
+        </div>
+            </div>
+            <div className="flex ms-20">
+            <div className="border-r">
+          <p className="mx-4 text-[#D4D4D4] text-xs font-medium">Region</p>
+          <p className="mx-4 underline text-[#FFFFFF] text-sm font-normal">RE6-NE001</p>
+        </div>
+        <div>
+          <p className="mx-4 text-[#D4D4D4] text-xs font-medium">Area</p>
+          <p className="mx-4 underline text-[#FFFFFF] text-sm font-normal">AE6-NE001</p>
+        </div>
+            </div>
+
+            <div className="flex gap-6 ms-6 my-12">
+              <div>
+                <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Role</p>
+                {/* <p>Employee ID</p> */}
+                <p className="text-[#FFFFFF] text-sm font-medium">BDA</p>
+              </div>
+              <div>
+                <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Employee ID</p>
+                <p className="text-[#FFFFFF] text-sm font-medium">BMC-NE001</p>
+              </div>
+              <div>
+                <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Joining Date</p>
+                <p className="text-[#FFFFFF] text-sm font-medium">13 June 2023</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
         
      {/* Table Section */}

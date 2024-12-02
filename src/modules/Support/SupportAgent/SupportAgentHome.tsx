@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 
 
 
-interface SupervisorData {
+interface SupportAgentData {
     supportAgentId: string;
     name:string;
     emailAdrees: string;
@@ -55,7 +55,7 @@ const SupervisorHome = () => {
   ];
 
     // Data for the table
-    const data: SupervisorData[] = [
+    const data: SupportAgentData[] = [
         { supportAgentId: "Devid Billie",name:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
         { supportAgentId: "Sudeep Kumar",name:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
         { supportAgentId: "Kathryn Murphy",name:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",  },
@@ -69,7 +69,7 @@ const SupervisorHome = () => {
         { supportAgentId: "Jane Cooper", name:"Von hue", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
       ];
         // Define the columns with strict keys
-        const columns: { key: keyof SupervisorData; label: string }[] = [
+        const columns: { key: keyof SupportAgentData; label: string }[] = [
           { key: "supportAgentId", label: "Support Agent Id" },
           { key: "name", label: "Name" },
           { key: "emailAdrees", label: "Email" },
@@ -105,7 +105,7 @@ const SupervisorHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<SupervisorData> data={data} columns={columns} headerContents={{
+        <Table<SupportAgentData> data={data} columns={columns} headerContents={{
           title:'Supervisor Overview',
           search:{placeholder:'Search Support Agent'},
           sort: [
