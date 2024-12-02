@@ -85,7 +85,7 @@ const TrialHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-base font-bold">Trial</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">Trial</h1>
         {/* <Button variant="primary" size="sm" onClick={handleModalToggle}>
           + Create Trial
         </Button> */}

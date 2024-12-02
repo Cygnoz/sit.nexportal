@@ -21,7 +21,7 @@ interface AMViewData {
 
 type Props = {}
 
-const AreaManagerView = ({ }: Props) => {
+const AMView = ({ }: Props) => {
 
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
@@ -227,4 +227,4 @@ const AreaManagerView = ({ }: Props) => {
   )
 }
 
-export default AreaManagerView
+export default AMView

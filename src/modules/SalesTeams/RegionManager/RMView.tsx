@@ -26,7 +26,7 @@ interface AreaData {
     areaManagers: string;
   }
 
-const RegionManagerView = () => {
+const RMView = () => {
 
     
   // State to manage modal visibility
@@ -284,4 +284,4 @@ title={card.title}
     )
 }
 
-export default RegionManagerView
+export default RMView

@@ -89,7 +89,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
   return (
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
-      <h1 className="text-2xl font-bold">Lead</h1>
+      <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
       <Button variant="primary"  size="sm" onClick={handleModalToggle}>
         <span className="text-xl font-bold">+</span>Create Lead
       </Button>

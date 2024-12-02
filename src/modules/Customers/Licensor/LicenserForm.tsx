@@ -44,7 +44,7 @@ const validationSchema = Yup.object({
   phone: Yup.string().required("Phone is required"),
 });
 
-function AddLicenser({ onClose ,editId}: Props) {
+function LicenserForm({ onClose ,editId}: Props) {
   const {
     register,
     handleSubmit,
@@ -83,7 +83,7 @@ function AddLicenser({ onClose ,editId}: Props) {
   };
 
   return (
-    <div className="p-5 bg-white rounded shadow-md">
+    <div className="px-5 py-3 bg-white rounded shadow-md">
       <div className="flex justify-between">
         <div>
           <h3 className="text-[#303F58] font-bold text-lg">Create Licenser</h3>
@@ -249,4 +249,4 @@ function AddLicenser({ onClose ,editId}: Props) {
   );
 }
 
-export default AddLicenser;
+export default LicenserForm;

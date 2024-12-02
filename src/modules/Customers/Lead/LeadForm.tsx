@@ -80,7 +80,7 @@ function LeadForm({ onClose ,editId}: Props) {
   };
 
   return (
-    <div className="p-5 space-y-6 text-[#4B5C79]">
+    <div className="px-5 py-3 space-y-6 text-[#4B5C79]">
       <div className="flex justify-between">
         <div>
           <h3 className="text-[#303F58] font-bold text-lg">Create Lead</h3>

@@ -93,7 +93,7 @@ function UserLogLogHome({}: Props) {
 
   return (
     <div className="text-[#303F58] space-y-4">
-    <h1 className="text-2xl font-bold">UserLog Log</h1>
+    <h1 className="text-[#303F58] text-xl font-bold">UserLog Log</h1>
     <p className='text-xs'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque natus iusto maiores ducimus optio</p>
     <div className="w-full bg-white rounded-lg p-4">
        <div  className='flex  items-center gap-2'>

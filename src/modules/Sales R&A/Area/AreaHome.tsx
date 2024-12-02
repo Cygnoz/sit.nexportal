@@ -9,7 +9,7 @@ import Table from "../../../components/ui/Table";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
-import AddArea from "./AddArea";
+import AddArea from "./AreaForm";
 import { useNavigate } from "react-router-dom";
 
 // Define the type for data items
@@ -112,7 +112,7 @@ const AreaHome = () => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-base font-bold">Area Home</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">Area</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
           <span className="font-bold text-xl">+</span> Create Area
         </Button>

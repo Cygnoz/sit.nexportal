@@ -30,7 +30,7 @@ const validationSchema = Yup.object({
     
 });
 
-function CreateTickets({ onClose }: Props) {
+function TicketsForm({ onClose }: Props) {
   const {
     register,
     handleSubmit,
@@ -168,4 +168,4 @@ function CreateTickets({ onClose }: Props) {
   );
 }
 
-export default CreateTickets;
+export default TicketsForm;

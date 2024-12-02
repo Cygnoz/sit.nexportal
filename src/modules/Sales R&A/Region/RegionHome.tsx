@@ -131,7 +131,7 @@ const RegionHome = () => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1>Region Home</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">Region</h1>
         <Button variant="primary" size="sm" onClick={()=>{
           handleModalToggle()
           setEditId('')

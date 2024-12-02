@@ -27,7 +27,7 @@ import idcard from '../../../assets/image/ID-card 1.svg'
 
 
 
-interface AddAreaManagerData {
+interface AddBDAData {
     fullName: string;
     emailAddress: string;
     phone: string;
@@ -50,11 +50,11 @@ interface AddAreaManagerData {
     workPhone?: string;
     role?: string;
     region?: string;
-    area?:string;
+    commission?:string;
   }
   
 
-interface AddAreaManagerProps {
+interface AddBDAProps {
   onClose: () => void; // Prop for handling modal close
 }
 
@@ -87,21 +87,21 @@ const validationSchema = Yup.object({
   workPhone: Yup.string().matches(/^\d+$/, "Work phone number must contain only digits"),
   role: Yup.string(),
   region: Yup.string(),
-  area:Yup.string(),
+  commission:Yup.string(),
 });
 
 
-    const AddAreaManager: React.FC<AddAreaManagerProps> = ({ onClose }) => {
+const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
         const {
             register,
             handleSubmit,
             formState: { errors },
-          } = useForm<AddAreaManagerData>({
+          } = useForm<AddBDAData>({
             resolver: yupResolver(validationSchema),
           });
           
 
-  const onSubmit: SubmitHandler<AddAreaManagerData> = (data) => {
+  const onSubmit: SubmitHandler<AddBDAData> = (data) => {
     console.log(data);
   };
 
@@ -127,14 +127,14 @@ if (currentIndex < tabs.length - 1) {
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-lg font-bold">Create Area Manager</h1>
+        <h1 className="text-lg font-bold">Create BDA</h1>
         
         <button
           type="button"
           onClick={onClose}
           className="text-gray-600 hover:text-gray-900 font-bold"
         >
-        <p className="text-xl">&times;</p>
+          <p className="text-xl">&times;</p>
         </button>
         
       </div>
@@ -165,7 +165,7 @@ if (currentIndex < tabs.length - 1) {
       ))}
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit(onSubmit)}>
       {activeTab === "Personal Information" && (
  
  
@@ -246,13 +246,13 @@ className="hidden"
              {...register("state")}
          />
          <Input
-             label="Aadhaar Number"
+             label="Aadhaar No"
              placeholder="Enter Aadhar"
              error={errors.adhaarNo?.message}
              {...register("adhaarNo")}
          />
          <Input
-             label="PAN Number"
+             label="PAN No"
              placeholder="Enter Pan Number"
              error={errors.panNo?.message}
              {...register("panNo")}
@@ -272,6 +272,7 @@ className="hidden"
 
         )}
 
+        
         {activeTab==="Company Information" && (
             <div>
             <div className="grid grid-cols-2 gap-4 ">
@@ -287,7 +288,7 @@ className="hidden"
                   error={errors.workPhone?.message}
                   {...register("workPhone")}
                 />
-                  <Select
+                                  <Select
                     label="Choose Role"
                     placeholder="Choose Role"
                     error={errors.role?.message}
@@ -310,7 +311,7 @@ className="hidden"
                    <Select
                     label="Choose Commission Profile"
                     placeholder="Commission Profile"
-                    error={errors.area?.message}
+                    error={errors.commission?.message}
                     options={[
                       { value: "aa", label: "aa" },
                       { value: "bb", label: "bb" },
@@ -386,7 +387,7 @@ className="hidden"
 
     </div>
         )}
-                {activeTab==="Bank Information" && (
+        {activeTab==="Bank Information" && (
             <div>
             <div className="grid grid-cols-2 gap-4">
             <Input
@@ -416,6 +417,7 @@ className="hidden"
           </div>
             </div>
         )}
+
         {activeTab==="ID & Business Card" && (
           <div>
             <div className="grid grid-cols-2 gap-4">
@@ -447,8 +449,9 @@ className="hidden"
             </div>
           </div>
         )}
-      </form>
-      <div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
+
+        
+<div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
           <Button variant="tertiary" size="sm" onClick={onClose}>
             Cancel
           </Button>
@@ -462,9 +465,9 @@ className="hidden"
           </Button>
         )}
         </div>
-
+      </form>
     </div>
   );
 };
 
-export default AddAreaManager;
+export default BDAForm;

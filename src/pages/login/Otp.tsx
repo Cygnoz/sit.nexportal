@@ -94,13 +94,15 @@ function Otp({}: Props) {
         console.log(result.response)
         // OTP verified successfully
         const successMessage = result.response.data?.message || 'OTP verified successfully!';
-        localStorage.setItem('authToken', result.response.data.token);
+        sessionStorage.setItem('authToken', result.response.data.token);
         setRole(result.response.data.user.role)
         setTimeout(() => {
           setIsLoading(false)
-          toast.success(successMessage);
           navigate('/dashboard')
-        }, 1500);
+        }, 2000);
+        setTimeout(() => {
+          toast.success(successMessage);
+        }, 1000);
         // Save the token and update the authentication state
       } else {
         // Handle error response

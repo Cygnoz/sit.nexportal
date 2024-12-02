@@ -5,30 +5,31 @@ import { useRole } from './context/RoleContext';
 import Layout from './layout/Layout';
 import LeadHome from './modules/Customers/Lead/LeadHome';
 import LeadView from './modules/Customers/Lead/LeadView';
-import RegionManagerHome from './modules/RegionalManager/RegionManager/RegionManagerHome';
-import AreaHome from './modules/SaleArea&Region/Area/AreaHome';
-import RegionHome from './modules/SaleArea&Region/Region/RegionHome';
-import RegionView from './modules/SaleArea&Region/Region/RegionView';
-import AreaManagerView from './modules/SalesTeams/AreaManager/AreaManagerView';
+import RMHome from './modules/SalesTeams/RegionManager/RMHome';
+import AreaHome from './modules/Sales R&A/Area/AreaHome';
+import RegionHome from './modules/Sales R&A/Region/RegionHome';
+import RegionView from './modules/Sales R&A/Region/RegionView';
+import AMView from './modules/SalesTeams/AreaManager/AMView';
 import BDAView from './modules/SalesTeams/BDA/BDAView';
-import SupportagentHome from './modules/Support/SupportAgent/SupportAgentHome';
-import SupportAgentView from './modules/Support/SupportAgent/SupportAgentView';
+import SupportagentHome from './modules/SupportTeams/SupportAgent/SupportAgentHome';
+import SupportAgentView from './modules/SupportTeams/SupportAgent/SupportAgentView';
 import UserHome from './modules/Users/User/UserHome';
 import UserLogHome from './modules/Users/UserLog/UserLogHome';
 import DashboardPage from './pages/DashboardPage';
 import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
 import BDAHome from './modules/SalesTeams/BDA/BDAHome';
-import SupervisorHome from './modules/Support/Supervisor/SupervisorHome';
+import SupervisorHome from './modules/SupportTeams/Supervisor/SupervisorHome';
 import TrialHome from './modules/Customers/Trial/TrialHome';
 import LicensorHome from './modules/Customers/Licensor/LicensorHome';
 import WCommisionHome from './modules/Users/WorkerCommision/WCommisionHome';
 import TicketsHome from './modules/Tickets/TicketsHome';
-import AreaManagerHome from './modules/SalesTeams/AreaManager/AreaManagerHome';
-import AreaView from './modules/SaleArea&Region/Area/AreaView';
-import RegionManagerView from './modules/RegionalManager/RegionManager/RegionManagerView';
+import AMHome from './modules/SalesTeams/AreaManager/AMHome';
+import AreaView from './modules/Sales R&A/Area/AreaView';
+import RMView from './modules/SalesTeams/RegionManager/RMView';
 // import RMViewForm from './modules/RegionalManager/RegionManager/RMViewForm';
-import SuperVisorView from './modules/Support/Supervisor/SuperVisorView';
+import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
+import NoAccess from './context/NoAccess';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -36,6 +37,7 @@ const App: React.FC = () => {
 
 
   return (
+    <>
     <Router>
       <Routes>
         <Route path='/' element={<Login/>}/>
@@ -56,8 +58,8 @@ const App: React.FC = () => {
             <Route path='supportAgentView/:id' element={<SupportAgentView />} />
             <Route path="lead" element={<LeadHome />} />
             {/* Area Manager */}
-            <Route path="area-manager" element={<AreaManagerHome />} />
-            <Route path="amView/:id" element={<AreaManagerView/>} />
+            <Route path="area-manager" element={<AMHome />} />
+            <Route path="amView/:id" element={<AMView/>} />
             {/* BDA */}
             <Route path="bda" element={<BDAHome />} />
             <Route path="bdaView/:id" element={<BDAView />} />
@@ -67,8 +69,8 @@ const App: React.FC = () => {
             <Route path="trial" element={<TrialHome />} />
             <Route path="licenser" element={<LicensorHome />} />
 
-            <Route path="region-manager" element={<RegionManagerHome />} />
-            <Route path="region-managerView/:id" element={<RegionManagerView />} />
+            <Route path="region-manager" element={<RMHome />} />
+            <Route path="region-managerView/:id" element={<RMView />} />
 
             <Route path="user" element={<UserHome/>} />
             <Route path="worker-commission" element={<WCommisionHome/>} />
@@ -82,11 +84,13 @@ const App: React.FC = () => {
           </Route>
         ) : ( 
            // If not authenticated, show the login page 
-          <Route path="*" element={<Login />} />
+          <Route path="*" element={<NoAccess />} />
         )} 
       </Routes>
-        <Toaster reverseOrder={false}/>
+       
     </Router>
+    <Toaster reverseOrder={false}/>
+    </>
   );
 };
 

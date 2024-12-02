@@ -35,6 +35,8 @@ const TeamOverview = ({}: Props) => {
       console.log(editId)
       // setId({...id,edit:editId})
     }
+    console.log(deleteId);
+    
   }
 
   // Data for HomeCards

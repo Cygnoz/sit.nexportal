@@ -121,8 +121,8 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
           placeholder="Select Country"
           error={errors.country?.message}
           options={[
-            { value: "AED", label: "United Arab Emirates" },
-            { value: "INR", label: "India" },
+            { value: "UAE", label: "United Arab Emirates" },
+            { value: "India", label: "India" },
             { value: "UK", label: "United Kingdom" },
           ]}
           {...register("country")}

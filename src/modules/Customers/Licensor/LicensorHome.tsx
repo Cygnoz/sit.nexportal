@@ -13,7 +13,7 @@ import Package from "../../../assets/icons/Package";
 import PackageCheck from "../../../assets/icons/PackageCheck";
 import TrialIcon from "../../../assets/icons/TrialIcon";
 import LeadIcon from "../../../assets/icons/LeadIcon";
-import AddLicenser from "./AddLicenser";
+import AddLicenser from "./LicenserForm";
 
 
 
@@ -86,9 +86,9 @@ const LicensorHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-base font-bold">Licenser</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">Licenser</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create Licenser
+        <span className="text-xl font-bold">+</span> Create Licenser
         </Button>
       </div>
 

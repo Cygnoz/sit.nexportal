@@ -2,22 +2,16 @@ import { useState } from "react";
 import Modal from "../../components/modal/Modal";
 import Button from "../../components/ui/Button";
 import Table from "../../components/ui/Table";
-
-import { useNavigate } from "react-router-dom";
-import CreateTickets from "./CreateTickets";
-import SortBy from "../../components/ui/SortBy";
 import CalenderDays from "../../assets/icons/CalenderDays";
 import Package from "../../assets/icons/Package";
+import SortBy from "../../components/ui/SortBy";
+import CreateTickets from "./TicketsForm";
 
 
 type Props = {}
 
 function TicketsHome({}: Props) {
-  const navigate=useNavigate()
-  const [id,setId]=useState({
-    edit:'',
-    delete:''
-  })
+ 
   interface LeadData {
     status: string;
     subject: string;
@@ -38,8 +32,12 @@ function TicketsHome({}: Props) {
    const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
     if(viewId){
       console.log(viewId);
-      
     }
+
+    console.log(editId);
+    console.log(deleteId);
+    
+    
   }
 
   
@@ -90,7 +88,7 @@ const sort=
   return (
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
-      <h1 className="text-2xl font-bold">Tickets</h1>
+      <h1 className="text-[#303F58] text-xl font-bold">Tickets</h1>
       <Button variant="primary"  size="sm" onClick={handleModalToggle}>
         <span className="text-xl font-bold">+</span>Create Tickets
       </Button>

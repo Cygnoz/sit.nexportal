@@ -184,7 +184,7 @@ const Table = <T extends object>({
                   <p
                     key={index}
                     className="cursor-pointer"
-                    onClick={() => action.function(null, row?._id, null)}
+                    onClick={() => action.function(null,1, null)}
                   >
                     <Eye color="#4B5C79" size={16} />
                   </p>
