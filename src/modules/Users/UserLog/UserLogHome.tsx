@@ -53,7 +53,7 @@ function UserLogLogHome({}: Props) {
       
 
       const columns: { key: keyof UserLog | string; label: string }[] = [
-        { key: "UserLogId.role", label: "Screen" },
+        { key: "userId.role", label: "Screen" },
         { key: "action", label: "Action" },
         { key: "date", label: "Date" },
         { key: "time", label: "Time" },
