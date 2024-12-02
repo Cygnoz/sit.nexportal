@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
 import Input from "../../../components/form/Input";
 import Select from "../../../components/form/Select";
@@ -11,9 +11,12 @@ import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+import Trash from "../../../assets/icons/Trash";
+import { Role } from "../../../types/rolePermissions";
 
 type Props = {
   onClose: () => void;
+  editId?:any;
 };
 
 interface UserData {
@@ -21,26 +24,40 @@ interface UserData {
   userName: string;
   email: string;
   phoneNo?: string; // Make phoneNo optional
-  password: string;
-  confirmPassword: string;
+  password?: string;
+  confirmPassword?: string;
   role: string;
 }
 
-const validationSchema = Yup.object({
-  userName: Yup.string().required("Full name is required"),
-  email: Yup.string().email("Invalid email format").required("Email is required"),
-  phoneNo: Yup.string(), // No need to make this required since it's optional in the interface
-  password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwords must match")
-    .required("Confirm Password is required"),
-  role: Yup.string().required("Role is required"),
-});
 
-function UserForm({ onClose }: Props) {
+
+
+
+
+
+function UserForm({ onClose,editId }: Props) {
+  const addValidationSchema = Yup.object().shape({
+    userName: Yup.string().required("Full name is required"),
+    email: Yup.string().email("Invalid email format").required("Email is required"),
+    phoneNo: Yup.string().optional(), // Optional field, no need to make this required
+    password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+    confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password")], "Passwords must match")
+      .required("Confirm Password is required"),
+    role: Yup.string().required("Role is required"),
+  });
+  
+  const editValidationSchema = Yup.object().shape({
+    userName: Yup.string().required("Full name is required"),
+    email: Yup.string().email("Invalid email format").required("Email is required"),
+    phoneNo: Yup.string().optional(), // Optional field, no need to make this required
+    role: Yup.string().required("Role is required")
+  });
+  
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { request: addUser } = useApi("post", 3002);
-
+  const {request:editUser}=useApi('put',3002)
+  const {request:getAUser}=useApi('get',3002)
   const {
     register,
     handleSubmit,
@@ -49,17 +66,47 @@ function UserForm({ onClose }: Props) {
     watch,
     setValue,
   } = useForm<UserData>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
   });
+  console.log(editId);
+  const setFormValues = (data: UserData) => {
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof UserData, data[key as keyof UserData]);
+    });
+  };
+
+  const getOneUser=async()=>{
+    try{
+      const {response,error}=await getAUser(`${endPoints.ADD_USER}/${editId}`)
+      if(response && !error){
+       const res=response.data
+       console.log(res);
+       
+       setFormValues(res);
+      }
+    }catch(err){
+      console.log('Err',err);
+      
+    }
+  }
 
   const onSubmit: SubmitHandler<UserData> = async (data, event) => {
+    
     event?.preventDefault();
     console.log("Form Data:", data);
     try {
-      const url = endPoints.ADD_USER;
-      const { response, error } = await addUser(url, data);
+      const fun = editId ? editUser : addUser;
+      let response, error;
+  
+      if (editId) {
+        ({ response, error } = await fun(`${endPoints.ADD_USER}/${editId}`, data));
+      } else {
+        ({ response, error } = await fun(endPoints.ADD_USER, data));
+      }
+  
       console.log(response);
       console.log(error);
+  
       if (response && !error) {
         toast.success(response.data.message);
         onClose();
@@ -68,12 +115,25 @@ function UserForm({ onClose }: Props) {
       }
     } catch (err) {
       console.error("Error:", err);
+      toast.error("An unexpected error occurred.");
     }
   };
+  
 
-  const Role = [
-    { label: "Support Admin", value: "Support Admin" },
+  const addRoles: { label: string; value: Role }[] = [
+    { label: "Super Admin", value: "Super Admin" },
     { label: "Sales Admin", value: "Sales Admin" },
+    { label: "Support Admin", value: "Support Admin" },
+  ];
+  const editRoles: { label: string; value: Role }[] = [
+    { label: "Super Admin", value: "Super Admin" },
+    { label: "Sales Admin", value: "Sales Admin" },
+    { label: "Support Admin", value: "Support Admin" },
+    { label: "Region Manager", value: "Region Manager" },
+    { label: "Area Manager", value: "Area Manager" },
+    { label: "BDAs", value: "BDAs" },
+    { label: "Supervisor", value: "Supervisor" },
+    { label: "Support Agent", value: "Support Agent" },
   ];
 
   const handleInputChange = (field: keyof UserData) => {
@@ -92,14 +152,31 @@ function UserForm({ onClose }: Props) {
     }
   };
 
+  const handleRemoveImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent click propagation
+ 
+    // Clear the leadImage value
+    setValue("userImage","")
+ 
+    // Reset the file input value
+    if (fileInputRef?.current) {
+      fileInputRef.current.value = ""; // Clear the input field
+    }
+  };
+
+
+  useEffect(()=>{
+    getOneUser()
+  },[])
+  
+
   return (
     <div className="p-5 space-y-2 text-[#4B5C79] py-2">
       <div className="flex justify-between p-2">
         <div>
-          <h3 className="text-[#303F58] font-bold text-lg">Create User</h3>
+          <h3 className="text-[#303F58] font-bold text-lg">{editId?'Edit':'Create'} User</h3>
           <p className="text-[11px] text-[#8F99A9] mt-1">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt.
+          {`Use this form to ${editId?'edit an existing user':'add a new user'} details. Please fill in the required information`}
           </p>
         </div>
         <p onClick={onClose} className="text-3xl cursor-pointer">
@@ -107,6 +184,7 @@ function UserForm({ onClose }: Props) {
         </p>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
+       
         <div className="grid grid-cols-12">
           <div className="col-span-3">
             <label className="cursor-pointer text-center" htmlFor="file-upload">
@@ -118,11 +196,18 @@ function UserForm({ onClose }: Props) {
               />
               <ImagePlaceHolder
                 uploadedImage={watch("userImage")}
-                value={watch("userImage")}
-                setValue={setValue}
-                fileInputRef={fileInputRef}
               />
             </label>
+            {watch('userImage') && (
+        <div
+          onClick={handleRemoveImage} // Remove image handler
+          className="flex justify-center items-center "
+        >
+          <div  className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
+           <Trash color="red" size={16}/>
+          </div>
+        </div>
+      )}
           </div>
           <div className="col-span-9 my-2">
             <div className="mx-3 gap-4 space-y-2 max-w-lg">
@@ -153,7 +238,9 @@ function UserForm({ onClose }: Props) {
                   setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                 }}
               />
-              <InputPasswordEye
+             {!editId&& 
+             <>
+             <InputPasswordEye
                 label="Password"
                 placeholder="Enter your password"
                 error={errors.password?.message}
@@ -165,13 +252,15 @@ function UserForm({ onClose }: Props) {
                 error={errors.confirmPassword?.message}
                 {...register("confirmPassword")}
               />
+             </>
+             }
               <Select
-                label="Role"
-                placeholder="Select Role"
-                options={Role}
-                error={errors.role?.message}
-                {...register("role")}
-              />
+  label="Role"
+  placeholder={!editId ? 'Select Role' : undefined}
+  options={editId ? editRoles : addRoles}
+  error={errors.role?.message}
+  {...register("role")}
+/>
             </div>
           </div>
         </div>

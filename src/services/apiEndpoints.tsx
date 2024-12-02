@@ -6,6 +6,8 @@ export const endPoints={
 
   //User
   ADD_USER:'/user',
-  GET_USERS:'/users'
+  GET_USERS:'/users',
+  // Activity Logs
+  GET_ACTIVITY_LOGS:'/get-activity-logs'
 
 }

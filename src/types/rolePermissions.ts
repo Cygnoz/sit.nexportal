@@ -87,7 +87,7 @@ const rolePermissions: RolePermissions = {
     "Work Commission",
     "Prise",
   ],
-  saleAdmin: [
+  'Sales Admin': [
     "Regions",
     "Area",
     "Region Manager",
@@ -98,12 +98,12 @@ const rolePermissions: RolePermissions = {
     "Licenser",
     "Tickets",
   ],
-  supportAdmin: ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets"],
-  regionManager: ["Area", "Area Manager", "BDA", "Lead", "Trial", "Licenser"],
-  areaManager: ["BDA", "Lead", "Trial", "Licenser"],
-  bda: ["Lead", "Trial", "Licenser"],
-  supervisor: ["Support Agent", "Trial", "Licenser", "Tickets"],
-  support: ["Trial", "Licenser", "Tickets"],
+  'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets"],
+  'Region Manager': ["Area", "Area Manager", "BDA", "Lead", "Trial", "Licenser"],
+  'Area Manager': ["BDA", "Lead", "Trial", "Licenser"],
+  'BDAs': ["Lead", "Trial", "Licenser"],
+  'Supervisor': ["Support Agent", "Trial", "Licenser", "Tickets"],
+  'Support Agent': ["Trial", "Licenser", "Tickets"],
 };
 
 // Export rolePermissions, sidebarRoutes, and sidebarIcons

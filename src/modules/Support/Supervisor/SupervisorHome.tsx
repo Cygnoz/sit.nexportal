@@ -11,6 +11,7 @@ import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
 import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
 import AddSupervisor from "./AddSupervisor";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -26,14 +27,15 @@ interface SupervisorData {
 const SupervisorHome = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-
+const navigate=useNavigate()
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
       const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
         if(viewId){
+         
+          navigate(`/supervisor/${viewId}`)
           console.log(viewId);
-          // navigate(`/leadView/${viewId}`)
         }else if(editId){
           console.log(editId)
           // setId({...id,edit:editId})
