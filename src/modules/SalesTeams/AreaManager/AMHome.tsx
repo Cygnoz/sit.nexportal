@@ -9,7 +9,7 @@ import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import Licensor from "../../../assets/icons/Licensor";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
-import AddAreaManager from "../../SalesTeams/AreaManager/AddAreaManager";
+import AddAreaManager from "./AMForm";
 import { useNavigate } from "react-router-dom";
 
 
@@ -23,7 +23,7 @@ interface AMData {
     dateOfJoining:string;
   }
   
-const AreaManagerHome = () => {
+const AMHome = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -82,9 +82,9 @@ const AreaManagerHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-base font-bold">Area Manager</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">Area Manager</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create AM
+        <span className="font-bold text-xl">+</span> Create AM
         </Button>
       </div>
 
@@ -133,4 +133,4 @@ const AreaManagerHome = () => {
   )
 }
 
-export default AreaManagerHome
+export default AMHome

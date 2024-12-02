@@ -60,7 +60,7 @@ const Modal = ({
         >
           <div
             className={`bg-white rounded-lg h-auto ${
-              className || "w-[68%]"
+              className || "min-w-[68%]"
             } transition-transform duration-300`}
             onClick={handleModalClick}
             style={style}

@@ -5,9 +5,14 @@ export const endPoints={
   GET_OTP: "/verify-otp",
 
   //User
-  ADD_USER:'/user',
+  USER:'/user',
   GET_USERS:'/users',
   // Activity Logs
-  GET_ACTIVITY_LOGS:'/get-activity-logs'
+  GET_ACTIVITY_LOGS:'/get-activity-logs',
+
+  // Region
+  REGION:'/region',
+  GET_REGIONS:'/regions',
+
 
 }

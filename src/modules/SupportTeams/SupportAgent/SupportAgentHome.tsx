@@ -10,32 +10,32 @@ import CalenderDays from "../../../assets/icons/CalenderDays";
 import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
 import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
-import AddSupervisor from "./AddSupervisor";
+import AddSupportAgent from "./SupportAgentForm";
 import { useNavigate } from "react-router-dom";
 
 
 
-interface SupervisorData {
-    supervisorCode: string;
-    supervisorName:string;
+interface SupportAgentData {
+    supportAgentId: string;
+    name:string;
     emailAdrees: string;
     phoneNo: string;
-    assignedAgents:string;
-    roles: string;
+    assignedSupervisor:string;
   }
   
 const SupervisorHome = () => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-const navigate=useNavigate()
+
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
+      const navigate=useNavigate()
       const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
         if(viewId){
-         
-          navigate(`/supervisor/${viewId}`)
+          navigate(`/supportAgentView/${viewId}`)
           console.log(viewId);
+          
         }else if(editId){
           console.log(editId)
           // setId({...id,edit:editId})
@@ -44,10 +44,10 @@ const navigate=useNavigate()
           // setId({...id,delete:deleteId})
         }
       }
+    
 
       // Data for HomeCards
   const homeCardData = [
-    { icon: <AreaManagerIcon />, number: "8", title: "Total Supervisors",iconFrameColor:'#F9A51A',iconFrameBorderColor:'#FFF2DDCC' },
     { icon: <UserIcon />, number: "167", title: "Total Support Agents",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
     { icon: <TicketCardIcon size={40}/>, number: "46", title: "Total Tickets",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
     { icon: <EscalatedTicket/>, number: "86", title: "Total Escalated Tickets",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
@@ -55,27 +55,26 @@ const navigate=useNavigate()
   ];
 
     // Data for the table
-    const data: SupervisorData[] = [
-        { supervisorCode: "Devid Billie",supervisorName:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
-        { supervisorCode: "Sudeep Kumar",supervisorName:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
-        { supervisorCode: "Kathryn Murphy",supervisorName:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
-        { supervisorCode: "Darrell Steward",supervisorName:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2",},
-        { supervisorCode: "Ronald Richards", supervisorName:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2",},
-        { supervisorCode: "Jane Cooper", supervisorName:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
-        { supervisorCode: "Sudeep Kumar", supervisorName:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
-        { supervisorCode: "Kathryn Murphy", supervisorName:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
-        { supervisorCode: "Darrell Steward", supervisorName:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
-        { supervisorCode: "Ronald Richards", supervisorName:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2",},
-        { supervisorCode: "Jane Cooper", supervisorName:"Von hue", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedAgents: "Region 1", roles: "Area 2", },
+    const data: SupportAgentData[] = [
+        { supportAgentId: "Devid Billie",name:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
+        { supportAgentId: "Sudeep Kumar",name:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
+        { supportAgentId: "Kathryn Murphy",name:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",  },
+        { supportAgentId: "Darrell Steward",name:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
+        { supportAgentId: "Ronald Richards", name:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
+        { supportAgentId: "Jane Cooper", name:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
+        { supportAgentId: "Sudeep Kumar", name:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
+        { supportAgentId: "Kathryn Murphy", name:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
+        { supportAgentId: "Darrell Steward", name:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
+        { supportAgentId: "Ronald Richards", name:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
+        { supportAgentId: "Jane Cooper", name:"Von hue", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
       ];
         // Define the columns with strict keys
-        const columns: { key: keyof SupervisorData; label: string }[] = [
-          { key: "supervisorCode", label: "Supervisor Code" },
-          { key: "supervisorName", label: "Supervisor Name" },
+        const columns: { key: keyof SupportAgentData; label: string }[] = [
+          { key: "supportAgentId", label: "Support Agent Id" },
+          { key: "name", label: "Name" },
           { key: "emailAdrees", label: "Email" },
           { key: "phoneNo", label: "Phone" },
-          { key: "assignedAgents", label: "Assigned agents" },
-          { key: "roles", label: "Roles" },
+          { key: "assignedSupervisor", label: "Assigned Supervisor" },
 
         ];
       
@@ -84,9 +83,9 @@ const navigate=useNavigate()
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-base font-bold">Supervisor</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">Support Agent</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create Supervisor
+        <span className="font-bold text-xl">+</span> Create Support Agent
         </Button>
       </div>
 
@@ -106,9 +105,9 @@ const navigate=useNavigate()
 
       {/* Table Section */}
       <div>
-        <Table<SupervisorData> data={data} columns={columns} headerContents={{
+        <Table<SupportAgentData> data={data} columns={columns} headerContents={{
           title:'Supervisor Overview',
-          search:{placeholder:'Search Supervisor'},
+          search:{placeholder:'Search Support Agent'},
           sort: [
                 {
                   sortHead: "Filter",
@@ -130,7 +129,7 @@ const navigate=useNavigate()
 
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <AddSupervisor onClose={handleModalToggle} />
+        <AddSupportAgent onClose={handleModalToggle} />
       </Modal>
     </div>
   )

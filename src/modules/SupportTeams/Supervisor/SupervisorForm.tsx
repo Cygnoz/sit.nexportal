@@ -83,7 +83,7 @@ const validationSchema = Yup.object({
 });
 
 
-const AddSupervisor: React.FC<AddBDAProps> = ({ onClose }) => {
+const SupervisorForm: React.FC<AddBDAProps> = ({ onClose }) => {
         const {
             register,
             handleSubmit,
@@ -460,4 +460,4 @@ className="hidden"
   );
 };
 
-export default AddSupervisor;
+export default SupervisorForm;

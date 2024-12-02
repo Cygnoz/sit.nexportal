@@ -9,28 +9,13 @@ import { useEffect, useState } from "react";
 import UserForm from "./UserForm";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
-
-
-// Define the type for data items
-interface UserHomeData {
-    userName: string;
-    email: string;
-    phoneNo: string;
-    userImage?: string;
-    role: string;
-  }
-
-
-
-
-
-  
+import { UserData } from "../../../Interfaces/User";
 
 
 
 const UserHome = () => {
   const {request:getUsers}=useApi('get',3002)
-  const [allUsers, setAllUsers] = useState<UserHomeData[]>([]);
+  const [allUsers, setAllUsers] = useState<UserData[]>([]);
   const [editId,setEditId]=useState('')
   // State to manage modal visibility
  const [isModalOpen, setIsModalOpen] = useState(false);
@@ -77,7 +62,7 @@ const UserHome = () => {
 
 
     // Define the columns with strict keys
-    const columns: { key: keyof  UserHomeData; label: string }[] = [
+    const columns: { key: keyof  UserData; label: string }[] = [
       // { key: "userImage", label: "User Image" }, 
       { key: "userName", label: "Name" },
       { key: "email", label: "Email Address" },
@@ -91,7 +76,7 @@ const UserHome = () => {
   return (
     <div>
          <div className="flex justify-between items-center">
-      <h1 className="text-2xl font-bold">User</h1>
+      <h1 className="text-[#303F58] text-xl font-bold">User</h1>
      
       <Button variant="primary" size="sm" onClick={()=>{
         handleModalToggle()
@@ -106,18 +91,6 @@ const UserHome = () => {
       </Modal>
     </div>
 
-    {/* <div className="flex gap-3 py-2 justify-between mt-6">
-        {homeCardData.map((card, index) => (
-          <HomeCard 
-          iconFrameColor={card.iconFrameColor}
-            iconFrameBorderColor={card.iconFrameBorderColor}
-            key={index} 
-            icon={card.icon} 
-            number={card.number} 
-            title={card.title} 
-          />
-        ))}
-      </div> */}
 
        {/* Table Section */}
        <div className=" py-2 mt-3">
