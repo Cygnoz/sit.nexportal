@@ -3,12 +3,26 @@ import ChevronRight from "../../../assets/icons/ChevronRight"
 import ChevronDown from "../../../assets/icons/ChevronDown"
 import ChevronUp from "../../../assets/icons/ChevronUp"
 import { useState } from "react"
+import RegionAriaView from "./RegionAriaView"
+import RegionTeamView from "./RegionTeamView"
+import RegionPerformanceView from "./RegionPerformanceView"
 
 type Props = {}
 
 function RegionView({}: Props) {
     const [dropDown,setDropDown]=useState(false)
     const {id}=useParams()
+
+    
+  const tabs = [
+    "Aria",
+    "Team",
+    "Performance Analytics",
+    
+];
+const [activeTab, setActiveTab] = useState<string>("Aria");
+
+ 
   return (
     <div >
       <div className="flex items-center text-[16px] space-x-2">
@@ -118,7 +132,39 @@ function RegionView({}: Props) {
             </div>
         </div>
         <div className="col-span-10">
-            wefewf
+           
+           <div>
+           <div className="flex gap-8 text-base font-bold my-5 border-b border-gray-200">
+      {tabs.map((tab) => (
+        <div
+          key={tab}
+          onClick={() => setActiveTab(tab)}
+          className={`cursor-pointer py-3 px-[16px] ${
+            activeTab === tab
+              ? "text-deepStateBlue border-b-2 border-deepStateBlue"
+              : "text-gray-600"
+          }`}
+        >
+          {tab}
+        </div>
+      ))}
+    </div>
+            
+{activeTab === "Aria" && (
+  <RegionAriaView/>
+)}
+
+
+
+{activeTab === "Team" && (
+  <RegionTeamView/>
+)}
+
+
+{activeTab === "Performance Analytics" && (
+  <RegionPerformanceView/>
+)}
+           </div>
         </div>
       </div>
     </div>
