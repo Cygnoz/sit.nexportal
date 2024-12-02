@@ -10,6 +10,7 @@ import Table from "../../../components/ui/Table";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
+import { useNavigate } from "react-router-dom";
 
 
 // Define the type for data items
@@ -35,6 +36,8 @@ interface RegionManagerData {
 
 
 const RegionManagerHome = () => {
+  const navigate = useNavigate()
+
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -45,10 +48,13 @@ const RegionManagerHome = () => {
 
   const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
     if(viewId){
+      navigate(`/region-managerView/${viewId}`)
       console.log(viewId);
       
     }else if(editId){
       console.log(editId)
+      console.log(deleteId);
+      
      
     }
   }
@@ -84,7 +90,7 @@ const RegionManagerHome = () => {
   return (
     <div>
          <div className="flex justify-between items-center">
-      <h1>Regional Manager</h1>
+      <h1 className="text-base font-bold">Regional Manager</h1>
      
       <Button variant="primary" size="sm" onClick={handleModalToggle}>
         + Create RM

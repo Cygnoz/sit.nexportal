@@ -25,6 +25,7 @@ interface TableProps<T> {
     label: string;
     function: (editId?: any, viewId?: any, deleteId?: any) => void;
   }[];
+  noAction?:boolean;
 }
 
 const Table = <T extends object>({
@@ -32,6 +33,7 @@ const Table = <T extends object>({
   columns,
   headerContents,
   actionList,
+  noAction,
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -76,6 +78,10 @@ const Table = <T extends object>({
         return "bg-blue-300 text-white py-2 px-2 rounded-lg";
         case "Pending Renewal":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        case "Open":
+          return "bg-green-400 text-white py-2 px-2 rounded-lg";
+          case "Pending":
+            return "bg-green-400 text-white py-2 px-2 rounded-lg";
       default:
         return "";
         
@@ -124,9 +130,9 @@ const Table = <T extends object>({
                 {col.label}
               </th>
             ))}
-            <th className="border p-4 bg-[#F6F9FC] text-center text-sm text-[#303F58] font-medium">
+            {!noAction&&<th className="border p-4 bg-[#F6F9FC] text-center text-sm text-[#303F58] font-medium">
               Action
-            </th>
+            </th>}
           </tr>
         </thead>
         <tbody>
@@ -154,7 +160,7 @@ const Table = <T extends object>({
                     </div>
                   </td>
                 ))}
-                <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+               {!noAction&& <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
                   <div className="flex justify-center gap-2">
                     {actionList?.map(
                       (action, index) =>
@@ -193,7 +199,7 @@ const Table = <T extends object>({
                         )
                     )}
                   </div>
-                </td>
+                </td>}
               </tr>
             ))
           ) : (

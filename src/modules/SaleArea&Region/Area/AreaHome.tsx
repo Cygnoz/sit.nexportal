@@ -10,6 +10,7 @@ import CalenderDays from "../../../assets/icons/CalenderDays";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import AddArea from "./AddArea";
+import { useNavigate } from "react-router-dom";
 
 // Define the type for data items
 interface AreaData {
@@ -21,6 +22,7 @@ interface AreaData {
 }
 
 const AreaHome = () => {
+  const navigate=useNavigate()
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -30,7 +32,7 @@ const AreaHome = () => {
   };
   const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
     if(viewId){
-      // navigate(`/leadView/${viewId}`)
+      navigate(`/areaView/${viewId}`)
       console.log(viewId);
       
     }else if(editId){
