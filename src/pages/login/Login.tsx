@@ -1,5 +1,5 @@
 // File path: src/pages/Login.tsx
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Button from "../../components/ui/Button";
 import Eye from '../../assets/icons/Eye';
 import EyeOffIcon from '../../assets/icons/EyeOffIcon';
@@ -70,6 +70,10 @@ function Login({}: Props) {
       setIsLoading(false); // Ensure loading state is reset
     }
   };
+
+  useEffect(()=>{
+    localStorage.clear()
+  },[])
   
 
   return (

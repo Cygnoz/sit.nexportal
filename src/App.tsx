@@ -42,7 +42,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/otp' element={<Otp/>}/>
-        {role ? (
+        {localStorage.getItem('role') ? (
           // If role exists, show the layout with nested routes
           <Route path="/*" element={<Layout />}>
             {/* Define authenticated routes inside Layout */}
@@ -76,10 +76,6 @@ const App: React.FC = () => {
             <Route path="worker-commission" element={<WCommisionHome/>} />
             <Route path="tickets" element={<TicketsHome/>} />
             <Route path="user-log" element={<UserLogHome/>} />
-
-         
-           
-           
             {/* Add more authenticated routes as needed */}
           </Route>
         ) : ( 

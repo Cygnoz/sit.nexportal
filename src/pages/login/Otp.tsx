@@ -22,6 +22,12 @@ function Otp({}: Props) {
   // Extract email from location state or set a default for testing purposes
   const email = location.state?.email || '';
 
+  useEffect(()=>{
+    if(!email){
+      navigate('*')
+    }
+  },[email])
+
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
