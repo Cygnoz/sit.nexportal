@@ -12,6 +12,10 @@ import CheckIcon from "../../../assets/icons/CheckIcon";
 import DownloadIcon from "../../../assets/icons/DownloadIcon";
 import Trash from "../../../assets/icons/Trash";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
+import bcardback from '../../../assets/image/Business-card-back.svg'
+import idcard from '../../../assets/image/ID-card 1.svg'
+import ViewIcon from "../../../assets/icons/ViewIcon";
+import bcardfront from '../../../assets/image/Business-card-front.svg'
 
 
 interface AddRegionalManagerData {
@@ -75,9 +79,10 @@ const validationSchema = Yup.object({
 const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     const tabs = [
         "Personal Information",
-        "Bank Information",
         "Company Information",
         "Upload Files",
+        "Bank Information",
+        "ID & Business Card"
     ];
     const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
@@ -259,34 +264,7 @@ const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
 
                     )}
 
-                    {activeTab === "Bank Information" && (
-                        <div className="grid grid-cols-2 gap-4">
-                            <Input
-                                placeholder="Enter Bank Name"
-                                label="Bank Name"
-                                error={errors.bankName?.message}
-                                {...register("bankName")}
-                            />
-                            <Input
-                                placeholder="Enter Bank Branch"
-                                label="Bank Branch"
-                                error={errors.branchName?.message}
-                                {...register("branchName")}
-                            />
-                            <Input
-                                placeholder="Enter Account No"
-                                label="Bank Account No"
-                                error={errors.accountName?.message}
-                                {...register("accountName")}
-                            />
-                            <Input
-                                placeholder="Enter IFSC Code"
-                                label="IFSC Code"
-                                error={errors.ifscCode?.message}
-                                {...register("ifscCode")}
-                            />
-                        </div>
-                    )}
+                   
 
                     {activeTab === "Company Information" && (
                         <>
@@ -393,13 +371,75 @@ const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                         </div>
                     )}
 
+                     {activeTab === "Bank Information" && (
+                        <div className="grid grid-cols-2 gap-4">
+                            <Input
+                                placeholder="Enter Bank Name"
+                                label="Bank Name"
+                                error={errors.bankName?.message}
+                                {...register("bankName")}
+                            />
+                            <Input
+                                placeholder="Enter Bank Branch"
+                                label="Bank Branch"
+                                error={errors.branchName?.message}
+                                {...register("branchName")}
+                            />
+                            <Input
+                                placeholder="Enter Account No"
+                                label="Bank Account No"
+                                error={errors.accountName?.message}
+                                {...register("accountName")}
+                            />
+                            <Input
+                                placeholder="Enter IFSC Code"
+                                label="IFSC Code"
+                                error={errors.ifscCode?.message}
+                                {...register("ifscCode")}
+                            />
+                        </div>
+                    )}
+
+                    {activeTab === "ID & Business Card" && (
+          <div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+              <p className="text-[#303F58] text-base font-bold">Business Card</p>
+              <p className="text-xs font-normal text-[#8F99A9] mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
+              <img src={bcardfront} className="my-3" alt="" />
+              <img src={bcardback} className="mb-3" alt="" />
+              <div className="flex gap-3 justify-end">
+              <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
+                <ViewIcon size="13" color="#565148"/>View
+              </Button>
+              <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
+              </div>
+              </div>
+              <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+              <p className="text-[#303F58] text-base font-bold">ID Card</p>
+              <p className="text-xs font-normal text-[#8F99A9] mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
+              <img src={idcard} className="my-3" alt="" />
+              <div className="flex gap-3 justify-end">
+              <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
+                <ViewIcon size="13" color="#565148"/>View
+              </Button>
+              <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
+              </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+
                 </div>
 
                 <div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
                     <Button variant="tertiary" size="sm" onClick={onClose}>
                         Cancel
                     </Button>
-                    {tabs.indexOf(activeTab) === 3 ? (
+                    {tabs.indexOf(activeTab) === 4 ? (
                         <Button variant="primary" size="sm" type="submit">
                             Done
                         </Button>

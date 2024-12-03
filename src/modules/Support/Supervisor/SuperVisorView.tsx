@@ -17,7 +17,6 @@ import SuperVisorViewForm from "./SuperVisorViewForm"
 // import SuperVisorCard from "../../../components/ui/SuperVisorCards"
 import Background from "../../../assets/image/1.png"
 import PhoneIcon from "../../../assets/icons/PhoneIcon"
-import CalenderClock from "../../../assets/icons/CalenderClock"
 import CalenderMultiple from "../../../assets/icons/CalenderMultiple"
 import ChevronRight from "../../../assets/icons/ChevronRight"
 import { useParams } from "react-router-dom"
@@ -31,6 +30,9 @@ interface SupervisorData {
 
     rating: string;
 }
+
+
+
 
 type Props = {}
 
@@ -74,6 +76,8 @@ const SuperVisorView = ({
         },
 
     ];
+
+
 
     // Data for the table
     const data: SupervisorData[] = [
