@@ -38,17 +38,14 @@ exports.addUser = async (req, res,next) => {
     res.status(201).json({ message: "User added successfully" });
     
     if (newUser) {
-      const operationId = newUser._id
-      const { id, userName } = req.user;
-      req.user = { id, userName, status: "successfully",operationId };
+      logOperation(req, "successfully", newUser._id);
       next();
     }
 
   } catch (error) {
     console.error("Error adding user:", error);
     res.status(500).json({ message: "Internal server error" });
-    const { id, userName } = req.user;
-    req.user = { id, userName, status: "Failed" };
+    logOperation(req, "Failed");
     next();
   }
 };
@@ -134,17 +131,14 @@ exports.updateUser = async (req, res, next) => {
 
     // Pass operation details to middleware
     if (updatedUser) {
-      const operationId = updatedUser._id
-      const { id, userName } = req.user;
-      req.user = { id, userName, status: "successfully",operationId };
+      logOperation(req, "successfully", updatedUser._id);
       next();
     }
 
   } catch (error) {
     console.error("Error updating user:", error);
     res.status(500).json({ message: "Internal server error" });
-    const { id, userName } = req.user;
-    req.user = { id, userName, status: "Failed" };
+    logOperation(req, "Failed");
     next();
   }
 };
@@ -163,16 +157,13 @@ exports.deleteUser = async (req, res, next) => {
     res.status(200).json({ message: "User deleted successfully" });
 
     // Pass operation details to middleware
-    const operationId = deletedUser._id
-      const { id, userName } = req.user;
-      req.user = { id, userName, status: "successfully",operationId };
+    logOperation(req, "successfully");
       next();
 
   } catch (error) {
     console.error("Error deleting user:", error);
     res.status(500).json({ message: "Internal server error" });
-    const { id, userName } = req.user;
-    req.user = { id, userName, status: "Failed" };
+    logOperation(req, "Failed");
     next();
   }
 };
@@ -195,4 +186,15 @@ exports.getAllActivityLogs = async (req, res) => {
     console.error('Error retrieving activity logs:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
+};
+
+const logOperation = (req, status, operationId = null) => {
+  const { id, userName } = req.user;
+  const log = { id, userName, status };
+
+  if (operationId) {
+    log.operationId = operationId;
+  }
+
+  req.user = log;
 };
