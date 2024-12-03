@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Boxes from "../../../assets/icons/Boxes";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import Package from "../../../assets/icons/Package";
@@ -10,10 +10,13 @@ import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
 import LeadForm from './LeadForm'
 import { useNavigate } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
 
 type Props = {}
 
 function LeadHome({}: Props) {
+  const {request:getAllLeads}=useApi('get',3001)
   const navigate=useNavigate()
   interface LeadData {
     leadID: string;
@@ -35,6 +38,22 @@ function LeadHome({}: Props) {
   const handleView=(id:any)=>{
     navigate(`/leadView/${id}`)
   }
+
+  const getLeads=async()=>{
+    try{
+      const {response,error}=await getAllLeads(endPoints.GET_ALL_LEAD)
+      if(response && !error){
+        console.log(response.data.leads);
+        
+      }
+    }catch(err){
+      console.log(err);
+    }
+  }
+
+  useEffect(()=>{
+    getLeads()
+  },[])
 
    const homeCardData = [
     { icon: <CalenderDays  />, number: "110", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },

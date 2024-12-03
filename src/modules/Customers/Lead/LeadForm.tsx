@@ -7,6 +7,11 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
+import Trash from "../../../assets/icons/Trash";
+import { useRef } from "react";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import toast from "react-hot-toast";
 
 type Props = {
   onClose: () => void;
@@ -17,14 +22,14 @@ interface LeadFormData {
   leadImage?: any;
   salutation?: string;
   firstName: string;
-  lastName: string;
+  lastName?: string;
   email: string;
   phone: string;
   website?: string;
   leadSource?: string;
-  region?: string;
-  area?: string;
-  assignBDA?: string;
+  region: string;
+  area: string;
+  assignBda: string; 
   companyId?: string;
   companyName?: string;
   companyPhone?: string;
@@ -34,21 +39,25 @@ interface LeadFormData {
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First name is required"),
-  lastName: Yup.string().required("Last name is required"),
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string().required("Phone is required"),
+  region:Yup.string().required('Region is required'),
+  area:Yup.string().required('Area is required'),
+  assignBda:Yup.string().required('Bda is required'),
 });
 
 function LeadForm({ onClose ,editId}: Props) {
+  const {request:addLead}=useApi('post',3001)
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
     clearErrors,
     watch,
-    setValue,
+    setValue
   } = useForm<LeadFormData>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
@@ -56,9 +65,19 @@ function LeadForm({ onClose ,editId}: Props) {
     },
   });
 
-  const onSubmit: SubmitHandler<LeadFormData> = (data) => {
+  const onSubmit: SubmitHandler<LeadFormData> =async (data) => {
     console.log("Form Data", data);
-    // Submission logic
+    try{
+      const {response,error}=await addLead(endPoints.ADD_LEAD,data)
+      if(response && !error){
+        toast.success(response.data.message)
+        onClose()
+      }else{
+        toast.error(error.response.data.message)
+      }
+    }catch(err){
+      console.log(err);
+    }
   };
 
   const leadSource = [
@@ -74,6 +93,29 @@ function LeadForm({ onClose ,editId}: Props) {
     { value: "dr", label: "Dr." },
   ];
   console.log(editId)
+
+  const handleRemoveImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent click propagation
+ 
+    // Clear the leadImage value
+    setValue("leadImage","")
+ 
+    // Reset the file input value
+    if (fileInputRef?.current) {
+      fileInputRef.current.value = ""; // Clear the input field
+    }
+  };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setValue("leadImage", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleInputChange = (field: keyof LeadFormData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
@@ -97,20 +139,32 @@ function LeadForm({ onClose ,editId}: Props) {
         onSubmit={handleSubmit(onSubmit)}
         className="grid grid-cols-12 gap-2"
       >
-        <div className="col-span-2">
-          <label className="cursor-pointer text-center" htmlFor="file-upload">
+        <div className="col-span-2 ">
+          <label className="cursor-pointer text-center flex justify-center" htmlFor="file-upload">
             <input
               id="file-upload"
               type="file"
               className="hidden"
-              {...register("leadImage")}
+              onChange={handleFileChange}
             />
-            <ImagePlaceHolder />
+            <ImagePlaceHolder uploadedImage={watch("leadImage")} />
           </label>
+          {watch('leadImage') && (
+        <div
+          onClick={handleRemoveImage} // Remove image handler
+          className="flex justify-center  items-center"
+        >
+          <div  className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
+           <Trash color="red" size={16}/>
+          </div>
+        </div>
+      )}
         </div>
         <div className="col-span-10">
           <div className="grid grid-cols-2 gap-4">
             <PrefixInput
+              required
+              
               label="Enter your name"
               selectName="salutation"
               inputName="firstName"
@@ -133,15 +187,17 @@ function LeadForm({ onClose ,editId}: Props) {
               {...register("lastName")}
               onChange={() => handleInputChange("lastName")}
             />
-            <Input
-              label="Email"
-              type="email"
-              placeholder="Enter Email"
-              error={errors.email?.message}
-              {...register("email")}
-              onChange={() => handleInputChange("email")}
-            />
+           <Input
+                required
+                label="Email Address"
+                type="email"
+                placeholder="Enter Email"
+                error={errors.email?.message}
+                {...register("email")}
+                onChange={() => handleInputChange("email")}
+              />
             <CustomPhoneInput
+              required
               label="Phone Number"
               name="phone"
               error={errors.phone?.message}
@@ -159,6 +215,7 @@ function LeadForm({ onClose ,editId}: Props) {
               {...register("website")}
             />
             <Select
+            required
               label="Lead Source"
               placeholder="Select Lead Source"
               options={leadSource}
@@ -167,22 +224,28 @@ function LeadForm({ onClose ,editId}: Props) {
           </div>
           <div className="grid grid-cols-3 gap-4 mt-4">
             <Select
+            required
               label="Region"
               placeholder="Select Region"
               options={leadSource}
+              error={errors.region?.message}
               {...register("region")}
             />
             <Select
+              required
               label="Area"
               placeholder="Select Area"
+              error={errors.area?.message}
               options={leadSource}
               {...register("area")}
             />
             <Select
+              required
               label="Assign BDA"
               placeholder="Select BDA"
+              error={errors.assignBda?.message}
               options={leadSource}
-              {...register("assignBDA")}
+              {...register("assignBda")}
             />
           </div>
         </div>

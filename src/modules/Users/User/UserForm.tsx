@@ -22,12 +22,6 @@ type Props = {
 
 
 
-
-
-
-
-
-
 function UserForm({ onClose,editId }: Props) {
   const addValidationSchema = Yup.object().shape({
     userName: Yup.string().required("Full name is required"),
@@ -206,6 +200,7 @@ function UserForm({ onClose,editId }: Props) {
             <div className="mx-3 gap-4 space-y-2 max-w-lg">
               <Input
                 label="Full Name"
+                required
                 type="text"
                 placeholder="Enter Full Name"
                 error={errors.userName?.message}
@@ -214,6 +209,7 @@ function UserForm({ onClose,editId }: Props) {
               />
               <Input
                 label="Email Address"
+                required
                 type="email"
                 placeholder="Enter Email"
                 error={errors.email?.message}
@@ -222,6 +218,7 @@ function UserForm({ onClose,editId }: Props) {
               />
               <CustomPhoneInput
                 label="Phone Number"
+                required
                 name="phoneNo"
                 error={errors.phoneNo?.message}
                 placeholder="Enter phone number"
@@ -235,12 +232,14 @@ function UserForm({ onClose,editId }: Props) {
              <>
              <InputPasswordEye
                 label="Password"
+                required
                 placeholder="Enter your password"
                 error={errors.password?.message}
                 {...register("password")}
               />
               <InputPasswordEye
                 label="Confirm Password"
+                required
                 placeholder="Confirm your password"
                 error={errors.confirmPassword?.message}
                 {...register("confirmPassword")}
@@ -248,6 +247,7 @@ function UserForm({ onClose,editId }: Props) {
              </>
              }
               <Select
+              required
   label="Role"
   placeholder={!editId ? 'Select Role' : undefined}
   options={editId ? editRoles : addRoles}
