@@ -4,14 +4,15 @@ interface HomeCardProps {
   number: string | number;
   iconFrameColor: string; // Frame background color
   iconFrameBorderColor: string; // Frame border color
+  transparentCard?:boolean
 }
-const HomeCard = ({ icon: Icon, title, number, iconFrameColor, iconFrameBorderColor }: HomeCardProps) => {
+const HomeCard = ({ icon: Icon, title, number, iconFrameColor, iconFrameBorderColor,transparentCard }: HomeCardProps) => {
   return (
-    <div className="flex justify-between items-start w-full p-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300">
+    <div className={`flex justify-between items-start w-full p-4 ${transparentCard?'bg-transparent border border-white':'bg-white'}  border shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300`}>
       {/* Title and Number */}
       <div>
-        <h4 className="text-sm font-semibold text-[#8392A9]">{title}</h4>
-        <p className="text-[24px] font-bold text-gray-900">{number}</p>
+        <h4 className={`text-sm font-semibold  ${transparentCard?'text-[#bfd5f6]':'text-[#8392A9]'}`}>{title}</h4>
+        <p className={`text-[24px] font-bold  ${transparentCard?'text-white':'text-gray-900'}`}>{number}</p>
       </div>
       {/* Icon Frame */}
       <div

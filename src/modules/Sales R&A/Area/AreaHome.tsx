@@ -32,8 +32,9 @@ const AreaHome = () => {
   };
 
   const handleView=(id:any)=>{
-    navigate(`/leadView/${id}`)
+    navigate(`/areaView/${id}`)
   }
+
 
   // Data for HomeCards
   const homeCardData = [
