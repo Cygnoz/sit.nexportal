@@ -24,8 +24,10 @@ const RMViewBDAandGraph = ({
         if(viewId){
           // navigate(`/leadView/${viewId}`)
           console.log(viewId);
-          
         }
+        console.log(editId);
+        console.log(deleteId);
+        
     }
 
      // Data for the table

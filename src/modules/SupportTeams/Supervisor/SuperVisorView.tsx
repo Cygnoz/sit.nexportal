@@ -14,13 +14,11 @@ import SuperVisorCards from "../../../components/ui/SuperVisorCards"
 import Table from "../../../components/ui/Table"
 import SuperVisorTicketsOverview from "./SuperVisorTicketsOverview"
 import SuperVisorViewForm from "./SuperVisorViewForm"
-// import SuperVisorCard from "../../../components/ui/SuperVisorCards"
-import Background from "../../../assets/image/1.png"
-import PhoneIcon from "../../../assets/icons/PhoneIcon"
-import CalenderClock from "../../../assets/icons/CalenderClock"
+import { useParams } from "react-router-dom"
 import CalenderMultiple from "../../../assets/icons/CalenderMultiple"
 import ChevronRight from "../../../assets/icons/ChevronRight"
-import { useParams } from "react-router-dom"
+import PhoneIcon from "../../../assets/icons/PhoneIcon"
+import Background from "../../../assets/image/1.png"
 
 
 interface SupervisorData {

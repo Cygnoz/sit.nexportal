@@ -27,7 +27,7 @@ const validationSchema = Yup.object({
   region: Yup.string().required("region is required"),
 });
 
-const AddArea: React.FC<NewAreaProps> = ({ onClose }) => {
+const AreaForm: React.FC<NewAreaProps> = ({ onClose }) => {
   const {
     register,
     handleSubmit,
@@ -110,4 +110,4 @@ const AddArea: React.FC<NewAreaProps> = ({ onClose }) => {
   );
 };
 
-export default AddArea;
+export default AreaForm;

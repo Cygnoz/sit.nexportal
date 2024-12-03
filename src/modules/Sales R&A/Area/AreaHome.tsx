@@ -9,7 +9,7 @@ import Table from "../../../components/ui/Table";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
-import AddArea from "./AddArea";
+import AddArea from "./AreaForm";
 import { useNavigate } from "react-router-dom";
 
 // Define the type for data items
@@ -30,17 +30,9 @@ const AreaHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
-  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(viewId){
-      navigate(`/areaView/${viewId}`)
-      console.log(viewId);
-      
-    }else if(editId){
-      console.log(editId)
-      // setId({...id,edit:editId})
-    }
-    console.log(deleteId);
-    
+
+  const handleView=(id:any)=>{
+    navigate(`/leadView/${id}`)
   }
 
   // Data for HomeCards
@@ -112,7 +104,7 @@ const AreaHome = () => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-base font-bold">Area Home</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">Area</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
           <span className="font-bold text-xl">+</span> Create Area
         </Button>
@@ -150,8 +142,8 @@ const AreaHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'edit', function:handleView },
+          { label: 'view', function: handleView },
         ]}
          />
       </div>

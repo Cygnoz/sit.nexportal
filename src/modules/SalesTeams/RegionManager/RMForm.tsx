@@ -72,7 +72,7 @@ const validationSchema = Yup.object({
     region: Yup.string(),
 });
 
-const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
+const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     const tabs = [
         "Personal Information",
         "Bank Information",
@@ -86,6 +86,13 @@ const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
         const currentIndex = tabs.indexOf(activeTab);
         if (currentIndex < tabs.length - 1) {
             setActiveTab(tabs[currentIndex + 1]);
+        }
+    };
+    
+    const handleBack = () => {
+        const currentIndex = tabs.indexOf(activeTab);
+        if (currentIndex > 0) {
+            setActiveTab(tabs[currentIndex - 1]);
         }
     };
 
@@ -108,10 +115,10 @@ const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
 
 
     return (
-        <div className="p-5 bg-white rounded shadow-md h-[638px] overflow-auto">
+        <div className="p-5 bg-white rounded shadow-md  custom-scrollbar">
             <div className="flex justify-between items-center mb-4">
                 <div>
-                    <h1 className="text-lg font-bold text-deepStateBlue mt-2">
+                    <h1 className="text-lg font-bold text-deepStateBlue ">
                         Create Support Agent
                     </h1>
                     <p className="text-ashGray text-sm">
@@ -122,9 +129,9 @@ const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                 <button
                     type="button"
                     onClick={onClose}
-                    className="text-gray-600 hover:text-gray-900 font-bold"
+                    className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
                 >
-                    <p className="text-xl">&times;</p>
+                   &times;
                 </button>
             </div>
 
@@ -132,6 +139,7 @@ const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                 {tabs.map((tab, index) => (
                     <div
                         key={tab}
+                        onClick={()=>setActiveTab(tab)}
                         className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
                                 ? "text-deepStateBlue border-b-2 border-secondary2"
                                 : "text-gray-600"
@@ -153,12 +161,13 @@ const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
 
             <form onSubmit={handleSubmit(onSubmit)}>
 
-                <div>
+                <div className="transition-all duration-300"
+                style={{ minHeight: "450px" }}>
                     {activeTab === "Personal Information" && (
 
 
                         <div className="grid grid-cols-12">
-                            <div className="col-span-2">
+                            <div className="col-span-2 flex justify-center ">
                                 <label className="cursor-pointer text-center" htmlFor="file-upload">
                                     <input
                                         id="file-upload"
@@ -395,23 +404,39 @@ const AddRegionManager: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
 
                 </div>
 
-                <div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
-                    <Button variant="tertiary" size="sm" onClick={onClose}>
-                        Cancel
-                    </Button>
-                    {tabs.indexOf(activeTab) === 3 ? (
-                        <Button variant="primary" size="sm" type="submit">
-                            Done
-                        </Button>
-                    ) : (
-                        <Button variant="primary" size="sm" onClick={handleNext}>
-                            Next
-                        </Button>
-                    )}
-                </div>
+                <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2">
+    {tabs.indexOf(activeTab) > 0 ? (
+        <Button variant="tertiary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg" onClick={handleBack}>
+            Back
+        </Button>
+    ) : (
+        <Button variant="tertiary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg" onClick={onClose}>
+            Cancel
+        </Button>
+    )}
+    {tabs.indexOf(activeTab) === tabs.length - 1 ? (
+        <Button  variant="primary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg"
+        type="submit" onClick={onClose} >
+            Done
+        </Button>
+    ) : (
+        <Button  variant="primary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg"
+        type="submit" onClick={handleNext}>
+            Next
+        </Button>
+    )}
+</div>
             </form>
         </div>
     );
 };
 
-export default AddRegionManager;
+export default RMForm;

@@ -26,7 +26,7 @@ const validationSchema = Yup.object({
     .required("Email is required")
 });
 
-function CreateWCommission({ onClose }: Props) {
+function WCommissionForm({ onClose }: Props) {
   const {
     register,
     handleSubmit,
@@ -113,4 +113,4 @@ function CreateWCommission({ onClose }: Props) {
   );
 }
 
-export default CreateWCommission;
+export default WCommissionForm;

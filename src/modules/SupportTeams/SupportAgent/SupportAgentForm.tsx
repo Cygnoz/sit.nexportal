@@ -76,7 +76,7 @@ const validationSchema = Yup.object({
   region: Yup.string(),
 });
 
-const AddSupportAgent: React.FC<AddSupportAgentProps> = ({ onClose }) => {
+const SupportAgentForm: React.FC<AddSupportAgentProps> = ({ onClose }) => {
     const tabs = [
         "Personal Information",
         "Bank Information",
@@ -371,4 +371,4 @@ const AddSupportAgent: React.FC<AddSupportAgentProps> = ({ onClose }) => {
   );
 };
 
-export default AddSupportAgent;
+export default SupportAgentForm;

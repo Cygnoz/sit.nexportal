@@ -10,7 +10,7 @@ import CalenderDays from "../../../assets/icons/CalenderDays";
 import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
 import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
-import AddSupportAgent from "./AddSupportAgent";
+import AddSupportAgent from "./SupportAgentForm";
 import { useNavigate } from "react-router-dom";
 
 
@@ -31,20 +31,10 @@ const SupervisorHome = () => {
         setIsModalOpen((prev) => !prev);
       };
       const navigate=useNavigate()
-      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-          navigate(`/supportAgentView/${viewId}`)
-          console.log(viewId);
-          
-        }else if(editId){
-          console.log(editId)
-          // setId({...id,edit:editId})
-        }else{
-          console.log(deleteId)
-          // setId({...id,delete:deleteId})
-        }
+      
+      const handleView=(id:any)=>{
+        navigate(`/supportAgentView/${id}`)
       }
-    
 
       // Data for HomeCards
   const homeCardData = [
@@ -83,9 +73,9 @@ const SupervisorHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-base font-bold">Support Agent</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">Support Agent</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create Support Agent
+        <span className="font-bold text-xl">+</span> Create Support Agent
         </Button>
       </div>
 
@@ -121,9 +111,9 @@ const SupervisorHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'delete', function: handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'edit', function:handleView },
+          { label: 'delete', function: handleView},
+          { label: 'view', function:handleView },
         ]}  />
       </div>
 

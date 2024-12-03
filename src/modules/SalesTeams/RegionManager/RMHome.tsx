@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
-import AddRegionManager from "./AddRegionManager";
+import AddRegionManager from "./RMForm";
 import HomeCard from "../../../components/ui/HomeCards";
 import UserIcon from "../../../assets/icons/UserIcon";
 import AreaIcon from "../../../assets/icons/AreaIcon";
@@ -35,7 +35,7 @@ interface RegionManagerData {
 
 
 
-const RegionManagerHome = () => {
+const RMHome = () => {
   const navigate = useNavigate()
 
   // State to manage modal visibility
@@ -46,22 +46,10 @@ const RegionManagerHome = () => {
     setIsModalOpen((prev) => !prev);
   };
 
-  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(viewId){
-      navigate(`/region-managerView/${viewId}`)
-      console.log(viewId);
-      
-    }else if(editId){
-      console.log(editId)
-      console.log(deleteId);
-      
-     
-    }
-    else{
-      console.log(deleteId)
-    }
-  }
 
+  const handleView=(id:any)=>{
+    navigate(`/region-managerView/${id}`)
+  }
   
   // Data for the table
   const data:  RegionManagerData[] = [
@@ -93,10 +81,10 @@ const RegionManagerHome = () => {
   return (
     <div>
          <div className="flex justify-between items-center">
-      <h1 className="text-base font-bold">Regional Manager</h1>
+      <h1 className="text-[#303F58] text-xl font-bold">Regional Manager</h1>
      
       <Button variant="primary" size="sm" onClick={handleModalToggle}>
-        + Create RM
+      <span className="font-bold text-xl">+</span> Create RM
       </Button>
 
       {/* Modal controlled by state */}
@@ -136,8 +124,8 @@ const RegionManagerHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'edit', function:handleView},
+          { label: 'view', function: handleView },
         ]} />
       </div>
 
@@ -152,4 +140,4 @@ const RegionManagerHome = () => {
   );
 };
 
-export default RegionManagerHome;
+export default RMHome;

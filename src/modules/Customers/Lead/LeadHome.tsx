@@ -15,10 +15,6 @@ type Props = {}
 
 function LeadHome({}: Props) {
   const navigate=useNavigate()
-  const [id,setId]=useState({
-    edit:'',
-    delete:''
-  })
   interface LeadData {
     leadID: string;
     leadName: string;
@@ -35,16 +31,9 @@ function LeadHome({}: Props) {
      setIsModalOpen((prev) => !prev);
    };
 
-   const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(viewId){
-      navigate(`/leadView/${viewId}`)
-    }else if(editId){
-      console.log(editId)
-      setId({...id,edit:editId})
-    }else{
-      console.log(deleteId)
-      setId({...id,delete:deleteId})
-    }
+
+  const handleView=(id:any)=>{
+    navigate(`/leadView/${id}`)
   }
 
    const homeCardData = [
@@ -89,7 +78,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
   return (
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
-      <h1 className="text-2xl font-bold">Lead</h1>
+      <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
       <Button variant="primary"  size="sm" onClick={handleModalToggle}>
         <span className="text-xl font-bold">+</span>Create Lead
       </Button>
@@ -136,9 +125,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
     // ]
   }}
   actionList={[
-    { label: 'edit', function:handleEditDeleteView },
-    { label: 'delete', function: handleEditDeleteView },
-    { label: 'view', function: handleEditDeleteView },
+    { label: 'view', function: handleView },
   ]}
 />
       </div>
