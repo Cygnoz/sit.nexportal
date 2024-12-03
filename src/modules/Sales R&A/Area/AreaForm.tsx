@@ -1,45 +1,94 @@
 // src/features/regions/NewRegionForm.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import Input from "../../../components/form/Input";
 import Select from "../../../components/form/Select";
 import Button from "../../../components/ui/Button";
+import { AreaData } from "../../../Interfaces/Area";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import toast from "react-hot-toast";
 
-interface NewAreaData {
-  areaName: string;
-  areaCode: string;
-  description?: string;
-  region: string;
+interface RegionData {
+  label: string;
+  value: string;
 }
 
 interface NewAreaProps {
   onClose: () => void; // Prop for handling modal close
+  editId?: any;
 }
 
 const validationSchema = Yup.object({
   areaName: Yup.string().required("Area name is required"),
-  areaCode: Yup.string()
-    .required("Area code is required"),
-    // .matches(/^[A-Z]{2,3}$/, "Region code must be 2-3 uppercase letters"),
-  description: Yup.string(),
-  region: Yup.string().required("region is required"),
+  areaCode: Yup.string().required("Area code is required"),
+  regionId: Yup.string().required("region is required"),
 });
 
-const AreaForm: React.FC<NewAreaProps> = ({ onClose }) => {
+const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
+  const {request:addArea}=useApi('post',3003)
+  const {request:editArea}=useApi('put',3003)
+  const {request:getAllRegion}=useApi('get',3003)
+  const [regionData, setRegionData] = useState<RegionData[]>([]);
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<NewAreaData>({
+  } = useForm<AreaData>({
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<NewAreaData> = (data) => {
+  const onSubmit: SubmitHandler<AreaData> =async (data) => {
     console.log(data);
-    // Submission logic
+    try {
+      const apiCall = editId ? editArea : addArea;
+      const { response, error } = await apiCall(
+        editId ? `${endPoints.AREA}/${editId}` : endPoints.AREA,
+        data
+      );
+      if (response && !error) {
+        toast.success(response.data.message);
+        onClose();
+      } else {
+        toast.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.error("Error submitting region data:", err);
+      toast.error("An unexpected error occurred.");
+    }
   };
+
+  const getAllRegions = async () => {
+    try {
+      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
+      console.log("res", response);
+  
+      if (response && !error) {
+        // Extract only `regionName` and `_id` from each region
+        const filteredRegions = response.data.regions?.map((region:any) => ({
+          label: region.regionName,
+          value: region._id,
+        }));
+  
+        // Update the state with the filtered regions
+        setRegionData(filteredRegions);
+      } else {
+        toast.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
+
+  useEffect(()=>{
+    getAllRegions()
+  },[])
+
+  console.log(regionData);
+  
 
   return (
     <div className="p-5 bg-white rounded shadow-md space-y-3">
@@ -58,12 +107,14 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose }) => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <Input
+          required
           label="Area Name"
           placeholder="Enter Area Name"
           error={errors.areaName?.message}
           {...register("areaName")}
         />
         <Input
+          required
           placeholder="Enter Area Code"
           label="Area Code"
           error={errors.areaCode?.message}
@@ -71,15 +122,12 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose }) => {
         />
     
         <Select
+          required
           label="Region"
           placeholder="Select Region"
-          error={errors.region?.message}
-          options={[
-            { value: "US", label: "Region 1" },
-            { value: "CA", label: "Region 2" },
-            { value: "UK", label: "Region 3" },
-          ]}
-          {...register("region")}
+          error={errors.regionId?.message}
+          options={regionData}
+          {...register("regionId")}
         />
         <Input
           placeholder="Enter Description"

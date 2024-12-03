@@ -142,69 +142,70 @@ const Table = <T extends object>({
   {paginatedData.length > 0 ? (
     paginatedData.map((row:any, rowIndex) => (
       <tr key={rowIndex} className="hover:bg-gray-50">
-        <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-          {/* Adjusted SI No. calculation */}
-          {(currentPage - 1) * rowsPerPage + rowIndex + 1}
-        </td>
-        {columns.map((col) => (
-          <td
-            key={String(col.key)}
-            className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
-          >
-            <div className={`flex justify-center`}>
+  <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+    {/* Adjusted SI No. calculation */}
+    {(currentPage - 1) * rowsPerPage + rowIndex + 1}
+  </td>
+  {columns.map((col) => (
+    <td
+      key={String(col.key)}
+      className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
+    >
+      <div className={`flex justify-center`}>
+        <p
+          className={`${
+            col.key === "status" ? getStatusClass(row[col.key] as string) : ""
+          }`}
+        >
+          {row[col.key] ? row[col.key] : "-"}
+        </p>
+      </div>
+    </td>
+  ))}
+  {!noAction && (
+    <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+      <div className="flex justify-center gap-2">
+        {actionList?.map(
+          (action, index) =>
+            action.label === "edit" && (
               <p
-                className={`${
-                  col.key === "status"
-                    ? getStatusClass(row[col.key] as string)
-                    : ""
-                }`}
+                key={index}
+                className="cursor-pointer"
+                onClick={() => action.function(row?._id)}
               >
-                {row[col.key] as string}
+                <PencilLine color="#4B5C79" size={16} />
               </p>
-            </div>
-          </td>
-        ))}
-      {!noAction&& <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-          <div className="flex justify-center gap-2">
-            {actionList?.map(
-              (action, index) =>
-                action.label === "edit" && (
-                  <p
-                    key={index}
-                    className="cursor-pointer"
-                    onClick={() => action.function(row?._id)}
-                  >
-                    <PencilLine color="#4B5C79" size={16} />
-                  </p>
-                )
-            )}
-            {actionList?.map(
-              (action, index) =>
-                action.label === "view" && (
-                  <p
-                    key={index}
-                    className="cursor-pointer"
-                    onClick={() => action.function(1)}
-                  >
-                    <Eye color="#4B5C79" size={16} />
-                  </p>
-                )
-            )}
-            {actionList?.map(
-              (action, index) =>
-                action.label === "delete" && (
-                  <p
-                    key={index}
-                    className="cursor-pointer"
-                    onClick={() => action.function(row?._id)}
-                  >
-                    <Trash color="#4B5C79" size={16} />
-                  </p>
-                )
-            )}
-          </div>
-        </td>}
-      </tr>
+            )
+        )}
+        {actionList?.map(
+          (action, index) =>
+            action.label === "view" && (
+              <p
+                key={index}
+                className="cursor-pointer"
+                onClick={() => action.function(1)}
+              >
+                <Eye color="#4B5C79" size={16} />
+              </p>
+            )
+        )}
+        {actionList?.map(
+          (action, index) =>
+            action.label === "delete" && (
+              <p
+                key={index}
+                className="cursor-pointer"
+                onClick={() => action.function(row?._id)}
+              >
+                <Trash color="#4B5C79" size={16} />
+              </p>
+            )
+        )}
+      </div>
+    </td>
+  )}
+</tr>
+
     ))
   ) : (
     <tr>
