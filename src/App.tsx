@@ -1,39 +1,37 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import { useRole } from './context/RoleContext';
 import Layout from './layout/Layout';
 import LeadHome from './modules/Customers/Lead/LeadHome';
 import LeadView from './modules/Customers/Lead/LeadView';
-import RMHome from './modules/SalesTeams/RegionManager/RMHome';
+import LicensorHome from './modules/Customers/Licensor/LicensorHome';
+import TrialHome from './modules/Customers/Trial/TrialHome';
 import AreaHome from './modules/Sales R&A/Area/AreaHome';
+import AreaView from './modules/Sales R&A/Area/AreaView';
 import RegionHome from './modules/Sales R&A/Region/RegionHome';
 import RegionView from './modules/Sales R&A/Region/RegionView';
+import AMHome from './modules/SalesTeams/AreaManager/AMHome';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
+import BDAHome from './modules/SalesTeams/BDA/BDAHome';
 import BDAView from './modules/SalesTeams/BDA/BDAView';
+import RMHome from './modules/SalesTeams/RegionManager/RMHome';
+import RMView from './modules/SalesTeams/RegionManager/RMView';
+import SupervisorHome from './modules/SupportTeams/Supervisor/SupervisorHome';
 import SupportagentHome from './modules/SupportTeams/SupportAgent/SupportAgentHome';
 import SupportAgentView from './modules/SupportTeams/SupportAgent/SupportAgentView';
+import TicketsHome from './modules/Tickets/TicketsHome';
 import UserHome from './modules/Users/User/UserHome';
 import UserLogHome from './modules/Users/UserLog/UserLogHome';
+import WCommisionHome from './modules/Users/WorkerCommision/WCommisionHome';
 import DashboardPage from './pages/DashboardPage';
 import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
-import BDAHome from './modules/SalesTeams/BDA/BDAHome';
-import SupervisorHome from './modules/SupportTeams/Supervisor/SupervisorHome';
-import TrialHome from './modules/Customers/Trial/TrialHome';
-import LicensorHome from './modules/Customers/Licensor/LicensorHome';
-import WCommisionHome from './modules/Users/WorkerCommision/WCommisionHome';
-import TicketsHome from './modules/Tickets/TicketsHome';
-import AMHome from './modules/SalesTeams/AreaManager/AMHome';
-import AreaView from './modules/Sales R&A/Area/AreaView';
-import RMView from './modules/SalesTeams/RegionManager/RMView';
 // import RMViewForm from './modules/RegionalManager/RegionManager/RMViewForm';
-import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
 import NoAccess from './context/NoAccess';
+import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
-  const { role} = useRole(); // Access the role from context
 
 
   return (

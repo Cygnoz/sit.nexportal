@@ -33,15 +33,7 @@ const RegionHome = () => {
     getAllRegions()
   };
 
-  const handleEditDeleteView=async(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(viewId){
-      navigate(`/regionView/${viewId}`)
-    }else if(editId){
-      
-    }else{
-     
-    }
-  }
+ 
   const handleView=(id:any)=>{
     navigate(`/regionView/${id}`)
   }
