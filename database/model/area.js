@@ -8,9 +8,9 @@ const areaSchema = new Schema(
     areaCode: { type: String, required: true, unique: true },
     areaName: { type: String, required: true },
     region: { type: Schema.Types.ObjectId, ref: "Region", required: true }, // References the Region collection
-    description: { type: String }, // Optional field
+    description: { type: String }, 
   },
-  { timestamps: true } // Enables createdAt and updatedAt fields
+  { timestamps: true } 
 );
 
 const Area = mongoose.model("Area", areaSchema);

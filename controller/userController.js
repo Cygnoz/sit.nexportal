@@ -319,6 +319,24 @@ const roles = [
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+
+      // Region Manager
+      { action: "Add Region Manager", note: "Add Region Manager" },
+      { action: "View Region Manager", note: "View Region Manager" },
+      { action: "Edit Region Manager", note: "Edit Region Manager" },
+      { action: "Delete Region Manager", note: "Delete Region Manager" },
+
+      // Lead
+      { action: "Add Lead", note: "Add Lead" },
+      { action: "View Lead", note: "View Lead" },
+      { action: "Edit Lead", note: "Edit Lead" },
+      { action: "Delete Lead", note: "Delete Lead" },
+
+      // Tickets
+      { action: "Add Ticket", note: "Add Ticket" },
+      { action: "View Ticket", note: "View Ticket" },
+      { action: "Edit Ticket", note: "Edit Ticket" },
+      { action: "Delete Ticket", note: "Delete Ticket" },
     ],
   },
   {

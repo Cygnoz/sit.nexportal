@@ -33,12 +33,12 @@ exports.addArea = async (req, res, next) => {
       res.status(201).json({ message: "Area added successfully"});
   
       // Pass operation details to middleware
-      ActivityLog(req, "successfully", newArea._id);
+      logOperation(req, "successfully", newArea._id);
       next();
     } catch (error) {
       console.error("Error adding area:", error);
       res.status(500).json({ message: "Internal server error" });
-      ActivityLog(req, "Failed");
+      logOperation(req, "Failed");
       next();
     }
   };
@@ -116,12 +116,12 @@ exports.getAllAreas = async (req, res) => {
       res.status(200).json({ message: "Area updated successfully", area: updatedArea });
   
       // Pass operation details to middleware
-      ActivityLog(req, "successfully", updatedArea._id );
+      logOperation(req, "successfully", updatedArea._id );
       next();
     } catch (error) {
       console.error("Error updating area:", error);
       res.status(500).json({ message: "Internal server error" });
-      ActivityLog(req, "Failed");
+      logOperation(req, "Failed");
       next();
     }
   };
@@ -140,19 +140,19 @@ exports.deleteArea = async (req, res, next) => {
     res.status(200).json({ message: "Area deleted successfully" });
 
     // Pass operation details to middleware
-    ActivityLog(req, "successfully");
+    logOperation(req, "successfully");
     next();
   } catch (error) {
     console.error("Error deleting area:", error);
     res.status(500).json({ message: "Internal server error" });
-    ActivityLog(req, "Failed");
+    logOperation(req, "Failed");
     next();
   }
 };
 
 
 
-const ActivityLog = (req, status, operationId = null) => {
+const logOperation = (req, status, operationId = null) => {
     const { id, userName } = req.user;
     const log = { id, userName, status };
   
