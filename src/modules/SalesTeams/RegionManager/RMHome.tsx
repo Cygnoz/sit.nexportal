@@ -46,22 +46,10 @@ const RMHome = () => {
     setIsModalOpen((prev) => !prev);
   };
 
-  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(viewId){
-      navigate(`/region-managerView/${viewId}`)
-      console.log(viewId);
-      
-    }else if(editId){
-      console.log(editId)
-      console.log(deleteId);
-      
-     
-    }
-    else{
-      console.log(deleteId)
-    }
-  }
 
+  const handleView=(id:any)=>{
+    navigate(`/region-managerView/${id}`)
+  }
   
   // Data for the table
   const data:  RegionManagerData[] = [
@@ -136,8 +124,8 @@ const RMHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'edit', function:handleView},
+          { label: 'view', function: handleView },
         ]} />
       </div>
 

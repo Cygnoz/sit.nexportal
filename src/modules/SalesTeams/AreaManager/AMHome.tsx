@@ -32,17 +32,10 @@ const AMHome = () => {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
-      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-        navigate(`/amView/${viewId}`)
-          console.log(viewId);
-          
-        }else if(editId){
-          console.log(editId)
-          // setId({...id,edit:editId})
-        }
-        console.log(deleteId);
-        
+      
+
+      const handleView=(id:any)=>{
+        navigate(`/amView/${id}`)
       }
       // Data for HomeCards
   const homeCardData = [
@@ -120,8 +113,8 @@ const AMHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'edit', function:handleView},
+          { label: 'view', function: handleView },
         ]}  />
       </div>
 

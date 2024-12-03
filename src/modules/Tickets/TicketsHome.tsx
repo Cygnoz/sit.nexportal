@@ -29,15 +29,11 @@ function TicketsHome({}: Props) {
      setIsModalOpen((prev) => !prev);
    };
 
-   const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(viewId){
-      console.log(viewId);
-    }
 
-    console.log(editId);
-    console.log(deleteId);
-    
-    
+
+  const handleView=(id:any)=>{
+   console.log(id);
+   
   }
 
   
@@ -137,7 +133,7 @@ const sort=
    
   }}
   actionList={[
-    { label: 'view', function: handleEditDeleteView },
+    { label: 'view', function: handleView },
   ]}
 />
 

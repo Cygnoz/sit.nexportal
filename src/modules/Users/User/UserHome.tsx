@@ -27,15 +27,11 @@ const UserHome = () => {
   };
 
   
-  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(editId){
-     setEditId(editId)
+  
+
+  const handleEdit=(id:any)=>{
+    setEditId(id)
      handleModalToggle()
-    }else if(viewId){
-      console.log(viewId)
-    }else{
-      console.log(deleteId)
-    }
   }
 
   const getAllUsers=async()=>{
@@ -110,7 +106,7 @@ const UserHome = () => {
           ]
         }}
         actionList={[
-            { label: 'edit', function:handleEditDeleteView },
+            { label: 'edit', function:handleEdit },
           ]}  />
 
 

@@ -13,7 +13,7 @@ export const RoleProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Load role from localStorage when the component mounts
   useEffect(() => {
-    const savedRole = sessionStorage.getItem('role') as Role | null;
+    const savedRole = localStorage.getItem('role') as Role | null;
     if (savedRole) {
       setRoleState(savedRole);
     }
@@ -22,7 +22,7 @@ export const RoleProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   // Function to set role and save it to localStorage
   const setRole = (newRole: Role) => {
     setRoleState(newRole);
-    sessionStorage.setItem('role', newRole); // Save role to localStorage
+    localStorage.setItem('role', newRole); // Save role to localStorage
   };
 
   // Function to get permissions for a specific role

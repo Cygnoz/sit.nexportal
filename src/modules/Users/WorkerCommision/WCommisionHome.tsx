@@ -35,13 +35,10 @@ const WCommisionHome = () => {
   };
 
   
-  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(deleteId){
-     console.log(deleteId);
-    }
-    console.log(editId);
-    console.log(viewId);
-    
+  
+
+  const handleDelete=(id:any)=>{
+    console.log(id);
     
   }
 
@@ -98,7 +95,7 @@ const WCommisionHome = () => {
         
         }}
         actionList={[
-            { label: 'delete', function:handleEditDeleteView },
+            { label: 'delete', function:handleDelete },
            
           ]}  />
 

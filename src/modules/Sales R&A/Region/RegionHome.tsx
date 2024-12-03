@@ -37,23 +37,35 @@ const RegionHome = () => {
     if(viewId){
       navigate(`/regionView/${viewId}`)
     }else if(editId){
-      handleModalToggle()
-      setEditId(editId)
+      
     }else{
-      try{
-        const {response,error}=await deleteRegion(`${endPoints.REGION}/${deleteId}`)
-      if(response && !error){
-        toast.success(response.data.message)
-        getAllRegions()
-      }else{
-        toast.error(error.response.data.message)
-      }
-      }catch(err){
-        console.log();
-        
-      }
+     
     }
   }
+  const handleView=(id:any)=>{
+    navigate(`/regionView/${id}`)
+  }
+
+  const handleDelete=async(id:any)=>{
+    try{
+      const {response,error}=await deleteRegion(`${endPoints.REGION}/${id}`)
+    if(response && !error){
+      toast.success(response.data.message)
+      getAllRegions()
+    }else{
+      toast.error(error.response.data.message)
+    }
+    }catch(err){
+      console.log();
+    }
+  }
+
+ const  handleEdit=(id:any)=>{
+  handleModalToggle()
+  setEditId(id)
+ }
+
+
 
   const getAllRegions=async()=>{
     try{
@@ -172,9 +184,9 @@ const RegionHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'delete', function: handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'edit', function:handleEdit },
+          { label: 'delete', function: handleDelete },
+          { label: 'view', function: handleView },
         ]}
          />
       </div>

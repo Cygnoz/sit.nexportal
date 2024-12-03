@@ -32,15 +32,9 @@ const BDAHome = () => {
         setIsModalOpen((prev) => !prev);
       };
       const navigate=useNavigate()
-      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-          navigate(`/bdaView/${viewId}`)
-          console.log(viewId);
-          console.log(editId);
-          console.log(deleteId);
-          
-          
-        }
+
+      const handleView=(id:any)=>{
+        navigate(`/bdaView/${id}`)
       }
     
 
@@ -121,7 +115,7 @@ const BDAHome = () => {
         }}
         actionList={[
           
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'view', function: handleView },
         ]}  />
       </div>
 

@@ -15,7 +15,6 @@ function Otp({}: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const { request: verifyOtp } = useApi("post", 3003);
-  // const { setIsAuthenticated } = useAuth(); // Get the setIsAuthenticated function from context
   useEffect(() => {
     inputRefs[0].current?.focus();
   }, []);
@@ -94,7 +93,7 @@ function Otp({}: Props) {
         console.log(result.response)
         // OTP verified successfully
         const successMessage = result.response.data?.message || 'OTP verified successfully!';
-        sessionStorage.setItem('authToken', result.response.data.token);
+        localStorage.setItem('authToken', result.response.data.token);
         setRole(result.response.data.user.role)
         setTimeout(() => {
           setIsLoading(false)
