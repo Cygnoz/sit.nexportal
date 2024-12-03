@@ -100,13 +100,11 @@ const RMView = () => {
       
                         <div className="flex items-center justify-between p-2 bg-white rounded-lg shadow-md border border-gray-200">
 
-<div className="grid grid-cols-12 gap-3" style={{
+<div className="grid grid-cols-12 gap-3 bg-cover" style={{
     backgroundImage: `url(${BackgroundImage})`, // Use the imported image
   }}>
 
-<div className="col-span-6" style={{
-    backgroundImage: `url(${BackgroundImage})`, // Use the imported image
-  }}>
+<div className="col-span-6 " >
 
 <div>
                     {/* Left Section: Area Icon and Details */}
@@ -227,6 +225,7 @@ iconFrameColor={card.iconFrameColor}
 iconFrameBorderColor={card.iconFrameBorderColor}
 key={index} 
 icon={card.icon} 
+transparentCard
 number={card.number} 
 title={card.title} 
 />
