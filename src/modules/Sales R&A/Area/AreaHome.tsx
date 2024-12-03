@@ -30,17 +30,9 @@ const AreaHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
-  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(viewId){
-      navigate(`/areaView/${viewId}`)
-      console.log(viewId);
-      
-    }else if(editId){
-      console.log(editId)
-      // setId({...id,edit:editId})
-    }
-    console.log(deleteId);
-    
+
+  const handleView=(id:any)=>{
+    navigate(`/leadView/${id}`)
   }
 
   // Data for HomeCards
@@ -150,8 +142,8 @@ const AreaHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'edit', function:handleView },
+          { label: 'view', function: handleView },
         ]}
          />
       </div>

@@ -31,19 +31,12 @@ const navigate=useNavigate()
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
-      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-         
-          navigate(`/supervisor/${viewId}`)
-          console.log(viewId);
-        }else if(editId){
-          console.log(editId)
-          // setId({...id,edit:editId})
-        }else{
-          console.log(deleteId)
-          // setId({...id,delete:deleteId})
-        }
+  
+
+      const handleView=(id:any)=>{
+        navigate(`/supervisor/${id}`)
       }
+      
 
       // Data for HomeCards
   const homeCardData = [
@@ -122,9 +115,9 @@ const navigate=useNavigate()
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'delete', function: handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'edit', function:handleView },
+          { label: 'delete', function: handleView },
+          { label: 'view', function: handleView},
         ]}  />
       </div>
 
