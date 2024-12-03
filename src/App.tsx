@@ -29,10 +29,11 @@ import Otp from './pages/login/Otp';
 // import RMViewForm from './modules/RegionalManager/RegionManager/RMViewForm';
 import NoAccess from './context/NoAccess';
 import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
+import { useRole } from './context/RoleContext';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
-
+  const {role}=useRole()
 
   return (
     <>
@@ -40,7 +41,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/otp' element={<Otp/>}/>
-        {localStorage.getItem('role') ? (
+        {localStorage.getItem('authToken') || role ? (
           // If role exists, show the layout with nested routes
           <Route path="/*" element={<Layout />}>
             {/* Define authenticated routes inside Layout */}
