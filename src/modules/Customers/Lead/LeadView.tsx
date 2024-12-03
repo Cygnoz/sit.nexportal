@@ -1,21 +1,28 @@
 import { useParams } from "react-router-dom"
 import ChevronRight from "../../../assets/icons/ChevronRight"
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import Package from "../../../assets/icons/Package";
-import PackageCheck from "../../../assets/icons/PackageCheck";
-import Boxes from "../../../assets/icons/Boxes";
 import HomeCard from "../../../components/ui/HomeCards";
+import RegionIcon from "../../../assets/icons/RegionIcon";
+import ComputerTick from "../../../assets/icons/ComputerTick";
+import DivisionIcon from "../../../assets/icons/DivisionIcon";
+import LeadScoreIcon from "../../../assets/icons/LeadScoreIcon";
+import { useState } from "react";
+import Button from "../../../components/ui/Button";
+import ChevronDown from "../../../assets/icons/ChevronDown";
 
 type Props = {}
 
 function LeadView({}: Props) {
     const {id}=useParams()
     const homeCardData = [
-      { icon: <CalenderDays />, number: "110", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-      { icon: <Package />, number: "56", title: "Closed Leads",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
-      { icon: <PackageCheck />, number: "100", title: "Converted Leads",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
-      { icon: <Boxes />, number: "526", title: "Total Leads",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
+      { icon: <ComputerTick />, number: "Warm", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
+      { icon: <RegionIcon />, number: "Website", title: "Closed Leads",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
+      { icon: <DivisionIcon />, number: "85%", title: "Converted Leads",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
+      { icon: <LeadScoreIcon />, number: "High", title: "Total Leads",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
     ];
+
+    const tabs=["Overview","Activities"]
+    const [activeTab, setActiveTab] = useState<string>("Overview");
+
   
   return (
     <div >
@@ -51,6 +58,28 @@ function LeadView({}: Props) {
           />
         ))}
       </div>
+      <div className="flex gap-8 text-base font-bold my-5 border-b border-gray-200">
+      {tabs.map((tab) => (
+        <div
+          key={tab}
+          onClick={() => setActiveTab(tab)}
+          className={`cursor-pointer py-3 px-[16px] ${
+            activeTab === tab
+              ? "text-deepStateBlue border-b-2 border-deepStateBlue"
+              : "text-gray-600"
+          }`}
+        >
+          {tab}
+        </div>
+      ))}
+      <div className="justify-end">
+      <Button variant="primary"  size="sm">
+        <span className="">+</span>New Activity
+        <ChevronDown size={20} color="#FEFDF9"/>
+      </Button>
+      </div>
+    </div>
+
 
         </div>
       </div>
