@@ -12,7 +12,6 @@ const Sidebar: React.FC = () => {
     return <div>Please log in to access the sidebar.</div>;
   }
 
-  console.log("dd",role);
   
 
   const sidebarOptions = getSidebarOptions(role); // Get sidebar options based on the role

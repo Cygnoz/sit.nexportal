@@ -10,7 +10,7 @@ import Table from "../../../components/ui/Table";
 
 import { useState } from "react";
 //import CreateUser from "../User/CreateUser";
-import CreateWCommission from "./CreateWCommission";
+import CreateWCommission from "./WCommissionForm";
 
 
 
@@ -35,11 +35,11 @@ const WCommisionHome = () => {
   };
 
   
-  const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-    if(deleteId){
-     console.log(deleteId);
-     
-    }
+  
+
+  const handleDelete=(id:any)=>{
+    console.log(id);
+    
   }
 
   
@@ -73,10 +73,10 @@ const WCommisionHome = () => {
   return (
     <div>
          <div className="flex justify-between items-center">
-      <h1>Worker Commission Profile</h1>
+      <h1 className="text-[#303F58] text-xl font-bold">Worker Commission Profile</h1>
      
       <Button variant="primary" size="sm" onClick={handleModalToggle}>
-        + Add Commission Profile
+      <span className="text-xl font-bold">+</span> Add Commission Profile
       </Button>
 
       {/* Modal controlled by state */}
@@ -95,7 +95,7 @@ const WCommisionHome = () => {
         
         }}
         actionList={[
-            { label: 'delete', function:handleEditDeleteView },
+            { label: 'delete', function:handleDelete },
            
           ]}  />
 

@@ -1,10 +1,22 @@
 import { useParams } from "react-router-dom"
 import ChevronRight from "../../../assets/icons/ChevronRight"
+import CalenderDays from "../../../assets/icons/CalenderDays";
+import Package from "../../../assets/icons/Package";
+import PackageCheck from "../../../assets/icons/PackageCheck";
+import Boxes from "../../../assets/icons/Boxes";
+import HomeCard from "../../../components/ui/HomeCards";
 
 type Props = {}
 
 function LeadView({}: Props) {
     const {id}=useParams()
+    const homeCardData = [
+      { icon: <CalenderDays />, number: "110", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
+      { icon: <Package />, number: "56", title: "Closed Leads",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
+      { icon: <PackageCheck />, number: "100", title: "Converted Leads",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
+      { icon: <Boxes />, number: "526", title: "Total Leads",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
+    ];
+  
   return (
     <div >
       <div className="flex items-center text-[16px] space-x-2">
@@ -26,7 +38,20 @@ function LeadView({}: Props) {
             </div>
         </div>
         <div className="col-span-9">
-            wefewf
+                  {/* HomeCards Section */}
+      <div className="flex gap-3 justify-between">
+        {homeCardData?.map((card, index) => (
+          <HomeCard 
+            iconFrameColor={card.iconFrameColor}
+            iconFrameBorderColor={card.iconFrameBorderColor}
+            key={index} 
+            icon={card.icon} 
+            number={card.number} 
+            title={card.title} 
+          />
+        ))}
+      </div>
+
         </div>
       </div>
     </div>

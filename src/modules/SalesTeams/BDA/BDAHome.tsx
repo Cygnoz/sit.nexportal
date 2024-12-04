@@ -10,7 +10,7 @@ import Licensor from "../../../assets/icons/Licensor";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import TrialIcon from "../../../assets/icons/TrialIcon";
-import NewBDAForm from "./NewBDAForm";
+import NewBDAForm from "./BDAForm";
 import { useNavigate } from "react-router-dom";
 
 
@@ -32,15 +32,9 @@ const BDAHome = () => {
         setIsModalOpen((prev) => !prev);
       };
       const navigate=useNavigate()
-      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-          navigate(`/bdaView/${viewId}`)
-          console.log(viewId);
-          console.log(editId);
-          console.log(deleteId);
-          
-          
-        }
+
+      const handleView=(id:any)=>{
+        navigate(`/bdaView/${id}`)
       }
     
 
@@ -82,9 +76,9 @@ const BDAHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-base font-bold">BDA</h1>
+        <h1 className="text-[#303F58] text-xl font-bold">BDA</h1>
         <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create BDA
+        <span className="font-bold text-xl">+</span> Create BDA
         </Button>
       </div>
 
@@ -121,7 +115,7 @@ const BDAHome = () => {
         }}
         actionList={[
           
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'view', function: handleView },
         ]}  />
       </div>
 

@@ -20,7 +20,7 @@ interface TableProps<T> {
   };
   actionList?: {
     label: string;
-    function: (editId?: any, viewId?: any, deleteId?: any,) => void;
+    function: (id:any) => void;
   }[];
   noAction?:boolean;
 }
@@ -172,7 +172,7 @@ const Table = <T extends object>({
                   <p
                     key={index}
                     className="cursor-pointer"
-                    onClick={() => action.function(row?._id, null, null)}
+                    onClick={() => action.function(row?._id)}
                   >
                     <PencilLine color="#4B5C79" size={16} />
                   </p>
@@ -184,7 +184,7 @@ const Table = <T extends object>({
                   <p
                     key={index}
                     className="cursor-pointer"
-                    onClick={() => action.function(null, 1, null)}
+                    onClick={() => action.function(1)}
                   >
                     <Eye color="#4B5C79" size={16} />
                   </p>
@@ -196,7 +196,7 @@ const Table = <T extends object>({
                   <p
                     key={index}
                     className="cursor-pointer"
-                    onClick={() => action.function(null, null, 2)}
+                    onClick={() => action.function(row?._id)}
                   >
                     <Trash color="#4B5C79" size={16} />
                   </p>
