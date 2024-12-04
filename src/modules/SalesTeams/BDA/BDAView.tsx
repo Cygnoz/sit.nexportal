@@ -96,7 +96,7 @@ const {id}=useParams()
         </div>
         <div className="col-span-6">
         </div>
-        <div className="col-span-4 rounded-xl"  style={{backgroundImage:`url(${backGroundView})`}}>
+        <div className="col-span-4 rounded-xl bg-cover"  style={{backgroundImage:`url(${backGroundView})`}}>
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
             <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white">
