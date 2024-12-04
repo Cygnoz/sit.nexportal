@@ -6,7 +6,10 @@ import { useState } from "react"
 import RegionAriaView from "./RegionAriaView"
 import RegionTeamView from "./RegionTeamView"
 import RegionPerformanceView from "./RegionPerformanceView"
-
+import EditIcon from "../../../assets/icons/EditIcon"
+import DeleteIcon from "../../../assets/icons/DeleteIcon"
+import PlusCircle from "../../../assets/icons/PlusCircle"
+import region from "../../../assets/image/Ellipse 14 (3).png"
 type Props = {}
 
 function RegionView({}: Props) {
@@ -24,17 +27,19 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
 
  
   return (
-    <div >
+    <div className="relative">
       <div className="flex items-center text-[16px] space-x-2">
        <p className="font-bold text-[#820000] ">Region</p>
         <ChevronRight color="#4B5C79" size={18}/>
         <p className="font-bold text-[#303F58] ">Region {id}</p>
       </div>
       <div className="grid grid-cols-12 mt-5">
-        <div className="col-span-2 pe-2">
+        <div className="col-span-2 overflow-hidden  pe-2">
             <div className="h-auto w-full bg-[#FFFFFF] rounded-lg p-3">
                 <div className="space-y-2 flex flex-col justify-center items-center">
-                   <div className="h-12 w-12 rounded-full bg-red-400"></div>
+                   <div className="rounded-full">
+                   <img className="w-16 h-16" src={region} alt="" />
+                   </div>
                    <p className="font-bold text-[#303F58] ">Region {id}</p>
                    <div className="grid grid-cols-2">
                     <div className="border-r  pe-3">
@@ -52,18 +57,30 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
                    </div>
                    <hr className="  w-full" />
                    <div className="flex justify-evenly items-center w-full text-[10px]">
-                    <div className="flex flex-col items-center  space-y-1">
-                        <div className="w-8 h-8 bg-slate-500 rounded-full"></div>
-                        <p >Edit</p>
-                    </div>
-                    <div className="flex flex-col  items-center space-y-1">
-                        <div className="w-8 h-8 bg-slate-500 rounded-full"></div>
-                        <p>Add Area</p>
-                    </div>
-                    <div className="flex flex-col  items-center space-y-1">
-                        <div className="w-8 h-8 bg-slate-500 rounded-full"></div>
-                        <p>Delete</p>
-                    </div>
+                   <div className="flex flex-col items-center space-y-1">
+                                <div className="w-8 h-8 mb-2 rounded-full">
+                                    <EditIcon size={35} color="#C4A25D24" />
+                                </div>
+                                <p className="text-center font-medium  text-xs ms-2" >Edit</p>
+                            </div>
+
+                            <div className="flex flex-col  items-center space-y-1">
+                                <div  className="w-8 h-8 mb-2 rounded-full">
+                                    <PlusCircle size={35} color="#D52B1E4D" />
+
+                                </div>
+                                <p className="text-center font-medium  text-xs ms-2">Add Area</p>
+                            </div>
+
+
+
+                            <div className="flex flex-col  items-center space-y-1">
+                                <div className="w-8 h-8 mb-2 rounded-full">
+                                    <DeleteIcon size={35} color="#D52B1E4D" />
+                                </div>
+                                <p className="text-center font-medium  text-xs ms-2">Delete</p>
+
+                            </div>
                    </div>
                    <hr className="w-full"/>
                 </div>
@@ -135,20 +152,20 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
            
            <div>
            <div className="flex gap-8 text-base font-bold my-5 border-b border-gray-200">
-      {tabs.map((tab) => (
-        <div
-          key={tab}
-          onClick={() => setActiveTab(tab)}
-          className={`cursor-pointer py-3 px-[16px] ${
-            activeTab === tab
-              ? "text-deepStateBlue border-b-2 border-deepStateBlue"
-              : "text-gray-600"
-          }`}
-        >
-          {tab}
-        </div>
-      ))}
+  {tabs.map((tab) => (
+    <div
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`cursor-pointer py-3 px-[16px] ${
+        activeTab === tab
+          ? "text-deepStateBlue border-b-2 border-deepStateBlue bg-white"
+          : "text-gray-600 bg-transparent"
+      }`}
+    >
+      {tab}
     </div>
+  ))}
+</div>
             
 {activeTab === "Aria" && (
   <RegionAriaView/>

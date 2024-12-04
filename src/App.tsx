@@ -75,6 +75,7 @@ const App: React.FC = () => {
             <Route path="worker-commission" element={<WCommisionHome/>} />
             <Route path="tickets" element={<TicketsHome/>} />
             <Route path="user-log" element={<UserLogHome/>} />
+            
             {/* Add more authenticated routes as needed */}
           </Route>
         ) : ( 
