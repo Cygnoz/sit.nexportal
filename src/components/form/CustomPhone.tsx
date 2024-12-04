@@ -3,6 +3,7 @@ import "react-phone-input-2/lib/style.css";
 import PhoneInput from "react-phone-input-2";
 
 interface CustomPhoneInputProps {
+  required?:boolean
   label: string;
   error?: string;
   placeholder?: string;
@@ -15,6 +16,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
   label,
   error,
   placeholder,
+  required,
   value,
   onChange,
   ...props
@@ -31,7 +33,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
         htmlFor={props.name}
         className="block text-sm mb-2 font-normal text-deepStateBlue"
       >
-        {label}
+        <p>{label} {required&&<span className="text-red-500">*</span>}</p>
       </label>
       <PhoneInput
         inputClass="appearance-none text-[#818894] bg-white border-inputBorder text-sm h-[39px] pl-3 pr-8 rounded-md leading-tight focus:outline-none focus:bg-white focus:border-darkRed"

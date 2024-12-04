@@ -15,19 +15,13 @@ interface RegionFormProps {
   editId?: any;
 }
 
-const addValidationSchema = Yup.object({
+const validationSchema = Yup.object({
   regionName: Yup.string().required("Region name is required"),
   regionCode: Yup.string().required("Region code is required"),
-  description: Yup.string().required("Description is required"),
   country: Yup.string().required("Country is required"),
 });
 
-const editValidationSchema = Yup.object({
-  regionName: Yup.string().required("Region name is required"),
-  regionCode: Yup.string().required("Region code is required"),
-  description: Yup.string().required("Description is required"),
-  country: Yup.string().required("Country is required"),
-});
+
 
 const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
   const { request: addRegion } = useApi("post", 3003);
@@ -40,7 +34,7 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
     formState: { errors },
     setValue,
   } = useForm<RegionData>({
-    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
+    resolver: yupResolver(validationSchema),
   });
 
   const setFormValues = (data: RegionData) => {
@@ -105,18 +99,21 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
         <Input
+          required
           label="Region Name"
           placeholder="Enter Region Name"
           error={errors.regionName?.message}
           {...register("regionName")}
         />
         <Input
+          required
           placeholder="Enter Region Code"
           label="Region Code"
           error={errors.regionCode?.message}
           {...register("regionCode")}
         />
         <Select
+          required
           label="Country"
           placeholder="Select Country"
           error={errors.country?.message}

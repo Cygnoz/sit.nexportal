@@ -5,10 +5,11 @@ import Eye from "../../assets/icons/Eye";
 interface InputPasswordEyeProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
+  required?:boolean
 }
 
 const InputPasswordEye = forwardRef<HTMLInputElement, InputPasswordEyeProps>(
-  ({ label, error, ...props }, ref) => {
+  ({ label, error,required, ...props }, ref) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const togglePasswordVisibility = () => {
@@ -22,7 +23,7 @@ const InputPasswordEye = forwardRef<HTMLInputElement, InputPasswordEyeProps>(
             htmlFor={props.name}
             className="block text-sm mb-2 font-normal text-deepStateBlue"
           >
-            {label}
+            <p>{label} {required&&<span className="text-red-500">*</span>}</p>
           </label>
         )}
         <div className="relative">

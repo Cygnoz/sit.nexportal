@@ -1,17 +1,18 @@
 import React, { forwardRef } from "react";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  required?:boolean
   label?: string;
   error?: string;
   placeholder?: string;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, placeholder, ...props }, ref) => {
+const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, placeholder,required, ...props }, ref) => {
   return (
     <div className="">
       {label && (
         <label htmlFor={props.name} className="block text-sm mb-2 font-normal text-deepStateBlue">
-          {label}
+          <p>{label} {required&&<span className="text-red-500">*</span>}</p>
         </label>
       )}
       <input
