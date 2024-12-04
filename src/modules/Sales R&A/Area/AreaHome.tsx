@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
@@ -9,8 +9,11 @@ import Table from "../../../components/ui/Table";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
-import AddArea from "./AreaForm";
+import AreaForm from "./AreaForm";
 import { useNavigate } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import toast from "react-hot-toast";
 
 // Define the type for data items
 interface AreaData {
@@ -23,8 +26,11 @@ interface AreaData {
 
 const AreaHome = () => {
   const navigate=useNavigate()
+  // const [allAreas,setAllAreas]=useState<AreaData[]>([]);
   // State to manage modal visibility
+  const {request:getAllArea}=useApi('get',3003)
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editId,setEditId]=useState('')
 
   // Function to toggle modal visibility
   const handleModalToggle = () => {
@@ -32,8 +38,34 @@ const AreaHome = () => {
   };
 
   const handleView=(id:any)=>{
-    navigate(`/leadView/${id}`)
+    navigate(`/areaView/${id}`)
   }
+  const handleEdit=(id:any)=>{
+    setEditId(id)
+  }
+
+  const getAreas=async()=>{
+    try{
+      const {response,error}=await getAllArea(endPoints.GET_AREAS)
+      if(response && !error){
+        const transformedAreas = response.data.areas?.map((area:any) => ({
+          ...area,
+          createdAt: new Date(area.createdAt).toISOString().split('T')[0], // Extracts the date part
+        }));
+        
+        // Then set the transformed regions into state
+        setAllAreas(transformedAreas);
+      }else{
+        toast.error(error.response.data.message)
+      }
+    }catch(err){
+      console.log(err);
+    }
+  }
+
+  useEffect(()=>{
+    getAreas()
+  },[])
 
   // Data for HomeCards
   const homeCardData = [
@@ -142,7 +174,7 @@ const AreaHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleView },
+          { label: 'edit', function:handleEdit },
           { label: 'view', function: handleView },
         ]}
          />
@@ -150,7 +182,7 @@ const AreaHome = () => {
 
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[35%]">
-        <AddArea onClose={handleModalToggle} />
+        <AreaForm editId={editId} onClose={handleModalToggle} />
       </Modal>
     </div>
   );

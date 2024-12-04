@@ -7,6 +7,7 @@ interface Option {
 
 interface PrefixInputProps {
   label?: string;
+  required?:boolean
   selectName: string;
   inputName: string;
   selectValue?: string;
@@ -21,6 +22,7 @@ interface PrefixInputProps {
 const PrefixInput = forwardRef<HTMLInputElement, PrefixInputProps>(
   (
     {
+      required,
       label,
       selectName,
       inputName,
@@ -41,7 +43,8 @@ const PrefixInput = forwardRef<HTMLInputElement, PrefixInputProps>(
             htmlFor={inputName}
             className="block text-sm mb-2 font-normal text-deepStateBlue"
           >
-            {label}
+            <p>{label} {required&&<span className="text-red-500">*</span>}</p>
+            
           </label>
         )}
         <div className="flex items-center">

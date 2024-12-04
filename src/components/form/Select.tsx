@@ -3,6 +3,7 @@ import ChevronDown from "../../assets/icons/ChevronDown";
 
 interface SelectProps
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  required?:boolean
   label?: string;
   options: { value: string; label: string }[];
   error?: string;
@@ -11,11 +12,11 @@ interface SelectProps
 
 // Forward ref to allow react-hook-form to control this component
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, options, error, placeholder,...props }, ref) => {
+  ({ label, options, error, placeholder,required,...props }, ref) => {
     return (
       <div className="relative w-full">
         <label htmlFor={props.name} className={`block text-sm font-medium ${label&&'mb-2'}`}>
-          {label}
+         <p> {label} {required&&<span className="text-red-500">*</span>}</p>
         </label>
         <div className="relative cursor-pointer">
           <select
