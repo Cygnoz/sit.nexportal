@@ -24,14 +24,14 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
 
  
   return (
-    <div >
-      <div className="flex items-center text-[16px] space-x-2">
+    <div className="h-screen ">
+      <div className="flex items-center  text-[16px] space-x-2">
        <p className="font-bold text-[#820000] ">Region</p>
         <ChevronRight color="#4B5C79" size={18}/>
         <p className="font-bold text-[#303F58] ">Region {id}</p>
       </div>
-      <div className="grid grid-cols-12 mt-5">
-        <div className="col-span-2 pe-2">
+      <div className="grid grid-cols-12 relative  mt-5">
+        <div className="col-span-2  pe-2">
             <div className="h-auto w-full bg-[#FFFFFF] rounded-lg p-3">
                 <div className="space-y-2 flex flex-col justify-center items-center">
                    <div className="h-12 w-12 rounded-full bg-red-400"></div>
