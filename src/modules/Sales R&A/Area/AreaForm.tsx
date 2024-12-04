@@ -24,21 +24,26 @@ interface NewAreaProps {
 const validationSchema = Yup.object({
   areaName: Yup.string().required("Area name is required"),
   areaCode: Yup.string().required("Area code is required"),
-  regionId: Yup.string().required("region is required"),
+  region: Yup.string().required("Region is required"),
 });
 
 const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
   const {request:addArea}=useApi('post',3003)
   const {request:editArea}=useApi('put',3003)
   const {request:getAllRegion}=useApi('get',3003)
+  const {request:getArea}=useApi('get',3003)
   const [regionData, setRegionData] = useState<RegionData[]>([]);
   const {
     register,
     handleSubmit,
+    setValue,
+    watch,
     formState: { errors },
   } = useForm<AreaData>({
     resolver: yupResolver(validationSchema),
   });
+
+  
 
   const onSubmit: SubmitHandler<AreaData> =async (data) => {
     console.log(data);
@@ -63,13 +68,12 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
   const getAllRegions = async () => {
     try {
       const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
-      console.log("res", response);
   
       if (response && !error) {
         // Extract only `regionName` and `_id` from each region
-        const filteredRegions = response.data.regions?.map((region:any) => ({
+        const filteredRegions = response.data.regions?.map((region: any) => ({
           label: region.regionName,
-          value: region._id,
+          value: String(region._id), // Ensure `value` is a string
         }));
   
         // Update the state with the filtered regions
@@ -87,7 +91,42 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
     getAllRegions()
   },[])
 
-  console.log(regionData);
+  const setFormValues = (data: AreaData) => {
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof AreaData, data[key as keyof AreaData]);
+    });
+  };
+
+  useEffect(() => {
+    if (editId) {
+      (async () => {
+        try {
+          const { response, error } = await getArea(`${endPoints.AREA}/${editId}`);
+          console.log("res", response);
+          if (response && !error) {
+            const regionValue = {
+              label: response.data.region.regionName,
+              value: String(response.data.region._id), // Ensure this matches the Select options structure
+            };
+            setValue("region", regionValue.value); // Set the region field's value
+            const { region, ...otherFields } = response.data; 
+          setFormValues(otherFields); // Populate other form fields
+          } else {
+            toast.error(error.response.data.message);
+          }
+        } catch (err) {
+          console.error("Error fetching region data:", err);
+        }
+      })();
+    }
+  }, [editId]);
+
+
+  
+
+
+  // console.log(editRegionValue);
+  
   
 
   return (
@@ -95,9 +134,11 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
       {/* Close button */}
       <div className="flex justify-between">
         <div>
-          <h3 className="text-[#303F58] font-bold text-lg">Create Area</h3>
+          <h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Area</h3>
           <p className="text-[11px] text-[#8F99A9] mt-1">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit
+          {editId
+              ? "Edit the details of the existing area."
+              : "Fill in the details to create a new area."}
           </p>
         </div>
         <p onClick={onClose} className="text-3xl cursor-pointer">
@@ -125,9 +166,10 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
           required
           label="Region"
           placeholder="Select Region"
-          error={errors.regionId?.message}
+          value={watch("region")}
+          error={errors.region?.message}
           options={regionData}
-          {...register("regionId")}
+          {...register("region")}
         />
         <Input
           placeholder="Enter Description"
