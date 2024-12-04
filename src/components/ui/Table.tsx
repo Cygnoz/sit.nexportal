@@ -91,6 +91,15 @@ const Table = <T extends object>({
     }
   };
 
+  function getNestedValue(obj: any, path: string): any {
+    // If no dots in path, return the direct property value
+    if (!path.includes(".")) {
+      return obj?.[path];
+    }
+    // Otherwise, traverse the nested structure
+    return path.split(".").reduce((acc, part) => acc?.[part], obj);
+  }
+
   // Render table header
   const renderHeader = () => (
     <div className={`flex  ${headerContents.search&&!headerContents.title&&!headerContents.sort?"justify-start":'justify-between'} items-center mb-4`}>
@@ -146,18 +155,19 @@ const Table = <T extends object>({
     {/* Adjusted SI No. calculation */}
     {(currentPage - 1) * rowsPerPage + rowIndex + 1}
   </td>
-  {columns.map((col) => (
+  {columns.map((col:any) => (
     <td
       key={String(col.key)}
       className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
     >
-      <div className={`flex justify-center`}>
+      <div className="flex justify-center">
         <p
           className={`${
-            col.key === "status" ? getStatusClass(row[col.key] as string) : ""
+            col.key === "status" ? getStatusClass(getNestedValue(row, col.key)) : ""
           }`}
         >
-          {row[col.key] ? row[col.key] : "-"}
+          {/* Fetch value using getNestedValue for both simple and nested keys */}
+          {getNestedValue(row, col.key) || "-"}
         </p>
       </div>
     </td>
@@ -205,6 +215,7 @@ const Table = <T extends object>({
     </td>
   )}
 </tr>
+
 
     ))
   ) : (

@@ -3,5 +3,5 @@ export interface AreaData {
     areaCode: string;
     createdAt?: string;
     description?: string;
-    regionId: string;
+    region: string;
   }

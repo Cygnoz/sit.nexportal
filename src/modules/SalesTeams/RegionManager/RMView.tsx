@@ -15,7 +15,7 @@ import RMViewAriaManagers from "./RMViewAriaManagers"
 import RMViewBDAandGraph from "./RMViewBDAandGraph"
 import RMViewForm from "./RMViewForm"
 // import HomeCard from "../../components/ui/HomeCards"
-import BackgroundImage from "../../../assets/Image/6.png"
+import BackgroundImage from "../../../assets/image/6.png"
 import ChevronRight from "../../../assets/icons/ChevronRight"
 import { useParams } from "react-router-dom"
 
