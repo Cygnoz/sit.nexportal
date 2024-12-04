@@ -56,6 +56,7 @@ const ViewHomwTable = ({}: Props) => {
                 }
           ]
         }}
+        noAction
         // actionList={[
         //   { label: 'edit', function:handleEditDeleteView },
         //   { label: 'delete', function: handleEditDeleteView },

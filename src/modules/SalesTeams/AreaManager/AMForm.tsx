@@ -121,6 +121,13 @@ if (currentIndex < tabs.length - 1) {
   setActiveTab(tabs[currentIndex + 1]);
 }
 };
+const handleBack = () => {
+  const currentIndex = tabs.indexOf(activeTab);
+  if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1]);
+  }
+};
+
   
 
   return (
@@ -144,28 +151,31 @@ if (currentIndex < tabs.length - 1) {
 
           <div className="flex gap-8 items-center justify-center text-base font-bold my-5">
           {tabs.map((tab, index) => (
-        <div
-          key={tab}
-          className={`cursor-pointer py-3 px-[16px] ${
-            activeTab === tab
-              ? "text-deepStateBlue border-b-2 border-secondary2"
-              : "text-gray-600"
-          }`}
-        >
-          <p>
-            {index < tabs.indexOf(activeTab) ? (
-              <div className="flex items-center justify-center gap-2">
-                <CheckIcon  /> {tab}
-              </div>
-            ) : (
-              tab
-            )}
-          </p>
-        </div>
-      ))}
+                    <div
+                        key={tab}
+                        onClick={()=>setActiveTab(tab)}
+                        className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
+                                ? "text-deepStateBlue border-b-2 border-secondary2"
+                                : "text-gray-600"
+                            }`}
+                    >
+                        <p>
+                            {index < tabs.indexOf(activeTab) ? (
+                                <div className="flex items-center justify-center gap-2">
+                                    <CheckIcon /> {tab}
+                                </div>
+                            ) : (
+                                tab
+                            )}
+                        </p>
+                    </div>
+                ))}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
+
+        <div className="transition-all duration-300"
+                style={{ minHeight: "450px" }}>
       {activeTab === "Personal Information" && (
  
  
@@ -447,8 +457,43 @@ className="hidden"
             </div>
           </div>
         )}
+
+        </div>
+
+
+        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2">
+    {tabs.indexOf(activeTab) > 0 ? (
+        <Button variant="tertiary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg" onClick={handleBack}>
+            Back
+        </Button>
+    ) : (
+        <Button variant="tertiary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg" onClick={onClose}>
+            Cancel
+        </Button>
+    )}
+    {tabs.indexOf(activeTab) === tabs.length - 1 ? (
+        <Button  variant="primary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg"
+        type="submit" onClick={onClose} >
+            Done
+        </Button>
+    ) : (
+        <Button  variant="primary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg"
+        type="submit" onClick={handleNext}>
+            Next
+        </Button>
+    )}
+</div>
+
       </form>
-      <div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
+      {/* <div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
           <Button variant="tertiary" size="sm" onClick={onClose}>
             Cancel
           </Button>
@@ -461,7 +506,7 @@ className="hidden"
             Next
           </Button>
         )}
-        </div>
+        </div> */}
 
     </div>
   );
