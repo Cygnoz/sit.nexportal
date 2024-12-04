@@ -66,7 +66,8 @@ const [activeTab, setActiveTab] = useState<string>("Team Overview");
       </div>
       <div className="text-center">
           <p className="text-xs text-[#8F99A9]">Area status</p>
-          <h3 className={`px-1  rounded-full ${status === "Active" ? "bg-green-100 text-green-400" : "bg-gray-100 text-gray-400"}`}>Active</h3>
+          <h3 className={`px-1  rounded-full ${status === "Active" ? "bg-[#6AAF681A] text-green-400" : "bg-gray-100 text-[#6AAF68]"}`}>Active</h3>
+          
         </div>
         <div className="border-r border-[#DADADA] h-10 me-4"></div>
         <div className="text-center">
@@ -113,22 +114,21 @@ const [activeTab, setActiveTab] = useState<string>("Team Overview");
                     </div>
                    </div>
     </div>
-
     <div className="flex gap-8 text-base font-bold my-5 border-b border-gray-200">
-      {tabs.map((tab) => (
-        <div
-          key={tab}
-          onClick={() => setActiveTab(tab)}
-          className={`cursor-pointer py-3 px-[16px] ${
-            activeTab === tab
-              ? "text-deepStateBlue border-b-2 border-deepStateBlue"
-              : "text-gray-600"
-          }`}
-        >
-          {tab}
-        </div>
-      ))}
+  {tabs.map((tab) => (
+    <div
+      key={tab}
+      onClick={() => setActiveTab(tab)}
+      className={`cursor-pointer py-3 px-[16px] ${
+        activeTab === tab
+          ? "text-deepStateBlue border-b-2 border-deepStateBlue bg-white"
+          : "text-gray-600 bg-transparent"
+      }`}
+    >
+      {tab}
     </div>
+  ))}
+</div>
 
 
 

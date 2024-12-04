@@ -9,10 +9,12 @@ type Props = {}
 
 const RMViewAriaManagers = ({}: Props) => {
   return (
-    <div className="bg-white p-3 h-96 overflow-y-scroll custom-scrollbar ">
-         <div className="bg-white p-4">
-      <h1 className="font-bold text-sm sticky top-0 bg-white z-10">Area Managers</h1>
-      
+    <div>
+            <h1  className="font-bold text-sm sticky top-0 bg-white border-b border-gray-200 pb-2 p-2">Area Managers</h1>
+
+            <div className="bg-white p-2 h-96 overflow-y-scroll custom-scrollbar ">
+         <div className="bg-white p-4 m-2">
+     
       <div className="flex justify-between bg-[#F5F9FC] p-3 rounded-lg my-2 ">
             <div className="">
               <p className="text-[#4B5C79] text-xs font-medium py-1">Eleanor Pena</p>
@@ -89,7 +91,9 @@ const RMViewAriaManagers = ({}: Props) => {
 
 
 
-      </div>
+          </div>
+    </div>
+  
     </div>
   )
 }

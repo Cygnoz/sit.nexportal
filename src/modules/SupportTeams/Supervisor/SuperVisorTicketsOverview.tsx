@@ -75,13 +75,7 @@ const SuperVisorTicketsOverview = ({
         {ticketsNumber:"TN-MH31", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
         {ticketsNumber:"TN-MH32", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
         {ticketsNumber:"TN-MH33", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH34", supportAgent:"Dani",status:"open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH22", supportAgent:"Dani",status:"open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH22", supportAgent:"Dani",status:"open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH22", supportAgent:"Dani",status:"open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH22", supportAgent:"Dani",status:"open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH22", supportAgent:"Dani",status:"open", issue:"Billing issue",Priority:"High"},
-
+      
 
     ];
         // Define the columns with strict keys
