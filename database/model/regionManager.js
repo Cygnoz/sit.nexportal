@@ -17,6 +17,7 @@ const regionManagerSchema = new mongoose.Schema({
   workEmail: { type: String},
   workPhone: { type: String},
   region: { type: String},
+  regionId : { type: String },
   commission: { type: Number},
   bankDetails: {
     bankName: { type: String},

@@ -25,7 +25,7 @@ router.delete("/user/:userId",verifyToken,checkPermission('Delete User'), userCo
 
 router.post('/region-manager',verifyToken,checkPermission('Add Region Manager'),regionManagerController.addRegionManager,ActivityLogGeneration('Add Region Manager'))
 
-// router.get("/users",verifyToken,checkPermission('View Region Manager'), userController.getAllUsers);
+router.get("/region-managers",verifyToken,checkPermission('View Region Manager'), regionManagerController.getAllRegionManager);
 
 // router.get("/user/:userId",verifyToken,checkPermission('View Region Manager'), userController.getUser);
 
