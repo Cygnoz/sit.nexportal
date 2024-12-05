@@ -30,6 +30,8 @@ import Otp from './pages/login/Otp';
 import NoAccess from './context/NoAccess';
 import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
 import { useRole } from './context/RoleContext';
+import TrialView from './modules/Customers/Trial/TrialView';
+import LicenserView from './modules/Customers/Licensor/LicenserView';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -64,13 +66,12 @@ const App: React.FC = () => {
             <Route path="bdaView/:id" element={<BDAView />} />
             <Route path="supervisor" element={<SupervisorHome />} />
             <Route path="supervisor/:id" element={<SuperVisorView />} />
-
             <Route path="trial" element={<TrialHome />} />
+            <Route path="trialView/:id" element={<TrialView/>} />
             <Route path="licenser" element={<LicensorHome />} />
-
+            <Route path="licenserView/:id" element={<LicenserView />} />
             <Route path="region-manager" element={<RMHome />} />
             <Route path="region-managerView/:id" element={<RMView />} />
-
             <Route path="user" element={<UserHome/>} />
             <Route path="worker-commission" element={<WCommisionHome/>} />
             <Route path="tickets" element={<TicketsHome/>} />

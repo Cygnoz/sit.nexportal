@@ -20,6 +20,8 @@ import { BDAData } from "../../../Interfaces/BDA";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import toast from "react-hot-toast";
+import PhoneInput from "react-phone-input-2";
+import CustomPhoneInput from "../../../components/form/CustomPhone";
 
 
 
@@ -57,6 +59,7 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
     handleSubmit,
     watch,
     trigger,
+    setValue,
     clearErrors,
     formState: { errors },
   } = useForm<BDAData>({
@@ -104,6 +107,10 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
     }
   };
 
+  const handleInputChange = (field: keyof BDAData) => {
+    clearErrors(field); // Clear the error for the specific field when the user starts typing
+  };
+
   const getAllRegions = async () => {
     try {
       const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
@@ -129,7 +136,7 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
     getAllRegions();
   }, []);
 
-  
+
 
 
   return (
@@ -206,11 +213,15 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
                   error={errors.email?.message}
                   {...register("email")}
                 />
-                <Input
+                <CustomPhoneInput
                   placeholder="Phone"
-                  label="Phone "
+                  label="Phone"
                   error={errors.phone?.message}
-                  {...register("phone")}
+                  value={watch("phone")} // Watch phone field for changes
+                onChange={(value) => {
+                  handleInputChange("phone");
+                  setValue("phone", value); // Update the value of the phone field in React Hook Form
+                }}
                 />
                 <div className="flex gap-4 w-full">
                   <Input
@@ -319,11 +330,15 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
                   error={errors.workEmail?.message}
                   {...register("workEmail")}
                 />
-                <Input
-                  placeholder="Enter Work Phone"
-                  label="Work Phone"
+                 <CustomPhoneInput
+                  placeholder="Phone"
+                  label="Work phone"
                   error={errors.workPhone?.message}
-                  {...register("workPhone")}
+                  value={watch("workPhone")} // Watch phone field for changes
+                onChange={(value) => {
+                  handleInputChange("workPhone");
+                  setValue("workPhone", value); // Update the value of the phone field in React Hook Form
+                }}
                 />
                 <Select
                   label="Select Region"

@@ -20,7 +20,7 @@ import bcardfront from "../../../assets/image/Business-card-front.svg";
 interface AddRegionalManagerData {
   fullName: string;
   emailAddress?: string;
-  phone: string;
+  phone?: string;
   dateOfBirth?: string;
   bloodGroup?: string;
   addressStreet1?: string;

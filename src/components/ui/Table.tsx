@@ -75,7 +75,7 @@ const Table = <T extends object>({
   const getStatusClass = (status: string | undefined) => {
     switch (status) {
       case "New":
-        return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
+        return "bg-red-500 text-white py-2  px-2 w-fit rounded-lg";
       case "Contacted":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
       case "Closed":
@@ -215,7 +215,7 @@ const Table = <T extends object>({
               {columns.map((col) => (
                 <th
                   key={String(col.key)}
-                  className="border p-4 text-sm  text-[#303F58] font-medium"
+                  className={`border p-4 text-sm  text-[#303F58] font-medium ${col.key=='status'&&'text-center'}`}
                 >
                   {col.label}
                 </th>
@@ -239,7 +239,7 @@ const Table = <T extends object>({
                       key={String(col.key)}
                       className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] "
                     >
-                      <div className="flex justify-start items-center gap-2">
+                      <div className={`flex justify-start items-center gap-2 ${col.key=='status'?'justify-center':'justify-start'}`}>
                         {col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
                         ) : ["userName", "rmName", "amName"].includes(

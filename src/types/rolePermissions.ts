@@ -5,7 +5,7 @@ import UserIcon from '../assets/icons/UserIcon';
 import SupervisorIcon from '../assets/icons/SupervisorIcon';
 import SupportAgentIcon from '../assets/icons/SupportAgentIcon';
 import LeadIcon from '../assets/icons/LeadIcon';
-import TicketsIcon from '../assets/icons/TicketsIcon';
+import TicketCheck from '../assets/icons/TicketCheck';
 import RegionIcon from '../assets/icons/RegionIcon';
 import TrialIcon from '../assets/icons/TrialIcon';
 import Licensor from '../assets/icons/Licensor';
@@ -39,7 +39,7 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
     "Lead": LeadIcon,
     "Trial": TrialIcon,
     "Licenser": Licensor,
-    "Tickets": TicketsIcon,
+    "Tickets": TicketCheck,
     "User": UserIcon,
     "User Log": UserIcon,
     "Work Commission":UserIcon,

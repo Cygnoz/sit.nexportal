@@ -26,6 +26,10 @@ export const endPoints={
   AREA:'/area',
   GET_AREAS:'/areas',
 
+  //RM
+  RM:'/region-manager',
+  
+
   // Area Manager
   AM:'/area-manager',
 }
