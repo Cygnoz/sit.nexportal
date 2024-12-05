@@ -284,7 +284,30 @@ className="hidden"
 
         {activeTab==="Company Information" && (
             <div>
-            <div className="grid grid-cols-2 gap-4 ">
+              <p className="my-4 text-[#303F58] text-sm font-semibold">Set Login Credential</p>
+              <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
+                <Input
+                  placeholder="Enter Email"
+                  label="Email"
+                  error={errors.workEmail?.message}
+                  {...register("workEmail")}
+                />
+                <Input
+                  placeholder="Enter Password"
+                  label="Create Password"
+                  error={errors.workPhone?.message}
+                  {...register("workPhone")}
+                />
+                 <Input
+                  placeholder="Re-enter Password"
+                  label="Confirm Password"
+                  error={errors.workEmail?.message}
+                  {...register("workEmail")}
+                />
+                
+              </div>
+              <hr className="" />
+            <div className="grid grid-cols-2 gap-4 mt-4">
                 <Input
                   placeholder="Enter Work Email"
                   label="Work Email"
