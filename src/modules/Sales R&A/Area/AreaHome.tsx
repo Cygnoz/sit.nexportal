@@ -14,19 +14,13 @@ import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+import { AreaData } from "../../../Interfaces/Area";
 
-// Define the type for data items
-interface AreaData {
-  areaCode: string;
-  areaName: string;
-  createdDate: string;
-  region: string;
-  description: string;
-}
+
 
 const AreaHome = () => {
   const navigate=useNavigate()
-  // const [allAreas,setAllAreas]=useState<AreaData[]>([]);
+  const [allAreas,setAllAreas]=useState<AreaData[]>([]);
   // State to manage modal visibility
   const {request:getAllArea}=useApi('get',3003)
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -35,12 +29,14 @@ const AreaHome = () => {
   // Function to toggle modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
+    getAreas()
   };
 
   const handleView=(id:any)=>{
     navigate(`/areaView/${id}`)
   }
   const handleEdit=(id:any)=>{
+    handleModalToggle()
     setEditId(id)
   }
 
@@ -66,6 +62,9 @@ const AreaHome = () => {
   useEffect(()=>{
     getAreas()
   },[])
+
+  console.log(allAreas);
+  
 
   // Data for HomeCards
   const homeCardData = [
@@ -100,44 +99,27 @@ const AreaHome = () => {
 
   ];
   
-  // Data for the table
-  const data: AreaData[] = [
-  { areaCode: "AR-NE001", areaName: "Area 1", createdDate: "2023-01-15", region: "Region 1", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 2", createdDate: "2022-05-21", region: "Region 2", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 3", createdDate: "2023-03-02", region: "Region 3", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 4", createdDate: "2021-08-09", region: "Region 4", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 5", createdDate: "2022-10-16", region: "Region 5", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 6", createdDate: "2020-12-01", region: "Region 6", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 7", createdDate: "2023-06-10", region: "Region 7", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 8", createdDate: "2021-07-04", region: "Region 8", description: "ILorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 9", createdDate: "2023-02-17", region: "Region 9", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 10", createdDate: "2022-11-25", region: "Region 10", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 11", createdDate: "2021-09-19", region: "Region 11", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 12", createdDate: "2023-05-05", region: "Region 12", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 13", createdDate: "2020-06-13", region: "Region 13", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 14", createdDate: "2021-04-22", region: "Region 14", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 15", createdDate: "2022-02-01", region: "Region 15", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 16", createdDate: "2022-09-10", region: "Region 16", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 17", createdDate: "2023-07-30", region: "Region 17", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 18", createdDate: "2021-12-11", region: "Region 18", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 19", createdDate: "2023-08-15", region: "Region 19", description: "Lorem ipsum dolor sise cillum d" },
-  { areaCode: "AR-NE001", areaName: "Area 20", createdDate: "2022-04-05", region: "Region 20", description: "Lorem ipsum dolor sise cillum d" },
-];
+
+
   // Define the columns with strict keys
-  const columns: { key: keyof AreaData; label: string }[] = [
+  const columns: { key:any; label: string }[] = [
     { key: "areaCode", label: "Area Code" },
     { key: "areaName", label: "Area Name" },
-    { key: "createdDate", label: "Created Date" },
-    { key: "region", label: "Region" },
+    { key: "createdAt", label: "Created Date" },
+    { key: "region.regionName", label: "Region" },
     { key: "description", label: "Discription" },
   ];
-
+  console.log(allAreas);
+  
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">Area</h1>
-        <Button variant="primary" size="sm" onClick={handleModalToggle}>
+        <Button variant="primary" size="sm" onClick={()=>{
+          handleModalToggle()
+          setEditId('')
+        }}>
           <span className="font-bold text-xl">+</span> Create Area
         </Button>
       </div>
@@ -158,7 +140,7 @@ const AreaHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<AreaData> data={data} columns={columns} headerContents={{
+        <Table<AreaData> data={allAreas} columns={columns} headerContents={{
           title:"Area's",
           search:{placeholder:'Search Area By Name, Region'},
           sort: [

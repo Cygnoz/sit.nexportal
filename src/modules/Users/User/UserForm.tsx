@@ -42,7 +42,7 @@ function UserForm({ onClose,editId }: Props) {
   });
   
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const { request: addUser } = useApi("post", 3002);
+  const {request:addUser}=useApi('post',3002)
   const {request:editUser}=useApi('put',3002)
   const {request:getAUser}=useApi('get',3002)
   const {
@@ -173,7 +173,8 @@ function UserForm({ onClose,editId }: Props) {
       <form onSubmit={handleSubmit(onSubmit)}>
        
         <div className="grid grid-cols-12">
-          <div className="col-span-3">
+          <div className="col-span-3 ">
+            <div className="flex justify-center items-center">
             <label className="cursor-pointer text-center" htmlFor="file-upload">
               <input
                 id="file-upload"
@@ -185,6 +186,8 @@ function UserForm({ onClose,editId }: Props) {
                 uploadedImage={watch("userImage")}
               />
             </label>
+            </div>
+           
             {watch('userImage') && (
         <div
           onClick={handleRemoveImage} // Remove image handler

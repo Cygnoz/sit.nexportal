@@ -24,5 +24,6 @@ export const endPoints={
 
   // Area
   AREA:'/area',
-  GET_AREAS:'/areas'
+  GET_AREAS:'/areas',
+
 }

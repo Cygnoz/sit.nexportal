@@ -5,7 +5,7 @@ import Licensers from "../../../components/ui/Licensers";
 import Table from "../../../components/ui/Table";
 import ViewCard from "../../../components/ui/ViewCard"
 import GraphTable from "./GraphTable";
-import backGroundView from '../../../assets/Images/BDAView.png'
+import backGroundView from '../../../assets/image/BDAView.png'
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
 interface BDAViewData {
@@ -96,7 +96,7 @@ const {id}=useParams()
         </div>
         <div className="col-span-6">
         </div>
-        <div className="col-span-4 rounded-xl"  style={{backgroundImage:`url(${backGroundView})`}}>
+        <div className="col-span-4 rounded-xl bg-cover"  style={{backgroundImage:`url(${backGroundView})`}}>
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
             <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white">

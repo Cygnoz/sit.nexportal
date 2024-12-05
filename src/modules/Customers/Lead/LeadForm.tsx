@@ -8,7 +8,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
 import Trash from "../../../assets/icons/Trash";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
@@ -17,6 +17,11 @@ type Props = {
   onClose: () => void;
   editId?:string
 };
+
+interface RegionData {
+  label: string;
+  value: string;
+}
 
 interface LeadFormData {
   leadImage?: any;
@@ -49,7 +54,9 @@ const validationSchema = Yup.object({
 });
 
 function LeadForm({ onClose ,editId}: Props) {
+  const [regionData, setRegionData] = useState<RegionData[]>([]);
   const {request:addLead}=useApi('post',3001)
+  const {request:getAllRegion}=useApi('get',3003)
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const {
     register,
@@ -79,7 +86,31 @@ function LeadForm({ onClose ,editId}: Props) {
       console.log(err);
     }
   };
+  const getAllRegions = async () => {
+    try {
+      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
+  
+      if (response && !error) {
+        // Extract only `regionName` and `_id` from each region
+        const filteredRegions = response.data.regions?.map((region: any) => ({
+          label: region.regionName,
+          value: String(region._id), // Ensure `value` is a string
+        }));
+  
+        // Update the state with the filtered regions
+        setRegionData(filteredRegions);
+      } else {
+        toast.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
 
+  useEffect(()=>{
+    getAllRegions()
+  },[])
   const leadSource = [
     { label: "Hi", value: "hi" },
     { label: "Bi", value: "bi" },
@@ -215,7 +246,6 @@ function LeadForm({ onClose ,editId}: Props) {
               {...register("website")}
             />
             <Select
-            required
               label="Lead Source"
               placeholder="Select Lead Source"
               options={leadSource}
@@ -227,7 +257,7 @@ function LeadForm({ onClose ,editId}: Props) {
             required
               label="Region"
               placeholder="Select Region"
-              options={leadSource}
+              options={regionData}
               error={errors.region?.message}
               {...register("region")}
             />

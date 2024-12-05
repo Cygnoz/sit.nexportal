@@ -14,11 +14,13 @@ import SuperVisorCards from "../../../components/ui/SuperVisorCards"
 import Table from "../../../components/ui/Table"
 import SuperVisorTicketsOverview from "./SuperVisorTicketsOverview"
 import SuperVisorViewForm from "./SuperVisorViewForm"
-import { useParams } from "react-router-dom"
+// import SuperVisorCard from "../../../components/ui/SuperVisorCards"
+import Background from "../../../assets/image/1.png"
+import PhoneIcon from "../../../assets/icons/PhoneIcon"
 import CalenderMultiple from "../../../assets/icons/CalenderMultiple"
 import ChevronRight from "../../../assets/icons/ChevronRight"
-import PhoneIcon from "../../../assets/icons/PhoneIcon"
-import Background from "../../../assets/image/1.png"
+import { useParams } from "react-router-dom"
+
 
 
 interface SupervisorData {
@@ -30,22 +32,25 @@ interface SupervisorData {
     rating: string;
 }
 
+
+
+
 type Props = {}
 
 const SuperVisorView = ({
 
 }: Props) => {
 
-    
-  // State to manage modal visibility
-  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // Function to toggle modal visibility
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
-  };
+    // State to manage modal visibility
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const {id}=useParams()
+    // Function to toggle modal visibility
+    const handleModalToggle = () => {
+        setIsModalOpen((prev) => !prev);
+    };
+
+    const { id } = useParams()
 
 
 
@@ -73,10 +78,12 @@ const SuperVisorView = ({
 
     ];
 
+
+
     // Data for the table
     const data: SupervisorData[] = [
 
-        { memberID: "001", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
+        { memberID: "001", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "3" },
         { memberID: "002", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
         { memberID: "003", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
         { memberID: "004", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
@@ -102,14 +109,17 @@ const SuperVisorView = ({
     ];
 
 
+   
+
 
     return (
         <div>
-               <div className="flex items-center text-[16px] my-2 space-x-2">
-       <p className="font-bold text-[#820000] ">SuperVisor</p>
-        <ChevronRight color="#4B5C79" size={18}/>
-        <p className="font-bold text-[#303F58] "> {id}</p>
-      </div>
+            
+            <div className="flex items-center text-[16px] my-2 space-x-2">
+                <p className="font-bold text-[#820000] ">SuperVisor</p>
+                <ChevronRight color="#4B5C79" size={18} />
+                <p className="font-bold text-[#303F58] "> {id}</p>
+            </div>
             <div className="grid grid-cols-12 gap-3">
 
                 <div className="col-span-8 py-6 ">
@@ -135,6 +145,7 @@ const SuperVisorView = ({
                     {/* Table Section */}
                     <div>
                         <Table<SupervisorData> data={data} columns={columns} headerContents={{
+                            
                             title: 'Support Team Members',
                             search: { placeholder: 'Search Supervisor' },
                             sort: [
@@ -151,8 +162,8 @@ const SuperVisorView = ({
                                     ]
                                 }
                             ]
-                            
-                        }}noAction
+
+                        }} noAction
                         />
                     </div>
 
@@ -161,11 +172,11 @@ const SuperVisorView = ({
 
 
                 <div
-      className="col-span-4 bg-slate-200 py-3 p-2 mx-2 my-6 mt-16 rounded-lg bg-cover bg-center"
-      style={{
-        backgroundImage: `url(${Background})`, // Use the imported image
-      }}
-    >
+                    className="col-span-4 bg-slate-200 py-3 p-2 mx-2 my-6 mt-16 rounded-lg bg-cover bg-center"
+                    style={{
+                        backgroundImage: `url(${Background})`, // Use the imported image
+                    }}
+                >
 
                     <div className="rounded-full flex my-2">
                         <img className="w-16 h-16" src={person} alt="" />
@@ -257,12 +268,12 @@ const SuperVisorView = ({
 
             </div>
 
-            <SuperVisorTicketsOverview/>
-            
- {/* Modal controlled by state */}
- <Modal open={isModalOpen} onClose={handleModalToggle}>
-      <SuperVisorViewForm onClose={handleModalToggle} />
-      </Modal>
+            <SuperVisorTicketsOverview />
+
+            {/* Modal controlled by state */}
+            <Modal open={isModalOpen} onClose={handleModalToggle}>
+                <SuperVisorViewForm onClose={handleModalToggle} />
+            </Modal>
 
 
 

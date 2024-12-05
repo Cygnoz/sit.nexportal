@@ -70,11 +70,11 @@ const TeamOverview = ({}: Props) => {
       iconFrameBorderColor: "#CAD1F1CC" 
     },
     { 
-      icon: <RupeeIcon size={40}/>, 
+      icon: <RupeeIcon />, 
       number: "2898", 
       title: "Revenue Generated", 
-      iconFrameColor: "#DD9F86", 
-      iconFrameBorderColor: "#F6DCD2" 
+      iconFrameColor: "#FDE3BB", 
+      iconFrameBorderColor: "#FCB23E" 
     },
 
   ];

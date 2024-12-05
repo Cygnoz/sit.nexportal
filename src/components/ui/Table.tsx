@@ -6,6 +6,14 @@ import PreviousIcon from "../../assets/icons/PreviousIcon";
 import Trash from "../../assets/icons/Trash";
 import SearchBar from "./SearchBar";
 import SortBy from "./SortBy";
+import IndiaLogo from '../../assets/image/IndiaLogo.png'
+import UKLogo from '../../assets/image/UKLogo.webp'
+import UAELogo from '../../assets/image/UAELogo.webp'
+
+const ImageAndLabel = [
+  { key: "userName", imageKey: "userImage" },
+  { key: "rmName", imageKey: "rmImage" },
+];
 
 interface TableProps<T> {
   data: T[];
@@ -23,6 +31,8 @@ interface TableProps<T> {
     function: (id:any) => void;
   }[];
   noAction?:boolean;
+  noPagination?:boolean
+  maxHeight?:string
 }
 
 const Table = <T extends object>({
@@ -31,6 +41,8 @@ const Table = <T extends object>({
   headerContents,
   actionList,
   noAction,
+  noPagination,
+  maxHeight
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -91,6 +103,47 @@ const Table = <T extends object>({
     }
   };
 
+  function getNestedValue(obj: any, path: string): any {
+    // If no dots in path, return the direct property value
+    if (!path.includes(".")) {
+      return obj?.[path];
+    }
+    // Otherwise, traverse the nested structure
+    return path.split(".").reduce((acc, part) => acc?.[part], obj);
+  }
+
+  const countryLogo=(key:string)=>{
+    if(key=='India'){
+      return <>
+    <img
+      src={IndiaLogo}
+      alt="India"
+      className="w-5 h-5 rounded-full"
+    />
+    <p>India</p>
+  </>
+    }else if(key=='UK'){
+      return  <>
+      <img
+        src={UKLogo}
+        alt="UK"
+        className="w-5 h-5 rounded-full"
+      />
+      <p>UK</p>
+    </>
+    }else{
+     return <>
+      <img
+        src={UAELogo}
+        alt="UAE"
+        className="w-5 h-5 rounded-full"
+      />
+      <p>UAE</p>
+    </>
+    }
+
+  }
+
   // Render table header
   const renderHeader = () => (
     <div className={`flex  ${headerContents.search&&!headerContents.title&&!headerContents.sort?"justify-start":'justify-between'} items-center mb-4`}>
@@ -116,112 +169,126 @@ const Table = <T extends object>({
     </div>
   );
 
+  const renderImageAndLabel = (data: any) => {
+    for (const { key, imageKey } of ImageAndLabel) {
+      if (data[key] && data[imageKey]) {
+        return (
+          <>
+            {data[imageKey].length>500&&<img
+              src={`${data[imageKey]}`}
+              alt={data[key]}
+              className="w-5 h-5 rounded-full"
+            />}
+            <p>{data[key]}</p>
+          </>
+        );
+      }
+    }
+    return '-'; // Return null if no match is found
+  };
+
   return (
-    <div className="w-full bg-white rounded-lg p-4">
+    <div className="w-full  bg-white rounded-lg p-4">
       {renderHeader()}
-      <table className="w-full border-collapse border text-left">
-        <thead>
-          <tr>
-            <th className="border p-4 bg-[#F6F9FC] text-sm text-center text-[#303F58] font-medium">
-              SI No.
-            </th>
-            {columns.map((col) => (
-              <th
-                key={String(col.key)}
-                className="border p-4 bg-[#F6F9FC] text-sm text-center text-[#303F58] font-medium"
-              >
-                {col.label}
-              </th>
-            ))}
-            {!noAction&&<th className="border p-4 bg-[#F6F9FC] text-center text-sm text-[#303F58] font-medium">
-              Action
-            </th>}
-          </tr>
-        </thead>
-        <tbody>
-  {paginatedData.length > 0 ? (
-    paginatedData.map((row:any, rowIndex) => (
-      <tr key={rowIndex} className="hover:bg-gray-50">
-  <td className="border-b border-gray-300 p-4 text-xs gap-2 text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-    {/* Adjusted SI No. calculation */}
-    {(currentPage - 1) * rowsPerPage + rowIndex + 1}
+
+      <div style={maxHeight ? { maxHeight: maxHeight, overflowY: "auto" } : {}} className={maxHeight?"custom-scrollbar":'hide-scrollbar'}>
+  <table className={`w-full border-collapse border text-left  ${maxHeight&&'table-fixed'}`}>
+    <thead className={` bg-[#F6F9FC]  ${maxHeight&&'z-40 sticky top-0'}`}>
+      <tr >
+        <th className="border p-4 text-sm text-center text-[#303F58] font-medium">
+          SI No.
+        </th>
+        {columns.map((col) => (
+          <th
+            key={String(col.key)}
+            className="border p-4 text-sm text-center text-[#303F58] font-medium"
+          >
+            {col.label}
+          </th>
+        ))}
+        {!noAction && (
+          <th className="border p-4 text-center text-sm text-[#303F58] font-medium">
+            Action
+          </th>
+        )}
+      </tr>
+    </thead>
+    <tbody >
+      {paginatedData.length > 0 ? (
+        paginatedData.map((row: any, rowIndex: number) => (
+          <tr key={rowIndex} className="hover:bg-gray-50 z-10">
+            <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+              {(currentPage - 1) * rowsPerPage + rowIndex + 1}
+            </td>
+            {columns.map((col: any) => (
+  <td
+    key={String(col.key)}
+    className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center"
+  >
+    <div className="flex justify-center items-center gap-2">
+      {col.key === "country"
+        ? countryLogo(getNestedValue(row, col.key))
+        : ["userName", "rmName", "amName"].includes(col.key)
+        ? renderImageAndLabel(row)
+        : col.key === "status"
+        ? <p className={getStatusClass(row[col.key])}>{row[col.key]}</p>
+        : getNestedValue(row, col.key) || "-"}
+    </div>
   </td>
-  {columns.map((col) => (
-    <td
-      key={String(col.key)}
-      className={`border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center`}
-    >
-      <div className={`flex justify-center`}>
-        <p
-          className={`${
-            col.key === "status" ? getStatusClass(row[col.key] as string) : ""
-          }`}
-        >
-          {row[col.key] ? row[col.key] : "-"}
-        </p>
-      </div>
-    </td>
-  ))}
-  {!noAction && (
-    <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-      <div className="flex justify-center gap-2">
-        {actionList?.map(
-          (action, index) =>
-            action.label === "edit" && (
-              <p
-                key={index}
-                className="cursor-pointer"
-                onClick={() => action.function(row?._id)}
-              >
-                <PencilLine color="#4B5C79" size={16} />
-              </p>
-            )
-        )}
-        {actionList?.map(
-          (action, index) =>
-            action.label === "view" && (
-              <p
-                key={index}
-                className="cursor-pointer"
-                onClick={() => action.function(1)}
-              >
-                <Eye color="#4B5C79" size={16} />
-              </p>
-            )
-        )}
-        {actionList?.map(
-          (action, index) =>
-            action.label === "delete" && (
-              <p
-                key={index}
-                className="cursor-pointer"
-                onClick={() => action.function(row?._id)}
-              >
-                <Trash color="#4B5C79" size={16} />
-              </p>
-            )
-        )}
-      </div>
-    </td>
-  )}
-</tr>
+))}
+            {!noAction && (
+              <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
+                <div className="flex justify-center gap-2">
+                  {actionList?.map((action, index) =>
+                    action.label === "edit" ? (
+                      <p
+                        key={index}
+                        className="cursor-pointer"
+                        onClick={() => action.function(row?._id)}
+                      >
+                        <PencilLine color="#4B5C79" size={16} />
+                      </p>
+                    ) : action.label === "view" ? (
+                      <p
+                        key={index}
+                        className="cursor-pointer"
+                        onClick={() => action.function(1)}
+                      >
+                        <Eye color="#4B5C79" size={16} />
+                      </p>
+                    ) : action.label === "delete" ? (
+                      <p
+                        key={index}
+                        className="cursor-pointer"
+                        onClick={() => action.function(row?._id)}
+                      >
+                        <Trash color="#4B5C79" size={16} />
+                      </p>
+                    ) : null
+                  )}
+                </div>
+              </td>
+            )}
+          </tr>
+        ))
+      ) : (
+        <tr>
+          <td
+            colSpan={columns.length + 2}
+            className="text-center py-4 text-gray-500"
+          >
+            No results found.
+          </td>
+        </tr>
+      )}
+    </tbody>
+  </table>
+</div>
 
-    ))
-  ) : (
-    <tr>
-      <td
-        colSpan={columns.length + 2}
-        className="text-center py-4 text-gray-500"
-      >
-        No results found.
-      </td>
-    </tr>
-  )}
-</tbody>
 
-      </table>
+   
 
-      <div className="flex justify-between items-center mt-4">
+     {!noPagination&& <div className="flex justify-between items-center mt-4">
         <div className="text-xs text-[#71736B] font-medium flex gap-2">
           Showing {currentPage} of {totalPages || 1}
           <div className="flex gap-2">
@@ -258,7 +325,7 @@ const Table = <T extends object>({
             ))}
           </select>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };
