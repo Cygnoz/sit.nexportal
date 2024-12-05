@@ -1,10 +1,8 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-// import Select from "../../components/form/Select";
-// import Button from "../../components/ui/Button";
-// import Input from "../../components/form/Input";
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import Select from "../../../components/form/Select";
 import Button from "../../../components/ui/Button";
 import Input from "../../../components/form/Input";
@@ -18,39 +16,17 @@ import ViewIcon from "../../../assets/icons/ViewIcon";
 import bcardfront from '../../../assets/image/Business-card-front.svg'
 import bcardback from '../../../assets/image/Business-card-back.svg'
 import idcard from '../../../assets/image/ID-card 1.svg'
-// import PlusCircle from "../../assets/icons/PlusCircle";
-// import Files from "../../assets/icons/Files";
-// import CheckIcon from "../../assets/icons/CheckIcon";
-// import Download from "../../assets/icons/Download";
-// import Trash from "../../assets/icons/Trash";
+import { BDAData } from "../../../Interfaces/BDA";
+import { endPoints } from "../../../services/apiEndpoints";
+import useApi from "../../../Hooks/useApi";
+import toast from "react-hot-toast";
 
 
 
 
-interface AddBDAData {
-  fullName: string;
-  emailAddress: string;
-  phone: string;
-  age?: string;
-  bloodGroup?: string;
-  addressStreet1?: string;
-  addressStreet2?: string;
-  city?: string;
-  state?: string;
-  adhaarNo?: string;
-  panNo?: string;
-  dateOfJoining?: string;
-  // Additional fields for Bank and Company information
-  bankName?: string;
-  branchName?: string;
-  accountNumber?: string;
-  ifscCode?: string;
-  companyId?: string;
-  workEmail?: string;
-  workPhone?: string;
-  role?: string;
-  region?: string;
-  commission?: string;
+interface RegionData {
+  label: string;
+  value: string;
 }
 
 
@@ -60,48 +36,35 @@ interface AddBDAProps {
 
 const validationSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
-  emailAddress: Yup.string()
-    .email("Invalid email address")
-    .required("Email address is required"),
   phone: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  age: Yup.string(),
-  bloodGroup: Yup.string(),
-  addressStreet1: Yup.string(),
-  addressStreet2: Yup.string(),
-  city: Yup.string(),
-  state: Yup.string(),
-  adhaarNo: Yup.string()
-    .matches(/^\d{12}$/, "Aadhaar number must be 12 digits"),
-  panNo: Yup.string()
-    .matches(/^[A-Z]{5}\d{4}[A-Z]{1}$/, "Invalid PAN number"),
-  dateOfJoining: Yup.string(),
-  // Additional validation
-  bankName: Yup.string(),
-  branchName: Yup.string(),
-  accountNumber: Yup.string(),
-  ifscCode: Yup.string(),
-  companyId: Yup.string(),
-  workEmail: Yup.string().email("Invalid work email"),
-  workPhone: Yup.string().matches(/^\d+$/, "Work phone number must contain only digits"),
-  role: Yup.string(),
-  region: Yup.string(),
-  commission: Yup.string(),
+  loginEmail: Yup.string().required('Email required').email("Invalid work email"),
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
 });
 
 
 const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
+  const { request: getAllRegion } = useApi("get", 3003);
+  const [regionData, setRegionData] = useState<RegionData[]>([]);
   const {
     register,
     handleSubmit,
+    watch,
+    trigger,
+    clearErrors,
     formState: { errors },
-  } = useForm<AddBDAData>({
+  } = useForm<BDAData>({
     resolver: yupResolver(validationSchema),
   });
 
 
-  const onSubmit: SubmitHandler<AddBDAData> = (data) => {
+  const onSubmit: SubmitHandler<BDAData> = (data) => {
     console.log(data);
   };
 
@@ -115,10 +78,23 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
 
-  const handleNext = () => {
+  const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
-    if (currentIndex < tabs.length - 1) {
+    let fieldsToValidate: any[] = [];
+
+    if (tab === "Personal Information") {
+      fieldsToValidate = ["fullName", "phone"];
+    } else if (tab === "Company Information") {
+      fieldsToValidate = ["loginEmail","password","confirmPassword"];
+    }
+
+    const isValid = fieldsToValidate.length
+      ? await trigger(fieldsToValidate)
+      : true;
+
+    if (isValid && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
+      clearErrors();
     }
   };
   const handleBack = () => {
@@ -127,6 +103,33 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
       setActiveTab(tabs[currentIndex - 1]);
     }
   };
+
+  const getAllRegions = async () => {
+    try {
+      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
+
+      if (response && !error) {
+        // Extract only `regionName` and `_id` from each region
+        const filteredRegions = response.data.regions?.map((region: any) => ({
+          label: region.regionName,
+          value: String(region._id), // Ensure `value` is a string
+        }));
+
+        // Update the state with the filtered regions
+        setRegionData(filteredRegions);
+      } else {
+        toast.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getAllRegions();
+  }, []);
+
+  
 
 
   return (
@@ -152,7 +155,6 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
         {tabs.map((tab, index) => (
           <div
             key={tab}
-            onClick={() => setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
               ? "text-deepStateBlue border-b-2 border-secondary2"
               : "text-gray-600"
@@ -201,11 +203,11 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
-                  error={errors.emailAddress?.message}
-                  {...register("emailAddress")}
+                  error={errors.email?.message}
+                  {...register("email")}
                 />
                 <Input
-                  placeholder=" Phone"
+                  placeholder="Phone"
                   label="Phone "
                   error={errors.phone?.message}
                   {...register("phone")}
@@ -227,14 +229,14 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
                 <Input
                   label="Address"
                   placeholder="Street 1"
-                  error={errors.addressStreet1?.message}
-                  {...register("addressStreet1")}
+                  error={errors.address?.street1?.message}
+                  {...register("address.street1")}
                 />
                 <Input
                   label="Address"
                   placeholder="Street 2"
-                  error={errors.addressStreet2?.message}
-                  {...register("addressStreet2")}
+                  error={errors.address?.street2?.message}
+                  {...register("address.street2")}
                 />
                 <Input
                   label="City"
@@ -281,9 +283,36 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
           )}
 
 
-          {activeTab === "Company Information" && (
+{activeTab === "Company Information" && (
             <div>
-              <div className="grid grid-cols-2 gap-4 ">
+              <p className="my-4 text-[#303F58] text-sm font-semibold">
+                Set Login Credential
+              </p>
+              <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
+                <Input
+                  required
+                  placeholder="Enter Email"
+                  label="Email"
+                  error={errors.loginEmail?.message}
+                  {...register("loginEmail")}
+                />
+                <Input
+                  required
+                  placeholder="Enter Password"
+                  label="Create Password"
+                  error={errors.password?.message}
+                  {...register("password")}
+                />
+                <Input
+                  required
+                  placeholder="Re-enter Password"
+                  label="Confirm Password"
+                  error={errors.confirmPassword?.message}
+                  {...register("confirmPassword")}
+                />
+              </div>
+              <hr className="" />
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <Input
                   placeholder="Enter Work Email"
                   label="Work Email"
@@ -297,24 +326,22 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
                   {...register("workPhone")}
                 />
                 <Select
-                  label="Choose Role"
-                  placeholder="Choose Role"
-                  error={errors.role?.message}
-                  options={[
-                    { value: "Admin", label: "Admin" },
-                    { value: "Support", label: "Support" },
-                  ]}
-                  {...register("role")}
-                />
-                <Select
                   label="Select Region"
                   placeholder="Choose Region"
+                  value={watch("region")}
                   error={errors.region?.message}
+                  options={regionData}
+                  {...register("region")}
+                />
+                <Select
+                  label="Select Area"
+                  placeholder="Choose Area"
+                  error={errors.area?.message}
                   options={[
                     { value: "North", label: "North" },
                     { value: "South", label: "South" },
                   ]}
-                  {...register("region")}
+                  {...register("area")}
                 />
                 <Select
                   label="Choose Commission Profile"
@@ -324,9 +351,8 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
                     { value: "aa", label: "aa" },
                     { value: "bb", label: "bb" },
                   ]}
-                  {...register("region")}
+                  {...register("commission")}
                 />
-
               </div>
             </div>
           )}
@@ -401,26 +427,26 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
                 <Input
                   placeholder="Enter Bank Name"
                   label="Bank Name"
-                  error={errors.bankName?.message}
-                  {...register("bankName")}
+                  error={errors.bankDetails?.bankName?.message}
+                  {...register("bankDetails.bankName")}
                 />
                 <Input
                   placeholder="Enter Bank Branch"
                   label="Bank Branch"
-                  error={errors.branchName?.message}
-                  {...register("branchName")}
+                  error={errors.bankDetails?.bankBranch?.message}
+                  {...register("bankDetails.bankBranch")}
                 />
                 <Input
                   placeholder="Enter Account No"
                   label="Bank Account No"
-                  error={errors.accountNumber?.message}
-                  {...register("accountNumber")}
+                  error={errors.bankDetails?.bankAccountNo?.message}
+                  {...register("bankDetails.bankAccountNo")}
                 />
                 <Input
                   placeholder="Enter IFSC Code"
                   label="IFSC Code"
-                  error={errors.ifscCode?.message}
-                  {...register("ifscCode")}
+                  error={errors.bankDetails?.ifscCode?.message}
+                  {...register("bankDetails.ifscCode")}
                 />
               </div>
             </div>
@@ -480,14 +506,14 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
             <Button variant="primary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
-              type="submit" onClick={onClose} >
+              type="submit" >
               Done
             </Button>
           ) : (
             <Button variant="primary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
-              type="submit" onClick={handleNext}>
+              type="submit" onClick={()=>handleNext(activeTab)}>
               Next
             </Button>
           )}
