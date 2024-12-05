@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const regionManagerSchema = new mongoose.Schema({
+const areaManagerSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   email: { type: String},
   age: { type: Number},
@@ -16,8 +16,8 @@ const regionManagerSchema = new mongoose.Schema({
   dateOfJoining: { type: Date },
   workEmail: { type: String},
   workPhone: { type: String},
-  region: { type: String},
-  regionId : { type: String },
+  area: { type: String},
+  areaId : { type: String },
   commission: { type: Number},
   bankDetails: {
     bankName: { type: String},
@@ -27,5 +27,5 @@ const regionManagerSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('RegionManager', regionManagerSchema);
+module.exports = mongoose.model('AreaManager', areaManagerSchema);
 

@@ -1,6 +1,6 @@
 
 const User = require("../database/model/user");
-const RegionManager = require("../database/model/regionManager");
+const AreaManager = require("../database/model/areaManager");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require('mongoose').Types;
 
@@ -71,17 +71,17 @@ const logOperation = (req, status, operationId = null) => {
       email: loginEmail,
       password: hashedPassword,
       phoneNo: phone,
-      role: "Region Manager",
+      role: "Area Manager",
     });
     return newUser.save();
   }
   
-  async function createRegionManager(data, user) {
-    const newRegionManager = new RegionManager({...data, user});
-    return newRegionManager.save();
+  async function createAreaManager(data, user) {
+    const newAreaManager = new AreaManager({...data, user});
+    return newAreaManager.save();
   }
   
-  exports.addRegionManager = async (req, res, next) => {
+  exports.addAreaManager = async (req, res, next) => {
     try {
       // Destructure and validate
       const data = cleanData(req.body);
@@ -105,24 +105,17 @@ const logOperation = (req, status, operationId = null) => {
       const newUser = await createUser(data);
   
       // Create region manager
-      const newRegionManager = await createRegionManager(data, newUser._id);
+      const newAreaManager = await createAreaManager(data, newUser._id);
   
-      logOperation(req, "Success", newRegionManager._id);
+      logOperation(req, "Success", newAreaManager._id);
       next()
       return res.status(201).json({
-        message: "Region Manager added successfully",
+        message: "Area Manager added successfully",
         userId: newUser._id,
-        regionManagerId: newRegionManager._id,
+        areaManagerId: newAreaManager._id,
       });
     } catch (error) {
-      if (error instanceof UserCreationError) {
-        console.error("User creation failed:", error);
-        return res.status(500).json({ message: "Error creating user" });
-      }
-      if (error instanceof RegionManagerCreationError) {
-        console.error("Region manager creation failed:", error);
-        return res.status(500).json({ message: "Error creating region manager" });
-      }
+
       logOperation(req, "Failed");
        next();
       console.error("Unexpected error:", error);
@@ -131,51 +124,51 @@ const logOperation = (req, status, operationId = null) => {
   };
   
 
-  exports.getRegionManager = async (req, res) => {
+  exports.getAreaManager = async (req, res) => {
     try {
       const { id } = req.params;
   
-      const regionManager = await RegionManager.findById(id).populate('user', 'userName phoneNo').exec();
+      const areaManager = await AreaManager.findById(id).populate('user', 'userName phoneNo').exec();
       
-      if (!regionManager) {
-        return res.status(404).json({ message: "Region Manager not found" });
+      if (!areaManager) {
+        return res.status(404).json({ message: "Area Manager not found" });
       }
   
-      res.status(200).json(regionManager);
+      res.status(200).json(areaManager);
     } catch (error) {
-      console.error("Error fetching Region Manager:", error);
+      console.error("Error fetching Area Manager:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   };
   
-  exports.getAllRegionManager = async (req, res) => {
+  exports.getAllAreaManager = async (req, res) => {
       try {
-        const regionManager = await RegionManager.find({}).populate('user', 'userName phoneNo');
+        const areaManager = await AreaManager.find({}).populate('user', 'userName phoneNo');
     
-        if (regionManager.length === 0) {
-          return res.status(404).json({ message: "No Region Manager found" });
+        if (areaManager.length === 0) {
+          return res.status(404).json({ message: "No Area Manager found" });
         }
     
-        res.status(200).json({ regionManager });
+        res.status(200).json({ areaManager });
       } catch (error) {
-        console.error("Error fetching all Region Manager:", error);
+        console.error("Error fetching all Area Manager:", error);
         res.status(500).json({ message: "Internal server error" });
       }
     };
 
 
-    exports.editRegionManager = async (req, res,next) => {
+    exports.editAreaManager = async (req, res,next) => {
       try {
         const { id } = req.params;
         const data = cleanData(req.body);
         // Fetch the existing document to get the user field
-    const existingRegionManager = await RegionManager.findById(id);
-    if (!existingRegionManager) {
-      return res.status(404).json({ message: "Region Manager not found" });
+    const existingAreaManager = await AreaManager.findById(id);
+    if (!existingAreaManager) {
+      return res.status(404).json({ message: "Area Manager not found" });
     }
 
     // Extract the user field (ObjectId)
-    const existingUserId = existingRegionManager.user;
+    const existingUserId = existingAreaManager.user;
 
 
         
@@ -212,23 +205,23 @@ const logOperation = (req, status, operationId = null) => {
           { new: true, runValidators: true } // Return the updated document and apply validation
         );
         // Find and update the region manager
-        const updatedRegionManager = await RegionManager.findByIdAndUpdate(
+        const updatedAreaManager = await AreaManager.findByIdAndUpdate(
           id,
           { $set: data },
           { new: true, runValidators: true }
         );
     
-        if (!updatedRegionManager) {
-          return res.status(404).json({ message: "Region Manager not found" });
+        if (!updatedAreaManager) {
+          return res.status(404).json({ message: "Area Manager not found" });
         }
     
         res.status(200).json({
-          message: "Region Manager updated successfully"
+          message: "Area Manager updated successfully"
         });
-        logOperation(req, "Success", updatedRegionManager._id);
+        logOperation(req, "Success", updatedAreaManager._id);
       next()
       } catch (error) {
-        console.error("Error editing Region Manager:", error);
+        console.error("Error editing Area Manager:", error);
         res.status(500).json({ message: "Internal server error" });
         logOperation(req, "Failed");
        next();
