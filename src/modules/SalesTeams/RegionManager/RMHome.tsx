@@ -11,6 +11,8 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import { useNavigate } from "react-router-dom";
+// import { RMData } from "../../../Interfaces/RM";
+// import { endPoints } from "../../../services/apiEndpoints";
 
 
 // Define the type for data items
@@ -36,6 +38,8 @@ interface RegionManagerData {
 
 
 const RMHome = () => {
+  // const {request:getRM}=useApi('get',3002)
+  // const [allRms, setAllRms] = useState<RMData[]>([]);
   const navigate = useNavigate()
 
   // State to manage modal visibility
@@ -50,6 +54,28 @@ const RMHome = () => {
   const handleView=(id:any)=>{
     navigate(`/region-managerView/${id}`)
   }
+
+  // const getAllRM=async()=>{
+  //   const url=endPoints.GET_ALL_RM
+  //   try{
+  //     const {response,error}=await getRM(url)
+  //     console.log(response)
+  //     console.log(error)
+  //     if(response && !error){
+  //       // toast.success(response.data.message)
+  //       setAllRms(response.data.AllUsers)
+  //     }else{
+  //       console.log(error)
+  //     }
+
+  //   }catch(err){
+  //     console.log(err)
+  //   }
+  // }
+
+  // useEffect(()=>{
+  //   getAllRM()
+  // },[])
 
   
   

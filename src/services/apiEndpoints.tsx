@@ -28,8 +28,10 @@ export const endPoints={
 
   //RM
   RM:'/region-manager',
+  GET_ALL_RM:'/region-managers',
   
 
   // Area Manager
   AM:'/area-manager',
+ 
 }
