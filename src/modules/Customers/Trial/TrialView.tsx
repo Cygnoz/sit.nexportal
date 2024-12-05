@@ -9,8 +9,8 @@ import EmailIcon from "../../../assets/icons/EmailIcon"
 import EmailRoundIcon from "../../../assets/icons/EmailRoundIcon"
 import PhoneRingIcon from "../../../assets/icons/PhoneRingIcon"
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon"
-import profileImage from '../../../assets/Images/AvatarImg.png'
-import BackgroundImage from '../../../assets/Images/LeadView.jpg'
+import profileImage from "../../../assets/image/AvatarImg.png"
+import BackgroundImage from '../../../assets/image/LeadView.jpg'
 import BuildingIcon from "../../../assets/icons/BuildingIcon"
 import CalenderDays from "../../../assets/icons/CalenderDays"
 import Modal from "../../../components/modal/Modal"
