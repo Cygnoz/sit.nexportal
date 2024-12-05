@@ -326,6 +326,12 @@ const roles = [
       { action: "Edit Region Manager", note: "Edit Region Manager" },
       { action: "Delete Region Manager", note: "Delete Region Manager" },
 
+      // Area Manager
+      { action: "Add Area Manager", note: "Add Area Manager" },
+      { action: "View Area Manager", note: "View Area Manager" },
+      { action: "Edit Area Manager", note: "Edit Area Manager" },
+      { action: "Delete Area Manager", note: "Delete Area Manager" },
+
       // Lead
       { action: "Add Lead", note: "Add Lead" },
       { action: "View Lead", note: "View Lead" },
