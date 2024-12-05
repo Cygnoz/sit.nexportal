@@ -91,7 +91,7 @@ const logOperation = (req, status, operationId = null) => {
       if (validationError) {
         return res.status(400).json({ message: validationError });
       }
-      if (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100) {
+      if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
         return res.status(400).json({ message: "Invalid commission value" });
       }
   
