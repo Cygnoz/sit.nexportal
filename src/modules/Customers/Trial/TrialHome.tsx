@@ -11,6 +11,7 @@ import Boxes from "../../../assets/icons/Boxes";
 import PackageMinus from "../../../assets/icons/PackageMinus";
 import CalenderClock from "../../../assets/icons/CalenderClock";
 import CalenderMultiple from "../../../assets/icons/CalenderMultiple";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -29,15 +30,21 @@ const TrialHome = () => {
     // const handleModalToggle = () => {
     //     setIsModalOpen((prev) => !prev);
     //   };
-      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-          // navigate(`/leadView/${viewId}`)
-          console.log(viewId);  
-          console.log(editId);
-          console.log(deleteId);
+   const navigate=useNavigate()
+      // const handleView=(editId?:any,viewId?:any,deleteId?:any)=>{
+      //   if(viewId){
+      //     // navigate(`/trialView/${viewId}`)
+      //     console.log(viewId);
+          
+         
+      //     console.log(editId);
+      //     console.log(deleteId);
           
           
-        }
+      //   }
+      // }
+      const handleView=(id:any)=>{
+        navigate(`/trialView/${id}`)
       }
     
 
@@ -123,7 +130,7 @@ const TrialHome = () => {
         //   ]
         }}
         actionList={[
-            { label: 'view', function: handleEditDeleteView },
+            { label: 'view', function: handleView },
           ]} />
       </div>
 
