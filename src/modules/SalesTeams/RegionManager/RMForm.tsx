@@ -121,7 +121,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
 
 
     return (
-        <div className="p-5 bg-white rounded shadow-md  custom-scrollbar">
+        <div className="p-5 bg-white rounded shadow-md  hide-scrollbar">
             <div className="flex justify-between items-center mb-4">
                 <div>
                     <h1 className="text-lg font-bold text-deepStateBlue ">

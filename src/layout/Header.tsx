@@ -1,4 +1,7 @@
 import { useState } from "react";
+import Bell from "../assets/icons/Bell";
+import Settings from "../assets/icons/Settings";
+import UserIcon from "../assets/icons/UserIcon";
 import SearchBar from "../components/ui/SearchBar";
 
 const Header = () => {
@@ -20,15 +23,24 @@ const Header = () => {
     >
       {/* <img src={viewAppsIcon} alt="View Apps Icon" /> */}
     </div>
-    <div className="flex items-center gap-2 ml-auto">
-      <div className="tooltip" data-tooltip="Notifications">
-        {/* <Notification /> */}asda
+    <div className="flex items-center gap-4 ml-auto">
+      <div className="tooltip" data-tooltip="Settings">
+        {/* <Notification /> */}
+        <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+          <Settings color="#768294"/> 
+        </p>
       </div>
-      <div className="tooltip" data-tooltip="Refer & Earn">
-        {/* <RefferEarn /> */}asda
+      <div className="tooltip" data-tooltip="notification">
+        {/* <RefferEarn /> */}
+        <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+          <Bell /> 
+        </p>
       </div>
-      <p className="tooltip" data-tooltip="Settings">
-        {/* <SettingsIcons /> */}settings
+      <p className="tooltip" data-tooltip="user">
+        {/* <SettingsIcons /> */}
+        <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+          <UserIcon color="#768294"/> 
+        </p>
       </p>
       <div className="tooltip" data-tooltip="Organization">
         {/* <Organization organizationData={organizationData} /> */}

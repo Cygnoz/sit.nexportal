@@ -12,12 +12,12 @@ import ViewActivity from "./ViewActivity";
 import EmailIcon from "../../../assets/icons/EmailIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
 import DeleteIcon from "../../../assets/icons/DeleteIcon";
-import BackgroundImage from '../../../assets/Images/LeadView.jpg'
+import BackgroundImage from '../../../assets/image/LeadView.jpg'
 import PhoneRingIcon from "../../../assets/icons/PhoneRingIcon";
 import DeltaTech from "../../../assets/icons/DeltaTech";
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
 import EmailRoundIcon from "../../../assets/icons/EmailRoundIcon";
-import profileImage from '../../../assets/Images/AvatarImg.png'
+import profileImage from '../../../assets/image/AvatarImg.png'
 import CalenderRound from "../../../assets/icons/CalenderRound";
 
 type Props = {}
