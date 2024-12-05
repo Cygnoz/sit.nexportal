@@ -82,7 +82,7 @@ const validationSchema = Yup.object({
             resolver: yupResolver(validationSchema),
           });
           
-    const {request:addAM}=useApi('post',3002)
+    // const {request:addAM}=useApi('post',3002)
     const {request:getAllRegion}=useApi('get',3003)
     const [regionData, setRegionData] = useState<RegionData[]>([]);
 
