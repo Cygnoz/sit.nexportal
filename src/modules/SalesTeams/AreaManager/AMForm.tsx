@@ -1,10 +1,7 @@
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-// import Select from "../../components/form/Select";
-// import Button from "../../components/ui/Button";
-// import Input from "../../components/form/Input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Select from "../../../components/form/Select";
  import Button from "../../../components/ui/Button";
 import Input from "../../../components/form/Input";
@@ -18,40 +15,15 @@ import ViewIcon from "../../../assets/icons/ViewIcon";
 import bcardfront from '../../../assets/image/Business-card-front.svg'
 import bcardback from '../../../assets/image/Business-card-back.svg'
 import idcard from '../../../assets/image/ID-card 1.svg'
-// import PlusCircle from "../../assets/icons/PlusCircle";
-// import Files from "../../assets/icons/Files";
-// import CheckIcon from "../../assets/icons/CheckIcon";
-// import Download from "../../assets/icons/Download";
-// import Trash from "../../assets/icons/Trash";
+import { AMData } from "../../../Interfaces/AM";
+import useApi from "../../../Hooks/useApi";
+import toast from "react-hot-toast";
+import { endPoints } from "../../../services/apiEndpoints";
 
-
-
-
-interface AddAreaManagerData {
-    fullName: string;
-    emailAddress: string;
-    phone: string;
-    age?: string;
-    bloodGroup?: string;
-    addressStreet1?: string;
-    addressStreet2?: string;
-    city?: string;
-    state?: string;
-    adhaarNo?: string;
-    panNo?: string;
-    dateOfJoining?: string;
-// Additional fields for Bank and Company information
-    bankName?: string;
-    branchName?: string;
-    accountNumber?: string;
-    ifscCode?: string;
-    companyId?: string;
-    workEmail?: string;
-    workPhone?: string;
-    role?: string;
-    region?: string;
-    area?:string;
-  }
+interface RegionData {
+  label: string;
+  value: string;
+}
   
 
 interface AddAreaManagerProps {
@@ -60,34 +32,41 @@ interface AddAreaManagerProps {
 
 const validationSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
-  emailAddress: Yup.string()
-    .email("Invalid email address")
-    .required("Email address is required"),
+  // emailAddress: Yup.string()
+  //   .email("Invalid email address")
+  //   .required("Email address is required"),
   phone: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  age: Yup.string(),
-  bloodGroup: Yup.string(),
-  addressStreet1: Yup.string(),
-  addressStreet2: Yup.string(),
-  city: Yup.string(),
-  state: Yup.string(),
-  adhaarNo: Yup.string()
-    .matches(/^\d{12}$/, "Aadhaar number must be 12 digits"),
-  panNo: Yup.string()
-    .matches(/^[A-Z]{5}\d{4}[A-Z]{1}$/, "Invalid PAN number"),
-  dateOfJoining: Yup.string(),
-  // Additional validation
-  bankName: Yup.string(),
-  branchName: Yup.string(),
-  accountNumber: Yup.string(),
-  ifscCode: Yup.string(),
-  companyId: Yup.string(),
-  workEmail: Yup.string().email("Invalid work email"),
-  workPhone: Yup.string().matches(/^\d+$/, "Work phone number must contain only digits"),
-  role: Yup.string(),
-  region: Yup.string(),
-  area:Yup.string(),
+  // age: Yup.string(),
+  // bloodGroup: Yup.string(),
+  // addressStreet1: Yup.string(),
+  // addressStreet2: Yup.string(),
+  // city: Yup.string(),
+  // state: Yup.string(),
+  // adhaarNo: Yup.string()
+  //   .matches(/^\d{12}$/, "Aadhaar number must be 12 digits"),
+  // panNo: Yup.string()
+  //   .matches(/^[A-Z]{5}\d{4}[A-Z]{1}$/, "Invalid PAN number"),
+  // dateOfJoining: Yup.string(),
+  // // Additional validation
+  // bankName: Yup.string(),
+  // branchName: Yup.string(),
+  // accountNumber: Yup.string(),
+  // ifscCode: Yup.string(),
+  // companyId: Yup.string(),
+  // workEmail: Yup.string().email("Invalid work email"),
+  // workPhone: Yup.string().matches(/^\d+$/, "Work phone number must contain only digits"),
+  // role: Yup.string(),
+  // region: Yup.string(),
+  // area:Yup.string(),
+  loginEmail:Yup.string()
+  .email("Invalid email address")
+  .required("Login Email is required"),
+  password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
 });
 
 
@@ -95,13 +74,20 @@ const validationSchema = Yup.object({
         const {
             register,
             handleSubmit,
+            clearErrors,
+            trigger,
+            watch,
             formState: { errors },
-          } = useForm<AddAreaManagerData>({
+          } = useForm<AMData>({
             resolver: yupResolver(validationSchema),
           });
           
+    const {request:addAM}=useApi('post',3002)
+    const {request:getAllRegion}=useApi('get',3003)
+    const [regionData, setRegionData] = useState<RegionData[]>([]);
 
-  const onSubmit: SubmitHandler<AddAreaManagerData> = (data) => {
+
+  const onSubmit: SubmitHandler<AMData> = (data) => {
     console.log(data);
   };
 
@@ -115,18 +101,57 @@ const validationSchema = Yup.object({
 const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
 
-const handleNext = () => {
-const currentIndex = tabs.indexOf(activeTab);
-if (currentIndex < tabs.length - 1) {
-  setActiveTab(tabs[currentIndex + 1]);
-}
-};
-const handleBack = () => {
+const handleNext = async (tab: string) => {
+  const currentIndex = tabs.indexOf(activeTab);
+  let fieldsToValidate: any[] = [];
+
+  if (tab === "Personal Information") {
+    fieldsToValidate = ["fullName", "phone"];
+  } else if (tab === "Company Information") {
+    fieldsToValidate = ["loginEmail", "password", "confirmPassword"];
+  }
+
+  const isValid = fieldsToValidate.length ? await trigger(fieldsToValidate) : true;
+
+  if (isValid && currentIndex < tabs.length - 1) {
+    setActiveTab(tabs[currentIndex + 1]);
+    clearErrors();
+  }
+};const handleBack = () => {
   const currentIndex = tabs.indexOf(activeTab);
   if (currentIndex > 0) {
       setActiveTab(tabs[currentIndex - 1]);
   }
 };
+
+const getAllRegions = async () => {
+  try {
+    const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
+
+    if (response && !error) {
+      // Extract only `regionName` and `_id` from each region
+      const filteredRegions = response.data.regions?.map((region: any) => ({
+        label: region.regionName,
+        value: String(region._id), // Ensure `value` is a string
+      }));
+
+      
+
+      // Update the state with the filtered regions
+      setRegionData(filteredRegions);
+    } else {
+      toast.error(error.response.data.message);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+};
+
+
+useEffect(()=>{
+  getAllRegions()
+},[])
+
 
   
 
@@ -195,6 +220,7 @@ className="hidden"
      <div className="grid grid-cols-2 gap-2 col-span-10">
 
          <Input
+            required
              placeholder="Enter Full Name"
              label="Full Name"
              error={errors.fullName?.message}
@@ -203,10 +229,11 @@ className="hidden"
          <Input
              placeholder="Enter Email Address"
              label="Email Address"
-             error={errors.emailAddress?.message}
-             {...register("emailAddress")}
+             error={errors.email?.message}
+             {...register("email")}
          />
          <Input
+            required
              placeholder=" Phone"
              label="Phone "
              error={errors.phone?.message}
@@ -229,14 +256,14 @@ className="hidden"
          <Input
              label="Address"
              placeholder="Street 1"
-             error={errors.addressStreet1?.message}
-             {...register("addressStreet1")}
+             error={errors.street1?.message}
+             {...register("street1")}
          />
          <Input
              label="Address"
              placeholder="Street 2"
-             error={errors.addressStreet2?.message}
-             {...register("addressStreet2")}
+             error={errors.street2?.message}
+             {...register("street2")}
          />
          <Input
              label="City"
@@ -287,22 +314,25 @@ className="hidden"
               <p className="my-4 text-[#303F58] text-sm font-semibold">Set Login Credential</p>
               <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
                 <Input
+                required
                   placeholder="Enter Email"
                   label="Email"
-                  error={errors.workEmail?.message}
-                  {...register("workEmail")}
+                  error={errors.loginEmail?.message}
+                  {...register("loginEmail")}
                 />
                 <Input
+                required
                   placeholder="Enter Password"
                   label="Create Password"
-                  error={errors.workPhone?.message}
-                  {...register("workPhone")}
+                  error={errors.password?.message}
+                  {...register("password")}
                 />
                  <Input
+                 required
                   placeholder="Re-enter Password"
                   label="Confirm Password"
-                  error={errors.workEmail?.message}
-                  {...register("workEmail")}
+                  error={errors.confirmPassword?.message}
+                  {...register("confirmPassword")}
                 />
                 
               </div>
@@ -321,34 +351,33 @@ className="hidden"
                   {...register("workPhone")}
                 />
                   <Select
-                    label="Choose Role"
-                    placeholder="Choose Role"
-                    error={errors.role?.message}
-                    options={[
-                      { value: "Admin", label: "Admin" },
-                      { value: "Support", label: "Support" },
-                    ]}
-                    {...register("role")}
-                  />
-                  <Select
                     label="Select Region"
                     placeholder="Choose Region"
-                    error={errors.region?.message}
+                    value={watch("region")}
+          error={errors.region?.message}
+          options={regionData}
+          {...register("region")}
+                   
+                  />
+                  <Select
+                    label="Select Area"
+                    placeholder="Choose Area"
+                    error={errors.area?.message}
                     options={[
                       { value: "North", label: "North" },
                       { value: "South", label: "South" },
                     ]}
-                    {...register("region")}
+                    {...register("area")}
                   />
                    <Select
                     label="Choose Commission Profile"
                     placeholder="Commission Profile"
-                    error={errors.area?.message}
+                    error={errors.commission?.message}
                     options={[
                       { value: "aa", label: "aa" },
                       { value: "bb", label: "bb" },
                     ]}
-                    {...register("region")}
+                    {...register("commission")}
                   />
 
               </div>
@@ -431,14 +460,14 @@ className="hidden"
             <Input
               placeholder="Enter Bank Branch"
               label="Bank Branch"
-              error={errors.branchName?.message}
-              {...register("branchName")}
+              error={errors.bankBranch?.message}
+              {...register("bankBranch")}
             />
             <Input
               placeholder="Enter Account No"
               label="Bank Account No"
-              error={errors.accountNumber?.message}
-              {...register("accountNumber")}
+              error={errors.bankAccountNo?.message}
+              {...register("bankAccountNo")}
             />
             <Input
               placeholder="Enter IFSC Code"
@@ -461,20 +490,20 @@ className="hidden"
               <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
                 <ViewIcon size="13" color="#565148"/>View
               </Button>
-              <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
+              {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
               </div>
               </div>
               <div className="bg-[#F5F9FC] p-3 rounded-2xl">
               <p className="text-[#303F58] text-base font-bold">ID Card</p>
               <p className="text-xs font-normal text-[#8F99A9] mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
               <img src={idcard} className="my-3" alt="" />
-              <div className="flex gap-3 justify-end">
+              <div className="flex gap-3 bg-[#FEFDFA] justify-end">
               <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
                 <ViewIcon size="13" color="#565148"/>View
               </Button>
-              <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
+              {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
               </div>
               </div>
             </div>
@@ -509,27 +538,14 @@ className="hidden"
         <Button  variant="primary"
         className="h-8 text-sm border rounded-lg"
         size="lg"
-        type="submit" onClick={handleNext}>
+        type="submit"   onClick={() => handleNext(activeTab)}>
             Next
         </Button>
     )}
 </div>
 
       </form>
-      {/* <div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
-          <Button variant="tertiary" size="sm" onClick={onClose}>
-            Cancel
-          </Button>
-          {tabs.indexOf(activeTab) === 4 ? (
-          <Button variant="primary" size="sm" type="submit">
-            Done
-          </Button>
-        ) : (
-          <Button variant="primary" size="sm" onClick={handleNext}>
-            Next
-          </Button>
-        )}
-        </div> */}
+
 
     </div>
   );

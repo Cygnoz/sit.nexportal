@@ -6,8 +6,8 @@ import EmailIcon from "../../../assets/icons/EmailIcon"
 import EmailRoundIcon from "../../../assets/icons/EmailRoundIcon"
 import PhoneRingIcon from "../../../assets/icons/PhoneRingIcon"
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon"
-import BackgroundImage from '../../../assets/Images/LeadView.jpg'
-import profileImage from '../../../assets/Images/AvatarImg.png'
+import BackgroundImage from '../../../assets/image/LeadView.jpg'
+import profileImage from '../../../assets/image/AvatarImg.png'
 
 type Props = {}
 

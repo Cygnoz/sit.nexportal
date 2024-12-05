@@ -10,7 +10,7 @@ import ViewCard from "../../../components/ui/ViewCard";
 import BackgroundView from '../../../assets/image/AMView.png'
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
-import profileImage from '../../../assets/Images/AvatarImg.png'
+import profileImage from '../../../assets/image/AvatarImg.png'
 import EditIcon from "../../../assets/icons/EditIcon";
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";

@@ -27,5 +27,5 @@ export const endPoints={
   GET_AREAS:'/areas',
 
   // Area Manager
-  
+  AM:'/area-manager',
 }
