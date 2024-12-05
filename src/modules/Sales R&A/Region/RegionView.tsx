@@ -8,8 +8,13 @@ import RegionTeamView from "./RegionTeamView"
 import RegionPerformanceView from "./RegionPerformanceView"
 import EditIcon from "../../../assets/icons/EditIcon"
 import DeleteIcon from "../../../assets/icons/DeleteIcon"
-import PlusCircle from "../../../assets/icons/PlusCircle"
 import region from "../../../assets/image/Ellipse 14 (3).png"
+
+import PlusCircleIcon from "../../../assets/icons/PlusCircleIcon"
+
+import EmailRound from "../../../assets/icons/EmailRound"
+
+import PhoneRoundIcon from "../../../assets/icons/PhoneRoundIcon"
 type Props = {}
 
 function RegionView({}: Props) {
@@ -66,7 +71,7 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
 
                             <div className="flex flex-col  items-center space-y-1">
                                 <div  className="w-8 h-8 mb-2 rounded-full">
-                                    <PlusCircle size={35} color="#D52B1E4D" />
+                                    <PlusCircleIcon size={35} color="#D52B1E4D" />
 
                                 </div>
                                 <p className="text-center font-medium  text-xs ms-2">Add Area</p>
@@ -87,11 +92,14 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
                 <div className="space-y-1 text-xs mt-2">
                 <p className="font-bold text-[12px]">Regional Manager Info</p>
                 <p className="text-[#8F99A9]">Total RM</p>
-                <p >02</p>
-                {/* 1st dropdown */}
-                <div className='flex justify-between items-center w-full '>
+                <p className="text-xs font-medium">02</p>
+               <div className="">
+                 {/* 1st dropdown */}
+                 <div className='flex justify-between items-center w-full'>
                     <div className="flex justify-between items-center gap-1">
-                    <div className='w-10 rounded-full bg-slate-400 h-10'></div>
+                    <div className="rounded-full ">
+                   <img className="w-10 h-10" src={region} alt="" />
+                   </div>
                     <div className="flex flex-col space-y-1">
                     <p className="text-[11px] text-[#8F99A9]">Name</p>
                     <p className="text-xs">Ashok Nair</p>
@@ -104,14 +112,18 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
                 </div>
                 {dropDown&&<>
                 <div className="flex  items-center gap-1  pt-2">
-                    <div className='w-10 rounded-full border h-10'></div>
+                <div className="w-10 rounded-full border h-10">
+                  <EmailRound/>
+                   </div>
                     <div className="flex flex-col space-y-1">
                     <p className="text-[11px] text-[#8F99A9]">Email Adress,</p>
                     <p className="text-xs">abid123@gmail.com</p>
                     </div>
                     </div>
                     <div className="flex  items-center gap-1  pt-2">
-                    <div className='w-10 rounded-full border h-10'></div>
+                    <div className='w-10 rounded-full border h-10'>
+                      <PhoneRoundIcon/>
+                    </div>
                     <div className="flex flex-col space-y-1">
                     <p className="text-[11px] text-[#8F99A9]">Phone Number</p>
                     <p className="text-xs">abid123@gmail.com</p>
@@ -119,9 +131,11 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
                     </div>
                 </>}
                     {/* 2nd  dropdown */}
-                    <div className='flex justify-between items-center w-full '>
+                    <div className='flex justify-between items-center w-full gap-1 pt-2'>
                     <div className="flex justify-between items-center gap-1">
-                    <div className='w-10 rounded-full bg-slate-400 h-10'></div>
+                    <div className="rounded-full">
+                   <img className="w-10 h-10" src={region} alt="" />
+                   </div>
                     <div className="flex flex-col space-y-1">
                     <p className="text-[11px] text-[#8F99A9]">Name</p>
                     <p className="text-xs">Michle Hussy</p>
@@ -131,19 +145,24 @@ const [activeTab, setActiveTab] = useState<string>("Aria");
                   :<p className='cursor-pointer' onClick={()=>setDropDown((prev)=>!prev)}> <ChevronUp size={18} color='#303F58'/></p>}
                 </div>
                 <div className="flex  items-center gap-1  pt-2">
-                    <div className='w-10 rounded-full border h-10'></div>
+                <div className="w-10 rounded-full border h-10">
+                  <EmailRound/>
+                   </div>
                     <div className="flex flex-col space-y-1">
                     <p className="text-[11px] text-[#8F99A9]">Email Adress,</p>
                     <p className="text-xs">bid123@gmail.com</p>
                     </div>
                     </div>
                     <div className="flex  items-center gap-1  pt-2">
-                    <div className='w-10 rounded-full border h-10'></div>
+                    <div className='w-10 rounded-full border h-10'>
+                      <PhoneRoundIcon/>
+                    </div>
                     <div className="flex flex-col space-y-1">
                     <p className="text-[11px] text-[#8F99A9]">Phone Number</p>
                     <p className="text-xs">90332435536</p>
                     </div>
                     </div>
+               </div>
                 </div>
 
             </div>

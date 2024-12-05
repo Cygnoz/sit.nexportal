@@ -30,6 +30,7 @@ import Otp from './pages/login/Otp';
 import NoAccess from './context/NoAccess';
 import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
 import { useRole } from './context/RoleContext';
+import TrialView from './modules/Customers/Trial/TrialView';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -66,6 +67,7 @@ const App: React.FC = () => {
             <Route path="supervisor/:id" element={<SuperVisorView />} />
 
             <Route path="trial" element={<TrialHome />} />
+            <Route path="trialView/:id" element={<TrialView/>} />
             <Route path="licenser" element={<LicensorHome />} />
 
             <Route path="region-manager" element={<RMHome />} />

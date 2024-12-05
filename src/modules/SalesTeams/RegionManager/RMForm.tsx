@@ -41,6 +41,7 @@ interface AddRegionalManagerData {
     workPhone?: string;
     role?: string;
     region?: string;
+    profile?:string
 }
 
 interface AddRegionalManagerProps {
@@ -277,7 +278,34 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
 
                     {activeTab === "Company Information" && (
                         <>
-                            <div className="grid grid-cols-2 gap-4 ">
+                        <h1 className="text-xs font-semibold">Set Login Credentials</h1>
+                        <div className="grid grid-cols-3 gap-4 my-4">
+                                <Input
+                                    placeholder="Email"
+                                    label="Enter Email"
+                                    error={errors.companyId?.message}
+                                    {...register("companyId")}
+                                />
+                                <Input
+                                    placeholder="Create Password"
+                                    label="Enter Password"
+                                    error={errors.workEmail?.message}
+                                    {...register("workEmail")}
+                                />
+                                <Input
+                                    placeholder="Confirm Password"
+                                    label="Re-enter Password"
+                                    error={errors.workEmail?.message}
+                                    {...register("workEmail")}
+                                />
+
+                            </div>
+
+                            <div>
+                                <hr />
+                            </div>
+                            
+                            <div className="grid grid-cols-2 gap-4 my-4 ">
                                 <Input
                                     placeholder="Enter Work Email"
                                     label="Work Email"
@@ -292,7 +320,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                                 />
 
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
+                            <div className="grid grid-cols-2 gap-4 my-4">
                                 <Select
                                     label="Choose Role"
                                     error={errors.role?.message}
@@ -311,6 +339,18 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                                     ]}
                                     {...register("region")}
                                 />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Select
+                                    label="Choose Commission Profile"
+                                    error={errors.profile?.message}
+                                    options={[
+                                        { value: "Admin", label: "Admin" },
+                                        { value: "Support", label: "Support" },
+                                    ]}
+                                    {...register("profile")}
+                                />
+                                
                             </div>
                         </>
                     )}
