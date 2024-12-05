@@ -4,7 +4,7 @@ interface Props {
   height?: number;
 }
 
-const TicketsIcon = ({ color, width = 19, height = 14 }: Props) => {
+const TicketCheck = ({ color, width = 19, height = 14 }: Props) => {
   return (
     <svg
       width={width}
@@ -24,4 +24,4 @@ const TicketsIcon = ({ color, width = 19, height = 14 }: Props) => {
   );
 };
 
-export default TicketsIcon;
+export default TicketCheck;

@@ -14,6 +14,7 @@ import PackageCheck from "../../../assets/icons/PackageCheck";
 import TrialIcon from "../../../assets/icons/TrialIcon";
 import LeadIcon from "../../../assets/icons/LeadIcon";
 import AddLicenser from "./LicenserForm";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -27,23 +28,17 @@ interface LicenserData {
   }
   
 const LicensorHome = () => {
+    const navigate=useNavigate()
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
-      const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-          // navigate(`/leadView/${viewId}`)
-          console.log(viewId);
-          
-        }else if(editId){
-          console.log(editId)
-          // setId({...id,edit:editId})
-        }
-        console.log(deleteId);
-        
+     
+
+      const handleView=(id:any)=>{
+        navigate(`/licenserView/${id}`)
       }
     
 
@@ -141,8 +136,8 @@ const LicensorHome = () => {
           ]
         }}
         actionList={[
-            { label: 'edit', function:handleEditDeleteView },
-            { label: 'view', function: handleEditDeleteView },
+            { label: 'edit', function:handleView },
+            { label: 'view', function: handleView },
           ]}  />
       </div>
 

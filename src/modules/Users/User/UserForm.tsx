@@ -17,34 +17,38 @@ import { UserData } from "../../../Interfaces/User";
 
 type Props = {
   onClose: () => void;
-  editId?:any;
+  editId?: any;
 };
 
-
-
-function UserForm({ onClose,editId }: Props) {
+function UserForm({ onClose, editId }: Props) {
   const addValidationSchema = Yup.object().shape({
     userName: Yup.string().required("Full name is required"),
-    email: Yup.string().email("Invalid email format").required("Email is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
     phoneNo: Yup.string().optional(), // Optional field, no need to make this required
-    password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+    password: Yup.string()
+      .min(6, "Password must be at least 6 characters")
+      .required("Password is required"),
     confirmPassword: Yup.string()
       .oneOf([Yup.ref("password")], "Passwords must match")
       .required("Confirm Password is required"),
     role: Yup.string().required("Role is required"),
   });
-  
+
   const editValidationSchema = Yup.object().shape({
     userName: Yup.string().required("Full name is required"),
-    email: Yup.string().email("Invalid email format").required("Email is required"),
+    email: Yup.string()
+      .email("Invalid email format")
+      .required("Email is required"),
     phoneNo: Yup.string().optional(), // Optional field, no need to make this required
-    role: Yup.string().required("Role is required")
+    role: Yup.string().required("Role is required"),
   });
-  
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const {request:addUser}=useApi('post',3002)
-  const {request:editUser}=useApi('put',3002)
-  const {request:getAUser}=useApi('get',3002)
+  const { request: addUser } = useApi("post", 3002);
+  const { request: editUser } = useApi("put", 3002);
+  const { request: getAUser } = useApi("get", 3002);
   const {
     register,
     handleSubmit,
@@ -53,7 +57,7 @@ function UserForm({ onClose,editId }: Props) {
     watch,
     setValue,
   } = useForm<UserData>({
-    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
   console.log(editId);
   const setFormValues = (data: UserData) => {
@@ -62,38 +66,36 @@ function UserForm({ onClose,editId }: Props) {
     });
   };
 
-  const getOneUser=async()=>{
-    try{
-      const {response,error}=await getAUser(`${endPoints.USER}/${editId}`)
-      if(response && !error){
-       const res=response.data
-       console.log(res);
-       
-       setFormValues(res);
+  const getOneUser = async () => {
+    try {
+      const { response, error } = await getAUser(`${endPoints.USER}/${editId}`);
+      if (response && !error) {
+        const res = response.data;
+        console.log(res);
+
+        setFormValues(res);
       }
-    }catch(err){
-      console.log('Err',err);
-      
+    } catch (err) {
+      console.log("Err", err);
     }
-  }
+  };
 
   const onSubmit: SubmitHandler<UserData> = async (data, event) => {
-    
     event?.preventDefault();
     console.log("Form Data:", data);
     try {
       const fun = editId ? editUser : addUser;
       let response, error;
-  
+
       if (editId) {
         ({ response, error } = await fun(`${endPoints.USER}/${editId}`, data));
       } else {
         ({ response, error } = await fun(endPoints.USER, data));
       }
-  
+
       console.log(response);
       console.log(error);
-  
+
       if (response && !error) {
         toast.success(response.data.message);
         onClose();
@@ -105,7 +107,6 @@ function UserForm({ onClose,editId }: Props) {
       toast.error("An unexpected error occurred.");
     }
   };
-  
 
   const addRoles: { label: string; value: Role }[] = [
     { label: "Super Admin", value: "Super Admin" },
@@ -141,29 +142,31 @@ function UserForm({ onClose,editId }: Props) {
 
   const handleRemoveImage = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent click propagation
- 
+
     // Clear the leadImage value
-    setValue("userImage","")
- 
+    setValue("userImage", "");
+
     // Reset the file input value
     if (fileInputRef?.current) {
       fileInputRef.current.value = ""; // Clear the input field
     }
   };
 
-
-  useEffect(()=>{
-    getOneUser()
-  },[])
-  
+  useEffect(() => {
+    getOneUser();
+  }, []);
 
   return (
     <div className="p-5 space-y-2 text-[#4B5C79] py-2">
       <div className="flex justify-between p-2">
         <div>
-          <h3 className="text-[#303F58] font-bold text-lg">{editId?'Edit':'Create'} User</h3>
+          <h3 className="text-[#303F58] font-bold text-lg">
+            {editId ? "Edit" : "Create"} User
+          </h3>
           <p className="text-[11px] text-[#8F99A9] mt-1">
-          {`Use this form to ${editId?'edit an existing user':'add a new user'} details. Please fill in the required information`}
+            {`Use this form to ${
+              editId ? "edit an existing user" : "add a new user"
+            } details. Please fill in the required information`}
           </p>
         </div>
         <p onClick={onClose} className="text-3xl cursor-pointer">
@@ -171,33 +174,33 @@ function UserForm({ onClose,editId }: Props) {
         </p>
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
-       
         <div className="grid grid-cols-12">
           <div className="col-span-3 ">
             <div className="flex justify-center items-center">
-            <label className="cursor-pointer text-center" htmlFor="file-upload">
-              <input
-                id="file-upload"
-                type="file"
-                className="hidden"
-                onChange={handleFileChange}
-              />
-              <ImagePlaceHolder
-                uploadedImage={watch("userImage")}
-              />
-            </label>
+              <label
+                className="cursor-pointer text-center"
+                htmlFor="file-upload"
+              >
+                <input
+                  id="file-upload"
+                  type="file"
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+                <ImagePlaceHolder uploadedImage={watch("userImage")} />
+              </label>
             </div>
-           
-            {watch('userImage') && (
-        <div
-          onClick={handleRemoveImage} // Remove image handler
-          className="flex justify-center items-center "
-        >
-          <div  className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
-           <Trash color="red" size={16}/>
-          </div>
-        </div>
-      )}
+
+            {watch("userImage") && (
+              <div
+                onClick={handleRemoveImage} // Remove image handler
+                className="flex justify-center items-center "
+              >
+                <div className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
+                  <Trash color="red" size={16} />
+                </div>
+              </div>
+            )}
           </div>
           <div className="col-span-9 my-2">
             <div className="mx-3 gap-4 space-y-2 max-w-lg">
@@ -231,32 +234,32 @@ function UserForm({ onClose,editId }: Props) {
                   setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                 }}
               />
-             {!editId&& 
-             <>
-             <InputPasswordEye
-                label="Password"
-                required
-                placeholder="Enter your password"
-                error={errors.password?.message}
-                {...register("password")}
-              />
-              <InputPasswordEye
-                label="Confirm Password"
-                required
-                placeholder="Confirm your password"
-                error={errors.confirmPassword?.message}
-                {...register("confirmPassword")}
-              />
-             </>
-             }
+              {!editId && (
+                <>
+                  <InputPasswordEye
+                    label="Password"
+                    required
+                    placeholder="Enter your password"
+                    error={errors.password?.message}
+                    {...register("password")}
+                  />
+                  <InputPasswordEye
+                    label="Confirm Password"
+                    required
+                    placeholder="Confirm your password"
+                    error={errors.confirmPassword?.message}
+                    {...register("confirmPassword")}
+                  />
+                </>
+              )}
               <Select
-              required
-  label="Role"
-  placeholder={!editId ? 'Select Role' : undefined}
-  options={editId ? editRoles : addRoles}
-  error={errors.role?.message}
-  {...register("role")}
-/>
+                required
+                label="Role"
+                placeholder={!editId ? "Select Role" : undefined}
+                options={editId ? editRoles : addRoles}
+                error={errors.role?.message}
+                {...register("role")}
+              />
             </div>
           </div>
         </div>
