@@ -21,7 +21,6 @@ import { RegionData } from "../../../Interfaces/Region";
 const RegionHome = () => {
   const [allRegions,setAllRegions]=useState<RegionData[]>([]);
   const {request:getAllRegion}=useApi('get',3003)
-  const {request:deleteRegion}=useApi('delete',3003)
   const navigate=useNavigate()
   const [editId,setEditId]=useState('')
   // State to manage modal visibility

@@ -19,6 +19,7 @@ import { AMData } from "../../../Interfaces/AM";
 import useApi from "../../../Hooks/useApi";
 import toast from "react-hot-toast";
 import { endPoints } from "../../../services/apiEndpoints";
+import { AreaData } from "../../../Interfaces/Area";
 
 interface RegionData {
   label: string;
@@ -31,9 +32,34 @@ interface AddAreaManagerProps {
 
 const validationSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
+  // emailAddress: Yup.string()
+  //   .email("Invalid email address")
+  //   .required("Email address is required"),
   phone: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
+  // age: Yup.string(),
+  // bloodGroup: Yup.string(),
+  // addressStreet1: Yup.string(),
+  // addressStreet2: Yup.string(),
+  // city: Yup.string(),
+  // state: Yup.string(),
+  // adhaarNo: Yup.string()
+  //   .matches(/^\d{12}$/, "Aadhaar number must be 12 digits"),
+  // panNo: Yup.string()
+  //   .matches(/^[A-Z]{5}\d{4}[A-Z]{1}$/, "Invalid PAN number"),
+  // dateOfJoining: Yup.string(),
+  // // Additional validation
+  // bankName: Yup.string(),
+  // branchName: Yup.string(),
+  // accountNumber: Yup.string(),
+  // ifscCode: Yup.string(),
+  // companyId: Yup.string(),
+  // workEmail: Yup.string().email("Invalid work email"),
+  // workPhone: Yup.string().matches(/^\d+$/, "Work phone number must contain only digits"),
+  // role: Yup.string(),
+  // region: Yup.string(),
+  // area:Yup.string(),
   loginEmail: Yup.string()
     .email("Invalid email address")
     .required("Login Email is required"),
@@ -52,17 +78,40 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
     clearErrors,
     trigger,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<AMData>({
     resolver: yupResolver(validationSchema),
   });
 
-  // const {request:addAM}=useApi('post',3002)
+  const { request: addAM } = useApi("post", 3002);
   const { request: getAllRegion } = useApi("get", 3003);
+  const [allAreas, setAllAreas] = useState<AreaData[]>([]);
+  // State to manage modal visibility
+  const { request: getAllArea } = useApi("get", 3003);
   const [regionData, setRegionData] = useState<RegionData[]>([]);
+  const [submit, setSubmit] = useState(false);
 
-  const onSubmit: SubmitHandler<AMData> = (data) => {
+  const onSubmit: SubmitHandler<AMData> = async (data) => {
     console.log(data);
+
+    if (submit) {
+      try {
+        const { response, error } = await addAM(endPoints.AM, data);
+        console.log("res", response);
+        console.log("err", error);
+        if (response && !error) {
+          toast.success(response.data.message);
+          onClose();
+          setSubmit(false);
+        } else {
+          toast.error(error.response.data.message);
+        }
+      } catch (err) {
+        console.error("Error submitting region data:", err);
+        toast.error("An unexpected error occurred.");
+      }
+    }
   };
 
   const tabs = [
@@ -125,6 +174,50 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
     getAllRegions();
   }, []);
 
+  const getAreas = async (regionId: any) => {
+    try {
+      const { response, error } = await getAllArea(endPoints.GET_AREAS);
+      console.log(response);
+
+      if (response && !error) {
+        const transformedAreas = response.data.areas?.filter(
+          (area: any) => area.region?._id === regionId
+        );
+
+        // Then set the transformed regions into state
+        setAllAreas(transformedAreas);
+      } else {
+        toast.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const regionId = watch("region");
+    getAreas(regionId);
+  }, [watch("region")]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setValue("image", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent click propagation
+
+    // Clear the leadImage value
+    setValue("image", "");
+  };
+
   return (
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
@@ -148,7 +241,6 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
         {tabs.map((tab, index) => (
           <div
             key={tab}
-            onClick={() => setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${
               activeTab === tab
                 ? "text-deepStateBlue border-b-2 border-secondary2"
@@ -184,10 +276,21 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                     id="file-upload"
                     type="file"
                     className="hidden"
+                    onChange={handleFileChange}
                     //   onChange={(e) => handleFileUpload(e)}
                   />
-                  <ImagePlaceHolder />
+                  <ImagePlaceHolder uploadedImage={watch("image")} />
                 </label>
+                {watch("image") && (
+                  <div
+                    onClick={handleRemoveImage} // Remove image handler
+                    className="flex ms-14"
+                  >
+                    <div className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
+                      <Trash color="red" size={16} />
+                    </div>
+                  </div>
+                )}
               </div>
               <div className="grid grid-cols-2 gap-2 col-span-10">
                 <Input
@@ -227,14 +330,14 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                 <Input
                   label="Address"
                   placeholder="Street 1"
-                  error={errors.street1?.message}
-                  {...register("street1")}
+                  error={errors.address?.street1?.message}
+                  {...register("address.street1")}
                 />
                 <Input
                   label="Address"
                   placeholder="Street 2"
-                  error={errors.street2?.message}
-                  {...register("street2")}
+                  error={errors.address?.street2?.message}
+                  {...register("address.street2")}
                 />
                 <Input
                   label="City"
@@ -329,11 +432,12 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                 <Select
                   label="Select Area"
                   placeholder="Choose Area"
+                  value={watch("area")}
                   error={errors.area?.message}
-                  options={[
-                    { value: "North", label: "North" },
-                    { value: "South", label: "South" },
-                  ]}
+                  options={allAreas.map((area) => ({
+                    value: area.areaCode,
+                    label: area.areaName,
+                  }))}
                   {...register("area")}
                 />
                 <Select
@@ -412,26 +516,26 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                 <Input
                   placeholder="Enter Bank Name"
                   label="Bank Name"
-                  error={errors.bankName?.message}
-                  {...register("bankName")}
+                  error={errors.bankDetails?.bankName?.message}
+                  {...register("bankDetails.bankName")}
                 />
                 <Input
                   placeholder="Enter Bank Branch"
                   label="Bank Branch"
-                  error={errors.bankBranch?.message}
-                  {...register("bankBranch")}
+                  error={errors.bankDetails?.bankBranch?.message}
+                  {...register("bankDetails.bankBranch")}
                 />
                 <Input
                   placeholder="Enter Account No"
                   label="Bank Account No"
-                  error={errors.bankAccountNo?.message}
-                  {...register("bankAccountNo")}
+                  error={errors.bankDetails?.bankAccountNo?.message}
+                  {...register("bankDetails.bankAccountNo")}
                 />
                 <Input
                   placeholder="Enter IFSC Code"
                   label="IFSC Code"
-                  error={errors.ifscCode?.message}
-                  {...register("ifscCode")}
+                  error={errors.bankDetails?.ifscCode?.message}
+                  {...register("bankDetails.ifscCode")}
                 />
               </div>
             </div>
@@ -513,7 +617,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
               className="h-8 text-sm border rounded-lg"
               size="lg"
               type="submit"
-              onClick={onClose}
+              onClick={() => setSubmit(true)}
             >
               Done
             </Button>
