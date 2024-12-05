@@ -18,6 +18,8 @@ import ViewIcon from "../../../assets/icons/ViewIcon";
 import bcardfront from '../../../assets/image/Business-card-front.svg'
 import bcardback from '../../../assets/image/Business-card-back.svg'
 import idcard from '../../../assets/image/ID-card 1.svg'
+import PrefixInput from "../../../components/form/PrefixInput";
+import CustomPhoneInput from "../../../components/form/CustomPhone";
 // import PlusCircle from "../../assets/icons/PlusCircle";
 // import Files from "../../assets/icons/Files";
 // import CheckIcon from "../../assets/icons/CheckIcon";
@@ -29,6 +31,7 @@ import idcard from '../../../assets/image/ID-card 1.svg'
 
 interface AddBDAData {
   fullName: string;
+  salutation?:string;
   emailAddress: string;
   phone: string;
   age?: string;
@@ -95,10 +98,24 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
   const {
     register,
     handleSubmit,
+    watch,
+    clearErrors,
+    setValue,
     formState: { errors },
   } = useForm<AddBDAData>({
     resolver: yupResolver(validationSchema),
+    defaultValues: {
+      salutation: "mr", // Default value for salutation
+    },
   });
+
+  const salutation = [
+    { value: "mr", label: "Mr." },
+    { value: "mrs", label: "Mrs." },
+    { value: "ms", label: "Ms." },
+    { value: "dr", label: "Dr." },
+  ];
+
 
 
   const onSubmit: SubmitHandler<AddBDAData> = (data) => {
@@ -126,6 +143,10 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
     if (currentIndex > 0) {
       setActiveTab(tabs[currentIndex - 1]);
     }
+  };
+
+  const handleInputChange = (field: keyof AddBDAData) => {
+    clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
 
@@ -192,24 +213,38 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
               </div>
               <div className="grid grid-cols-2 gap-2 col-span-10">
 
-                <Input
-                  placeholder="Enter Full Name"
-                  label="Full Name"
-                  error={errors.fullName?.message}
-                  {...register("fullName")}
-                />
+              <PrefixInput
+              label="Full Name"
+              selectName="salutation"
+              inputName="fullName"
+              selectValue={watch("salutation")} // Dynamic select binding
+              inputValue={watch("fullName")} // Dynamic input binding
+              options={salutation}
+              placeholder="Enter First Name"
+              error={errors.fullName?.message} // Display error message if any
+              onSelectChange={(e) => setValue("salutation", e.target.value)} // Update salutation value
+              onInputChange={(e) => {
+                clearErrors("fullName"); // Clear error for input field
+                setValue("fullName", e.target.value); // Update firstName value
+              }}
+            />
                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
                   error={errors.emailAddress?.message}
                   {...register("emailAddress")}
                 />
-                <Input
-                  placeholder=" Phone"
-                  label="Phone "
-                  error={errors.phone?.message}
-                  {...register("phone")}
-                />
+                <CustomPhoneInput
+              label="Phone"
+              name="phone"
+              error={errors.phone?.message}
+              placeholder="Enter Phone No"
+              value={watch("phone")} // Watch phone field for changes
+              onChange={(value) => {
+                handleInputChange("phone");
+                setValue("phone", value); // Update the value of the phone field in React Hook Form
+              }}
+            />
                 <div className="flex gap-4 w-full">
                   <Input
                     placeholder="Enter Age"
