@@ -2,7 +2,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import * as Yup from "yup";
 
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Files from "../../../assets/icons/Files";
 import PlusCircle from "../../../assets/icons/PlusCircle";
 import Input from "../../../components/form/Input";
@@ -16,32 +16,21 @@ import bcardback from '../../../assets/image/Business-card-back.svg'
 import idcard from '../../../assets/image/ID-card 1.svg'
 import ViewIcon from "../../../assets/icons/ViewIcon";
 import bcardfront from '../../../assets/image/Business-card-front.svg'
+import useApi from "../../../Hooks/useApi";
+import { RMData } from "../../../Interfaces/RM";
+import CustomPhoneInput from "../../../components/form/CustomPhone";
+import { endPoints } from "../../../services/apiEndpoints";
+// import { RegionData } from "../../../Interfaces/Region";
+import toast from "react-hot-toast";
 
 
-interface AddRegionalManagerData {
-    fullName: string;
-    emailAddress: string;
-    phone: string;
-    dateOfBirth?: string;
-    bloodGroup?: string;
-    addressStreet1?: string;
-    addressStreet2?: string;
-    city?: string;
-    state?: string;
-    adhaarNo?: string;
-    panNo?: string;
-    dateOfJoining?: string;
-    // Additional fields for Bank and Company information
-    bankName?: string;
-    branchName?: string;
-    accountName?: string;
-    ifscCode?: string;
-    companyId?: string;
-    workEmail?: string;
-    workPhone?: string;
-    role?: string;
-    region?: string;
+interface RegionData {
+    label: string;
+    value: string;
 }
+
+
+
 
 interface AddRegionalManagerProps {
     onClose: () => void;
@@ -49,34 +38,27 @@ interface AddRegionalManagerProps {
 
 const validationSchema = Yup.object({
     fullName: Yup.string().required("Full name is required"),
-    emailAddress: Yup.string()
-        .email("Invalid email address")
-        .required("Email address is required"),
+
     phone: Yup.string()
         .matches(/^\d+$/, "Phone number must contain only digits")
         .required("Phone number is required"),
-    dateOfBirth: Yup.string(),
-    bloodGroup: Yup.string(),
-    addressStreet1: Yup.string(),
-    addressStreet2: Yup.string(),
-    city: Yup.string(),
-    state: Yup.string(),
-    adhaarNo: Yup.string().matches(/^\d{12}$/, "Aadhaar number must be 12 digits"),
-    panNo: Yup.string().matches(/^[A-Z]{5}\d{4}[A-Z]{1}$/, "Invalid PAN number"),
-    dateOfJoining: Yup.string(),
-    // Additional validation
-    bankName: Yup.string(),
-    branchName: Yup.string(),
-    accountName: Yup.string(),
-    ifscCode: Yup.string(),
-    companyId: Yup.string(),
-    workEmail: Yup.string().email("Invalid work email"),
-    workPhone: Yup.string().matches(/^\d+$/, "Work phone number must contain only digits"),
-    role: Yup.string(),
-    region: Yup.string(),
+    loginEmail: Yup.string()
+        .email("Invalid email address")
+        .required("Login Email.is required"),
+    password: Yup.string().min(6, "Password must be at least 6 characters").required("Password is required"),
+    confirmPassword: Yup.string()
+        .oneOf([Yup.ref("password")], "Passwords must match")
+        .required("Confirm Password is required"),
+
+
 });
 
 const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
+    const { request: addRM } = useApi('post', 3002)
+    //const { request: editRM } = useApi('put', 3002)
+    const { request: getAllRegion } = useApi('get', 3003)
+    const [regionData, setRegionData] = useState<RegionData[]>([]);
+
     const tabs = [
         "Personal Information",
         "Company Information",
@@ -87,19 +69,6 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
 
-    const handleNext = () => {
-        const currentIndex = tabs.indexOf(activeTab);
-        if (currentIndex < tabs.length - 1) {
-            setActiveTab(tabs[currentIndex + 1]);
-        }
-    };
-    
-    const handleBack = () => {
-        const currentIndex = tabs.indexOf(activeTab);
-        if (currentIndex > 0) {
-            setActiveTab(tabs[currentIndex - 1]);
-        }
-    };
 
 
 
@@ -108,14 +77,92 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
         register,
         handleSubmit,
         formState: { errors },
-    } = useForm<AddRegionalManagerData>({
+        clearErrors,
+        trigger,
+        setValue,
+        watch
+    } = useForm<RMData>({
         resolver: yupResolver(validationSchema),
     });
 
-    const onSubmit: SubmitHandler<AddRegionalManagerData> = (data) => {
+  
+    const onSubmit: SubmitHandler<RMData> = async (data) => {
         console.log(data);
+        if(activeTab=="ID & Business Card"){
+        try{
+         const apiCall= addRM;
+            const { response, error } = await apiCall(endPoints.RM, data);
+            console.log("res",response);
+            console.log("err",error);
+            
+
+            if (response && !error) {
+              toast.success(response.data.message);
+              onClose();
+            } else {
+              toast.error(error.response.data.message);
+            }
+
+        }catch (err){
+
+        }
+    }
+    };
+   
+
+    const handleNext = async (tab: string) => {
+        const currentIndex = tabs.indexOf(activeTab);
+        let fieldsToValidate: any[] = [];
+
+        if (tab === "Personal Information") {
+            fieldsToValidate = ["fullName", "phone"];
+        } else if (tab === "Company Information") {
+            fieldsToValidate = ["loginEmail", "Password", "confirmPassword"];
+        }
+
+        const isValid = fieldsToValidate.length ? await trigger(fieldsToValidate) : true;
+
+        if (isValid && currentIndex < tabs.length - 1) {
+            setActiveTab(tabs[currentIndex + 1]);
+            clearErrors();
+        }
     };
 
+    const handleBack = () => {
+        const currentIndex = tabs.indexOf(activeTab);
+        if (currentIndex > 0) {
+            setActiveTab(tabs[currentIndex - 1]);
+        }
+    };
+
+    const handleInputChange = (field: keyof RMData) => {
+        clearErrors(field); // Clear the error for the specific field when the user starts typing
+    };
+
+
+    const getAllRegions = async () => {
+        try {
+            const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
+
+            if (response && !error) {
+                // Extract only `regionName` and `_id` from each region
+                const filteredRegions = response.data.regions?.map((region: any) => ({
+                    label: region.regionName,
+                    value: String(region._id), // Ensure `value` is a string
+                }));
+                // Update the state with the filtered regions
+                setRegionData(filteredRegions);
+            } else {
+                toast.error(error.response.data.message);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    useEffect(() => {
+        getAllRegions()
+    }, [])
 
 
 
@@ -136,7 +183,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                     onClick={onClose}
                     className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
                 >
-                   &times;
+                    &times;
                 </button>
             </div>
 
@@ -144,10 +191,10 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                 {tabs.map((tab, index) => (
                     <div
                         key={tab}
-                        onClick={()=>setActiveTab(tab)}
+                        // onClick={()=>setActiveTab(tab)}
                         className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
-                                ? "text-deepStateBlue border-b-2 border-secondary2"
-                                : "text-gray-600"
+                            ? "text-deepStateBlue border-b-2 border-secondary2"
+                            : "text-gray-600"
                             }`}
                     >
                         <p>
@@ -167,7 +214,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
             <form onSubmit={handleSubmit(onSubmit)}>
 
                 <div className="transition-all duration-300"
-                style={{ minHeight: "450px" }}>
+                    style={{ minHeight: "450px" }}>
                     {activeTab === "Personal Information" && (
 
 
@@ -187,6 +234,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                             <div className="grid grid-cols-2 gap-2 col-span-10">
 
                                 <Input
+                                    required
                                     placeholder="Enter Full Name"
                                     label="Full Name"
                                     error={errors.fullName?.message}
@@ -195,21 +243,30 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                                 <Input
                                     placeholder="Enter Email Address"
                                     label="Email Address"
-                                    error={errors.emailAddress?.message}
-                                    {...register("emailAddress")}
+                                    error={errors.email?.message}
+                                    {...register("email")}
                                 />
-                                <Input
-                                    placeholder=" Phone"
-                                    label="Phone "
+                                <CustomPhoneInput
+                                    label="Phone Number"
+                                    required
+
                                     error={errors.phone?.message}
                                     {...register("phone")}
+                                    placeholder="Enter phone number"
+                                    onChange={(value) => {
+                                        handleInputChange("phone");
+                                        setValue("phone", value); // Update the value of the phone field in React Hook Form
+                                    }}
+                                // Watch phone field for changes
+
                                 />
                                 <div className="flex gap-4 w-full">
                                     <Input
                                         placeholder="Enter Age"
                                         label="Age"
-                                        error={errors.dateOfBirth?.message}
-                                        {...register("dateOfBirth")}
+                                        error={errors.age?.message}
+                                        {...register("age")}
+
                                     />
                                     <Input
                                         label="Blood Group"
@@ -221,14 +278,14 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                                 <Input
                                     label="Address"
                                     placeholder="Street 1"
-                                    error={errors.addressStreet1?.message}
-                                    {...register("addressStreet1")}
+                                    error={errors.address?.street1?.message}
+                                    {...register("address.street1")}
                                 />
                                 <Input
                                     label="Address"
                                     placeholder="Street 2"
-                                    error={errors.addressStreet2?.message}
-                                    {...register("addressStreet2")}
+                                    error={errors.address?.street2?.message}
+                                    {...register("address.street2")}
                                 />
                                 <Input
                                     label="City"
@@ -237,6 +294,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                                     {...register("city")}
                                 />
                                 <Select
+                                    placeholder="Select State"
                                     label="State"
                                     error={errors.state?.message}
                                     options={[
@@ -273,45 +331,88 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
 
                     )}
 
-                   
+
 
                     {activeTab === "Company Information" && (
                         <>
-                            <div className="grid grid-cols-2 gap-4 ">
+                            <h1 className="text-xs font-semibold">Set Login Credentials</h1>
+                            <div className="grid grid-cols-3 gap-4 my-4">
                                 <Input
-                                    placeholder="Enter Work Email"
-                                    label="Work Email"
-                                    error={errors.companyId?.message}
-                                    {...register("companyId")}
+                                    required
+                                    placeholder="Enter Email"
+                                    label="Email"
+                                    error={errors.loginEmail?.message}
+                                    {...register("loginEmail")}
                                 />
                                 <Input
-                                    placeholder="Enter Work Phone"
-                                    label="Work Phone"
-                                    error={errors.workEmail?.message}
-                                    {...register("workEmail")}
+                                    required
+                                    placeholder="Create Password"
+                                    label="Enter Password"
+                                    error={errors.password?.message}
+                                    {...register("password")}
+                                />
+                                <Input
+                                    required
+                                    placeholder="Confirm Password"
+                                    label="Re-enter Password"
+                                    error={errors.confirmPassword?.message}
+                                    {...register("confirmPassword")}
                                 />
 
                             </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <Select
-                                    label="Choose Role"
-                                    error={errors.role?.message}
-                                    options={[
-                                        { value: "Admin", label: "Admin" },
-                                        { value: "Support", label: "Support" },
-                                    ]}
-                                    {...register("role")}
-                                />
-                                <Select
-                                    label="Select Region"
-                                    error={errors.region?.message}
-                                    options={[
-                                        { value: "North", label: "North" },
-                                        { value: "South", label: "South" },
-                                    ]}
-                                    {...register("region")}
-                                />
+
+                            <div>
+                                <hr />
                             </div>
+
+                            <div className="grid grid-cols-2 gap-4 my-4 ">
+                                <Input
+                                    placeholder="Enter Work Email"
+                                    label="Work Email"
+                                    error={errors.workEmail?.message}
+                                    {...register("workEmail")}
+                                />
+                                <CustomPhoneInput
+                                    label="Phone Number"
+                                    required
+
+                                    error={errors.workPhone?.message}
+                                    {...register("workPhone")}
+                                    placeholder="Enter phone number"
+                                    onChange={(value) => {
+                                        handleInputChange("workPhone");
+                                        setValue("workPhone", value); // Update the value of the phone field in React Hook Form
+                                    }}
+                                // Watch phone field for changes
+
+                                />
+
+                            </div>
+                            <div className="grid grid-cols-2 gap-4 my-4">
+
+                                <Select
+                                    placeholder="Select Region"
+                                    label="Select Region"
+                                    value={watch("region")}
+                                    error={errors.region?.message}
+                                    options={regionData}
+                                    {...register("region")}
+
+                                />
+                                <Select
+                                    placeholder="Select Commission profile"
+                                    label="Choose Commission Profile"
+                                    error={errors.commission?.message}
+                                    options={[
+                                        { value: "5", label: "5" },
+                                        { value: "10", label: "10" },
+                                        { value: "15", label: "15" },
+                                    ]}
+                                    {...register("commission")}
+                                />
+
+                            </div>
+
                         </>
                     )}
 
@@ -380,100 +481,100 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                         </div>
                     )}
 
-                     {activeTab === "Bank Information" && (
+                    {activeTab === "Bank Information" && (
                         <div className="grid grid-cols-2 gap-4">
                             <Input
                                 placeholder="Enter Bank Name"
                                 label="Bank Name"
-                                error={errors.bankName?.message}
-                                {...register("bankName")}
+                                error={errors.bankDetails?.bankName?.message}
+                                {...register("bankDetails.bankName")}
                             />
                             <Input
                                 placeholder="Enter Bank Branch"
                                 label="Bank Branch"
-                                error={errors.branchName?.message}
-                                {...register("branchName")}
+                                error={errors.bankDetails?.bankBranch?.message}
+                                {...register("bankDetails.bankBranch")}
                             />
                             <Input
                                 placeholder="Enter Account No"
                                 label="Bank Account No"
-                                error={errors.accountName?.message}
-                                {...register("accountName")}
+                                error={errors.bankDetails?.bankAccountNo?.message}
+                                {...register("bankDetails.bankAccountNo")}
                             />
                             <Input
                                 placeholder="Enter IFSC Code"
                                 label="IFSC Code"
-                                error={errors.ifscCode?.message}
-                                {...register("ifscCode")}
+                                error={errors.bankDetails?.ifscCode?.message}
+                                {...register("bankDetails.ifscCode")}
                             />
                         </div>
                     )}
 
                     {activeTab === "ID & Business Card" && (
-          <div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#F5F9FC] p-3 rounded-2xl">
-              <p className="text-[#303F58] text-base font-bold">Business Card</p>
-              <p className="text-xs font-normal text-[#8F99A9] mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
-              <img src={bcardfront} className="my-3" alt="" />
-              <img src={bcardback} className="mb-3" alt="" />
-              <div className="flex gap-3 justify-end">
-              <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
-                <ViewIcon size="13" color="#565148"/>View
-              </Button>
-              <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
-              </div>
-              </div>
-              <div className="bg-[#F5F9FC] p-3 rounded-2xl">
-              <p className="text-[#303F58] text-base font-bold">ID Card</p>
-              <p className="text-xs font-normal text-[#8F99A9] mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
-              <img src={idcard} className="my-3" alt="" />
-              <div className="flex gap-3 justify-end">
-              <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
-                <ViewIcon size="13" color="#565148"/>View
-              </Button>
-              <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
-              </div>
-              </div>
-            </div>
-          </div>
-        )}
+                        <div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                                    <p className="text-[#303F58] text-base font-bold">Business Card</p>
+                                    <p className="text-xs font-normal text-[#8F99A9] mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
+                                    <img src={bcardfront} className="my-3" alt="" />
+                                    <img src={bcardback} className="mb-3" alt="" />
+                                    <div className="flex gap-3 justify-end">
+                                        <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
+                                            <ViewIcon size="13" color="#565148" />View
+                                        </Button>
+                                        {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
+                                    </div>
+                                </div>
+                                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                                    <p className="text-[#303F58] text-base font-bold">ID Card</p>
+                                    <p className="text-xs font-normal text-[#8F99A9] mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
+                                    <img src={idcard} className="my-3" alt="" />
+                                    <div className="flex gap-3 justify-end">
+                                        <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
+                                            <ViewIcon size="13" color="#565148" />View
+                                        </Button>
+                                        {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
 
 
                 </div>
 
                 <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2">
-    {tabs.indexOf(activeTab) > 0 ? (
-        <Button variant="tertiary"
-        className="h-8 text-sm border rounded-lg"
-        size="lg" onClick={handleBack}>
-            Back
-        </Button>
-    ) : (
-        <Button variant="tertiary"
-        className="h-8 text-sm border rounded-lg"
-        size="lg" onClick={onClose}>
-            Cancel
-        </Button>
-    )}
-    {tabs.indexOf(activeTab) === tabs.length - 1 ? (
-        <Button  variant="primary"
-        className="h-8 text-sm border rounded-lg"
-        size="lg"
-        type="submit" onClick={onClose} >
-            Done
-        </Button>
-    ) : (
-        <Button  variant="primary"
-        className="h-8 text-sm border rounded-lg"
-        size="lg"
-        type="submit" onClick={handleNext}>
-            Next
-        </Button>
-    )}
-</div>
+                    {tabs.indexOf(activeTab) > 0 ? (
+                        <Button variant="tertiary"
+                            className="h-8 text-sm border rounded-lg"
+                            size="lg" onClick={handleBack}>
+                            Back
+                        </Button>
+                    ) : (
+                        <Button variant="tertiary"
+                            className="h-8 text-sm border rounded-lg"
+                            size="lg" onClick={onClose}>
+                            Cancel
+                        </Button>
+                    )}
+                    {tabs.indexOf(activeTab) === tabs.length - 1 ? (
+                        <Button variant="primary"
+                            className="h-8 text-sm border rounded-lg"
+                            size="lg"
+                            type="submit"  >
+                            Done
+                        </Button>
+                    ) : (
+                        <Button variant="primary"
+                            className="h-8 text-sm border rounded-lg"
+                            size="lg"
+                            type="submit" onClick={() => handleNext(activeTab)}>
+                            Next
+                        </Button>
+                    )}
+                </div>
             </form>
         </div>
     );
