@@ -30,4 +30,6 @@ export const endPoints={
   RM:'/region-manager',
   
 
+  // Area Manager
+  AM:'/area-manager',
 }

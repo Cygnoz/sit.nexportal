@@ -55,7 +55,7 @@ const validationSchema = Yup.object({
 
 const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     const { request: addRM } = useApi('post', 3002)
-    const { request: editRM } = useApi('put', 3002)
+    //const { request: editRM } = useApi('put', 3002)
     const { request: getAllRegion } = useApi('get', 3003)
     const [regionData, setRegionData] = useState<RegionData[]>([]);
 
