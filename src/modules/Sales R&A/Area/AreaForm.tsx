@@ -43,6 +43,8 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
     resolver: yupResolver(validationSchema),
   });
 
+ 
+
   
 
   const onSubmit: SubmitHandler<AreaData> =async (data) => {
@@ -75,6 +77,8 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
           label: region.regionName,
           value: String(region._id), // Ensure `value` is a string
         }));
+
+        
   
         // Update the state with the filtered regions
         setRegionData(filteredRegions);
@@ -121,7 +125,8 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
     }
   }, [editId]);
 
-
+  console.log(editId);
+  
   
 
 

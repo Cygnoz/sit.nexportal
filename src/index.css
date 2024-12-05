@@ -12,7 +12,7 @@ body{
   background-color: #f5f5f8;
 }
 
-.custom-scrollbar {
+.hide-scrollbar {
   /* For Firefox */
   scrollbar-width: none;
 
@@ -20,7 +20,32 @@ body{
   -ms-overflow-style: none; /* Internet Explorer 10+ */
 }
 
-.custom-scrollbar::-webkit-scrollbar {
+.hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+
+/* Custom Scrollbar for .custom-scrollbar class */
+
+
+/* Custom Scrollbar styles */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+  height: 12px; /* Height of the scrollbar (horizontal scrollbar) */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #303F58; /* Gray color for the scrollbar thumb */
+  border-radius: 6px; /* Border radius for rounded corners */
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* Darker gray on hover */
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* Light gray track */
+  border-radius: 6px; /* Border radius for the track */
+}
+
 

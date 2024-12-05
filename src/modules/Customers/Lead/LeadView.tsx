@@ -39,7 +39,7 @@ function LeadView({}: Props) {
         <div className="col-span-3">
           <ViewSidebar/>
         </div>
-        
+
         <div className="col-span-9 ms-4"> 
                   {/* HomeCards Section */}
       <div className="flex gap-3 justify-between">

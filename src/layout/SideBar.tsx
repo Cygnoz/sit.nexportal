@@ -17,7 +17,7 @@ const Sidebar: React.FC = () => {
   const sidebarOptions = getSidebarOptions(role); // Get sidebar options based on the role
 
   return (
-    <aside className="sidebar bg-primary min-h-screen  overflow-y-auto custom-scrollbar w-[12%]">
+    <aside className="sidebar bg-primary min-h-screen  overflow-y-auto hide-scrollbar w-[12%]">
       {/* Logo */}
       <div className="flex p-5 items-center gap-3">
         <img src={BillBizz} alt="billbizz logo" className="w-6" />

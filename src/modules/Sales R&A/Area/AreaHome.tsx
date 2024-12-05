@@ -14,15 +14,9 @@ import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+import { AreaData } from "../../../Interfaces/Area";
 
-// Define the type for data items
-interface AreaData {
-  areaCode: string;
-  areaName: string;
-  createdDate: string;
-  region: { regionName: string; id: string };
-  description: string;
-}
+
 
 const AreaHome = () => {
   const navigate=useNavigate()
@@ -115,13 +109,17 @@ const AreaHome = () => {
     { key: "region.regionName", label: "Region" },
     { key: "description", label: "Discription" },
   ];
-
+  console.log(allAreas);
+  
   return (
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">Area</h1>
-        <Button variant="primary" size="sm" onClick={handleModalToggle}>
+        <Button variant="primary" size="sm" onClick={()=>{
+          handleModalToggle()
+          setEditId('')
+        }}>
           <span className="font-bold text-xl">+</span> Create Area
         </Button>
       </div>

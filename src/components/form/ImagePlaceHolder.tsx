@@ -1,4 +1,4 @@
-import AvtarImg from "../../assets/Images/AvatarImg.png";
+import AvtarImg from "../../assets/image/AvatarImg.png";
  
 type Props = {
   uploadedImage?: string;
