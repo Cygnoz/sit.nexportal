@@ -78,6 +78,7 @@ const validationSchema = Yup.object({
             clearErrors,
             trigger,
             watch,
+            setValue,
             formState: { errors },
           } = useForm<AMData>({
             resolver: yupResolver(validationSchema),
@@ -89,25 +90,31 @@ const validationSchema = Yup.object({
     // State to manage modal visibility
     const {request:getAllArea}=useApi('get',3003)  
     const [regionData, setRegionData] = useState<RegionData[]>([]);
+    const [submit,setSubmit]=useState(false)
 
 
   const onSubmit: SubmitHandler<AMData> = async(data) => {
     console.log(data);
-    try{
-      const { response, error } = await addAM(endPoints.AM, data);
-      console.log("res",response);
-      console.log("err",error);
-      if (response && !error) {
-        toast.success(response.data.message);
-        onClose();
-      } else {
-        toast.error(error.response.data.message);
+
+    if(submit){
+      try{
+        const { response, error } = await addAM(endPoints.AM, data);
+        console.log("res",response);
+        console.log("err",error);
+        if (response && !error) {
+          toast.success(response.data.message);
+          onClose();
+          setSubmit(false)
+        } else {
+          toast.error(error.response.data.message);
+        }
+      }
+      catch(err){
+        console.error("Error submitting region data:", err);
+        toast.error("An unexpected error occurred.");
       }
     }
-    catch(err){
-      console.error("Error submitting region data:", err);
-      toast.error("An unexpected error occurred.");
-    }
+
   };
 
   const tabs = [
@@ -144,6 +151,7 @@ const handleNext = async (tab: string) => {
 };
 
 const getAllRegions = async () => {
+
   try {
     const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
 
@@ -171,14 +179,15 @@ useEffect(()=>{
   getAllRegions()
 },[])
 
-const getAreas=async()=>{
+const getAreas=async(regionId:any)=>{
+  
   try{
     const {response,error}=await getAllArea(endPoints.GET_AREAS)
+    console.log(response);
+    
     if(response && !error){
-      const transformedAreas = response.data.areas?.map((area:any) => ({
-        ...area,
-        createdAt: new Date(area.createdAt).toISOString().split('T')[0], // Extracts the date part
-      }));
+      const transformedAreas = response.data.areas?.filter((area: any) => area.region?._id === regionId);
+
       
       // Then set the transformed regions into state
       setAllAreas(transformedAreas);
@@ -190,11 +199,31 @@ const getAreas=async()=>{
   }
 }
 
+
 useEffect(()=>{
-  getAreas()
-},[])
+  const regionId = watch("region")
+  getAreas(regionId)
+},[watch("region")])
 
+const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      setValue("image", base64String);
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
+const handleRemoveImage = (e: React.MouseEvent) => {
+  e.stopPropagation(); // Prevent click propagation
+
+  // Clear the leadImage value
+  setValue("image","")
+
+};
   
 
   return (
@@ -206,6 +235,7 @@ useEffect(()=>{
         <button
           type="button"
           onClick={onClose}
+        
           className="text-gray-600 hover:text-gray-900 font-bold"
         >
         <p className="text-xl">&times;</p>
@@ -220,7 +250,6 @@ useEffect(()=>{
           {tabs.map((tab, index) => (
                     <div
                         key={tab}
-                        onClick={()=>setActiveTab(tab)}
                         className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
                                 ? "text-deepStateBlue border-b-2 border-secondary2"
                                 : "text-gray-600"
@@ -253,11 +282,23 @@ useEffect(()=>{
 id="file-upload"
 type="file"
 className="hidden"
+onChange={handleFileChange}
 //   onChange={(e) => handleFileUpload(e)}
 />
-<ImagePlaceHolder />
+<ImagePlaceHolder 
+ uploadedImage={watch("image")}
+/>
 </label>
-
+{watch('image') && (
+        <div
+          onClick={handleRemoveImage} // Remove image handler
+          className="flex ms-14"
+        >
+          <div  className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
+           <Trash color="red" size={16}/>
+          </div>
+        </div>
+      )}
      </div>
      <div className="grid grid-cols-2 gap-2 col-span-10">
 
@@ -411,7 +452,7 @@ className="hidden"
     label: area.areaName,
   }))} 
   {...register("area")}
-/>;
+/>
                    <Select
                     label="Choose Commission Profile"
                     placeholder="Commission Profile"
@@ -574,7 +615,7 @@ className="hidden"
         <Button  variant="primary"
         className="h-8 text-sm border rounded-lg"
         size="lg"
-        type="submit" onClick={onClose} >
+        type="submit" onClick={()=>setSubmit(true)} >
             Done
         </Button>
     ) : (
