@@ -8,6 +8,8 @@ const regionManagerController = require('../controller/regionManagerController')
 
 const areaManagerController = require('../controller/areaManagerController')
 
+const bdaController = require('../controller/bdaController')
+
 
 const checkPermission = require('../controller/authController/permission');
 
@@ -47,6 +49,18 @@ router.get("/area-managers/:id",verifyToken,checkPermission('View Area Manager')
 router.put("/area-managers/:id",verifyToken,checkPermission('Edit Area Manager'), areaManagerController.editAreaManager,ActivityLogGeneration('Edit Area Manager'));
 
 // router.delete("/user/:userId",verifyToken,checkPermission('Delete Area Manager'), areaManagerController.deleteUser,ActivityLogGeneration('Delete Area Manager'));
+
+// BDA
+// Area manager
+router.post('/bda',verifyToken,checkPermission('Add BDA'),bdaController.addBda,ActivityLogGeneration('Add BDA'))
+
+router.get("/bda",verifyToken,checkPermission('View BDA'), bdaController.getAllBda);
+
+router.get("/bda/:id",verifyToken,checkPermission('View BDA'), bdaController.getBda);
+
+router.put("/bda/:id",verifyToken,checkPermission('Edit BDA'), bdaController.editBda,ActivityLogGeneration('Edit BDA'));
+
+// router.delete("/user/:userId",verifyToken,checkPermission('Delete BDA'), bdaController.deleteUser,ActivityLogGeneration('Delete BDA'));
 
 
 router.get('/get-activity-logs',verifyToken,checkPermission('View logs'),userController.getAllActivityLogs)

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const areaManagerSchema = new mongoose.Schema({
+const bdaSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   email: { type: String},
   age: { type: Number},
@@ -29,5 +29,5 @@ const areaManagerSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('AreaManager', areaManagerSchema);
+module.exports = mongoose.model('Bda', bdaSchema);
 

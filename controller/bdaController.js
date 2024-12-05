@@ -1,6 +1,6 @@
 
 const User = require("../database/model/user");
-const RegionManager = require("../database/model/regionManager");
+const Bda = require("../database/model/bda");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require('mongoose').Types;
 
@@ -71,17 +71,17 @@ const logOperation = (req, status, operationId = null) => {
       email: loginEmail,
       password: hashedPassword,
       phoneNo: phone,
-      role: "Region Manager",
+      role: "BDA",
     });
     return newUser.save();
   }
   
-  async function createRegionManager(data, user) {
-    const newRegionManager = new RegionManager({...data, user});
-    return newRegionManager.save();
+  async function createBda(data, user) {
+    const newBda = new Bda({...data, user});
+    return newBda.save();
   }
   
-  exports.addRegionManager = async (req, res, next) => {
+  exports.addBda = async (req, res, next) => {
     try {
       // Destructure and validate
       const data = cleanData(req.body);
@@ -91,10 +91,9 @@ const logOperation = (req, status, operationId = null) => {
       if (validationError) {
         return res.status(400).json({ message: validationError });
       }
-      if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
+      if (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100) {
         return res.status(400).json({ message: "Invalid commission value" });
       }
-      
   
       // Check for duplicates
       const duplicateCheck = await checkDuplicateUser(data.fullName, data.loginEmail, data.phone);
@@ -106,24 +105,17 @@ const logOperation = (req, status, operationId = null) => {
       const newUser = await createUser(data);
   
       // Create region manager
-      const newRegionManager = await createRegionManager(data, newUser._id);
+      const newBda = await createBda(data, newUser._id);
   
-      logOperation(req, "Success", newRegionManager._id);
+      logOperation(req, "Success", newBda._id);
       next()
       return res.status(201).json({
-        message: "Region Manager added successfully",
+        message: "BDA added successfully",
         userId: newUser._id,
-        regionManagerId: newRegionManager._id,
+        areaManagerId: newBda._id,
       });
     } catch (error) {
-      if (error instanceof UserCreationError) {
-        console.error("User creation failed:", error);
-        return res.status(500).json({ message: "Error creating user" });
-      }
-      if (error instanceof RegionManagerCreationError) {
-        console.error("Region manager creation failed:", error);
-        return res.status(500).json({ message: "Error creating region manager" });
-      }
+
       logOperation(req, "Failed");
        next();
       console.error("Unexpected error:", error);
@@ -132,51 +124,51 @@ const logOperation = (req, status, operationId = null) => {
   };
   
 
-  exports.getRegionManager = async (req, res) => {
+  exports.getBda = async (req, res) => {
     try {
       const { id } = req.params;
   
-      const regionManager = await RegionManager.findById(id).populate('user', 'userName phoneNo').exec();
+      const bda = await Bda.findById(id).populate('user', 'userName phoneNo').exec();
       
-      if (!regionManager) {
-        return res.status(404).json({ message: "Region Manager not found" });
+      if (!bda) {
+        return res.status(404).json({ message: "BDA not found" });
       }
   
-      res.status(200).json(regionManager);
+      res.status(200).json(bda);
     } catch (error) {
-      console.error("Error fetching Region Manager:", error);
+      console.error("Error fetching BDAr:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   };
   
-  exports.getAllRegionManager = async (req, res) => {
+  exports.getAllBda = async (req, res) => {
       try {
-        const regionManager = await RegionManager.find({}).populate('user', 'userName phoneNo');
+        const bda = await Bda.find({}).populate('user', 'userName phoneNo');
     
-        if (regionManager.length === 0) {
-          return res.status(404).json({ message: "No Region Manager found" });
+        if (bda.length === 0) {
+          return res.status(404).json({ message: "No BDA found" });
         }
     
-        res.status(200).json({ regionManager });
+        res.status(200).json({ bda });
       } catch (error) {
-        console.error("Error fetching all Region Manager:", error);
+        console.error("Error fetching all Bda:", error);
         res.status(500).json({ message: "Internal server error" });
       }
     };
 
 
-    exports.editRegionManager = async (req, res,next) => {
+    exports.editBda = async (req, res,next) => {
       try {
         const { id } = req.params;
         const data = cleanData(req.body);
         // Fetch the existing document to get the user field
-    const existingRegionManager = await RegionManager.findById(id);
-    if (!existingRegionManager) {
-      return res.status(404).json({ message: "Region Manager not found" });
+    const existingBda = await Bda.findById(id);
+    if (!existingBda) {
+      return res.status(404).json({ message: "BDA not found" });
     }
 
     // Extract the user field (ObjectId)
-    const existingUserId = existingRegionManager.user;
+    const existingUserId = existingBda.user;
 
 
         
@@ -198,9 +190,7 @@ const logOperation = (req, status, operationId = null) => {
         if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
           return res.status(400).json({ message: "Invalid commission value" });
         }
-        console.log("RM" , id)
-        console.log("userId" , existingUserId)
-
+        
         const updatedUser = await User.findByIdAndUpdate(
           new ObjectId(existingUserId), // Use 'new' when creating an ObjectId
           {
@@ -213,23 +203,23 @@ const logOperation = (req, status, operationId = null) => {
           { new: true, runValidators: true } // Return the updated document and apply validation
         );
         // Find and update the region manager
-        const updatedRegionManager = await RegionManager.findByIdAndUpdate(
+        const updatedBda = await Bda.findByIdAndUpdate(
           id,
           { $set: data },
           { new: true, runValidators: true }
         );
     
-        if (!updatedRegionManager) {
-          return res.status(404).json({ message: "Region Manager not found" });
+        if (!updatedBda) {
+          return res.status(404).json({ message: "BDA not found" });
         }
     
         res.status(200).json({
-          message: "Region Manager updated successfully"
+          message: "BDA updated successfully"
         });
-        logOperation(req, "Success", updatedRegionManager._id);
+        logOperation(req, "Success", updatedBda._id);
       next()
       } catch (error) {
-        console.error("Error editing Region Manager:", error);
+        console.error("Error editing BDA:", error);
         res.status(500).json({ message: "Internal server error" });
         logOperation(req, "Failed");
        next();
