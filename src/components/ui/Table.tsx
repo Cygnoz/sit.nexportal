@@ -6,9 +6,10 @@ import PreviousIcon from "../../assets/icons/PreviousIcon";
 import Trash from "../../assets/icons/Trash";
 import SearchBar from "./SearchBar";
 import SortBy from "./SortBy";
-import IndiaLogo from '../../assets/image/IndiaLogo.png'
-import UKLogo from '../../assets/image/UKLogo.webp'
-import UAELogo from '../../assets/image/UAELogo.webp'
+import IndiaLogo from "../../assets/image/IndiaLogo.png";
+import UKLogo from "../../assets/image/UKLogo.webp";
+import UAELogo from "../../assets/image/UAELogo.webp";
+import UserIcon from "../../assets/icons/UserIcon";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -28,11 +29,11 @@ interface TableProps<T> {
   };
   actionList?: {
     label: string;
-    function: (id:any) => void;
+    function: (id: any) => void;
   }[];
-  noAction?:boolean;
-  noPagination?:boolean
-  maxHeight?:string
+  noAction?: boolean;
+  noPagination?: boolean;
+  maxHeight?: string;
 }
 
 const Table = <T extends object>({
@@ -42,7 +43,7 @@ const Table = <T extends object>({
   actionList,
   noAction,
   noPagination,
-  maxHeight
+  maxHeight,
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -79,19 +80,19 @@ const Table = <T extends object>({
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
       case "Closed":
         return "bg-blue-300 text-white py-2 px-2 rounded-lg";
-        case "Active":
+      case "Active":
         return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
       case "Converted":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
       case "Expired":
         return "bg-blue-300 text-white py-2 px-2 rounded-lg";
-        case "Pending Renewal":
+      case "Pending Renewal":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
-        case "Open":
-          return "bg-green-400 text-white py-2 px-2 rounded-lg";
-          case "Pending":
-            return "bg-green-400 text-white py-2 px-2 rounded-lg";
-        case "High":
+      case "Open":
+        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+      case "Pending":
+        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+      case "High":
         return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
       case "Medium":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
@@ -99,7 +100,6 @@ const Table = <T extends object>({
         return "bg-blue-300 text-white py-2 px-2 rounded-lg";
       default:
         return "";
-        
     }
   };
 
@@ -112,41 +112,40 @@ const Table = <T extends object>({
     return path.split(".").reduce((acc, part) => acc?.[part], obj);
   }
 
-  const countryLogo=(key:string)=>{
-    if(key=='India'){
-      return <>
-    <img
-      src={IndiaLogo}
-      alt="India"
-      className="w-5 h-5 rounded-full"
-    />
-    <p>India</p>
-  </>
-    }else if(key=='UK'){
-      return  <>
-      <img
-        src={UKLogo}
-        alt="UK"
-        className="w-5 h-5 rounded-full"
-      />
-      <p>UK</p>
-    </>
-    }else{
-     return <>
-      <img
-        src={UAELogo}
-        alt="UAE"
-        className="w-5 h-5 rounded-full"
-      />
-      <p>UAE</p>
-    </>
+  const countryLogo = (key: string) => {
+    if (key == "India") {
+      return (
+        <>
+          <img src={IndiaLogo} alt="India" className="w-5 h-5 rounded-full" />
+          <p>India</p>
+        </>
+      );
+    } else if (key == "UK") {
+      return (
+        <>
+          <img src={UKLogo} alt="UK" className="w-5 h-5 rounded-full" />
+          <p>UK</p>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full" />
+          <p>UAE</p>
+        </>
+      );
     }
-
-  }
+  };
 
   // Render table header
   const renderHeader = () => (
-    <div className={`flex  ${headerContents.search&&!headerContents.title&&!headerContents.sort?"justify-start":'justify-between'} items-center mb-4`}>
+    <div
+      className={`flex  ${
+        headerContents.search && !headerContents.title && !headerContents.sort
+          ? "justify-start"
+          : "justify-between"
+      } items-center mb-4`}
+    >
       {headerContents.title && (
         <h2 className="text-lg font-bold">{headerContents.title}</h2>
       )}
@@ -174,158 +173,178 @@ const Table = <T extends object>({
       if (data[key] && data[imageKey]) {
         return (
           <>
-            {data[imageKey].length>500&&<img
-              src={`${data[imageKey]}`}
-              alt={data[key]}
-              className="w-5 h-5 rounded-full"
-            />}
+            {data[imageKey].length > 500? (
+              <img
+                src={`${data[imageKey]}`}
+                alt={data[key]}
+                className="w-5 h-5 rounded-full"
+              />
+            ):
+            <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+          <UserIcon color="#768294" size={15}/> 
+        </p>
+            }
             <p>{data[key]}</p>
           </>
         );
       }
     }
-    return '-'; // Return null if no match is found
+    return "Null" // Return null if no match is found
   };
 
   return (
     <div className="w-full  bg-white rounded-lg p-4">
       {renderHeader()}
 
-      <div style={maxHeight ? { maxHeight: maxHeight, overflowY: "auto" } : {}} className={maxHeight?"custom-scrollbar":'hide-scrollbar'}>
-  <table className={`w-full border-collapse border text-left  ${maxHeight&&'table-fixed'}`}>
-    <thead className={` bg-[#F6F9FC]  ${maxHeight&&'z-40 sticky top-0'}`}>
-      <tr >
-        <th className="border p-4 text-sm text-center text-[#303F58] font-medium">
-          SI No.
-        </th>
-        {columns.map((col) => (
-          <th
-            key={String(col.key)}
-            className="border p-4 text-sm text-center text-[#303F58] font-medium"
+      <div
+        style={maxHeight ? { maxHeight: maxHeight, overflowY: "auto" } : {}}
+        className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
+      >
+        <table
+          className={`w-full border-collapse border text-left  ${
+            maxHeight && "table-fixed"
+          }`}
+        >
+          <thead
+            className={` bg-[#F6F9FC]  ${maxHeight && "z-40 sticky top-0"}`}
           >
-            {col.label}
-          </th>
-        ))}
-        {!noAction && (
-          <th className="border p-4 text-center text-sm text-[#303F58] font-medium">
-            Action
-          </th>
-        )}
-      </tr>
-    </thead>
-    <tbody >
-      {paginatedData.length > 0 ? (
-        paginatedData.map((row: any, rowIndex: number) => (
-          <tr key={rowIndex} className="hover:bg-gray-50 z-10">
-            <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-              {(currentPage - 1) * rowsPerPage + rowIndex + 1}
-            </td>
-            {columns.map((col: any) => (
-  <td
-    key={String(col.key)}
-    className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center"
-  >
-    <div className="flex justify-center items-center gap-2">
-      {col.key === "country"
-        ? countryLogo(getNestedValue(row, col.key))
-        : ["userName", "rmName", "amName"].includes(col.key)
-        ? renderImageAndLabel(row)
-        : col.key === "status"
-        ? <p className={getStatusClass(row[col.key])}>{row[col.key]}</p>
-        : getNestedValue(row, col.key) || "-"}
-    </div>
-  </td>
-))}
-            {!noAction && (
-              <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] text-center">
-                <div className="flex justify-center gap-2">
-                  {actionList?.map((action, index) =>
-                    action.label === "edit" ? (
-                      <p
-                        key={index}
-                        className="cursor-pointer"
-                        onClick={() => action.function(row?._id)}
-                      >
-                        <PencilLine color="#4B5C79" size={16} />
-                      </p>
-                    ) : action.label === "view" ? (
-                      <p
-                        key={index}
-                        className="cursor-pointer"
-                        onClick={() => action.function(1)}
-                      >
-                        <Eye color="#4B5C79" size={16} />
-                      </p>
-                    ) : action.label === "delete" ? (
-                      <p
-                        key={index}
-                        className="cursor-pointer"
-                        onClick={() => action.function(row?._id)}
-                      >
-                        <Trash color="#4B5C79" size={16} />
-                      </p>
-                    ) : null
+            <tr>
+              <th className="border p-4 text-sm  text-[#303F58] font-medium">
+                SI No.
+              </th>
+              {columns.map((col) => (
+                <th
+                  key={String(col.key)}
+                  className="border p-4 text-sm  text-[#303F58] font-medium"
+                >
+                  {col.label}
+                </th>
+              ))}
+              {!noAction && (
+                <th className="border p-4 text-sm text-[#303F58] text-center font-medium">
+                  Action
+                </th>
+              )}
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedData.length > 0 ? (
+              paginatedData.map((row: any, rowIndex: number) => (
+                <tr key={rowIndex} className="hover:bg-gray-50 z-10">
+                  <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
+                    {(currentPage - 1) * rowsPerPage + rowIndex + 1}
+                  </td>
+                  {columns.map((col: any) => (
+                    <td
+                      key={String(col.key)}
+                      className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] "
+                    >
+                      <div className="flex justify-start items-center gap-2">
+                        {col.key === "country" ? (
+                          countryLogo(getNestedValue(row, col.key))
+                        ) : ["userName", "rmName", "amName"].includes(
+                            col.key
+                          ) ? (
+                          renderImageAndLabel(row)
+                        ) : col.key === "status" ? (
+                          <p className={getStatusClass(row[col.key])}>
+                            {row[col.key]}
+                          </p>
+                        ) : (
+                          getNestedValue(row, col.key) || "Null"
+                        )}
+                      </div>
+                    </td>
+                  ))}
+                  {!noAction && (
+                    <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
+                      <div className="flex justify-center gap-2">
+                        {actionList?.map((action, index) =>
+                          action.label === "edit" ? (
+                            <p
+                              key={index}
+                              className="cursor-pointer"
+                              onClick={() => action.function(row?._id)}
+                            >
+                              <PencilLine color="#4B5C79" size={16} />
+                            </p>
+                          ) : action.label === "view" ? (
+                            <p
+                              key={index}
+                              className="cursor-pointer"
+                              onClick={() => action.function(1)}
+                            >
+                              <Eye color="#4B5C79" size={16} />
+                            </p>
+                          ) : action.label === "delete" ? (
+                            <p
+                              key={index}
+                              className="cursor-pointer"
+                              onClick={() => action.function(row?._id)}
+                            >
+                              <Trash color="#4B5C79" size={16} />
+                            </p>
+                          ) : null
+                        )}
+                      </div>
+                    </td>
                   )}
-                </div>
-              </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td
+                  colSpan={columns.length + 2}
+                  className="text-center py-4 text-gray-500"
+                >
+                  No results found.
+                </td>
+              </tr>
             )}
-          </tr>
-        ))
-      ) : (
-        <tr>
-          <td
-            colSpan={columns.length + 2}
-            className="text-center py-4 text-gray-500"
-          >
-            No results found.
-          </td>
-        </tr>
-      )}
-    </tbody>
-  </table>
-</div>
+          </tbody>
+        </table>
+      </div>
 
-
-   
-
-     {!noPagination&& <div className="flex justify-between items-center mt-4">
-        <div className="text-xs text-[#71736B] font-medium flex gap-2">
-          Showing {currentPage} of {totalPages || 1}
-          <div className="flex gap-2">
-            <button
-              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-              disabled={currentPage === 1}
+      {!noPagination && (
+        <div className="flex justify-between items-center mt-4">
+          <div className="text-xs text-[#71736B] font-medium flex gap-2">
+            Showing {currentPage} of {totalPages || 1}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <PreviousIcon size={20} color="#71736B" />
+              </button>
+              <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
+                {currentPage}
+              </button>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
+                <NextIcon size={20} color="#71736B" />
+              </button>
+            </div>
+          </div>
+          <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
+            Rows per page
+            <select
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+              className="border border-gray-300 rounded-md p-1 text-sm"
             >
-              <PreviousIcon size={20} color="#71736B" />
-            </button>
-            <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
-              {currentPage}
-            </button>
-            <button
-              onClick={() =>
-                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-              }
-              disabled={currentPage === totalPages || totalPages === 0}
-            >
-              <NextIcon size={20} color="#71736B" />
-            </button>
+              {[5, 10, 20, 50].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
-        <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
-          Rows per page
-          <select
-            value={rowsPerPage}
-            onChange={handleRowsPerPageChange}
-            className="border border-gray-300 rounded-md p-1 text-sm"
-          >
-            {[5, 10, 20, 50].map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>}
+      )}
     </div>
   );
 };
