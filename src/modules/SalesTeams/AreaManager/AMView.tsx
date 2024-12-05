@@ -10,6 +10,14 @@ import ViewCard from "../../../components/ui/ViewCard";
 import BackgroundView from '../../../assets/image/AMView.png'
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
+import profileImage from '../../../assets/image/AvatarImg.png'
+import EditIcon from "../../../assets/icons/EditIcon";
+import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
+import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
+import AwardIcon from "../../../assets/icons/AwardIcon";
+import { useState } from "react";
+import AMViewForm from "./AMViewForm";
+import Modal from "../../../components/modal/Modal";
 
 interface AMViewData {
   BDAname: string;
@@ -31,9 +39,16 @@ const AMView = ({ }: Props) => {
     }
     console.log(editId);
     console.log(deleteId);
-    
-    
+
+
   }
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Function to toggle modal visibility
+  const handleModalToggle = () => {
+      setIsModalOpen((prev) => !prev);
+  };
+
 
   const viewCardData = [
     { icon: <UserIcon />, number: "189", title: "Total Area Managed", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
@@ -73,20 +88,20 @@ const AMView = ({ }: Props) => {
     { plan: "2", name: "Jessica Davis", startDate: "2023-08-05", endDate: "2024-08-04", status: "Expired", buttonValue: "Renew" }
   ];
 
-  const {id} =useParams()
+  const { id } = useParams()
   return (
     <div >
-       <div className="flex items-center text-[16px] my-2 space-x-2">
-       <p className="font-bold text-[#820000] ">Aria</p>
-        <ChevronRight color="#4B5C79" size={18}/>
-        <p className="font-bold text-[#303F58] ">Aria {id}</p>
+      <div className="flex items-center text-[16px] my-2 space-x-2">
+        <p className="font-bold text-[#820000] ">AM</p>
+        <ChevronRight color="#4B5C79" size={18} />
+        <p className="font-bold text-[#303F58] ">AM {id}</p>
       </div>
-      <div className="rounded-xl p-6 flex items-center bg-cover"  style={{backgroundImage:`url(${BackgroundView})`}}>
+      <div className="rounded-xl p-6 flex items-center bg-cover" style={{ backgroundImage: `url(${BackgroundView})` }}>
         <div className="items-center space-x-6">
           {/* Profile Picture */}
           <div className="w-16 h-16 bg-gray-300 rounded-full overflow-hidden">
             <img
-              src="https://via.placeholder.com/150"
+              src={profileImage}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -96,30 +111,62 @@ const AMView = ({ }: Props) => {
           <h1 className="ms-7 text-[#FFFEFB] text-2xl font-normal">David Billie</h1>
           <div className="flex mt-1">
             <div className="border-r ms-3">
-              <p className="my-1 mx-3">Contact Number</p>
-              <p className="my-1 mx-3">+91 9834546756</p>
+              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
+              <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">+91 9834546756</p>
             </div>
             <div className="border-r">
-              <p className="my-1 mx-3">Email</p>
-              <p className="my-1 mx-3">dean@example.com</p>
+              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Email</p>
+              <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">dean@example.com</p>
             </div>
             <div className="">
-              <p className="my-1 mx-3">Area</p>
-              <p className="my-1 mx-3 underline">AE6-NE001</p>
+              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Area</p>
+              <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium underline">AE6-NE001</p>
             </div>
-            <div className="mx-8 -mt-5">
-              <p>Role</p>
-              <p>Area Manager</p>
+            <div className="mx-8 -mt-5 ms-20">
+              <p className="text-[#D4D4D4] text-xs font-medium">Role</p>
+              <p className="text-[#FFFFFF] text-sm font-medium">Area Manager</p>
             </div>
             <div className="me-8 -mt-5">
-              <p>Employee ID</p>
-              <p>EMC-NE001</p>
+              <p className="text-[#D4D4D4] text-xs font-medium">Employee ID</p>
+              <p className="text-[#FFFFFF] text-sm font-medium">EMC-NE001</p>
             </div>
             <div className="-mt-5">
-              <p>Joining Date</p>
-              <p>13 June 2023</p>
+              <p className="text-[#D4D4D4] text-xs font-medium">Joining Date</p>
+              <p className="text-[#FFFFFF] text-sm font-medium">13 June 2023</p>
             </div>
+            <div className="flex -mt-9 ms-6 gap-1">
+            <div className="flex flex-col items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+                <EditIcon size={36} color="#C4A25D24" />
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
+             </div>
+
+            <div className="flex flex-col  items-center space-y-1">
+              <div onClick={handleModalToggle} className="w-8 h-8 mb-2 rounded-full">
+                <ViewRoundIcon  size={36} color="#D52B1E4D" />
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
+            </div>
+
+            <div className="flex flex-col  items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+                <AwardIcon size={36} color="#D52B1E4D" />
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
+            </div>
+
+            <div className="flex flex-col  items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+                <DeActivateIcon size={36} color="#D52B1E4D" />
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
+            </div>
+
+        </div>
+
           </div>
+
         </div>
 
         {/* Action Buttons */}
@@ -223,6 +270,10 @@ const AMView = ({ }: Props) => {
         ))} */}
         <p>Leads Converted by Area Manager Over Time</p>
       </div>
+       {/* Modal controlled by state */}
+       <Modal open={isModalOpen} onClose={handleModalToggle}>
+                <AMViewForm onClose={handleModalToggle} />
+            </Modal>
     </div>
   )
 }
