@@ -1,7 +1,7 @@
-import LoginBack from "../../assets/Images/LoginBack.png";
-import LoginPie from '../../assets/Images/LoginPie.png';
-import LoginDash from '../../assets/Images/LoginPortalDash.png';
-import LoginNex from '../../assets/Images/Nex.png';
+import LoginBack from "../../assets/image/LoginBack.png";
+import LoginPie from '../../assets/image/LoginPie.png';
+import LoginDash from '../../assets/image/LoginPortalDash.png';
+import LoginNex from '../../assets/image/Nex.png';
 type Props = {}
 
 function LoginBgRight({}: Props) {

@@ -10,7 +10,7 @@ function SortBy({sort}: Props) {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+    setIsDropdownOpen((prev)=>!prev);
   };
 
   const handleClickOutside = (event: MouseEvent) => {

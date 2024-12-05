@@ -19,7 +19,7 @@ interface WCommissionData {
    regionCode:string;
    regionName: string;
    createdDate: string;
-   country: string;
+   amount: string;
    roll: string;
    
   }
@@ -44,28 +44,27 @@ const WCommisionHome = () => {
 
   
   // Data for the table
-  const data:  WCommissionData [] = [
-    {  regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", country: "100.0",  roll: "Regions across North America." },
-    { regionCode: "R002", regionName: "Europe", createdDate: "2022-05-21", country: "100.0",  roll: "European market regions." },
-    {  regionCode: "R003", regionName: "Asia Pacific", createdDate: "2023-03-02", country: "100.0",  roll: "Regions covering Asia-Pacific." },
-    {  regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", country: "100.0",  roll: "South American markets." },
-    {  regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", country: "100.0",  roll: "South American markets." },
-    {  regionCode: "R005", regionName: "Middle East", createdDate: "2022-10-16", country: "100.0",  roll: "Middle East region with a focus on technology." },
-    {   regionCode: "R006", regionName: "Africa", createdDate: "2020-12-01", country: "100.0",  roll: "African market regions and operations." },
-    {   regionCode: "R007", regionName: "Australia", createdDate: "2023-06-10", country: "100.0",  roll: "Regions within Australia." },
-    {   regionCode: "R008", regionName: "India", createdDate: "2021-07-04", country: "100.0",  roll: "Indian subcontinent markets." },
-    {   regionCode: "R009", regionName: "Canada", createdDate: "2023-02-17", country: "100.0",  roll: "Canadian market operations." },
-    {   regionCode: "R010", regionName: "UK & Ireland", createdDate: "2022-11-25", country: "100.0",  roll: "United Kingdom and Ireland regions." },
-    {   regionCode: "R011", regionName: "South East Asia", createdDate: "2021-09-19", country: "100.0",  roll: "Markets in South East Asia." },
-    {   regionCode: "R012", regionName: "Latin America", createdDate: "2023-05-05", country: "100.0",  roll: "Latin American region operations." },
-   
-  ];
+  const data: WCommissionData[] = [
+    { regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", amount: "100.0", roll: "Regions across North America." },
+    { regionCode: "R002", regionName: "Europe", createdDate: "2022-05-21", amount: "100.0", roll: "European market regions." },
+    { regionCode: "R003", regionName: "Asia Pacific", createdDate: "2023-03-02", amount: "100.0", roll: "Regions covering Asia-Pacific." },
+    { regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", amount: "100.0", roll: "South American markets." },
+    { regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", amount: "100.0", roll: "South American markets." },
+    { regionCode: "R005", regionName: "Middle East", createdDate: "2022-10-16", amount: "100.0", roll: "Middle East region with a focus on technology." },
+    { regionCode: "R006", regionName: "Africa", createdDate: "2020-12-01", amount: "100.0", roll: "African market regions and operations." },
+    { regionCode: "R007", regionName: "Australia", createdDate: "2023-06-10", amount: "100.0", roll: "Regions within Australia." },
+    { regionCode: "R008", regionName: "India", createdDate: "2021-07-04", amount: "100.0", roll: "Indian subcontinent markets." },
+    { regionCode: "R009", regionName: "Canada", createdDate: "2023-02-17", amount: "100.0", roll: "Canadian market operations." },
+    { regionCode: "R010", regionName: "UK & Ireland", createdDate: "2022-11-25", amount: "100.0", roll: "United Kingdom and Ireland regions." },
+    { regionCode: "R011", regionName: "South East Asia", createdDate: "2021-09-19", amount: "100.0", roll: "Markets in South East Asia." },
+    { regionCode: "R012", regionName: "Latin America", createdDate: "2023-05-05", amount: "100.0", roll: "Latin American region operations." },
+];
     // Define the columns with strict keys
     const columns: { key: keyof  WCommissionData ; label: string }[] = [
        
       { key: "regionName", label: "Name" },
       { key: "regionCode", label: "Value(%)" },
-      { key: "country", label: "Thrushold amt" },
+      { key: "amount", label: "Thrushold amt" },
       { key: "createdDate", label: "Creted Date" },
 
     ];

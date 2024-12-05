@@ -57,7 +57,7 @@ const RegionHome = () => {
   setEditId(id)
  }
 
-
+ 
 
   const getAllRegions=async()=>{
     try{
@@ -81,6 +81,9 @@ const RegionHome = () => {
   useEffect(()=>{
     getAllRegions()
   },[])
+
+  console.log(allRegions);
+  
  
   // Data for HomeCards
   const homeCardData = [

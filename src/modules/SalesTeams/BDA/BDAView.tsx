@@ -5,7 +5,7 @@ import Licensers from "../../../components/ui/Licensers";
 import Table from "../../../components/ui/Table";
 import ViewCard from "../../../components/ui/ViewCard"
 import GraphTable from "./GraphTable";
-import backGroundView from '../../../assets/Images/BDAView.png'
+import backGroundView from '../../../assets/image/BDAView.png'
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
 interface BDAViewData {

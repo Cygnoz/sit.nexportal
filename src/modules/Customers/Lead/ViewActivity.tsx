@@ -16,7 +16,7 @@ import PanelTopIcon from "../../../assets/icons/PanelTopIcon";
 import Table from "../../../components/ui/Table";
 import PackageCheck from "../../../assets/icons/PackageCheck";
 import Boxes from "../../../assets/icons/Boxes";
-import profileImage from '../../../assets/Images/AvatarImg.png'
+import profileImage from '../../../assets/image/AvatarImg.png'
 
 interface LeadViewData {
     task: string;
