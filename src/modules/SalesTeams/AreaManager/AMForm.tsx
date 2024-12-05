@@ -19,6 +19,7 @@ import { AMData } from "../../../Interfaces/AM";
 import useApi from "../../../Hooks/useApi";
 import toast from "react-hot-toast";
 import { endPoints } from "../../../services/apiEndpoints";
+import { AreaData } from "../../../Interfaces/Area";
 
 interface RegionData {
   label: string;
@@ -82,13 +83,31 @@ const validationSchema = Yup.object({
             resolver: yupResolver(validationSchema),
           });
           
-    // const {request:addAM}=useApi('post',3002)
+    const {request:addAM}=useApi('post',3002)
     const {request:getAllRegion}=useApi('get',3003)
+    const [allAreas,setAllAreas]=useState<AreaData[]>([]);
+    // State to manage modal visibility
+    const {request:getAllArea}=useApi('get',3003)  
     const [regionData, setRegionData] = useState<RegionData[]>([]);
 
 
-  const onSubmit: SubmitHandler<AMData> = (data) => {
+  const onSubmit: SubmitHandler<AMData> = async(data) => {
     console.log(data);
+    try{
+      const { response, error } = await addAM(endPoints.AM, data);
+      console.log("res",response);
+      console.log("err",error);
+      if (response && !error) {
+        toast.success(response.data.message);
+        onClose();
+      } else {
+        toast.error(error.response.data.message);
+      }
+    }
+    catch(err){
+      console.error("Error submitting region data:", err);
+      toast.error("An unexpected error occurred.");
+    }
   };
 
   const tabs = [
@@ -150,6 +169,29 @@ const getAllRegions = async () => {
 
 useEffect(()=>{
   getAllRegions()
+},[])
+
+const getAreas=async()=>{
+  try{
+    const {response,error}=await getAllArea(endPoints.GET_AREAS)
+    if(response && !error){
+      const transformedAreas = response.data.areas?.map((area:any) => ({
+        ...area,
+        createdAt: new Date(area.createdAt).toISOString().split('T')[0], // Extracts the date part
+      }));
+      
+      // Then set the transformed regions into state
+      setAllAreas(transformedAreas);
+    }else{
+      toast.error(error.response.data.message)
+    }
+  }catch(err){
+    console.log(err);
+  }
+}
+
+useEffect(()=>{
+  getAreas()
 },[])
 
 
@@ -256,14 +298,14 @@ className="hidden"
          <Input
              label="Address"
              placeholder="Street 1"
-             error={errors.street1?.message}
-             {...register("street1")}
+             error={errors.address?.street1?.message}
+             {...register("address.street1")}
          />
          <Input
              label="Address"
              placeholder="Street 2"
-             error={errors.street2?.message}
-             {...register("street2")}
+             error={errors.address?.street2?.message}
+             {...register("address.street2")}
          />
          <Input
              label="City"
@@ -360,15 +402,16 @@ className="hidden"
                    
                   />
                   <Select
-                    label="Select Area"
-                    placeholder="Choose Area"
-                    error={errors.area?.message}
-                    options={[
-                      { value: "North", label: "North" },
-                      { value: "South", label: "South" },
-                    ]}
-                    {...register("area")}
-                  />
+  label="Select Area"
+  placeholder="Choose Area"
+  value={watch("area")}
+  error={errors.area?.message}
+  options={allAreas.map((area) => ({
+    value: area.areaCode,
+    label: area.areaName,
+  }))} 
+  {...register("area")}
+/>;
                    <Select
                     label="Choose Commission Profile"
                     placeholder="Commission Profile"
@@ -454,26 +497,26 @@ className="hidden"
             <Input
               placeholder="Enter Bank Name"
               label="Bank Name"
-              error={errors.bankName?.message}
-              {...register("bankName")}
+              error={errors.bankDetails?.bankName?.message}
+              {...register("bankDetails.bankName")}
             />
             <Input
               placeholder="Enter Bank Branch"
               label="Bank Branch"
-              error={errors.bankBranch?.message}
-              {...register("bankBranch")}
+              error={errors.bankDetails?.bankBranch?.message}
+              {...register("bankDetails.bankBranch")}
             />
             <Input
               placeholder="Enter Account No"
               label="Bank Account No"
-              error={errors.bankAccountNo?.message}
-              {...register("bankAccountNo")}
+              error={errors.bankDetails?.bankAccountNo?.message}
+              {...register("bankDetails.bankAccountNo")}
             />
             <Input
               placeholder="Enter IFSC Code"
               label="IFSC Code"
-              error={errors.ifscCode?.message}
-              {...register("ifscCode")}
+              error={errors.bankDetails?.ifscCode?.message}
+              {...register("bankDetails.ifscCode")}
             />
           </div>
             </div>
