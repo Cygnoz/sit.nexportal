@@ -58,13 +58,14 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     //const { request: editRM } = useApi('put', 3002)
     const { request: getAllRegion } = useApi('get', 3003)
     const [regionData, setRegionData] = useState<RegionData[]>([]);
-
+    const [submit , setSubmit]=useState(false)
     const tabs = [
         "Personal Information",
         "Company Information",
         "Upload Files",
         "Bank Information",
-        "ID & Business Card"
+        "ID & Business Card",
+        
     ];
     const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
@@ -88,7 +89,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
   
     const onSubmit: SubmitHandler<RMData> = async (data) => {
         console.log(data);
-        if(activeTab=="ID & Business Card"){
+        if(submit){
         try{
          const apiCall= addRM;
             const { response, error } = await apiCall(endPoints.RM, data);
@@ -99,11 +100,14 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
             if (response && !error) {
               toast.success(response.data.message);
               onClose();
+              setSubmit(false)
             } else {
               toast.error(error.response.data.message);
             }
 
         }catch (err){
+            console.error("Error submitting region manager data:", err);
+            toast.error("An unexpected error occurred.");
 
         }
     }
@@ -163,6 +167,26 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     useEffect(() => {
         getAllRegions()
     }, [])
+
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64String = reader.result as string;
+            setValue("image", base64String);
+          };
+          reader.readAsDataURL(file);
+        }
+      };
+    
+      const handleRemoveImage = (e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent click propagation
+     
+        // Clear the leadImage value
+        setValue("image","")
+      }
 
 
 
@@ -225,13 +249,27 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                                         id="file-upload"
                                         type="file"
                                         className="hidden"
+                                       onChange={handleFileChange}
                                     //   onChange={(e) => handleFileUpload(e)}
                                     />
-                                    <ImagePlaceHolder />
+                                    <ImagePlaceHolder  uploadedImage={watch("image")} />
                                 </label>
 
+                                {watch('image') && (
+        <div
+          onClick={handleRemoveImage} // Remove image handler
+          className="flex justify-center items-center "
+        >
+          <div  className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ml-32 -mt-16 ">
+           <Trash color="red" size={16}/>
+          </div>
+        </div>
+      )} 
+
                             </div>
-                            <div className="grid grid-cols-2 gap-2 col-span-10">
+                             
+           
+                            <div className="grid grid-cols-2 gap-2 col-span-10"> 
 
                                 <Input
                                     required
@@ -563,7 +601,9 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                         <Button variant="primary"
                             className="h-8 text-sm border rounded-lg"
                             size="lg"
-                            type="submit"  >
+                            type="submit" 
+                            onClick={()=> setSubmit(true)} >
+                                
                             Done
                         </Button>
                     ) : (
@@ -579,5 +619,5 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
         </div>
     );
 };
-
+ 
 export default RMForm;
