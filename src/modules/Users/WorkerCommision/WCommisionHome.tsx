@@ -1,114 +1,164 @@
-
-
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
-
-
-//import UserIcon from "../../../assets/icons/UserIcon";
-
 import Table from "../../../components/ui/Table";
 
-import { useState } from "react";
-//import CreateUser from "../User/CreateUser";
+import { useEffect, useState } from "react";
 import CreateWCommission from "./WCommissionForm";
-
-
-
-// Define the type for data items
-interface WCommissionData {
-   regionCode:string;
-   regionName: string;
-   createdDate: string;
-   amount: string;
-   roll: string;
-   
-  }
-
+import useApi from "../../../Hooks/useApi";
+import { WCData } from "../../../Interfaces/WC";
+import { endPoints } from "../../../services/apiEndpoints";
+import toast from "react-hot-toast";
 
 const WCommisionHome = () => {
-  // State to manage modal visibility
- const [isModalOpen, setIsModalOpen] = useState(false);
+  const { request: getALLWC } = useApi("get", 3003);
+  const { request: deleteWC } = useApi("delete", 3003);
+  const [allWC, setAllWC] = useState<WCData[]>([]);
+  const [editId, setEditId] = useState<string | null>(null);
 
-  // Function to toggle modal visibility
+  // State to manage delete confirmation modal
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // State to manage main modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Function to toggle main modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
+    getWC();
   };
 
-  
-  
+  const openDeleteModal = (id: string) => {
+    setDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
 
-  const handleDelete=(id:any)=>{
-    console.log(id);
-    
-  }
+  const closeDeleteModal = () => {
+    setDeleteId(null);
+    setIsDeleteModalOpen(false);
+  };
 
-  
-  // Data for the table
-  const data: WCommissionData[] = [
-    { regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", amount: "100.0", roll: "Regions across North America." },
-    { regionCode: "R002", regionName: "Europe", createdDate: "2022-05-21", amount: "100.0", roll: "European market regions." },
-    { regionCode: "R003", regionName: "Asia Pacific", createdDate: "2023-03-02", amount: "100.0", roll: "Regions covering Asia-Pacific." },
-    { regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", amount: "100.0", roll: "South American markets." },
-    { regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", amount: "100.0", roll: "South American markets." },
-    { regionCode: "R005", regionName: "Middle East", createdDate: "2022-10-16", amount: "100.0", roll: "Middle East region with a focus on technology." },
-    { regionCode: "R006", regionName: "Africa", createdDate: "2020-12-01", amount: "100.0", roll: "African market regions and operations." },
-    { regionCode: "R007", regionName: "Australia", createdDate: "2023-06-10", amount: "100.0", roll: "Regions within Australia." },
-    { regionCode: "R008", regionName: "India", createdDate: "2021-07-04", amount: "100.0", roll: "Indian subcontinent markets." },
-    { regionCode: "R009", regionName: "Canada", createdDate: "2023-02-17", amount: "100.0", roll: "Canadian market operations." },
-    { regionCode: "R010", regionName: "UK & Ireland", createdDate: "2022-11-25", amount: "100.0", roll: "United Kingdom and Ireland regions." },
-    { regionCode: "R011", regionName: "South East Asia", createdDate: "2021-09-19", amount: "100.0", roll: "Markets in South East Asia." },
-    { regionCode: "R012", regionName: "Latin America", createdDate: "2023-05-05", amount: "100.0", roll: "Latin American region operations." },
-];
-    // Define the columns with strict keys
-    const columns: { key: keyof  WCommissionData ; label: string }[] = [
-       
-      { key: "regionName", label: "Name" },
-      { key: "regionCode", label: "Value(%)" },
-      { key: "amount", label: "Thrushold amt" },
-      { key: "createdDate", label: "Creted Date" },
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const { response, error } = await deleteWC(`${endPoints.DELETE_WC}/${deleteId}`);
+      if (response && !error) {
+        setAllWC((prev) => prev.filter((wc: any) => wc.id !== deleteId));
+        toast.success(response.data.message || "Commission deleted successfully");
+        getWC(); // Refresh the list
+      } else {
+        console.error(error);
+        toast.error("Failed to delete commission");
+      }
+    } catch (err) {
+      console.error("Error deleting commission:", err);
+      toast.error("An error occurred while deleting commission");
+    } finally {
+      closeDeleteModal(); // Close delete modal after operation
+    }
+  };
 
-    ];
+  const handleEdit = (id: string) => {
+    handleModalToggle();
+    setEditId(id);
+  };
+
+  const getWC = async () => {
+    try {
+      const { response, error } = await getALLWC(endPoints.GET_ALL_WC);
+      if (response && !error) {
+        const transformedRegions = response.data.commissions?.map(
+          (commission: any) => ({
+            ...commission,
+            createdAt: new Date(commission.createdAt)
+              .toISOString()
+              .split("T")[0], // Extracts the date part
+          })
+        );
+        setAllWC(transformedRegions);
+      } else {
+        console.log(error);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getWC();
+  }, []);
+
+  // Define the columns with strict keys
+  const columns: { key: keyof WCData; label: string }[] = [
+    { key: "profileName", label: "ProfileName" },
+    { key: "commissionPercentage", label: "Percentage" },
+    { key: "thresholdAmount", label: "Thrushold Amt" },
+    { key: "createdAt", label: "Created Date" },
+  ];
 
   return (
     <div>
-         <div className="flex justify-between items-center">
-      <h1 className="text-[#303F58] text-xl font-bold">Worker Commission Profile</h1>
-     
-      <Button variant="primary" size="sm" onClick={handleModalToggle}>
-      <span className="text-xl font-bold">+</span> Add Commission Profile
-      </Button>
+      <div className="flex justify-between items-center">
+        <h1 className="text-[#303F58] text-xl font-bold">
+          Worker Commission Profile
+        </h1>
 
-      {/* Modal controlled by state */}
-      <Modal open={isModalOpen} className="w-[40%]" onClose={handleModalToggle}>
-      <CreateWCommission onClose={handleModalToggle} />
-      </Modal>
-    </div>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => {
+            handleModalToggle();
+            setEditId(null);
+          }}
+        >
+          <span className="text-xl font-bold">+</span> Add Commission Profile
+        </Button>
 
-   
-
-       {/* Table Section */}
-       <div className=" py-2 mt-3">
-        <Table< WCommissionData > data={data} columns={columns} headerContents={{
-          
-          search:{placeholder:'Search BDA By Name'},
-        
-        }}
-        actionList={[
-            { label: 'delete', function:handleDelete },
-           
-          ]}  />
-
-
+        {/* Main Modal */}
+        <Modal
+          open={isModalOpen}
+          className="w-[40%]"
+          onClose={handleModalToggle}
+        >
+          <CreateWCommission editId={editId} onClose={handleModalToggle} />
+        </Modal>
       </div>
 
-      {/* Modal Section */}
-     
+      {/* Table Section */}
+      <div className="py-2 mt-3">
+        <Table<WCData>
+          data={allWC}
+          columns={columns}
+          headerContents={{
+            search: { placeholder: "Search BDA By Name" },
+          }}
+          actionList={[
+            { label: "delete", function: openDeleteModal },
+            { label: "edit", function: handleEdit },
+          ]}
+        />
+      </div>
 
-
-
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={isDeleteModalOpen}
+        className="w-[30%]"
+        onClose={closeDeleteModal}
+      >
+        <div className="p-4">
+          <h2 className="text-xl font-semibold">Confirm Delete</h2>
+          <p>Are you sure you want to delete this commission profile?</p>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="secondary" onClick={closeDeleteModal}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleDelete}>
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
-   
-    
   );
 };
 

@@ -42,12 +42,14 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       console.error('Error fetching areas:', err);
     }
   };
+
+
   useEffect(() => {
     fetchRegions()
     fetchAreas();
   }, [role]);
 
-  console.log(allRegions);
+  
   
 
   return (

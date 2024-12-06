@@ -23,10 +23,22 @@ import { endPoints } from "../../../services/apiEndpoints";
 // import { RegionData } from "../../../Interfaces/Region";
 import toast from "react-hot-toast";
 
+
 interface RegionData {
   label: string;
   value: string;
 }
+
+interface WCData {
+  label: string;
+  value: string;
+}
+
+// interface Counrty{
+//   label: string;
+//   value: string;
+
+// }
 
 interface AddRegionalManagerProps {
   onClose: () => void;
@@ -56,10 +68,16 @@ const validationSchema = Yup.object({
 
 const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
   const { request: addRM } = useApi("post", 3002);
+  const { request: getALLWC } = useApi("get", 3003);
+  // const { request: getCOUNTRY } = useApi("get", 3003);
+  // const[allCOUNTRY,setALLCOUNTRY]=useState<Counrty[]>([]);
+  const [allWC, setAllWC] = useState<WCData[]>([]);
+
   //const { request: editRM } = useApi('put', 3002)
   const { request: getAllRegion } = useApi("get", 3003);
   const [regionData, setRegionData] = useState<RegionData[]>([]);
   const [submit, setSubmit] = useState(false);
+
   const tabs = [
     "Personal Information",
     "Company Information",
@@ -159,6 +177,53 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
   useEffect(() => {
     getAllRegions();
   }, []);
+
+
+  const getWC = async()=>{
+    try{
+      const { response, error } = await getALLWC(endPoints.GET_ALL_WC);
+
+      if (response && !error) {
+        // Extract only `regionName` and `_id` from each region
+        const filteredCommission = response.data.commissions?.map((commission: any) => ({
+          label: commission.profileName,
+          value: String(commission._id), // Ensure `value` is a string
+        }));
+        // Update the state with the filtered regions
+        setAllWC(filteredCommission);
+      } else {
+        toast.error(error.response.data.message);
+      }
+
+    }catch(err){
+      console.log(err);
+    }
+  }
+  useEffect(() => {
+    getWC();
+  }, []);
+
+// const getCountry = async()=>{
+//   try{
+//     const { response, error } = await getALLWC(endPoints.GET_ALL_WC);
+
+//     if (response && !error) {
+//       // Extract only `regionName` and `_id` from each region
+//       const filteredCommission = response.data.commissions?.map((commission: any) => ({
+//         label: commission.profileName,
+//         value: String(commission._id), // Ensure `value` is a string
+//       }));
+//       // Update the state with the filtered regions
+//       setAllWC(filteredCommission);
+//     } else {
+//       toast.error(error.response.data.message);
+//     }
+
+//   }catch{
+
+//   }
+// }
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -309,11 +374,17 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   error={errors.address?.street2?.message}
                   {...register("address.street2")}
                 />
-                <Input
-                  label="City"
-                  placeholder="Enter City"
-                  error={errors.city?.message}
-                  {...register("city")}
+                
+                 <Select
+                  placeholder="Select Country"
+                  label="Country"
+                  error={errors.state?.message}
+                  options={[
+                    { value: "Kerala", label: "Kerala" },
+                    { value: "Tamilnadu", label: "Tamilnadu" },
+                    { value: "Karnataka", label: "Karnataka" },
+                  ]}
+                  {...register("state")}
                 />
                 <Select
                   placeholder="Select State"
@@ -325,6 +396,12 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                     { value: "Karnataka", label: "Karnataka" },
                   ]}
                   {...register("state")}
+                />
+                <Input
+                  label="City"
+                  placeholder="Enter City"
+                  error={errors.city?.message}
+                  {...register("city")}
                 />
                 <Input
                   label="Aadhaar Number"
@@ -413,10 +490,8 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
                   error={errors.commission?.message}
-                  options={[
-                    { value: 67, label: "67" },
-                    { value: 65, label: "65" },
-                  ]}
+                  options={allWC}
+                  
                   {...register("commission")}
                 />
               </div>

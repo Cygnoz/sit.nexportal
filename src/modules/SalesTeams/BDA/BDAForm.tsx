@@ -20,13 +20,8 @@ import Button from "../../../components/ui/Button";
 import useApi from "../../../Hooks/useApi";
 import { BDAData } from "../../../Interfaces/BDA";
 import { endPoints } from "../../../services/apiEndpoints";
-import { AreaData } from "../../../Interfaces/Area";
 import { useRegularApi } from "../../../context/ApiContext";
 
-interface RegionData {
-  label: string;
-  value: string;
-}
 
 interface BDAProps {
   onClose: () => void; // Prop for handling modal close
@@ -60,6 +55,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     areas: { label: string; value: string }[];
+   // workerCommission: {label:string; value:string}[];
+    
   }>({ regions: [], areas: [] });
   // State to manage modal visibility
   const {
