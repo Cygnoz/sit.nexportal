@@ -10,6 +10,7 @@ const areaManagerSchema = new mongoose.Schema({
     street2: { type: String},
   },
   city: { type: String },
+  country: { type: String },
   state: { type: String},
   adhaarNo: { type: String},
   panNo: { type: String },
