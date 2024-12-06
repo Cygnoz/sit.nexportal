@@ -40,13 +40,18 @@ const validationSchema = Yup.object({
     .required("Phone number is required"),
   loginEmail: Yup.string()
     .email("Invalid email address")
-    .required("Login Email is required"),
+    .required("Login Email.is required"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
+    age: Yup.number()
+    .nullable() // Allows null values
+    .transform((value, originalValue) =>
+      originalValue === "" ? null : value // Converts empty string to null
+    ),
 });
 
 const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
@@ -124,6 +129,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     if (currentIndex > 0) {
       setActiveTab(tabs[currentIndex - 1]);
     }
+    setSubmit(false);
   };
 
   const handleInputChange = (field: keyof RMData) => {
@@ -225,7 +231,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
         >
           {activeTab === "Personal Information" && (
             <div className="grid grid-cols-12">
-              <div className="col-span-2 flex justify-start items-center flex-col ">
+              <div className="col-span-2 flex flex-col items-center">
                 <label
                   className="cursor-pointer text-center"
                   htmlFor="file-upload"
@@ -239,13 +245,12 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   />
                   <ImagePlaceHolder uploadedImage={watch("image")} />
                 </label>
-
                 {watch("image") && (
                   <div
                     onClick={handleRemoveImage} // Remove image handler
-                    className="flex justify-center mt-2 "
+                    className="flex "
                   >
-                    <div className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center  ">
+                    <div className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
                       <Trash color="red" size={16} />
                     </div>
                   </div>
@@ -270,7 +275,6 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   label="Phone Number"
                   required
                   error={errors.phone?.message}
-                  {...register("phone")}
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("phone");
@@ -282,6 +286,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   <Input
                     placeholder="Enter Age"
                     label="Age"
+                    type="number"
                     error={errors.age?.message}
                     {...register("age")}
                   />
@@ -405,13 +410,12 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   {...register("region")}
                 />
                 <Select
-                  placeholder="Select Commission profile"
                   label="Choose Commission Profile"
+                  placeholder="Commission Profile"
                   error={errors.commission?.message}
                   options={[
-                    { value: "5", label: "5" },
-                    { value: "10", label: "10" },
-                    { value: "15", label: "15" },
+                    { value: 67, label: "67" },
+                    { value: 65, label: "65" },
                   ]}
                   {...register("commission")}
                 />

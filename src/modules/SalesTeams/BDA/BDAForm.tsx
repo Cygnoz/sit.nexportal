@@ -46,10 +46,17 @@ const validationSchema = Yup.object({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
+    age: Yup.number()
+    .nullable() // Allows null values
+    .transform((value, originalValue) =>
+      originalValue === "" ? null : value // Converts empty string to null
+    ),
 });
 
 const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
   const { request: getAllRegion } = useApi("get", 3003);
+  const {request:addBDA}=useApi('post',3002)
+  const [submit, setSubmit] = useState(false);
   const [regionData, setRegionData] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);
   // State to manage modal visibility
@@ -67,8 +74,26 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
   });
 
 
-  const onSubmit: SubmitHandler<BDAData> = (data) => {
+  const onSubmit: SubmitHandler<BDAData> = async (data) => {
     console.log(data);
+
+    if (submit) {
+      try {
+        const { response, error } = await addBDA(endPoints.BDA, data);
+        console.log("res", response);
+        console.log("err", error);
+        if (response && !error) {
+          toast.success(response.data.message);
+          onClose();
+          setSubmit(false);
+        } else {
+          toast.error(error.response.data.message);
+        }
+      } catch (err) {
+        console.error("Error submitting region data:", err);
+        toast.error("An unexpected error occurred.");
+      }
+    }
   };
 
   const tabs = [
@@ -104,6 +129,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
     if (currentIndex > 0) {
       setActiveTab(tabs[currentIndex - 1]);
     }
+    setSubmit(false)
   };
 
   const handleInputChange = (field: keyof BDAData) => {
@@ -160,6 +186,27 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
     getAreas(regionId);
   }, [watch("region")]);
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setValue("image", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent click propagation
+
+    // Clear the leadImage value
+    setValue("image", "");
+  };
+
+ 
+
   return (
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
@@ -209,7 +256,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
         >
           {activeTab === "Personal Information" && (
             <div className="grid grid-cols-12">
-              <div className="col-span-2">
+                <div className="col-span-2 flex flex-col items-center">
                 <label
                   className="cursor-pointer text-center"
                   htmlFor="file-upload"
@@ -218,11 +265,23 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
                     id="file-upload"
                     type="file"
                     className="hidden"
+                    onChange={handleFileChange}
                     //   onChange={(e) => handleFileUpload(e)}
                   />
-                  <ImagePlaceHolder />
+                  <ImagePlaceHolder uploadedImage={watch("image")} />
                 </label>
+                {watch("image") && (
+                  <div
+                    onClick={handleRemoveImage} // Remove image handler
+                    className="flex "
+                  >
+                    <div className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
+                      <Trash color="red" size={16} />
+                    </div>
+                  </div>
+                )}
               </div>
+                            
               <div className="grid grid-cols-2 gap-2 col-span-10">
                 <Input
                   required
@@ -238,6 +297,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
                   {...register("email")}
                 />
                 <CustomPhoneInput
+                required
                   placeholder="Phone"
                   label="Phone"
                   error={errors.phone?.message}
@@ -251,7 +311,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
                   <Input
                     placeholder="Enter Age"
                     label="Age"
-                    error={errors.age?.message}
+                    type="number"
                     {...register("age")}
                   />
                   <Input
@@ -377,13 +437,13 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
                   }))}
                   {...register("area")}
                 />
-                <Select
+               <Select
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
                   error={errors.commission?.message}
                   options={[
-                    { value: "aa", label: "aa" },
-                    { value: "bb", label: "bb" },
+                    { value: "67", label: "67" },
+                    { value: "65", label: "65" },
                   ]}
                   {...register("commission")}
                 />
@@ -555,6 +615,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
               className="h-8 text-sm border rounded-lg"
               size="lg"
               type="submit"
+              onClick={() => setSubmit(true)}
             >
               Done
             </Button>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import AddRegionManager from "./RMForm";
@@ -11,19 +11,15 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import { useNavigate } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
+import { RMData } from "../../../Interfaces/RM";
+import { endPoints } from "../../../services/apiEndpoints";
+import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 // import { RMData } from "../../../Interfaces/RM";
 // import { endPoints } from "../../../services/apiEndpoints";
 
 
-// Define the type for data items
-interface RegionManagerData {
-   
-    regionCode: string;
-    regionName: string;
-    createdDate: string;
-    phone: string;
-    description: string;
-  }
 
 
 
@@ -38,8 +34,8 @@ interface RegionManagerData {
 
 
 const RMHome = () => {
-  // const {request:getRM}=useApi('get',3002)
-  // const [allRms, setAllRms] = useState<RMData[]>([]);
+   const {request:getRM}=useApi('get',3002)
+   const [allRms, setAllRms] = useState<RMData[]>([]);
   const navigate = useNavigate()
 
   // State to manage modal visibility
@@ -48,6 +44,7 @@ const RMHome = () => {
   // Function to toggle modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
+    getRMs();
   };
 
 
@@ -62,8 +59,9 @@ const RMHome = () => {
   //     console.log(response)
   //     console.log(error)
   //     if(response && !error){
+
   //       // toast.success(response.data.message)
-  //       setAllRms(response.data.AllUsers)
+  //       setAllRms(response.data.allRms)
   //     }else{
   //       console.log(error)
   //     }
@@ -77,33 +75,46 @@ const RMHome = () => {
   //   getAllRM()
   // },[])
 
+
+
+  const getRMs = async () => {
+    try {
+      const { response, error } = await getRM(endPoints.GET_ALL_RM);
   
+      if (response && !error) {
+          const transformedAreas = response.data.regionManager?.map((region: any) => ({
+              ...region,
+              dateOfJoining: region.dateOfJoining
+                  ? new Date(region.dateOfJoining).toISOString().split('T')[0]
+                  : "N/A",
+          })) || [];
+          setAllRms(transformedAreas);
+      } else {
+         console.log(error?.response?.data?.message || "Failed to fetch data.");
+      }
+  } catch (err) {
+      console.error("Error:", err);
+      toast.error("An unexpected error occurred.");
+  }
   
-  // Data for the table
-  const data: RegionManagerData[] = [
-    { regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", phone: "+1-800-123-4567", description: "Regions across North America." },
-    { regionCode: "R002", regionName: "Europe", createdDate: "2022-05-21", phone: "+49-170-1234567", description: "European market regions." },
-    { regionCode: "R003", regionName: "Asia Pacific", createdDate: "2023-03-02", phone: "+86-10-12345678", description: "Regions covering Asia-Pacific." },
-    { regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", phone: "+55-11-12345678", description: "South American markets." },
-    { regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", phone: "+55-11-12345678", description: "South American markets." },
-    { regionCode: "R005", regionName: "Middle East", createdDate: "2022-10-16", phone: "+971-50-1234567", description: "Middle East region with a focus on technology." },
-    { regionCode: "R006", regionName: "Africa", createdDate: "2020-12-01", phone: "+27-21-1234567", description: "African market regions and operations." },
-    { regionCode: "R007", regionName: "Australia", createdDate: "2023-06-10", phone: "+61-2-12345678", description: "Regions within Australia." },
-    { regionCode: "R008", regionName: "India", createdDate: "2021-07-04", phone: "+91-11-12345678", description: "Indian subcontinent markets." },
-    { regionCode: "R009", regionName: "Canada", createdDate: "2023-02-17", phone: "+1-416-123-4567", description: "Canadian market operations." },
-    { regionCode: "R010", regionName: "UK & Ireland", createdDate: "2022-11-25", phone: "+44-20-12345678", description: "United Kingdom and Ireland regions." },
-    { regionCode: "R011", regionName: "South East Asia", createdDate: "2021-09-19", phone: "+65-12345678", description: "Markets in South East Asia." },
-    { regionCode: "R012", regionName: "Latin America", createdDate: "2023-05-05", phone: "+52-55-12345678", description: "Latin American region operations." },
-];
+};
+
+useEffect(() => {
+    getRMs();
+}, []);
+  
+  console.log(allRms);
+  
     // Define the columns with strict keys
-    const columns: { key: keyof  RegionManagerData; label: string }[] = [
-       
-      { key: "regionCode", label: "Name" },
-      { key: "regionName", label: "Email Address" },
-      { key: "phone", label: "Phone No" },
-      { key: "description", label: "Region" },
-      { key: "createdDate", label: "Date Of Joining" },
+    const columns: { key: any; label: string }[] = [
+      { key: "user.userName", label: "Name" },
+      { key: "email", label: "Email Address" },
+      { key: "user.phoneNo", label: "Phone No" },
+      { key: "region.regionName", label: "Region" },
+      { key: "dateOfJoining", label: "Date Of Joining" },
     ];
+
+    
 
   return (
     <div>
@@ -135,7 +146,7 @@ const RMHome = () => {
 
        {/* Table Section */}
        <div>
-        <Table< RegionManagerData> data={data} columns={columns} headerContents={{
+        <Table< RMData> data={allRms} columns={columns} headerContents={{
           
           search:{placeholder:'Search Region By Name Country'},
           sort: [

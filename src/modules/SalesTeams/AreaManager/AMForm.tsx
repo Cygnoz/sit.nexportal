@@ -20,6 +20,7 @@ import useApi from "../../../Hooks/useApi";
 import toast from "react-hot-toast";
 import { endPoints } from "../../../services/apiEndpoints";
 import { AreaData } from "../../../Interfaces/Area";
+import CustomPhoneInput from "../../../components/form/CustomPhone";
 
 interface RegionData {
   label: string;
@@ -44,7 +45,14 @@ const validationSchema = Yup.object({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
+    age: Yup.number()
+    .nullable() // Allows null values
+    .transform((value, originalValue) =>
+      originalValue === "" ? null : value // Converts empty string to null
+    )
 });
+
+
 
 const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
   const {
@@ -68,6 +76,8 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
   const [submit, setSubmit] = useState(false);
 
   const onSubmit: SubmitHandler<AMData> = async (data) => {
+    console.log("dewdew");
+    
     console.log(data);
 
     if (submit) {
@@ -192,25 +202,31 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
     // Clear the leadImage value
     setValue("image", "");
   };
+  const handleInputChange = (field: keyof AMData) => {
+    clearErrors(field); // Clear the error for the specific field when the user starts typing
+  };
 
   return (
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-lg font-bold">Create Area Manager</h1>
-
+        <div>
+          <h1 className="text-lg font-bold text-deepStateBlue ">
+            Create Area Manager
+          </h1>
+          <p className="text-ashGray text-sm">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+            eiusmod tempor incididunt
+          </p>
+        </div>
         <button
           type="button"
           onClick={onClose}
-          className="text-gray-600 hover:text-gray-900 font-bold"
+          className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
         >
-          <p className="text-xl">&times;</p>
+          &times;
         </button>
       </div>
-      <p className="text-sm text-gray-500">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt.
-      </p>
 
       <div className="flex gap-8 items-center justify-center text-base font-bold my-5">
         {tabs.map((tab, index) => (
@@ -242,7 +258,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
         >
           {activeTab === "Personal Information" && (
             <div className="grid grid-cols-12">
-              <div className="col-span-2">
+              <div className="col-span-2 flex flex-col items-center">
                 <label
                   className="cursor-pointer text-center"
                   htmlFor="file-upload"
@@ -259,7 +275,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                 {watch("image") && (
                   <div
                     onClick={handleRemoveImage} // Remove image handler
-                    className="flex ms-14"
+                    className="flex "
                   >
                     <div className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
                       <Trash color="red" size={16} />
@@ -281,17 +297,20 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                   error={errors.email?.message}
                   {...register("email")}
                 />
-                <Input
+               <CustomPhoneInput
+                  label="Phone Number"
                   required
-                  placeholder=" Phone"
-                  label="Phone "
                   error={errors.phone?.message}
-                  {...register("phone")}
-                />
+                  placeholder="Enter phone number"
+                  onChange={(value) => {
+                    handleInputChange("phone");
+                    setValue("phone", value); // Update the value of the phone field in React Hook Form
+                  }}/>
                 <div className="flex gap-4 w-full">
                   <Input
                     placeholder="Enter Age"
                     label="Age"
+                    type="number"
                     error={errors.age?.message}
                     {...register("age")}
                   />
@@ -390,12 +409,15 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                   error={errors.workEmail?.message}
                   {...register("workEmail")}
                 />
-                <Input
-                  placeholder="Enter Work Phone"
-                  label="Work Phone"
+                 <CustomPhoneInput
+                  label="Phone Number"
+                  required
                   error={errors.workPhone?.message}
-                  {...register("workPhone")}
-                />
+                  placeholder="Enter phone number"
+                  onChange={(value) => {
+                    handleInputChange("workPhone");
+                    setValue("workPhone", value); // Update the value of the phone field in React Hook Form
+                  }}/>
                 <Select
                   label="Select Region"
                   placeholder="Choose Region"
@@ -409,8 +431,8 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                   placeholder="Choose Area"
                   value={watch("area")}
                   error={errors.area?.message}
-                  options={allAreas.map((area) => ({
-                    value: area.areaCode,
+                  options={allAreas.map((area: any) => ({
+                    value: area?._id,
                     label: area.areaName,
                   }))}
                   {...register("area")}
@@ -420,8 +442,8 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                   placeholder="Commission Profile"
                   error={errors.commission?.message}
                   options={[
-                    { value: "aa", label: "aa" },
-                    { value: "bb", label: "bb" },
+                    { value: 67, label: "67" },
+                    { value: 65, label: "65" },
                   ]}
                   {...register("commission")}
                 />
@@ -548,7 +570,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                     do eiusmod tempor incididunt
                   </p>
                   <img src={idcard} className="my-3" alt="" />
-                  <div className="flex gap-3 bg-[#FEFDFA] justify-end">
+                  <div className="flex gap-3 justify-end">
                     <Button
                       variant="tertiary"
                       size="sm"
