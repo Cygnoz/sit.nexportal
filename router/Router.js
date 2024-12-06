@@ -19,8 +19,10 @@ router.post('/login',userController.login)
 
 router.post('/verify-otp',userController.verifyOtp)
 router.post('/roles',userController.addOrUpdateRoles)
+router.get('/countries',userController.getCountriesData)
 
 // region
+
 router.post("/region",verifyToken,checkPermission('Add Region'), regionController.addRegion,ActivityLogGeneration('Add Region'));
 
 router.get("/region/:regionId",verifyToken,checkPermission('View Region'), regionController.getRegion);

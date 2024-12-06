@@ -425,6 +425,53 @@ const roles = [
   }
 ];
 
+
+
+exports.getCountriesData = (req, res) => {
+  try {
+    const countriesData = [
+      {
+        countries: [
+          {
+            name: "India",
+            states: ["Andaman and Nicobar Island", "Andhra Pradesh", "Arunachal Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh", "Dadra and Nagar Haveli and Daman and Diu", "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh", "Jammu and Kashmir", "Jharkhand", "Karnataka", "Kerala", "Ladakh", "Lakshadweep", "Madhya Pradesh", "Maharashtra", "Manipur", "Meghalaya", "Mizoram", "Nagaland", "Odisha", "Puducherry", "Punjab", "Rajasthan", "Sikkim", "Tamil Nadu", "Telangana", "Tripura", "Uttar Pradesh", "Uttarakhand", "West Bengal"],
+            // phoneNumberCode: "+91",
+            // flag:"https://flagicons.lipis.dev/flags/1x1/in.svg",
+            // phoneNumberLimit:10,
+            // taxType:"GST"
+          },
+          {
+            name: "Saudi Arabia",
+            states: ["Asir","Al Bahah", "Al Jawf", "Al Madinah", "Al-Qassim", "Eastern Province", "Hail", "Jazan", "Makkah","Medina", "Najran", "Northern Borders", "Riyadh", "Tabuk"],
+            // phoneNumberCode: "+966",
+            // flag:"https://flagicons.lipis.dev/flags/1x1/sa.svg",
+            // phoneNumberLimit:9,
+            // taxType:"VAT"
+          },
+          {
+            name: "United Arab Emirates",
+            states: ["Abu Dhabi", "Dubai", "Sharjah", "Ajman", "Umm Al-Quwain", "Fujairah", "Ras Al Khaimah"],
+            // phoneNumberCode: "+971",
+            // flag:"https://flagicons.lipis.dev/flags/1x1/ae.svg",
+            // phoneNumberLimit:9,
+            // taxType:"VAT"
+          },
+        ]
+      }
+    ];
+    if (countriesData.length > 0) {
+      res.status(200).json(countriesData);
+    } else {
+      res.status(404).json("No Additional Data found");
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).json("Internal server error");
+  }
+};
+
+
+
 // Controller function to add or update roles
 exports.addOrUpdateRoles = async (req, res) => {
   try {
