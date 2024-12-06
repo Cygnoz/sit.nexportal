@@ -51,6 +51,7 @@ interface Address {
     bloodGroup?: string;
     address?: Address;
     city?: string;
+    country?:string;
     state?: string;
     adhaarNo?: string;
     panNo?: string;

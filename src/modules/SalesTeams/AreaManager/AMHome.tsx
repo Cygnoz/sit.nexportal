@@ -57,14 +57,10 @@ const AMHome = () => {
             console.error(error.response.data.message);
           }
         } catch (err) {
-          console.error(err);
-        }
-      };
-      
+          console.error(err);}}
       useEffect(() => {
         getAM();
       }, []);
-      
       console.log(allAM);
       
       // Data for HomeCards
@@ -154,5 +150,5 @@ const AMHome = () => {
     </div>
   )
 }
-
+      
 export default AMHome

@@ -8,6 +8,12 @@ import GraphTable from "./GraphTable";
 import backGroundView from '../../../assets/image/BDAView.png'
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
+import profileImage from '../../../assets/image/AvatarImg.png'
+import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
+import AwardIcon from "../../../assets/icons/AwardIcon";
+import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
+import EditIcon from "../../../assets/icons/EditIcon";
+
 interface BDAViewData {
   leadId:string;
   leadName: string;
@@ -99,9 +105,9 @@ const {id}=useParams()
         <div className="col-span-4 rounded-xl bg-cover"  style={{backgroundImage:`url(${backGroundView})`}}>
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
-            <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white">
+            <div className="w-20 h-20 rounded-full overflow-hidden">
           <img
-            src="https://via.placeholder.com/150" // Replace with the actual image URL
+            src={profileImage} // Replace with the actual image URL
             alt="Profile"
             className="w-full h-full object-cover"
           />
@@ -129,7 +135,7 @@ const {id}=useParams()
         </div>
             </div>
 
-            <div className="flex gap-6 ms-6 my-12">
+            <div className="flex gap-8 ms-6 my-12">
               <div>
                 <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Role</p>
                 {/* <p>Employee ID</p> */}
@@ -144,6 +150,36 @@ const {id}=useParams()
                 <p className="text-[#FFFFFF] text-sm font-medium">13 June 2023</p>
               </div>
             </div>
+            <div className="flex gap-1">
+            <div className="flex flex-col items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+                <EditIcon size={36} color="#C4A25D24" />
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
+             </div>
+
+            <div className="flex flex-col  items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+                <ViewRoundIcon  size={36} color="#D52B1E4D" />  
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
+            </div>
+
+            <div className="flex flex-col  items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+                <AwardIcon size={36} color="#D52B1E4D" />
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
+            </div>
+
+            <div className="flex flex-col  items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+                <DeActivateIcon size={36} color="#D52B1E4D" />
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
+            </div>
+
+        </div>
           </div>
         </div>
       </div>

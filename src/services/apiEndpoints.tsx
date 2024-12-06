@@ -42,7 +42,10 @@ export const endPoints={
   DELETE_WC:'/commissions',
  
   GET_ALL_AM:'/area-managers',
+  GET_COUNTRY:'/countries',
 
   // BDA
- BDA:'/bda'
+ BDA:'/bda',
+
+
 }
