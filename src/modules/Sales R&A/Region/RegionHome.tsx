@@ -21,7 +21,6 @@ import { RegionData } from "../../../Interfaces/Region";
 const RegionHome = () => {
   const [allRegions,setAllRegions]=useState<RegionData[]>([]);
   const {request:getAllRegion}=useApi('get',3003)
-  const {request:deleteRegion}=useApi('delete',3003)
   const navigate=useNavigate()
   const [editId,setEditId]=useState('')
   // State to manage modal visibility
@@ -38,19 +37,19 @@ const RegionHome = () => {
     navigate(`/regionView/${id}`)
   }
 
-  const handleDelete=async(id:any)=>{
-    try{
-      const {response,error}=await deleteRegion(`${endPoints.REGION}/${id}`)
-    if(response && !error){
-      toast.success(response.data.message)
-      getAllRegions()
-    }else{
-      toast.error(error.response.data.message)
-    }
-    }catch(err){
-      console.log();
-    }
-  }
+  // const handleDelete=async(id:any)=>{
+  //   try{
+  //     const {response,error}=await deleteRegion(`${endPoints.REGION}/${id}`)
+  //   if(response && !error){
+  //     toast.success(response.data.message)
+  //     getAllRegions()
+  //   }else{
+  //     toast.error(error.response.data.message)
+  //   }
+  //   }catch(err){
+  //     console.log();
+  //   }
+  // }
 
  const  handleEdit=(id:any)=>{
   handleModalToggle()
@@ -180,7 +179,6 @@ const RegionHome = () => {
         }}
         actionList={[
           { label: 'edit', function:handleEdit },
-          { label: 'delete', function: handleDelete },
           { label: 'view', function: handleView },
         ]}
          />
