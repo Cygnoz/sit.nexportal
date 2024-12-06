@@ -1,130 +1,164 @@
-
-
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
-
-
-//import UserIcon from "../../../assets/icons/UserIcon";
-
 import Table from "../../../components/ui/Table";
 
 import { useEffect, useState } from "react";
-//import CreateUser from "../User/CreateUser";
 import CreateWCommission from "./WCommissionForm";
 import useApi from "../../../Hooks/useApi";
 import { WCData } from "../../../Interfaces/WC";
 import { endPoints } from "../../../services/apiEndpoints";
-
-
-
-
+import toast from "react-hot-toast";
 
 const WCommisionHome = () => {
-  const {request:getALLWC}=useApi('get',3003)
-  const [allWC,setAllWC]=useState<WCData[]>([]);
- 
-  // State to manage modal visibility
- const [isModalOpen, setIsModalOpen] = useState(false);
+  const { request: getALLWC } = useApi("get", 3003);
+  const { request: deleteWC } = useApi("delete", 3003);
+  const [allWC, setAllWC] = useState<WCData[]>([]);
+  const [editId, setEditId] = useState<string | null>(null);
 
-  // Function to toggle modal visibility
+  // State to manage delete confirmation modal
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  // State to manage main modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Function to toggle main modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getWC();
   };
 
-  
-  
+  const openDeleteModal = (id: string) => {
+    setDeleteId(id);
+    setIsDeleteModalOpen(true);
+  };
 
-  const handleEditDelete=(id:any)=>{
-    console.log(id);
-    
-  }
+  const closeDeleteModal = () => {
+    setDeleteId(null);
+    setIsDeleteModalOpen(false);
+  };
 
-  const getWC= async()=>{
-   try{
-      const {response,error}=await getALLWC(endPoints.GET_ALL_WC)
-      if(response&&!error){
-
-        const transformedRegions = response.data.commissions?.map((commission:any) => ({
-          ...commission,
-          createdAt: new Date(commission.createdAt).toISOString().split('T')[0], // Extracts the date part
-        }));
-        
-        // Then set the transformed regions into state
-        setAllWC(transformedRegions);
- 
-        // // const wc= response.data
-        // console.log(response.data);
-
-        // setAllWC(response.data)
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const { response, error } = await deleteWC(`${endPoints.DELETE_WC}/${deleteId}`);
+      if (response && !error) {
+        setAllWC((prev) => prev.filter((wc: any) => wc.id !== deleteId));
+        toast.success(response.data.message || "Commission deleted successfully");
+        getWC(); // Refresh the list
+      } else {
+        console.error(error);
+        toast.error("Failed to delete commission");
       }
-      else{
-        console.log(error);
-       
-      }
-   }
-    catch(err){
-      console.log(err);
-     
+    } catch (err) {
+      console.error("Error deleting commission:", err);
+      toast.error("An error occurred while deleting commission");
+    } finally {
+      closeDeleteModal(); // Close delete modal after operation
     }
-  }
-  useEffect(()=>{
-    getWC()
-  },[])
- 
+  };
 
-  
-     // Define the columns with strict keys
-    const columns: { key: keyof  WCData ; label: string }[] = [
-       
-      { key: "profileName", label: "ProfileName" },
-      { key: "commissionPercentage", label: "Percentage" },
-      { key: "thresholdAmount", label: "Thrushold Amt" },
-      { key: "createdAt", label: "Created Date" },
+  const handleEdit = (id: string) => {
+    handleModalToggle();
+    setEditId(id);
+  };
 
-    ];
+  const getWC = async () => {
+    try {
+      const { response, error } = await getALLWC(endPoints.GET_ALL_WC);
+      if (response && !error) {
+        const transformedRegions = response.data.commissions?.map(
+          (commission: any) => ({
+            ...commission,
+            createdAt: new Date(commission.createdAt)
+              .toISOString()
+              .split("T")[0], // Extracts the date part
+          })
+        );
+        setAllWC(transformedRegions);
+      } else {
+        console.log(error);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getWC();
+  }, []);
+
+  // Define the columns with strict keys
+  const columns: { key: keyof WCData; label: string }[] = [
+    { key: "profileName", label: "ProfileName" },
+    { key: "commissionPercentage", label: "Percentage" },
+    { key: "thresholdAmount", label: "Thrushold Amt" },
+    { key: "createdAt", label: "Created Date" },
+  ];
 
   return (
     <div>
-         <div className="flex justify-between items-center">
-      <h1 className="text-[#303F58] text-xl font-bold">Worker Commission Profile</h1>
-     
-      <Button variant="primary" size="sm" onClick={handleModalToggle}>
-      <span className="text-xl font-bold">+</span> Add Commission Profile
-      </Button>
+      <div className="flex justify-between items-center">
+        <h1 className="text-[#303F58] text-xl font-bold">
+          Worker Commission Profile
+        </h1>
 
-      {/* Modal controlled by state */}
-      <Modal open={isModalOpen} className="w-[40%]" onClose={handleModalToggle}>
-      <CreateWCommission onClose={handleModalToggle} />
-      </Modal>
-    </div>
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => {
+            handleModalToggle();
+            setEditId(null);
+          }}
+        >
+          <span className="text-xl font-bold">+</span> Add Commission Profile
+        </Button>
 
-   
-
-       {/* Table Section */}
-       <div className=" py-2 mt-3">
-        <Table< WCData > data={allWC} columns={columns} headerContents={{
-          
-          search:{placeholder:'Search BDA By Name'},
-        
-        }}
-        actionList={[
-            { label: 'delete', function:handleEditDelete },
-            { label: 'edit', function:handleEditDelete },
-           
-          ]}  />
-
-
+        {/* Main Modal */}
+        <Modal
+          open={isModalOpen}
+          className="w-[40%]"
+          onClose={handleModalToggle}
+        >
+          <CreateWCommission editId={editId} onClose={handleModalToggle} />
+        </Modal>
       </div>
 
-      {/* Modal Section */}
-     
+      {/* Table Section */}
+      <div className="py-2 mt-3">
+        <Table<WCData>
+          data={allWC}
+          columns={columns}
+          headerContents={{
+            search: { placeholder: "Search BDA By Name" },
+          }}
+          actionList={[
+            { label: "delete", function: openDeleteModal },
+            { label: "edit", function: handleEdit },
+          ]}
+        />
+      </div>
 
-
-
+      {/* Delete Confirmation Modal */}
+      <Modal
+        open={isDeleteModalOpen}
+        className="w-[30%]"
+        onClose={closeDeleteModal}
+      >
+        <div className="p-4">
+          <h2 className="text-xl font-semibold">Confirm Delete</h2>
+          <p>Are you sure you want to delete this commission profile?</p>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="secondary" onClick={closeDeleteModal}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleDelete}>
+              Delete
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </div>
-   
-    
   );
 };
 

@@ -9,11 +9,13 @@ import { WCData } from "../../../Interfaces/WC";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+import { useEffect } from "react";
 //import CustomPhoneInput from "../../../components/form/CustomPhone";
 //import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 type Props = {
   onClose: () => void;
+  editId?:any;
 };
 
 
@@ -23,27 +25,54 @@ const validationSchema = Yup.object({
   thresholdAmount: Yup.number().required("thresholdAmount is required"),
 });
 
-function WCommissionForm({ onClose }: Props) {
-  const { request: addWC } = useApi('post', 3003)
+function WCommissionForm({ onClose , editId }: Props) {
+  const { request: addWC } = useApi('post', 3003);
+  const { request: editWC } = useApi("put", 3003);
+  const { request: getWC } = useApi("get", 3003);
   const {
     register,
     handleSubmit,
     formState: { errors },
-    clearErrors,
+    
+    setValue,
 
   } = useForm<WCData>({
     resolver: yupResolver(validationSchema),
   });
 
+  const setFormValues = (data: WCData) => {
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof WCData, data[key as keyof WCData]);
+    });
+  };
+
+  useEffect(() => {
+    if (editId) {
+      (async () => {
+        try {
+          const { response, error } = await getWC(`${endPoints.WC}/${editId}`);
+          if (response && !error) {
+            setFormValues(response.data);
+          } else {
+            toast.error(error.response.data.message);
+          }
+        } catch (err) {
+          console.error("Error fetching region data:", err);
+        }
+      })();
+    }
+  }, [editId]);
+
   const onSubmit: SubmitHandler<WCData> = async (data) => {
 
-    console.log( data);
+    // console.log( data);
 
     try {
-      const apiCall = addWC;
-      const { response, error } = await apiCall(endPoints.WC, data);
-      console.log("res", response);
-      console.log("err", error);
+      const apiCall = editId ? editWC : addWC;
+      const { response, error } = await apiCall(
+        editId ? `${endPoints.WC}/${editId}`: endPoints.WC , data);
+      // console.log("res", response);
+      // console.log("err", error);
       
      if (response && !error) {
         toast.success(response.data.message);
@@ -65,18 +94,19 @@ function WCommissionForm({ onClose }: Props) {
 
   };
 
-  const handleInputChange = (field: keyof WCData) => {
-    clearErrors(field); // Clear the error for the specific field when the user starts typing
-  };
+  // const handleInputChange = (field: keyof WCData) => {
+  //   clearErrors(field); // Clear the error for the specific field when the user starts typing
+  // };
 
   return (
     <div className="p-5 space-y-2 text-[#4B5C79] py-2 w-[100%]">
       <div className="flex justify-between p-2">
         <div>
-          <h3 className="text-[#303F58] font-bold text-lg">Add Commission Profile</h3>
+          <h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Commission Profile</h3>
           <p className="text-[11px] text-[#8F99A9] mt-1">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt.
+            {editId
+              ? "Edit the details of the existing region."
+              : "Fill in the details to create a new region."}
           </p>
         </div>
         <p onClick={onClose} className="text-3xl cursor-pointer">
@@ -95,12 +125,12 @@ function WCommissionForm({ onClose }: Props) {
                 placeholder="Enter Profile Name"
                 error={errors.profileName?.message}
                 {...register("profileName")}
-                onChange={() => handleInputChange("profileName")}
+                // onChange={() => handleInputChange("profileName")}
               />
               <Input
                 required
                 label="Commission Percentage"
-                type="text"
+                type="number"
                 placeholder="Enter Percentage"
                 error={errors.commissionPercentage?.message}
                 {...register("commissionPercentage")}
@@ -109,7 +139,7 @@ function WCommissionForm({ onClose }: Props) {
               <Input
                 required
                 label="Threshold Amount"
-                type="text"
+                type="number"
                 placeholder="Enter Amount"
                 error={errors.thresholdAmount?.message}
                 {...register("thresholdAmount")}

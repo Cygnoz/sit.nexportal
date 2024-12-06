@@ -36,6 +36,8 @@ export const endPoints={
 
   //Worker Commission
   WC:'/commissions',
-  GET_ALL_WC:'/commissions'
+  GET_ALL_WC:'/commissions',
+  UPDATE_WC:'/commissions',
+  DELETE_WC:'/commissions',
  
 }
