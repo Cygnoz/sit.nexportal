@@ -33,5 +33,6 @@ export const endPoints={
 
   // Area Manager
   AM:'/area-manager',
+  GET_ALL_AM:'/area-managers',
  
 }
