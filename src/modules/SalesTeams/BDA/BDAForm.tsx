@@ -21,13 +21,14 @@ import Button from "../../../components/ui/Button";
 import useApi from "../../../Hooks/useApi";
 import { BDAData } from "../../../Interfaces/BDA";
 import { endPoints } from "../../../services/apiEndpoints";
+import { AreaData } from "../../../Interfaces/Area";
 
 interface RegionData {
   label: string;
   value: string;
 }
 
-interface AddBDAProps {
+interface BDAProps {
   onClose: () => void; // Prop for handling modal close
 }
 
@@ -47,9 +48,12 @@ const validationSchema = Yup.object({
     .required("Confirm Password is required"),
 });
 
-const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
+const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
   const { request: getAllRegion } = useApi("get", 3003);
   const [regionData, setRegionData] = useState<RegionData[]>([]);
+  const [allAreas, setAllAreas] = useState<AreaData[]>([]);
+  // State to manage modal visibility
+  const { request: getAllArea } = useApi("get", 3003);
   const {
     register,
     handleSubmit,
@@ -130,6 +134,31 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
   useEffect(() => {
     getAllRegions();
   }, []);
+
+  const getAreas = async (regionId: any) => {
+    try {
+      const { response, error } = await getAllArea(endPoints.GET_AREAS);
+      console.log(response);
+
+      if (response && !error) {
+        const transformedAreas = response.data.areas?.filter(
+          (area: any) => area.region?._id === regionId
+        );
+
+        // Then set the transformed regions into state
+        setAllAreas(transformedAreas);
+      } else {
+        toast.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const regionId = watch("region");
+    getAreas(regionId);
+  }, [watch("region")]);
 
   return (
     <div className="p-5 bg-white rounded shadow-md">
@@ -342,10 +371,10 @@ const BDAForm: React.FC<AddBDAProps> = ({ onClose }) => {
                   label="Select Area"
                   placeholder="Choose Area"
                   error={errors.area?.message}
-                  options={[
-                    { value: "North", label: "North" },
-                    { value: "South", label: "South" },
-                  ]}
+                  options={allAreas.map((area:any) => ({
+                    value: area?._id,
+                    label: area.areaName,
+                  }))}
                   {...register("area")}
                 />
                 <Select

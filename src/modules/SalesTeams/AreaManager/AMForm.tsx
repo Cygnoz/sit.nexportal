@@ -32,34 +32,9 @@ interface AddAreaManagerProps {
 
 const validationSchema = Yup.object({
   fullName: Yup.string().required("Full name is required"),
-  // emailAddress: Yup.string()
-  //   .email("Invalid email address")
-  //   .required("Email address is required"),
   phone: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  // age: Yup.string(),
-  // bloodGroup: Yup.string(),
-  // addressStreet1: Yup.string(),
-  // addressStreet2: Yup.string(),
-  // city: Yup.string(),
-  // state: Yup.string(),
-  // adhaarNo: Yup.string()
-  //   .matches(/^\d{12}$/, "Aadhaar number must be 12 digits"),
-  // panNo: Yup.string()
-  //   .matches(/^[A-Z]{5}\d{4}[A-Z]{1}$/, "Invalid PAN number"),
-  // dateOfJoining: Yup.string(),
-  // // Additional validation
-  // bankName: Yup.string(),
-  // branchName: Yup.string(),
-  // accountNumber: Yup.string(),
-  // ifscCode: Yup.string(),
-  // companyId: Yup.string(),
-  // workEmail: Yup.string().email("Invalid work email"),
-  // workPhone: Yup.string().matches(/^\d+$/, "Work phone number must contain only digits"),
-  // role: Yup.string(),
-  // region: Yup.string(),
-  // area:Yup.string(),
   loginEmail: Yup.string()
     .email("Invalid email address")
     .required("Login Email is required"),
