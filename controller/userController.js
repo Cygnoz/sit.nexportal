@@ -42,6 +42,7 @@ exports.addUser = async (req, res,next) => {
       next();
     }
 
+    
   } catch (error) {
     console.error("Error adding user:", error);
     res.status(500).json({ message: "Internal server error" });

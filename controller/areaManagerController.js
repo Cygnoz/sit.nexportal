@@ -1,5 +1,8 @@
 
 const User = require("../database/model/user");
+const Region = require("../database/model/region");
+const Area = require("../database/model/area");
+const Commission = require("../database/model/commission");
 const AreaManager = require("../database/model/areaManager");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require('mongoose').Types;
@@ -91,9 +94,6 @@ const logOperation = (req, status, operationId = null) => {
       if (validationError) {
         return res.status(400).json({ message: validationError });
       }
-      if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
-        return res.status(400).json({ message: "Invalid commission value" });
-      }
   
       // Check for duplicates
       const duplicateCheck = await checkDuplicateUser(data.fullName, data.loginEmail, data.phone);
@@ -107,7 +107,7 @@ const logOperation = (req, status, operationId = null) => {
       // Create region manager
       const newAreaManager = await createAreaManager(data, newUser._id);
   
-      logOperation(req, "Success", newAreaManager._id);
+      logOperation(req, "Successfully", newAreaManager._id);
       next()
       return res.status(201).json({
         message: "Area Manager added successfully",
@@ -128,8 +128,12 @@ const logOperation = (req, status, operationId = null) => {
     try {
       const { id } = req.params;
   
-      const areaManager = await AreaManager.findById(id).populate('user', 'userName phoneNo').exec();
-      
+      const areaManager = await AreaManager.findById(id).populate([
+        { path: 'user', select: 'userName phoneNo' },
+        { path: 'region', select: 'regionName' },
+        { path: 'area', select: 'areaName' },
+        { path: 'commission', select: 'profileName' },
+      ]);
       if (!areaManager) {
         return res.status(404).json({ message: "Area Manager not found" });
       }
@@ -143,8 +147,12 @@ const logOperation = (req, status, operationId = null) => {
   
   exports.getAllAreaManager = async (req, res) => {
       try {
-        const areaManager = await AreaManager.find({}).populate('user', 'userName phoneNo');
-    
+        const areaManager = await AreaManager.find({}).populate([
+          { path: 'user', select: 'userName phoneNo' },
+          { path: 'region', select: 'regionName' },
+          { path: 'area', select: 'areaName' },
+          { path: 'commission', select: 'profileName' },
+        ]);
         if (areaManager.length === 0) {
           return res.status(404).json({ message: "No Area Manager found" });
         }
@@ -186,13 +194,6 @@ const logOperation = (req, status, operationId = null) => {
           return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
         }
     
-        // Validate commission value if provided
-        if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
-          return res.status(400).json({ message: "Invalid commission value" });
-        }
-        console.log("RM" , id)
-        console.log("userId" , existingUserId)
-
         const updatedUser = await User.findByIdAndUpdate(
           new ObjectId(existingUserId), // Use 'new' when creating an ObjectId
           {
@@ -218,7 +219,7 @@ const logOperation = (req, status, operationId = null) => {
         res.status(200).json({
           message: "Area Manager updated successfully"
         });
-        logOperation(req, "Success", updatedAreaManager._id);
+        logOperation(req, "Successfully", updatedAreaManager._id);
       next()
       } catch (error) {
         console.error("Error editing Area Manager:", error);

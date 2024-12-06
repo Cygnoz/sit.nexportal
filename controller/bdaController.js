@@ -1,6 +1,9 @@
 
 const User = require("../database/model/user");
 const Bda = require("../database/model/bda");
+const Region = require("../database/model/region");
+const Area = require("../database/model/area");
+const Commission = require("../database/model/commission");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require('mongoose').Types;
 
@@ -91,10 +94,6 @@ const logOperation = (req, status, operationId = null) => {
       if (validationError) {
         return res.status(400).json({ message: validationError });
       }
-      if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
-        return res.status(400).json({ message: "Invalid commission value" });
-      }
-  
       // Check for duplicates
       const duplicateCheck = await checkDuplicateUser(data.fullName, data.loginEmail, data.phone);
       if (duplicateCheck) {
@@ -107,7 +106,7 @@ const logOperation = (req, status, operationId = null) => {
       // Create region manager
       const newBda = await createBda(data, newUser._id);
   
-      logOperation(req, "Success", newBda._id);
+      logOperation(req, "Successfully", newBda._id);
       next()
       return res.status(201).json({
         message: "BDA added successfully",
@@ -128,8 +127,12 @@ const logOperation = (req, status, operationId = null) => {
     try {
       const { id } = req.params;
   
-      const bda = await Bda.findById(id).populate('user', 'userName phoneNo').exec();
-      
+      const bda = await Bda.findById(id).populate([
+        { path: 'user', select: 'userName phoneNo' },
+        { path: 'region', select: 'regionName' },
+        { path: 'area', select: 'areaName' },
+        { path: 'commission', select: 'profileName' },
+      ]);
       if (!bda) {
         return res.status(404).json({ message: "BDA not found" });
       }
@@ -143,8 +146,12 @@ const logOperation = (req, status, operationId = null) => {
   
   exports.getAllBda = async (req, res) => {
       try {
-        const bda = await Bda.find({}).populate('user', 'userName phoneNo');
-    
+        const bda = await Bda.find({}).populate([
+          { path: 'user', select: 'userName phoneNo' },
+          { path: 'region', select: 'regionName' },
+          { path: 'area', select: 'areaName' },
+          { path: 'commission', select: 'profileName' },
+        ]);
         if (bda.length === 0) {
           return res.status(404).json({ message: "No BDA found" });
         }
@@ -186,10 +193,6 @@ const logOperation = (req, status, operationId = null) => {
           return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
         }
     
-        // Validate commission value if provided
-        if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
-          return res.status(400).json({ message: "Invalid commission value" });
-        }
         
         const updatedUser = await User.findByIdAndUpdate(
           new ObjectId(existingUserId), // Use 'new' when creating an ObjectId
@@ -216,7 +219,7 @@ const logOperation = (req, status, operationId = null) => {
         res.status(200).json({
           message: "BDA updated successfully"
         });
-        logOperation(req, "Success", updatedBda._id);
+        logOperation(req, "Successfully", updatedBda._id);
       next()
       } catch (error) {
         console.error("Error editing BDA:", error);

@@ -16,18 +16,17 @@ const areaManagerSchema = new mongoose.Schema({
   dateOfJoining: { type: Date },
   workEmail: { type: String},
   workPhone: { type: String},
-  region: { type: String},
-  regionId : { type: String },
-  area: { type: String},
-  areaId : { type: String },
-  commission: { type: Number},
+  region: { type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
+  area: { type: mongoose.Schema.Types.ObjectId, ref: 'Area' },
+  commission: { type: mongoose.Schema.Types.ObjectId, ref: 'Commission'},
   bankDetails: {
     bankName: { type: String},
     bankBranch: { type: String},
     bankAccountNo: { type: String},
     ifscCode: { type: String},
   },
-});
+},
+{ timestamps: true });
 
 module.exports = mongoose.model('AreaManager', areaManagerSchema);
 

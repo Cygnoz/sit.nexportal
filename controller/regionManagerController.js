@@ -1,5 +1,7 @@
 
 const User = require("../database/model/user");
+const Region = require("../database/model/region");
+const Commission = require("../database/model/commission");
 const RegionManager = require("../database/model/regionManager");
 const bcrypt = require("bcrypt");
 const { ObjectId } = require('mongoose').Types;
@@ -119,9 +121,6 @@ const logOperation = (req, status, operationId = null) => {
       if (validationError) {
         return res.status(400).json({ message: validationError });
       }
-      if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
-        return res.status(400).json({ message: "Invalid commission value" });
-      }
       
   
       // Check for duplicates
@@ -136,7 +135,7 @@ const logOperation = (req, status, operationId = null) => {
       // Create region manager
       const newRegionManager = await createRegionManager(data, newUser._id);
   
-      logOperation(req, "Success", newRegionManager._id);
+      logOperation(req, "Successfully", newRegionManager._id);
       next()
       return res.status(201).json({
         message: "Region Manager added successfully",
@@ -157,8 +156,12 @@ const logOperation = (req, status, operationId = null) => {
     try {
       const { id } = req.params;
   
-      const regionManager = await RegionManager.findById(id).populate('user', 'userName phoneNo').exec();
-      
+      const regionManager = await RegionManager.findById(id).populate([
+        { path: 'user', select: 'userName phoneNo' },
+        { path: 'region', select: 'regionName' },
+        { path: 'commission', select: 'profileName' },
+      ]);
+  
       if (!regionManager) {
         return res.status(404).json({ message: "Region Manager not found" });
       }
@@ -170,20 +173,26 @@ const logOperation = (req, status, operationId = null) => {
     }
   };
   
+  
   exports.getAllRegionManager = async (req, res) => {
-      try {
-        const regionManager = await RegionManager.find({}).populate('user', 'userName phoneNo');
-    
-        if (regionManager.length === 0) {
-          return res.status(404).json({ message: "No Region Manager found" });
-        }
-    
-        res.status(200).json({ regionManager });
-      } catch (error) {
-        console.error("Error fetching all Region Manager:", error);
-        res.status(500).json({ message: "Internal server error" });
+    try {
+      const regionManager = await RegionManager.find({}).populate([
+        { path: 'user', select: 'userName phoneNo' },
+        { path: 'region', select: 'regionName' },
+        { path: 'commission', select: 'profileName' },
+      ]);
+  
+      if (regionManager.length === 0) {
+        return res.status(404).json({ message: "No Region Manager found" });
       }
-    };
+  
+      res.status(200).json({ regionManager });
+    } catch (error) {
+      console.error("Error fetching all Region Managers:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
 
 
     exports.editRegionManager = async (req, res,next) => {
@@ -215,13 +224,6 @@ const logOperation = (req, status, operationId = null) => {
           return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
         }
     
-        // Validate commission value if provided
-        if (data.commission !== undefined && (typeof data.commission !== "number" || data.commission < 0 || data.commission > 100)) {
-          return res.status(400).json({ message: "Invalid commission value" });
-        }
-        console.log("RM" , id)
-        console.log("userId" , existingUserId)
-
         const updatedUser = await User.findByIdAndUpdate(
           new ObjectId(existingUserId), // Use 'new' when creating an ObjectId
           {
@@ -247,7 +249,7 @@ const logOperation = (req, status, operationId = null) => {
         res.status(200).json({
           message: "Region Manager updated successfully"
         });
-        logOperation(req, "Success", updatedRegionManager._id);
+        logOperation(req, "Successfully", updatedRegionManager._id);
       next()
       } catch (error) {
         console.error("Error editing Region Manager:", error);
