@@ -6,7 +6,7 @@ const Role = require('../database/model/role');
 const User = require('../database/model/user');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-// const nodemailer = require('nodemailer');
+const nodemailer = require('nodemailer');
 const NodeCache = require('node-cache');
 const otpCache = new NodeCache({ stdTTL: 180 }); // 180 seconds
 const rateLimit = require('express-rate-limit');
@@ -217,46 +217,45 @@ function generateTimeAndDateForDB(
 
 
 
-
-
 // Nodemailer transporter setup using environment variables
-// const transporter = nodemailer.createTransport({
-//   service: 'gmail',
-//   auth: {
-//     user: process.env.EMAIL,
-//     pass: process.env.PASSWORD,
-//   },
-// });
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
 
 // Function to send OTP email
-// const sendOtpEmail = async (email, otp) => {
-//   const mailOptions = {
-//     from: `"BillBizz" <${process.env.EMAIL}>`,
-//     to: email,
-//     subject: 'BillBizz Software OTP',
-//     text: `Hey there,
+const sendOtpEmail = async (email, otp) => {
+  const mailOptions = {
+    from: `"BillBizz" <${process.env.EMAIL}>`,
+    to: email,
+    subject: 'BillBizz Software OTP',
+    text: `Hey there,
 
-// Your One-Time Password (OTP) is: ${otp}
+Your One-Time Password (OTP) is: ${otp}
 
-// This code is valid for 2 minutes. Please use it promptly to ensure secure access.
+This code is valid for 2 minutes. Please use it promptly to ensure secure access.
 
-// Thanks for using our service!
+Thanks for using our service!
 
-// Cheers,
+Cheers,
 
-// BillBizz`,
-//   };
+BillBizz`,
+  };
 
-//   return transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.error('Error occurred:', error);
-//       return false;
-//     } else {
-//       console.log('Email sent:', info.response);
-//       return true;
-//     }
-//   });
-// };
+  return transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.error('Error occurred:', error);
+      return false;
+    } else {
+      console.log('Email sent:', info.response);
+      return true;
+    }
+  });
+};
+
 
 
 
@@ -290,6 +289,7 @@ function generateTimeAndDateForDB(
 //     return false;
 //   }
 // };
+
 
 
 
