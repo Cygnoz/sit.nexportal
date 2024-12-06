@@ -447,8 +447,8 @@ onChange={handleFileChange}
   placeholder="Choose Area"
   value={watch("area")}
   error={errors.area?.message}
-  options={allAreas.map((area) => ({
-    value: area.areaCode,
+  options={allAreas.map((area:any) => ({
+    value: area?._id,
     label: area.areaName,
   }))} 
   {...register("area")}
@@ -457,9 +457,10 @@ onChange={handleFileChange}
                     label="Choose Commission Profile"
                     placeholder="Commission Profile"
                     error={errors.commission?.message}
+                    typeof="number"
                     options={[
-                      { value: "aa", label: "aa" },
-                      { value: "bb", label: "bb" },
+                      { value: "67", label: "67" },
+                      { value: "65", label: "65" },
                     ]}
                     {...register("commission")}
                   />
@@ -582,7 +583,7 @@ onChange={handleFileChange}
               <p className="text-[#303F58] text-base font-bold">ID Card</p>
               <p className="text-xs font-normal text-[#8F99A9] mt-1">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt</p>
               <img src={idcard} className="my-3" alt="" />
-              <div className="flex gap-3 bg-[#FEFDFA] justify-end">
+              <div className="flex gap-3 justify-end">
               <Button variant="tertiary" size="sm" className="text-xs text-[#565148] font-medium rounded-md">
                 <ViewIcon size="13" color="#565148"/>View
               </Button>

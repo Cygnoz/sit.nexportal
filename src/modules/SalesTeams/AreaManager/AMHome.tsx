@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../../components/ui/Button";
 import Modal from "../../../components/modal/Modal";
 import HomeCard from "../../../components/ui/HomeCards";
@@ -11,19 +11,17 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import AddAreaManager from "./AMForm";
 import { useNavigate } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
+import { AMData } from "../../../Interfaces/AM";
+import { endPoints } from "../../../services/apiEndpoints";
 
 
 
-interface AMData {
-    name: string;
-    emailAdrees: string;
-    phoneNo: string;
-    region:string;
-    area: string;
-    dateOfJoining:string;
-  }
   
 const AMHome = () => {
+  const {request:getAllAM}=useApi('get',3002)
+  const [allAM,setAllAM]=useState<AMData[]>([]);
+
 
     const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -31,12 +29,43 @@ const AMHome = () => {
 
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
+        getAM()
       };
       
 
       const handleView=(id:any)=>{
         navigate(`/amView/${id}`)
       }
+
+      const getAM = async () => {
+        try {
+          const { response, error } = await getAllAM(endPoints.GET_ALL_AM);
+          if (response && !error) {
+              const transformedAM = response.data.areaManager?.map((item:any) => ({
+              // ...item,
+              fullName: item.user.userName,
+              email: item.email,
+              phone: item.user.phoneNo,
+              dateOfJoining: item.dateOfJoining,
+              area: item.area,
+              region: item.region,
+            }));
+            setAllAM(transformedAM);
+
+          } else {
+            console.error(error.response.data.message);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      
+      useEffect(() => {
+        getAM();
+      }, []);
+      
+      console.log(allAM);
+      
       // Data for HomeCards
   const homeCardData = [
     { icon: <UserIcon />, number: "189", title: "Total Area Manager",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
@@ -46,24 +75,24 @@ const AMHome = () => {
   ];
 
     // Data for the table
-    const data: AMData[] = [
-        { name: "Devid Billie", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-        { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14"},
-        { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-      ];
+    // const data: AMData[] = [
+    //     { name: "Devid Billie", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //     { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14"},
+    //     { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
+    //   ];
         // Define the columns with strict keys
         const columns: { key: keyof AMData; label: string }[] = [
-          { key: "name", label: "Name" },
-          { key: "emailAdrees", label: "Email Address" },
-          { key: "phoneNo", label: "Phone No" },
+          { key: "fullName", label: "Name" },
+          { key: "email", label: "Email Address" },
+          { key: "phone", label: "Phone No" },
           { key: "region", label: "Region" },
           { key: "area", label: "Area" },
           { key: "dateOfJoining", label: "Date of Joining" },
@@ -97,7 +126,7 @@ const AMHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<AMData> data={data} columns={columns} headerContents={{
+        <Table<AMData> data={allAM} columns={columns} headerContents={{
           // title:'Region',
           search:{placeholder:'Search Invoice by client name, invoice number, or date'},
           sort: [
