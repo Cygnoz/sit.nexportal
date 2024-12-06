@@ -137,6 +137,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
         if (currentIndex > 0) {
             setActiveTab(tabs[currentIndex - 1]);
         }
+        setSubmit(false)
     };
 
     const handleInputChange = (field: keyof RMData) => {
@@ -437,17 +438,14 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                                     {...register("region")}
 
                                 />
-                                <Select
-                                    placeholder="Select Commission profile"
-                                    label="Choose Commission Profile"
-                                    error={errors.commission?.message}
-                                    options={[
-                                        { value: "5", label: "5" },
-                                        { value: "10", label: "10" },
-                                        { value: "15", label: "15" },
-                                    ]}
-                                    {...register("commission")}
+                                  <Input
+                                     placeholder="Enter Commission profile"
+                                     label="Commission Profile"
+                                     error={errors.commission?.message}
+                                     type="number"
+                                     {...register("commission")}
                                 />
+                               
 
                             </div>
 
