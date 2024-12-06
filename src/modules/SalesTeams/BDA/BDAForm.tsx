@@ -1,7 +1,6 @@
 import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import * as Yup from "yup";
-
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import CheckIcon from "../../../assets/icons/CheckIcon";
@@ -21,12 +20,8 @@ import Button from "../../../components/ui/Button";
 import useApi from "../../../Hooks/useApi";
 import { BDAData } from "../../../Interfaces/BDA";
 import { endPoints } from "../../../services/apiEndpoints";
-import { AreaData } from "../../../Interfaces/Area";
+import { useRegularApi } from "../../../context/ApiContext";
 
-interface RegionData {
-  label: string;
-  value: string;
-}
 
 interface BDAProps {
   onClose: () => void; // Prop for handling modal close
@@ -54,13 +49,16 @@ const validationSchema = Yup.object({
 });
 
 const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
-  const { request: getAllRegion } = useApi("get", 3003);
+  const {allAreas,allRegions}=useRegularApi()
   const {request:addBDA}=useApi('post',3002)
   const [submit, setSubmit] = useState(false);
-  const [regionData, setRegionData] = useState<RegionData[]>([]);
-  const [allAreas, setAllAreas] = useState<AreaData[]>([]);
+  const [data, setData] = useState<{
+    regions: { label: string; value: string }[];
+    areas: { label: string; value: string }[];
+   // workerCommission: {label:string; value:string}[];
+    
+  }>({ regions: [], areas: [] });
   // State to manage modal visibility
-  const { request: getAllArea } = useApi("get", 3003);
   const {
     register,
     handleSubmit,
@@ -136,54 +134,53 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-  const getAllRegions = async () => {
-    try {
-      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
+  //   try {
+  //     const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
 
-      if (response && !error) {
-        // Extract only `regionName` and `_id` from each region
-        const filteredRegions = response.data.regions?.map((region: any) => ({
-          label: region.regionName,
-          value: String(region._id), // Ensure `value` is a string
-        }));
+  //     if (response && !error) {
+  //       // Extract only `regionName` and `_id` from each region
+  //       const filteredRegions = response.data.regions?.map((region: any) => ({
+  //         label: region.regionName,
+  //         value: String(region._id), // Ensure `value` is a string
+  //       }));
 
-        // Update the state with the filtered regions
-        setRegionData(filteredRegions);
-      } else {
-        toast.error(error.response.data.message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  //       // Update the state with the filtered regions
+  //       setRegionData(filteredRegions);
+  //     } else {
+  //       toast.error(error.response.data.message);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // };
 
-  useEffect(() => {
-    getAllRegions();
-  }, []);
+  // useEffect(() => {
+  //   getAllRegions();
+  // }, []);
+  // const transformedAreas = response.data.areas?.filter(
+  //   (area: any) => area.region?._id === regionId
+  // );
+  
+   useEffect(()=>{
+    const filteredRegions = allRegions?.map((region: any) => ({
+            label: region.regionName,
+            value: String(region._id), // Ensure `value` is a string
+          }));
+    setData({...data,regions:filteredRegions})
+   },[allRegions])
 
-  const getAreas = async (regionId: any) => {
-    try {
-      const { response, error } = await getAllArea(endPoints.GET_AREAS);
-      console.log(response);
+   useEffect(() => {
+    // Filter areas based on the selected region
+    const filteredAreas = allAreas.filter((area:any) => area.region?._id === watch("region"));
 
-      if (response && !error) {
-        const transformedAreas = response.data.areas?.filter(
-          (area: any) => area.region?._id === regionId
-        );
-
-        // Then set the transformed regions into state
-        setAllAreas(transformedAreas);
-      } else {
-        toast.error(error.response.data.message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    const regionId = watch("region");
-    getAreas(regionId);
+    // Map the filtered areas to the required format for areaData
+    const transformedAreas = filteredAreas.map((area:any) => ({
+      label: area.areaName,
+      value: String(area._id), // Ensure `value` is a string
+    }));
+    console.log(transformedAreas);
+    
+    setData({...data,areas:transformedAreas})
   }, [watch("region")]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -206,7 +203,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
   };
 
  
-
   return (
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
@@ -424,17 +420,14 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
                   placeholder="Choose Region"
                   value={watch("region")}
                   error={errors.region?.message}
-                  options={regionData}
+                  options={data.regions}
                   {...register("region")}
                 />
                 <Select
                   label="Select Area"
                   placeholder="Choose Area"
                   error={errors.area?.message}
-                  options={allAreas.map((area:any) => ({
-                    value: area?._id,
-                    label: area.areaName,
-                  }))}
+                  options={data.areas}
                   {...register("area")}
                 />
                <Select
