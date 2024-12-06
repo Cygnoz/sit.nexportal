@@ -40,17 +40,18 @@ const AMHome = () => {
       const getAM = async () => {
         try {
           const { response, error } = await getAllAM(endPoints.GET_ALL_AM);
+          console.log(response);
+          
           if (response && !error) {
-              const transformedAM = response.data.areaManager?.map((item:any) => ({
-              // ...item,
-              fullName: item.user.userName,
-              email: item.email,
-              phone: item.user.phoneNo,
-              dateOfJoining: item.dateOfJoining,
-              area: item.area,
-              region: item.region,
-            }));
-            setAllAM(transformedAM);
+            const transformedAreas = response.data.areaManager?.map((area: any) => ({
+              ...area,
+              dateOfJoining: area.dateOfJoining
+                  ? new Date(area.dateOfJoining).toISOString().split('T')[0]
+                  : "N/A",
+          })) || [];
+             console.log(transformedAreas);
+             
+            setAllAM(transformedAreas);
 
           } else {
             console.error(error.response.data.message);
@@ -89,14 +90,13 @@ const AMHome = () => {
     //     { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
     //   ];
         // Define the columns with strict keys
-        const columns: { key: keyof AMData; label: string }[] = [
-          { key: "fullName", label: "Name" },
+        const columns: { key: any; label: string }[] = [
+          { key: "user.userName", label: "Name" },
           { key: "email", label: "Email Address" },
-          { key: "phone", label: "Phone No" },
-          { key: "region", label: "Region" },
-          { key: "area", label: "Area" },
+          { key: "user.phoneNo", label: "Phone No" },
+          { key: "region.regionName", label: "Region" },
+          { key: "area.areaName", label: "Area" },
           { key: "dateOfJoining", label: "Date of Joining" },
-
         ];
       
 
