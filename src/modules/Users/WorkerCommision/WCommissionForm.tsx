@@ -5,6 +5,10 @@ import Button from "../../../components/ui/Button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import { WCData } from "../../../Interfaces/WC";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import toast from "react-hot-toast";
 //import CustomPhoneInput from "../../../components/form/CustomPhone";
 //import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
@@ -12,36 +16,56 @@ type Props = {
   onClose: () => void;
 };
 
-interface WCommissionData {
-  profileName: string;
-  email: string;
- 
-  
-}
 
 const validationSchema = Yup.object({
   profileName: Yup.string().required("First name is required"),
-  email: Yup.string()
-    .email("Invalid email format")
-    .required("Email is required")
+  commissionPercentage: Yup.number().required("commissionPercentage is required"),
+  thresholdAmount: Yup.number().required("thresholdAmount is required"),
 });
 
 function WCommissionForm({ onClose }: Props) {
+  const { request: addWC } = useApi('post', 3003)
   const {
     register,
     handleSubmit,
     formState: { errors },
     clearErrors,
-   
-  } = useForm<WCommissionData>({
+
+  } = useForm<WCData>({
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<WCommissionData> = (data) => {
-    console.log("Form Data:", data);
+  const onSubmit: SubmitHandler<WCData> = async (data) => {
+
+    console.log( data);
+
+    try {
+      const apiCall = addWC;
+      const { response, error } = await apiCall(endPoints.WC, data);
+      console.log("res", response);
+      console.log("err", error);
+      
+     if (response && !error) {
+        toast.success(response.data.message);
+        console.log(response.data);
+        
+        onClose();
+
+      } else {
+        toast.error(error.response.data.message);
+      }
+
+    } catch (err) {
+      console.error("Error submitting worker commission  data:", err);
+      toast.error("An unexpected error occurred.");
+
+    }
+
+    
+
   };
 
-  const handleInputChange = (field: keyof WCommissionData) => {
+  const handleInputChange = (field: keyof WCData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
@@ -61,54 +85,61 @@ function WCommissionForm({ onClose }: Props) {
       </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div>
-        
-        <div className=" my-2">
-          <div className="mx-3 gap-4 space-y-2 max-w-xl">
-            <Input
-              label="Profile Name"
-              type="text"
-              placeholder="Enter Profile Name"
-              error={errors.profileName?.message}
-              {...register("profileName")}
-              onChange={() => handleInputChange("profileName")}
-            />
-             <Input
-              label="Commission Percentage"
-              type="text"
-              placeholder="Enter Percentage"
-             
-            />
-            <Input
-              label="Threshold Amount"
-              type="email"
-              placeholder="Enter Amount"
-              
-            />
-           
-            
+
+          <div className=" my-2">
+            <div className="mx-3 gap-4 space-y-2 max-w-2xl">
+              <Input
+                required
+                label="Profile Name"
+                type="text"
+                placeholder="Enter Profile Name"
+                error={errors.profileName?.message}
+                {...register("profileName")}
+                onChange={() => handleInputChange("profileName")}
+              />
+              <Input
+                required
+                label="Commission Percentage"
+                type="text"
+                placeholder="Enter Percentage"
+                error={errors.commissionPercentage?.message}
+                {...register("commissionPercentage")}
+
+              />
+              <Input
+                required
+                label="Threshold Amount"
+                type="text"
+                placeholder="Enter Amount"
+                error={errors.thresholdAmount?.message}
+                {...register("thresholdAmount")}
+
+              />
+
+
+            </div>
           </div>
         </div>
+        <div className=" flex justify-end gap-2 mt-3 pb-2 me-3">
+          <Button
+            variant="tertiary"
+            className="h-8 text-sm border rounded-lg"
+            size="lg"
+            onClick={onClose}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            className="h-8 text-sm border rounded-lg"
+            size="lg"
+            type="submit"
+          >
+            Submit
+          </Button>
         </div>
-        <div className=" flex justify-end gap-2 mt-3 pb-2">
-        <Button
-          variant="tertiary"
-          className="h-8 text-sm border rounded-lg"
-          size="lg"
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        <Button
-          variant="primary"
-          className="h-8 text-sm border rounded-lg"
-          size="lg"
-          type="submit"
-        >
-          Submit
-        </Button>
-      </div>
       </form>
-      
+
     </div>
   );
 }

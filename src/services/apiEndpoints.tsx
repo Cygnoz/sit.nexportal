@@ -33,5 +33,9 @@ export const endPoints={
 
   // Area Manager
   AM:'/area-manager',
+
+  //Worker Commission
+  WC:'/commissions',
+  GET_ALL_WC:'/commissions'
  
 }

@@ -8,64 +8,79 @@ import Button from "../../../components/ui/Button";
 
 import Table from "../../../components/ui/Table";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 //import CreateUser from "../User/CreateUser";
 import CreateWCommission from "./WCommissionForm";
+import useApi from "../../../Hooks/useApi";
+import { WCData } from "../../../Interfaces/WC";
+import { endPoints } from "../../../services/apiEndpoints";
 
 
 
-// Define the type for data items
-interface WCommissionData {
-   regionCode:string;
-   regionName: string;
-   createdDate: string;
-   amount: string;
-   roll: string;
-   
-  }
 
 
 const WCommisionHome = () => {
+  const {request:getALLWC}=useApi('get',3003)
+  const [allWC,setAllWC]=useState<WCData[]>([]);
+ 
   // State to manage modal visibility
  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // Function to toggle modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
+    getWC();
   };
 
   
   
 
-  const handleDelete=(id:any)=>{
+  const handleEditDelete=(id:any)=>{
     console.log(id);
     
   }
 
-  
-  // Data for the table
-  const data: WCommissionData[] = [
-    { regionCode: "R001", regionName: "North America", createdDate: "2023-01-15", amount: "100.0", roll: "Regions across North America." },
-    { regionCode: "R002", regionName: "Europe", createdDate: "2022-05-21", amount: "100.0", roll: "European market regions." },
-    { regionCode: "R003", regionName: "Asia Pacific", createdDate: "2023-03-02", amount: "100.0", roll: "Regions covering Asia-Pacific." },
-    { regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", amount: "100.0", roll: "South American markets." },
-    { regionCode: "R004", regionName: "South America", createdDate: "2021-08-09", amount: "100.0", roll: "South American markets." },
-    { regionCode: "R005", regionName: "Middle East", createdDate: "2022-10-16", amount: "100.0", roll: "Middle East region with a focus on technology." },
-    { regionCode: "R006", regionName: "Africa", createdDate: "2020-12-01", amount: "100.0", roll: "African market regions and operations." },
-    { regionCode: "R007", regionName: "Australia", createdDate: "2023-06-10", amount: "100.0", roll: "Regions within Australia." },
-    { regionCode: "R008", regionName: "India", createdDate: "2021-07-04", amount: "100.0", roll: "Indian subcontinent markets." },
-    { regionCode: "R009", regionName: "Canada", createdDate: "2023-02-17", amount: "100.0", roll: "Canadian market operations." },
-    { regionCode: "R010", regionName: "UK & Ireland", createdDate: "2022-11-25", amount: "100.0", roll: "United Kingdom and Ireland regions." },
-    { regionCode: "R011", regionName: "South East Asia", createdDate: "2021-09-19", amount: "100.0", roll: "Markets in South East Asia." },
-    { regionCode: "R012", regionName: "Latin America", createdDate: "2023-05-05", amount: "100.0", roll: "Latin American region operations." },
-];
-    // Define the columns with strict keys
-    const columns: { key: keyof  WCommissionData ; label: string }[] = [
+  const getWC= async()=>{
+   try{
+      const {response,error}=await getALLWC(endPoints.GET_ALL_WC)
+      if(response&&!error){
+
+        const transformedRegions = response.data.commissions?.map((commission:any) => ({
+          ...commission,
+          createdAt: new Date(commission.createdAt).toISOString().split('T')[0], // Extracts the date part
+        }));
+        
+        // Then set the transformed regions into state
+        setAllWC(transformedRegions);
+ 
+        // // const wc= response.data
+        // console.log(response.data);
+
+        // setAllWC(response.data)
+      }
+      else{
+        console.log(error);
        
-      { key: "regionName", label: "Name" },
-      { key: "regionCode", label: "Value(%)" },
-      { key: "amount", label: "Thrushold amt" },
-      { key: "createdDate", label: "Creted Date" },
+      }
+   }
+    catch(err){
+      console.log(err);
+     
+    }
+  }
+  useEffect(()=>{
+    getWC()
+  },[])
+ 
+
+  
+     // Define the columns with strict keys
+    const columns: { key: keyof  WCData ; label: string }[] = [
+       
+      { key: "profileName", label: "ProfileName" },
+      { key: "commissionPercentage", label: "Percentage" },
+      { key: "thresholdAmount", label: "Thrushold Amt" },
+      { key: "createdAt", label: "Created Date" },
 
     ];
 
@@ -88,13 +103,14 @@ const WCommisionHome = () => {
 
        {/* Table Section */}
        <div className=" py-2 mt-3">
-        <Table< WCommissionData > data={data} columns={columns} headerContents={{
+        <Table< WCData > data={allWC} columns={columns} headerContents={{
           
           search:{placeholder:'Search BDA By Name'},
         
         }}
         actionList={[
-            { label: 'delete', function:handleDelete },
+            { label: 'delete', function:handleEditDelete },
+            { label: 'edit', function:handleEditDelete },
            
           ]}  />
 
