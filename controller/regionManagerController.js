@@ -80,14 +80,42 @@ const logOperation = (req, status, operationId = null) => {
     const newRegionManager = new RegionManager({...data, user});
     return newRegionManager.save();
   }
-  
+
+  const dataExist = async (organizationId) => {
+    const [organizationExists, taxExists, currencyExists, allSupplier ,settings] = await Promise.all([
+      Organization.findOne({ organizationId },{ timeZoneExp: 1, dateFormatExp: 1, dateSplit: 1, organizationCountry: 1 }),
+      Tax.findOne({ organizationId },{ taxType: 1 }),
+      Currency.find({ organizationId }, { currencyCode: 1, _id: 0 }),
+      Supplier.find({ organizationId }),
+      Settings.find({ organizationId },{ duplicateSupplierDisplayName: 1, duplicateSupplierEmail: 1, duplicateSupplierMobile: 1 })
+    ]);
+    return { organizationExists, taxExists, currencyExists, allSupplier , settings };
+  };
+  function validateExsistance(organizationExists, taxExists, currencyExists, res) {
+    if (!organizationExists) {
+      res.status(404).json({ message: "Organization not found" });
+      return false;
+    }
+    if (!taxExists) {
+      res.status(404).json({ message: "Tax not found" });
+      return false;
+    }
+    if (!currencyExists.length) {
+      res.status(404).json({ message: "Currency not found" });
+      return false;
+    }
+    return true;
+  }
   exports.addRegionManager = async (req, res, next) => {
     try {
       // Destructure and validate
       const data = cleanData(req.body);
     //   const data = req.body;
+    
       const requiredFields = ["fullName", "phone", "loginEmail", "password"];
       const validationError = validateRequiredFields(requiredFields, data);
+      // if (!validateExsistance(organizationExists, taxExists, currencyExists, res)) return;     
+
       if (validationError) {
         return res.status(400).json({ message: validationError });
       }
@@ -116,14 +144,7 @@ const logOperation = (req, status, operationId = null) => {
         regionManagerId: newRegionManager._id,
       });
     } catch (error) {
-      if (error instanceof UserCreationError) {
-        console.error("User creation failed:", error);
-        return res.status(500).json({ message: "Error creating user" });
-      }
-      if (error instanceof RegionManagerCreationError) {
-        console.error("Region manager creation failed:", error);
-        return res.status(500).json({ message: "Error creating region manager" });
-      }
+      
       logOperation(req, "Failed");
        next();
       console.error("Unexpected error:", error);
