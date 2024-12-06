@@ -10,6 +10,7 @@ import { AreaData } from "../../../Interfaces/Area";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+import { useRegularApi } from "../../../context/ApiContext";
 
 interface RegionData {
   label: string;
@@ -30,7 +31,7 @@ const validationSchema = Yup.object({
 const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
   const {request:addArea}=useApi('post',3003)
   const {request:editArea}=useApi('put',3003)
-  const {request:getAllRegion}=useApi('get',3003)
+  const {allRegions}=useRegularApi()
   const {request:getArea}=useApi('get',3003)
   const [regionData, setRegionData] = useState<RegionData[]>([]);
   const {
@@ -67,33 +68,15 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
     }
   };
 
-  const getAllRegions = async () => {
-    try {
-      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
-  
-      if (response && !error) {
-        // Extract only `regionName` and `_id` from each region
-        const filteredRegions = response.data.regions?.map((region: any) => ({
-          label: region.regionName,
-          value: String(region._id), // Ensure `value` is a string
-        }));
-
-        
-  
-        // Update the state with the filtered regions
-        setRegionData(filteredRegions);
-      } else {
-        toast.error(error.response.data.message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
   
 
   useEffect(()=>{
-    getAllRegions()
-  },[])
+    const filteredRegions = allRegions?.map((region: any) => ({
+      label: region.regionName,
+      value: String(region._id), // Ensure `value` is a string
+    }));
+    setRegionData(filteredRegions)
+  },[allRegions])
 
   const setFormValues = (data: AreaData) => {
     Object.keys(data).forEach((key) => {
