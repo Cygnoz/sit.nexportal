@@ -47,7 +47,7 @@ interface Address {
     fullName: string;
     email?: string;
     phone: string;
-    age?: number;
+    age?: number |null;
     bloodGroup?: string;
     address?: Address;
     city?: string;
@@ -61,10 +61,8 @@ interface Address {
     workEmail?: string;
     workPhone?: string;
     region?: string;
-    regionId?: string;
     area?: string;
-    areaId?: string;
-    commission?: number;
+    commission?: string;
     bankDetails?: BankDetails;
   }
   

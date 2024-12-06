@@ -40,37 +40,27 @@ const AMHome = () => {
       const getAM = async () => {
         try {
           const { response, error } = await getAllAM(endPoints.GET_ALL_AM);
+          console.log(response);
+          
           if (response && !error) {
-            //   const transformedAM = response.data.areaManager?.map((item:any) => ({
-            //   // ...item,
-            //   fullName: item.user.userName,
-            //   email: item.email,
-            //   phone: item.user.phoneNo,
-            //   dateOfJoining: item.dateOfJoining,
-            //   area: item.area,
-            //   region: item.region,
-            // }));
-            // setAllAM(transformedAM);
             const transformedAreas = response.data.areaManager?.map((area: any) => ({
               ...area,
               dateOfJoining: area.dateOfJoining
                   ? new Date(area.dateOfJoining).toISOString().split('T')[0]
                   : "N/A",
           })) || [];
-          setAllAM(transformedAreas);
+             console.log(transformedAreas);
+             
+            setAllAM(transformedAreas);
 
           } else {
             console.error(error.response.data.message);
           }
         } catch (err) {
-          console.error(err);
-        }
-      };
-      
+          console.error(err);}}
       useEffect(() => {
         getAM();
       }, []);
-      
       console.log(allAM);
       
       // Data for HomeCards
@@ -100,10 +90,9 @@ const AMHome = () => {
           { key: "user.userName", label: "Name" },
           { key: "email", label: "Email Address" },
           { key: "user.phoneNo", label: "Phone No" },
-          { key: "region", label: "Region" },
-          { key: "area", label: "Area" },
+          { key: "region.regionName", label: "Region" },
+          { key: "area.areaName", label: "Area" },
           { key: "dateOfJoining", label: "Date of Joining" },
-
         ];
       
 
@@ -161,5 +150,5 @@ const AMHome = () => {
     </div>
   )
 }
-
+      
 export default AMHome

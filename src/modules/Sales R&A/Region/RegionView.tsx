@@ -161,7 +161,7 @@ function RegionView({ }: Props) {
       </div>
 
       {/* Main Content */}
-      <div className="w-[80%] relative ml-auto overflow-y-auto hide-scrollbar mb-4 mt-10">
+      <div className="w-[80%] relative ml-auto overflow-y-auto hide-scrollbar mb-4 mt-10 overflow-x-hidden">
         <div className="flex gap-8 sticky top-0 z-30 bg-[#F6F6F6] text-base font-bold border-b w-full border-gray-200">
           {tabs.map((tab) => (
             <div
