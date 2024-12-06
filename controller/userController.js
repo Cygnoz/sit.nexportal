@@ -332,6 +332,18 @@ const roles = [
       { action: "Edit Area Manager", note: "Edit Area Manager" },
       { action: "Delete Area Manager", note: "Delete Area Manager" },
 
+      // BDA
+      { action: "Add BDA", note: "Add BDA" },
+      { action: "View BDA", note: "View BDA" },
+      { action: "Edit BDA", note: "Edit BDA" },
+      { action: "Delete BDA", note: "Delete BDA" },
+
+      // commission
+      { action: "Add Commission", note: "Add Commission" },
+      { action: "View Commission", note: "View Commission" },
+      { action: "Edit Commission", note: "Edit Commission" },
+      { action: "Delete Commission", note: "Delete Commission" },
+
       // Lead
       { action: "Add Lead", note: "Add Lead" },
       { action: "View Lead", note: "View Lead" },

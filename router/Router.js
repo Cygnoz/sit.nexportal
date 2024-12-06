@@ -5,6 +5,7 @@ const router = new express.Router()
 const userController = require('../controller/userController')
 const regionController = require("../controller/regionController");
 const areaController = require("../controller/areaController");
+const commissionController = require('../controller/commissionController');
 
 
 const checkPermission = require('../controller/authController/permission');
@@ -40,5 +41,15 @@ router.get("/areas",verifyToken,checkPermission('View Area'), areaController.get
 router.put("/area/:areaId",verifyToken,checkPermission('Edit Area'), areaController.updateArea,ActivityLogGeneration('Edit Area'));
 
 router.delete("/area/:areaId",verifyToken,checkPermission('Delete Area'), areaController.deleteArea,ActivityLogGeneration('Delete Area'));
+
+router.post('/commissions', verifyToken,checkPermission('Add Commission'), commissionController.addCommission,ActivityLogGeneration('Add Commission'));
+
+router.get('/commissions/:Id',verifyToken,checkPermission('View Commission'),  commissionController.getCommission);
+
+router.get('/commissions',verifyToken,checkPermission('View Commission'),  commissionController.getAllCommissions);
+
+router.put('/commissions/:Id',verifyToken,checkPermission('Edit Commission'),  commissionController.updateCommission,ActivityLogGeneration('Edit Commission'));
+
+router.delete('/commissions/:Id',verifyToken,checkPermission('Delete Commission'),  commissionController.deleteCommission,ActivityLogGeneration('Delete Commission'));
 
 module.exports = router
