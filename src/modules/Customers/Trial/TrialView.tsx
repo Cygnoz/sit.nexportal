@@ -165,7 +165,7 @@ const TrialView = ({}: Props) => {
         <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
                 <div className="flex gap-6">
                 <div className="mt-2"><ArrowRight size={48}/></div>
-                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold">Lead Lifecycle Stage Updated</p></div>
+                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold"></p></div>
                 <div className="flex gap-2">
                     <EditIcon size={20}/>
                     <div className="rounded-full w-5 h-5 overflow-hidden">
