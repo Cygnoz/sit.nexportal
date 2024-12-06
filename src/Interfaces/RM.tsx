@@ -44,10 +44,11 @@ export interface RMData {
     fullName: string;
     email?: string;
     phone: string;
-    age?: number;
+    age?: number | null;
     bloodGroup?: string;
     address?: Address;
     city?: string;
+    country?: string
     state?: string;
     adhaarNo?: string;
     panNo?: string;
@@ -58,6 +59,6 @@ export interface RMData {
     workEmail?: string;
     workPhone?: string;
     region?: string;
-    commission?: number; // Use number for percentage values
+    commission?: string; // Use number for percentage values
     bankDetails?: BankDetails;
 }

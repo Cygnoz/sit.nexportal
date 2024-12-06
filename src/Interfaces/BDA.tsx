@@ -14,7 +14,7 @@ interface Address {
     fullName: string;
     email?: string;
     phone: string;
-    age?: string;
+    age?: number | null;
     bloodGroup?: string;
     address?: Address;
     adhaarNo?: string;
@@ -28,10 +28,8 @@ interface Address {
     city?: string;
     state?: string;
     region?: string;
-    regionId?: string;
     area?: string;
-    areaId?: string;
-    commission?: number;
+    commission?:string;
     bankDetails?: BankDetails;
     image?: string;  
   }

@@ -29,6 +29,7 @@ export const endPoints={
   //RM
   RM:'/region-manager',
   GET_ALL_RM:'/region-managers',
+  // GET_COUNTRY:'/countries'
   
 
   // Area Manager
@@ -40,4 +41,8 @@ export const endPoints={
   UPDATE_WC:'/commissions',
   DELETE_WC:'/commissions',
  
+  GET_ALL_AM:'/area-managers',
+
+  // BDA
+ BDA:'/bda'
 }

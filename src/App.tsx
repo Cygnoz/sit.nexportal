@@ -43,7 +43,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/otp' element={<Otp/>}/>
-        {localStorage.getItem('authToken') || role ? (
+        {sessionStorage.getItem('authToken') || role ? (
           // If role exists, show the layout with nested routes
           <Route path="/*" element={<Layout />}>
             {/* Define authenticated routes inside Layout */}

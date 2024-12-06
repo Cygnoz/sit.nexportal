@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { useRole } from '../context/RoleContext';
 const BASE_URLS: Record<number, string> = {
   // 3003: import.meta.env.VITE_REACT_APP_ACCOUNTS,
   // 5002: import.meta.env.VITE_REACT_APP_CUSTOMERS,
@@ -27,7 +27,7 @@ const createInstance = (
   };
 
   if (useAuth) {
-    const authToken: string | null = localStorage.getItem("authToken");
+    const authToken: string | null = sessionStorage.getItem("authToken");
     if (authToken) {
       headers = { ...headers, Authorization: `${authToken}`};
     }

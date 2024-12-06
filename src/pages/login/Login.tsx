@@ -26,6 +26,8 @@ function Login({}: Props) {
   };
 
   const handleLogin = async (event: React.FormEvent) => {
+    console.log("dssddd");
+    
     event.preventDefault();
     setIsLoading(true);
     setError(""); // Reset the error message
@@ -33,7 +35,7 @@ function Login({}: Props) {
     try {
       // Call the login API
       const result = await CheckLogin(endPoints.LOGIN, { email, password });
-  
+     
       // Log the result for debugging purposes
       console.log("Login response:", result);
   
@@ -72,7 +74,7 @@ function Login({}: Props) {
   };
 
   useEffect(()=>{
-    localStorage.clear()
+    sessionStorage.clear()
   },[])
   
 
