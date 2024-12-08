@@ -128,7 +128,7 @@ const logOperation = (req, status, operationId = null) => {
       const { id } = req.params;
   
       const bda = await Bda.findById(id).populate([
-        { path: 'user', select: 'userName phoneNo' },
+        { path: 'user', select: 'userName phoneNo userImage email' },
         { path: 'region', select: 'regionName' },
         { path: 'area', select: 'areaName' },
         { path: 'commission', select: 'profileName' },
@@ -147,7 +147,7 @@ const logOperation = (req, status, operationId = null) => {
   exports.getAllBda = async (req, res) => {
       try {
         const bda = await Bda.find({}).populate([
-          { path: 'user', select: 'userName phoneNo' },
+          { path: 'user', select: 'userName phoneNo userImage email'  },
           { path: 'region', select: 'regionName' },
           { path: 'area', select: 'areaName' },
           { path: 'commission', select: 'profileName' },

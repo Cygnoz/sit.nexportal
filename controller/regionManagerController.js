@@ -157,7 +157,7 @@ const logOperation = (req, status, operationId = null) => {
       const { id } = req.params;
   
       const regionManager = await RegionManager.findById(id).populate([
-        { path: 'user', select: 'userName phoneNo' },
+        { path: 'user', select: 'userName phoneNo userImage email' },
         { path: 'region', select: 'regionName' },
         { path: 'commission', select: 'profileName' },
       ]);
@@ -177,7 +177,7 @@ const logOperation = (req, status, operationId = null) => {
   exports.getAllRegionManager = async (req, res) => {
     try {
       const regionManager = await RegionManager.find({}).populate([
-        { path: 'user', select: 'userName phoneNo' },
+        { path: 'user', select: 'userName phoneNo userImage email' },
         { path: 'region', select: 'regionName' },
         { path: 'commission', select: 'profileName' },
       ]);
