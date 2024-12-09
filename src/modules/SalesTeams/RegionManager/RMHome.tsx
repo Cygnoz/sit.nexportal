@@ -40,6 +40,7 @@ const RMHome = () => {
 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editId,setEditId] = useState('');
 
   // Function to toggle modal visibility
   const handleModalToggle = () => {
@@ -47,7 +48,10 @@ const RMHome = () => {
     getRMs();
   };
 
-
+const handleEdit=(id:any)=>{
+  handleModalToggle()
+  setEditId(id)
+}
   const handleView=(id:any)=>{
     navigate(`/region-managerView/${id}`)
   }
@@ -82,13 +86,14 @@ const RMHome = () => {
       const { response, error } = await getRM(endPoints.GET_ALL_RM);
   
       if (response && !error) {
-          const transformedAreas = response.data.regionManager?.map((region: any) => ({
+          const transformedRMss = response.data.regionManager?.map((region: any) => ({
               ...region,
               dateOfJoining: region.dateOfJoining
-                  ? new Date(region.dateOfJoining).toISOString().split('T')[0]
-                  : "N/A",
+              ? new Date(region.dateOfJoining).toLocaleDateString("en-GB")
+              : "N/A",
+            loginEmail:region.user.email
           })) || [];
-          setAllRms(transformedAreas);
+          setAllRms(transformedRMss);
       } else {
          console.log(error?.response?.data?.message || "Failed to fetch data.");
       }
@@ -121,13 +126,19 @@ useEffect(() => {
          <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Regional Manager</h1>
      
-      <Button variant="primary" size="sm" onClick={handleModalToggle}>
+      <Button variant="primary" size="sm" onClick={()=>{
+        handleModalToggle()
+        setEditId('')
+
+      }}>
+
+
       <span className="font-bold text-xl">+</span> Create RM
       </Button>
 
       {/* Modal controlled by state */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-      <AddRegionManager  onClose={handleModalToggle} />
+      <AddRegionManager editId={editId}  onClose={handleModalToggle} />
       </Modal>
     </div>
 
@@ -162,7 +173,7 @@ useEffect(() => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleView},
+          { label: 'edit', function:handleEdit},
           { label: 'view', function: handleView },
         ]}
         />
