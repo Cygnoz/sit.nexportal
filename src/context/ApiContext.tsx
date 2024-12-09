@@ -42,6 +42,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { response, error } = await getAllArea(endPoints.GET_AREAS);
       if (response && !error) {
+        //console.log(response.data.areas);
+
         setAllAreas(response.data.areas);
       }
     } catch (err) {
@@ -51,7 +53,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
 
   const getWC = async () => {
     try {
-      const { response, error } = await getAllWc(endPoints.GET_ALL_WC);
+      const { response, error } = await getAllWc(endPoints.WC);
       if (response && !error) {
         const transformedRegions = response.data.commissions?.map(
           (commission: any) => ({
