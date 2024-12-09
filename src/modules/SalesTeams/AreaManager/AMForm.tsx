@@ -19,15 +19,11 @@ import { AMData } from "../../../Interfaces/AM";
 import useApi from "../../../Hooks/useApi";
 import toast from "react-hot-toast";
 import { endPoints } from "../../../services/apiEndpoints";
-import { AreaData } from "../../../Interfaces/Area";
+// import { AreaData } from "../../../Interfaces/Area";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
+import { useRegularApi } from "../../../context/ApiContext";
 
-interface RegionData {
-  label: string;
-  value: string;
-}
-
-// interface CountryData {
+// interface RegionData {
 //   label: string;
 //   value: string;
 // }
@@ -73,14 +69,23 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
   });
 
   const { request: addAM } = useApi("post", 3002);
-  const { request: getAllRegion } = useApi("get", 3003);
-  const [allAreas, setAllAreas] = useState<AreaData[]>([]);
+  // const { request: getAllRegion } = useApi("get", 3003);
+  // const [allAreas, setAllAreas] = useState<AreaData[]>([]);
   // State to manage modal visibility
-  const { request: getAllArea } = useApi("get", 3003);
-  const [regionData, setRegionData] = useState<RegionData[]>([]);
+  // const { request: getAllArea } = useApi("get", 3003);
+  // const [regionData, setRegionData] = useState<RegionData[]>([]);
   const [submit, setSubmit] = useState(false);
-  // const {request:getCountries}=useApi('get',3003)
-  // const [countryData,setCountryData]=useState<CountryData[]>([]);
+  const {allAreas,allRegions}=useRegularApi()
+
+  const [data, setData] = useState<{
+    regions: { label: string; value: string }[];
+    areas: { label: string; value: string }[];
+    // workerCommission:{label: string; value: string}[];
+    // country:{label: string; value: string}[];
+    // state:{label: string; value: string}[]
+    
+  }>({ regions: [], areas: [] });
+
 
   const onSubmit: SubmitHandler<AMData> = async (data) => {
     console.log("dewdew");
@@ -141,81 +146,132 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
     }
   };
 
-  const getAllRegions = async () => {
-    try {
-      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
-
-      if (response && !error) {
-        // Extract only `regionName` and `_id` from each region
-        const filteredRegions = response.data.regions?.map((region: any) => ({
-          label: region.regionName,
-          value: String(region._id), // Ensure `value` is a string
-        }));
-
-        // Update the state with the filtered regions
-        setRegionData(filteredRegions);
-      } else {
-        toast.error(error.response.data.message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    getAllRegions();
-  }, []);
-
-  // const getAllCountry =async()=>{
-  //   try{
-  //     const { response, error } = await getCountries(endPoints.GET_COUNTRY);
+  // const getAllRegions = async () => {
+  //   try {
+  //     const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
 
   //     if (response && !error) {
   //       // Extract only `regionName` and `_id` from each region
-  //       const filteredData = response.data?.map((country: any) => ({
-  //         // label: country.regionName,
-  //         value: String(country._id), // Ensure `value` is a string
+  //       const filteredRegions = response.data.regions?.map((region: any) => ({
+  //         label: region.regionName,
+  //         value: String(region._id), // Ensure `value` is a string
   //       }));
 
   //       // Update the state with the filtered regions
-  //       setCountryData(filteredData);
+  //       setRegionData(filteredRegions);
   //     } else {
   //       toast.error(error.response.data.message);
   //     }
+  //   } catch (err) {
+  //     console.log(err);
   //   }
-  //   catch(err){
-  //     console.error("error occured",err);
-      
+  // };
+
+  // useEffect(() => {
+  //   getAllRegions();
+  // }, []);
+
+  // const getAreas = async (regionId: any) => {
+  //   try {
+  //     const { response, error } = await getAllArea(endPoints.GET_AREAS);
+  //     console.log(response);
+
+  //     if (response && !error) {
+  //       const transformedAreas = response.data.areas?.filter(
+  //         (area: any) => area.region?._id === regionId
+  //       );
+
+  //       // Then set the transformed regions into state
+  //       setAllAreas(transformedAreas);
+  //     } else {
+  //       toast.error(error.response.data.message);
+  //     }
+  //   } catch (err) {
+  //     console.log(err);
   //   }
-  // }
+  // };
+
+  // useEffect(() => {
+  //   const regionId = watch("region");
+  //   getAreas(regionId);
+  // }, [watch("region")]);
   // useEffect(()=>{
-  //   getAllCountry()
-  // },[])
+  //   const filteredRegions = allRegions?.map((region: any) => ({
+  //           label: region.regionName,
+  //           value: String(region._id), // Ensure `value` is a string
+  //         }));
+  //   // setData({...data,regions:filteredRegions})
+  //   setData((prevData)=>({
+  //     ...prevData, 
+  //     regions:filteredRegions
+  //   }))
+  //  },[allRegions])
+  // console.log(data.regions);
+  
 
-  const getAreas = async (regionId: any) => {
-    try {
-      const { response, error } = await getAllArea(endPoints.GET_AREAS);
-      console.log(response);
+  //  useEffect(() => {
+  //   // Filter areas based on the selected region
+  //   const filteredAreas = allAreas.filter((area:any) => area.region?._id === watch("region"));
 
-      if (response && !error) {
-        const transformedAreas = response.data.areas?.filter(
-          (area: any) => area.region?._id === regionId
-        );
-
-        // Then set the transformed regions into state
-        setAllAreas(transformedAreas);
-      } else {
-        toast.error(error.response.data.message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
+  //   // Map the filtered areas to the required format for areaData
+  //   const transformedAreas = filteredAreas.map((area:any) => ({
+  //     label: area.areaName,
+  //     value: String(area._id), // Ensure `value` is a string
+  //   }));
+  //   console.log(transformedAreas);
+    
+  //   setData({...data,areas:transformedAreas})
+  // }, [watch("region")]);
   useEffect(() => {
-    const regionId = watch("region");
-    getAreas(regionId);
-  }, [watch("region")]);
+    // Map the regions into the required format for regions data
+    const filteredRegions = allRegions.map((region:any) => ({
+      label: region.regionName,
+      value: String(region._id), // Ensure `value` is a string
+    }));
+ 
+    // Set the data object with updated regions
+    setData((prevData) => ({ ...prevData, regions: filteredRegions }));
+  }, [allRegions]);
+ 
+  useEffect(() => {
+    // Filter areas based on the selected region
+    const filteredAreas = allAreas.filter((area:any) => area.region?._id === watch("region"));
+ 
+    // Map the filtered areas to the required format
+    const transformedAreas = filteredAreas.map((area:any) => ({
+label: area.areaName,
+      value: String(area._id), // Ensure `value` is a string
+    }));
+ 
+    // Set the data object with updated areas
+    setData((prevData) => ({ ...prevData, areas: transformedAreas }));
+  }, [watch("region"), allAreas]); // Re-run when either selected region or allAreas changes
+
+  // useEffect(() => {
+  //   const filteredCountries = allContries?.map((items: any) => ({
+  //     label: items.name,
+  //     value: String(items.name), // Ensure `value` is a string
+  //   }));
+  //   setData({ ...data,country:filteredCountries })
+  // }, [allContries])
+
+  // useEffect(() => {
+  //   const selectedCountry = watch("country");
+  //   if (selectedCountry) {
+  //     const filteredAreas = allContries.filter(
+  //       (country:any) => country.name === selectedCountry
+  //     );
+ 
+  //     const transformedAreas = filteredAreas.flatMap((country:any) =>
+  //       country.states.map((state:any) => ({
+  //         label: state,
+  //         value: state,
+  //       }))
+  //     );
+ 
+  //     setData({...data,state:transformedAreas})
+  //   }
+  // }, [watch("country"), allContries]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -467,7 +523,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                   placeholder="Choose Region"
                   value={watch("region")}
                   error={errors.region?.message}
-                  options={regionData}
+                  options={data.regions}
                   {...register("region")}
                 />
                 <Select
@@ -475,10 +531,11 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                   placeholder="Choose Area"
                   value={watch("area")}
                   error={errors.area?.message}
-                  options={allAreas.map((area: any) => ({
-                    value: area?._id,
-                    label: area.areaName,
-                  }))}
+                  // options={allAreas.map((area: any) => ({
+                  //   value: area?._id,
+                  //   label: area.areaName,
+                  // }))}
+                  options={data.areas}
                   {...register("area")}
                 />
                 <Select
