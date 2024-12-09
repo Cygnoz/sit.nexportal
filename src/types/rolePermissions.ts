@@ -18,7 +18,7 @@ export type Role =
   | "Support Admin"
   | "Region Manager"
   | "Area Manager"
-  | "BDAs"
+  | "BDA"
   | "Supervisor"
   | "Support Agent";
 

@@ -62,9 +62,10 @@ const RegionHome = () => {
     try{
       const {response,error}=await getAllRegion(endPoints.GET_REGIONS)
       if(response && !error){
-        const transformedRegions = response.data.regions?.map((region:any) => ({
+        const transformedRegions = response.data.regions?.map((region: any) => ({
           ...region,
-          createdAt: new Date(region.createdAt).toISOString().split('T')[0], // Extracts the date part
+          createdAt: new Date(region.createdAt)
+            .toLocaleDateString("en-GB") // This formats the date to "dd/mm/yyyy"
         }));
         
         // Then set the transformed regions into state

@@ -14,19 +14,20 @@ interface Address {
     fullName: string;
     email?: string;
     phone: string;
-    age?: number | null;
+    age?: number |null;
     bloodGroup?: string;
     address?: Address;
     adhaarNo?: string;
     panNo?: string;
     dateOfJoining?: string;
     loginEmail: string;  
-    password: string;
-    confirmPassword:string;   
+    password?: string;
+    confirmPassword?:string;   
     workEmail?: string;
     workPhone?: string;
     city?: string;
     state?: string;
+    country?:string
     region?: string;
     area?: string;
     commission?:string;

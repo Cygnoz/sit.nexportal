@@ -1,23 +1,29 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { RegionData } from '../Interfaces/Region';
-import { AreaData } from '../Interfaces/Area';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import useApi from '../Hooks/useApi';
+import { AreaData } from '../Interfaces/Area';
+import { RegionData } from '../Interfaces/Region';
+import { WCData } from '../Interfaces/WC';
 import { endPoints } from '../services/apiEndpoints';
-import { useRole } from './RoleContext';
 
 type ApiContextType = {
-    allRegions: RegionData[];
-    allAreas: AreaData[];
+    allRegions?: RegionData[];
+    allAreas?: AreaData[];
+    allWc?:WCData[];
+    allCountries?:any
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
 
 export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
-    const {role}=useRole()
     const { request: getAllRegion } = useApi("get", 3003);  
     const { request: getAllArea } = useApi("get", 3003);
+    const { request: getAllWc } = useApi("get", 3003);
+
+    const { request: getAllCountries } = useApi("get", 3003);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);
+  const [allWc, setAllWc] = useState<WCData[]>([]);
+  const [allCountries, setAllCountries] = useState<[]>([]);
 
   // Fetch all regions
   const fetchRegions = async () => {
@@ -43,17 +49,51 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const getWC = async () => {
+    try {
+      const { response, error } = await getAllWc(endPoints.GET_ALL_WC);
+      if (response && !error) {
+        const transformedRegions = response.data.commissions?.map(
+          (commission: any) => ({
+            ...commission,
+            createdAt: new Date(commission.createdAt)
+              .toISOString()
+              .split("T")[0], // Extracts the date part
+          })
+        );
+        setAllWc(transformedRegions);
+      } else {
+        console.log(error);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  
+  const getCountries=async()=>{
+    try {
+      const { response, error } = await getAllCountries(endPoints.GET_COUNTRY);
+      if (response && !error) {
+        setAllCountries(response.data[0].countries);
+      }
+    } catch (err) {
+      console.error('Error fetching areas:', err);
+    }
+  }
+
+  
 
   useEffect(() => {
     fetchRegions()
     fetchAreas();
-  }, [role]);
+    getWC()
+    getCountries()
+  }, []);
 
-  
   
 
   return (
-    <ApiContext.Provider value={{ allRegions, allAreas }}>
+    <ApiContext.Provider value={{ allRegions, allAreas,allWc,allCountries }}>
       {children}
     </ApiContext.Provider>
   );
