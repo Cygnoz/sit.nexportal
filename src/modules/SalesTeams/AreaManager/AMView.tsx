@@ -12,6 +12,7 @@ import AMViewForm from "./AMViewForm";
 import Modal from "../../../components/modal/Modal";
 import AMViewCardandTable from "./AMViewCardandTable";
 import LicensersTable from '../../../components/ui/LicensersTable';
+import AMViewAward from './AMViewAward';
 // import SearchBar from "../../../components/ui/SearchBar";
 interface AMData {
   name: string;
@@ -176,18 +177,6 @@ const AMView = ({ }: Props) => {
 
         </div>
 
-        {/* Action Buttons */}
-        {/* <div className="flex space-x-4">
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-black px-4 py-2 rounded-full flex items-center space-x-2">
-          <span>Edit Profile</span>
-        </button>
-        <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-full flex items-center space-x-2">
-          <span>View Details</span>
-        </button>
-        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-full flex items-center space-x-2">
-          <span>Deactivate</span>
-        </button>
-      </div> */}
       </div>
       {/* Card & table */}
           <AMViewCardandTable/>
@@ -216,7 +205,7 @@ const AMView = ({ }: Props) => {
             <div>
         <LicensersTable<AMData> data={data} columns={columns} headerContents={{
           title:'Licensers handled by BDA',
-          search:{placeholder:'Search Invoice by client name, invoice number, or date'},
+          search:{placeholder:'Search License by Name or Holder Name'},
           
         }}
          />
@@ -240,6 +229,10 @@ const AMView = ({ }: Props) => {
        <Modal open={isModalOpen} onClose={handleModalToggle}>
                 <AMViewForm onClose={handleModalToggle} />
             </Modal>
+             {/* Modal Section */}
+      <Modal open={isModalOpen} onClose={handleModalToggle}>
+        <AMViewAward onClose={handleModalToggle} />
+      </Modal>
     </div>
   )
 }
