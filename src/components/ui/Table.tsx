@@ -14,6 +14,7 @@ import UserIcon from "../../assets/icons/UserIcon";
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
   { key: "rmName", imageKey: "rmImage" },
+  {key:'user.userName',imageKey:"user.userImage"}
 ];
 
 interface TableProps<T> {
@@ -170,16 +171,19 @@ const Table = <T extends object>({
 
   const renderImageAndLabel = (data: any) => {
     for (const { key, imageKey } of ImageAndLabel) {
-      if (data[key]) {
-        if (data[imageKey] && data[imageKey].length > 500) {
+      const keyValue = getNestedValue(data, key); // Get the value for key, possibly nested
+      const imageValue = getNestedValue(data, imageKey); // Get the value for imageKey, possibly nested
+  
+      if (keyValue) {
+        if (imageValue && imageValue.length > 500) {
           return (
             <>
               <img
-                src={`${data[imageKey]}`}
-                alt={data[key]}
+                src={`${imageValue}`}
+                alt={keyValue}
                 className="w-5 h-5 rounded-full"
               />
-              <p>{data[key]}</p>
+              <p>{keyValue}</p>
             </>
           );
         } else {
@@ -188,7 +192,7 @@ const Table = <T extends object>({
               <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
                 <UserIcon color="#768294" size={15} />
               </p>
-              <p>{data[key]}</p>
+              <p>{keyValue}</p>
             </>
           );
         }
@@ -196,6 +200,10 @@ const Table = <T extends object>({
     }
     return "N/A"; // Return N/A if no match is found
   };
+  
+  
+
+  console.log(data);
   
 
   return (
@@ -248,7 +256,7 @@ const Table = <T extends object>({
                       <div className={`flex justify-start items-center gap-2 ${col.key=='status'?'justify-center':'justify-start'}`}>
                         {col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
-                        ) : ["userName", "rmName", "amName"].includes(
+                        ) : ["userName", "user.userName", "amName"].includes(
                             col.key
                           ) ? (
                           renderImageAndLabel(row)

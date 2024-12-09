@@ -11,6 +11,7 @@ import Button from "./Button";
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
   { key: "rmName", imageKey: "rmImage" },
+  {key:'',imageKey:''}
 ];
 
 interface TableProps<T> {
