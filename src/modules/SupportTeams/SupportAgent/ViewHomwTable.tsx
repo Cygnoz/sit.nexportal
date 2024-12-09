@@ -80,7 +80,7 @@ const ViewHomwTable = ({}: Props) => {
               </div>
               <p className="text-[#303F58] font-normal text-xs">Date Received: <span className="font-bold">"October 2024"</span></p>
             </div>
-            <div className="bg-[#F5F9FC] p-4 gap-3 w-72 h-32 rounded-lg mb-3">
+            <div className="bg-[#F5F9FC] p-4 gap-3 w-[98%] h-32 rounded-lg mb-3">
               <p className="bg-[#9DF6B482] w-fit h-7 p-2 rounded-xl mb-3 text-[#303F58] font-semibold text-xs">Customer Hero Award</p>
               <div className="flex gap-4 mb-3">
               <div className="rounded-full w-7 h-7 overflow-hidden">
@@ -90,7 +90,7 @@ const ViewHomwTable = ({}: Props) => {
               </div>
               <p className="text-[#303F58] font-normal text-xs">Date Received: <span className="font-bold">"August 2024"</span></p>
             </div>
-            <div className="bg-[#F5F9FC] p-4 gap-3 w-72 h-32 rounded-lg mb-3">
+            <div className="bg-[#F5F9FC] p-4 gap-3 w-[98%] h-32 rounded-lg mb-3">
               <p className="bg-[#1A9CF91A] w-fit h-7 p-2 rounded-xl mb-3 text-[#303F58] font-semibold text-xs"> Employee of the Month</p>
               <div className="flex gap-4 mb-3">
               <div className="rounded-full w-7 h-7 overflow-hidden">

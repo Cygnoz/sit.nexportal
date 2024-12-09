@@ -9,11 +9,11 @@ import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import Licensor from "../../../assets/icons/Licensor";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
-import AddAreaManager from "./AMForm";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { AMData } from "../../../Interfaces/AM";
 import { endPoints } from "../../../services/apiEndpoints";
+import AMForm from "./AMForm";
 
 
 
@@ -21,6 +21,8 @@ import { endPoints } from "../../../services/apiEndpoints";
 const AMHome = () => {
   const {request:getAllAM}=useApi('get',3002)
   const [allAM,setAllAM]=useState<AMData[]>([]);
+  const [editId, setEditId] = useState('');
+
 
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,17 +39,23 @@ const AMHome = () => {
         navigate(`/amView/${id}`)
       }
 
+      const handleEdit= (id:any)=>{
+        setEditId(id)
+        handleModalToggle()
+      }
+
       const getAM = async () => {
         try {
           const { response, error } = await getAllAM(endPoints.GET_ALL_AM);
           console.log(response);
           
           if (response && !error) {
-            const transformedAreas = response.data.areaManager?.map((area: any) => ({
-              ...area,
-              dateOfJoining: area.dateOfJoining
-                  ? new Date(area.dateOfJoining).toISOString().split('T')[0]
-                  : "N/A",
+            const transformedAreas = response.data.areaManager?.map((am: any) => ({
+              ...am,
+              dateOfJoining: am.dateOfJoining
+              ? new Date(am.dateOfJoining).toLocaleDateString("en-GB")
+              : "N/A",
+              loginEmail:am.user.email
           })) || [];
              console.log(transformedAreas);
              
@@ -71,20 +79,6 @@ const AMHome = () => {
     { icon: <Licensor />, number: "147", title: "Total Licensers",iconFrameColor:'#8695DD',iconFrameBorderColor:'#CAD1F1CC' },
   ];
 
-    // Data for the table
-    // const data: AMData[] = [
-    //     { name: "Devid Billie", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //     { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14"},
-    //     { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", region: "Region 1", area: "Area 2",dateOfJoining:"5/30/14" },
-    //   ];
         // Define the columns with strict keys
         const columns: { key: any; label: string }[] = [
           { key: "user.userName", label: "Name" },
@@ -101,7 +95,10 @@ const AMHome = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">Area Manager</h1>
-        <Button variant="primary" size="sm" onClick={handleModalToggle}>
+        <Button variant="primary" size="sm" onClick={()=>{
+          handleModalToggle()
+          setEditId('')
+        }}>
         <span className="font-bold text-xl">+</span> Create AM
         </Button>
       </div>
@@ -138,14 +135,14 @@ const AMHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleView},
+          { label: 'edit', function:handleEdit},
           { label: 'view', function: handleView },
         ]}  />
       </div>
 
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <AddAreaManager onClose={handleModalToggle} />
+        <AMForm editId={editId} onClose={handleModalToggle} />
       </Modal>
     </div>
   )

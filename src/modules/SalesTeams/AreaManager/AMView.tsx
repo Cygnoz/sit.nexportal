@@ -12,7 +12,7 @@ import AMViewForm from "./AMViewForm";
 import Modal from "../../../components/modal/Modal";
 import AMViewCardandTable from "./AMViewCardandTable";
 import LicensersTable from '../../../components/ui/LicensersTable';
-import AMViewAward from './AMViewAward';
+// import AMViewAward from './AMViewAward';
 // import SearchBar from "../../../components/ui/SearchBar";
 interface AMData {
   name: string;
@@ -39,6 +39,10 @@ const AMView = ({ }: Props) => {
   const handleModalToggle = () => {
       setIsModalOpen((prev) => !prev);
   };
+//   const handleToggle = () => {
+//     setIsModalOpen((prev) => !prev);
+// };
+
       const data: AMData[] = [
         { name: "Devid Billie", emailAdrees: "nathan.roberts@example.com", status: "Active", region: "Region 1", area: "Area 2" },
         { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", status: "Expired", region: "Region 1", area: "Area 2"},
@@ -229,10 +233,10 @@ const AMView = ({ }: Props) => {
        <Modal open={isModalOpen} onClose={handleModalToggle}>
                 <AMViewForm onClose={handleModalToggle} />
             </Modal>
-             {/* Modal Section */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <AMViewAward onClose={handleModalToggle} />
-      </Modal>
+      
+      {/* <Modal align='right' open={isModalOpen} onClose={handleToggle}>
+        <AMViewAward onClose={handleToggle} />
+      </Modal> */}
     </div>
   )
 }
