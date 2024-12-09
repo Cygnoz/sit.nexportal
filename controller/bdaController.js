@@ -17,15 +17,15 @@ const validateRequiredFields = (requiredFields, data) => {
 
 // Duplicate check utility function
 
-const checkDuplicateUser = async (fullName, loginEmail, phone, excludeId) => {
+const checkDuplicateUser = async (userName, email, phoneNo, excludeId) => {
   const existingUser = await User.findOne({
     $and: [
       { _id: { $ne: excludeId } }, // Exclude the current document
       {
         $or: [
-          { userName: fullName },
-          { email: loginEmail },
-          { phoneNo: phone },
+          { userName },
+          { email },
+          { phoneNo },
         ],
       },
     ],
@@ -34,11 +34,11 @@ const checkDuplicateUser = async (fullName, loginEmail, phone, excludeId) => {
   if (!existingUser) return null;
 
   const duplicateMessages = [];
-  if (existingUser.userName === fullName)
+  if (existingUser.userName === userName)
     duplicateMessages.push("Full name already exists");
-  if (existingUser.email === loginEmail)
+  if (existingUser.email === email)
     duplicateMessages.push("Login email already exists");
-  if (existingUser.phoneNo === phone)
+  if (existingUser.phoneNo === phoneNo)
     duplicateMessages.push("Phone number already exists");
 
   return duplicateMessages.join(". ");
@@ -66,15 +66,12 @@ const logOperation = (req, status, operationId = null) => {
   }
 
   async function createUser(data) {
-    const { image, fullName, loginEmail, password, phone } = data;
+    const { password, ...rest } = data; // Extract password and the rest of the data
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
-      userImage: image,
-      userName: fullName,
-      email: loginEmail,
-      password: hashedPassword,
-      phoneNo: phone,
-      role: "BDA",
+      ...rest, // Spread other properties from data
+      password: hashedPassword, // Use hashed password
+      role: "BDA", // Set default role
     });
     return newUser.save();
   }
@@ -89,13 +86,13 @@ const logOperation = (req, status, operationId = null) => {
       // Destructure and validate
       const data = cleanData(req.body);
     //   const data = req.body;
-      const requiredFields = ["fullName", "phone", "loginEmail", "password"];
-      const validationError = validateRequiredFields(requiredFields, data);
+    const requiredFields = ["userName", "phoneNo", "email", "password"];
+    const validationError = validateRequiredFields(requiredFields, data);
       if (validationError) {
         return res.status(400).json({ message: validationError });
       }
       // Check for duplicates
-      const duplicateCheck = await checkDuplicateUser(data.fullName, data.loginEmail, data.phone);
+      const duplicateCheck = await checkDuplicateUser(data.userName, data.email, data.phoneNo);
       if (duplicateCheck) {
         return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
       }
@@ -111,7 +108,7 @@ const logOperation = (req, status, operationId = null) => {
       return res.status(201).json({
         message: "BDA added successfully",
         userId: newUser._id,
-        areaManagerId: newBda._id,
+        bdaId: newBda._id,
       });
     } catch (error) {
 
@@ -180,7 +177,7 @@ const logOperation = (req, status, operationId = null) => {
 
         
         // Validate required fields
-        const requiredFields = ["fullName", "phone", "loginEmail"];
+        const requiredFields = ["userName", "phoneNo", "email"];
         const validationError = validateRequiredFields(requiredFields, data);
     
         if (validationError) {
@@ -188,29 +185,19 @@ const logOperation = (req, status, operationId = null) => {
         }
     
         // Check for duplicate user details, excluding the current document
-        const duplicateCheck = await checkDuplicateUser(data.fullName, data.loginEmail, data.phone, existingUserId);
+        const duplicateCheck = await checkDuplicateUser(data.userName, data.email, data.phoneNo, existingUserId);
         if (duplicateCheck) {
           return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
         }
     
         
-        const updatedUser = await User.findByIdAndUpdate(
-          new ObjectId(existingUserId), // Use 'new' when creating an ObjectId
-          {
-            $set: {
-              userImage: data.image,       // Update userImage with data.image
-              userName: data.fullName,     // Update userName with data.fullName
-              email: data.loginEmail,      // Update email with data.loginEmail
-            },
-          },
-          { new: true, runValidators: true } // Return the updated document and apply validation
-        );
-        // Find and update the region manager
-        const updatedBda = await Bda.findByIdAndUpdate(
-          id,
-          { $set: data },
-          { new: true, runValidators: true }
-        );
+      
+        const user = await User.findById(existingUserId);
+        Object.assign(user, data);
+        await user.save();
+
+        Object.assign(existingBda, data);
+        const updatedBda = await existingBda.save();
     
         if (!updatedBda) {
           return res.status(404).json({ message: "BDA not found" });
