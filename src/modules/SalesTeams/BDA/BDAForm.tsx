@@ -183,6 +183,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose }) => {
     setData({...data,areas:transformedAreas})
   }, [watch("region")]);
 
+  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {

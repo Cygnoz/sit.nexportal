@@ -272,6 +272,8 @@ const RMView = () => {
                 title: "Total Area Managed",
               }}
               noAction
+              noPagination
+                maxHeight="345px"
             />
           </div>
         </div>

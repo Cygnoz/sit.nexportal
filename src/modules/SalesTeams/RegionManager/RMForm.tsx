@@ -22,17 +22,18 @@ import CustomPhoneInput from "../../../components/form/CustomPhone";
 import { endPoints } from "../../../services/apiEndpoints";
 // import { RegionData } from "../../../Interfaces/Region";
 import toast from "react-hot-toast";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
-interface RegionData {
-  label: string;
-  value: string;
-}
+// interface RegionData {
+//   label: string;
+//   value: string;
+// }
 
-interface WCData {
-  label: string;
-  value: string;
-}
+// interface WCData {
+//   label: string;
+//   value: string;
+// }
 
 // interface Counrty{
 //   label: string;
@@ -59,7 +60,7 @@ const validationSchema = Yup.object({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
-    age: Yup.number()
+  age: Yup.number()
     .nullable() // Allows null values
     .transform((value, originalValue) =>
       originalValue === "" ? null : value // Converts empty string to null
@@ -68,15 +69,18 @@ const validationSchema = Yup.object({
 
 const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
   const { request: addRM } = useApi("post", 3002);
-  const { request: getALLWC } = useApi("get", 3003);
-  // const { request: getCOUNTRY } = useApi("get", 3003);
-  // const[allCOUNTRY,setALLCOUNTRY]=useState<Counrty[]>([]);
-  const [allWC, setAllWC] = useState<WCData[]>([]);
+  const { allRegions, allWC, allContries } = useRegularApi()
+
 
   //const { request: editRM } = useApi('put', 3002)
-  const { request: getAllRegion } = useApi("get", 3003);
-  const [regionData, setRegionData] = useState<RegionData[]>([]);
+ 
   const [submit, setSubmit] = useState(false);
+  const [data, setData] = useState<{
+    regions: { label: string; value: string }[];
+    workerCommission: { label: string; value: string }[];
+    country: { label: string; value: string }[];
+    state: { label: string; value: string }[]
+  }>({ workerCommission: [], country: [], state: [], regions: [] });
 
   const tabs = [
     "Personal Information",
@@ -154,75 +158,81 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-  const getAllRegions = async () => {
-    try {
-      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
+ 
 
-      if (response && !error) {
-        // Extract only `regionName` and `_id` from each region
-        const filteredRegions = response.data.regions?.map((region: any) => ({
-          label: region.regionName,
-          value: String(region._id), // Ensure `value` is a string
-        }));
-        // Update the state with the filtered regions
-        setRegionData(filteredRegions);
-      } else {
-        toast.error(error.response.data.message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
+
+ 
+
+ 
+
 
   useEffect(() => {
-    getAllRegions();
-  }, []);
+    // Map the regions into the required format for regions data
+    const filteredRegions = allRegions.map((region: any) => ({
+      label: region.regionName,
+      value: String(region._id), // Ensure `value` is a string
+    }));
+    // Set the data object with updated regions
+    setData((prevData) => ({ ...prevData, regions: filteredRegions }));
+
+}, [allRegions]);
+
+  
 
 
-  const getWC = async()=>{
-    try{
-      const { response, error } = await getALLWC(endPoints.GET_ALL_WC);
-
-      if (response && !error) {
-        // Extract only `regionName` and `_id` from each region
-        const filteredCommission = response.data.commissions?.map((commission: any) => ({
-          label: commission.profileName,
-          value: String(commission._id), // Ensure `value` is a string
-        }));
-        // Update the state with the filtered regions
-        setAllWC(filteredCommission);
-      } else {
-        toast.error(error.response.data.message);
-      }
-
-    }catch(err){
-      console.log(err);
-    }
-  }
   useEffect(() => {
-    getWC();
-  }, []);
+    const filteredCommissions = allWC?.map((commission: any) => ({
+      label: commission.profileName,
+      value: String(commission._id), // Ensure `value` is a string
+    }));
+    setData((prevData) => ({ ...prevData, workerCommission: filteredCommissions }));
 
-// const getCountry = async()=>{
-//   try{
-//     const { response, error } = await getALLWC(endPoints.GET_ALL_WC);
+  }, [allWC])
 
-//     if (response && !error) {
-//       // Extract only `regionName` and `_id` from each region
-//       const filteredCommission = response.data.commissions?.map((commission: any) => ({
-//         label: commission.profileName,
-//         value: String(commission._id), // Ensure `value` is a string
-//       }));
-//       // Update the state with the filtered regions
-//       setAllWC(filteredCommission);
-//     } else {
-//       toast.error(error.response.data.message);
-//     }
+  console.log(allWC);
 
-//   }catch{
+  useEffect(() => {
+    const filteredCountries = allContries?.map((items: any) => ({
+      label: items.name,
+      value: String(items.name), // Ensure `value` is a string
+    }));
+    setData((prevData) => ({ ...prevData, country: filteredCountries }));
+  }, [allContries])
 
-//   }
-// }
+
+  useEffect(() => {
+    // Filter states based on the selected country
+    const filteredAreas = allContries.filter((state:any) => state.countries?.name === watch("country"));
+
+    // Map the filtered areas to the required format for areaData
+    const transformedAreas = filteredAreas.map((state:any) => ({
+      label: state.states,
+      value: String(state.states), // Ensure `value` is a string
+    }));
+    console.log(transformedAreas);
+
+    setData((prevData) => ({ ...prevData, state: transformedAreas }));
+  }, [watch("country")]);
+
+  // Effect to fetch and populate states based on selected country
+  useEffect(() => {
+    const selectedCountry = watch("country");
+    if (selectedCountry) {
+      const filteredAreas = allContries.filter(
+        (country: any) => country.name === selectedCountry
+      );
+
+      const transformedAreas = filteredAreas.flatMap((country: any) =>
+        country.states.map((state: any) => ({
+          label: state,
+          value: state,
+        }))
+      );
+
+      setData({ ...data, state: transformedAreas })
+    }
+  }, [watch("country"), allContries]);
+
 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,11 +280,10 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
           <div
             key={tab}
             // onClick={()=>setActiveTab(tab)}
-            className={`cursor-pointer py-3 px-[16px] ${
-              activeTab === tab
-                ? "text-deepStateBlue border-b-2 border-secondary2"
-                : "text-gray-600"
-            }`}
+            className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
+              ? "text-deepStateBlue border-b-2 border-secondary2"
+              : "text-gray-600"
+              }`}
           >
             <p>
               {index < tabs.indexOf(activeTab) ? (
@@ -306,7 +315,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                     type="file"
                     className="hidden"
                     onChange={handleFileChange}
-                    //   onChange={(e) => handleFileUpload(e)}
+                  //   onChange={(e) => handleFileUpload(e)}
                   />
                   <ImagePlaceHolder uploadedImage={watch("image")} />
                 </label>
@@ -345,7 +354,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                     handleInputChange("phone");
                     setValue("phone", value); // Update the value of the phone field in React Hook Form
                   }}
-                  // Watch phone field for changes
+                // Watch phone field for changes
                 />
                 <div className="flex gap-4 w-full">
                   <Input
@@ -374,27 +383,20 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   error={errors.address?.street2?.message}
                   {...register("address.street2")}
                 />
-                
-                 <Select
+
+                <Select
                   placeholder="Select Country"
                   label="Country"
-                  error={errors.state?.message}
-                  options={[
-                    { value: "Kerala", label: "Kerala" },
-                    { value: "Tamilnadu", label: "Tamilnadu" },
-                    { value: "Karnataka", label: "Karnataka" },
-                  ]}
-                  {...register("state")}
+                  error={errors.country?.message}
+                  value={watch("country")}
+                  options={data.country}
+                  {...register("country")}
                 />
                 <Select
                   placeholder="Select State"
                   label="State"
                   error={errors.state?.message}
-                  options={[
-                    { value: "Kerala", label: "Kerala" },
-                    { value: "Tamilnadu", label: "Tamilnadu" },
-                    { value: "Karnataka", label: "Karnataka" },
-                  ]}
+                  options={data.state}
                   {...register("state")}
                 />
                 <Input
@@ -474,24 +476,24 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                     handleInputChange("workPhone");
                     setValue("workPhone", value); // Update the value of the phone field in React Hook Form
                   }}
-                  // Watch phone field for changes
+                // Watch phone field for changes
                 />
               </div>
               <div className="grid grid-cols-2 gap-4 my-4">
                 <Select
                   placeholder="Select Region"
                   label="Select Region"
-                  value={watch("region")}
+                  // value={watch("region")}
                   error={errors.region?.message}
-                  options={regionData}
+                  options={data.regions}
                   {...register("region")}
                 />
                 <Select
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
                   error={errors.commission?.message}
-                  options={allWC}
-                  
+                  options={data.workerCommission}
+
                   {...register("commission")}
                 />
               </div>
