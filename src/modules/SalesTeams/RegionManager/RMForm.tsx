@@ -269,7 +269,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
           userName: user?.userName,
           phoneNo: user?.phoneNo,
           email: user?.email,
-          image: user?.userImage,
+          userImage: user?.userImage,
           region: RM.region?._id,
           area: RM.area?._id,
           commission: RM.commission?._id
@@ -507,9 +507,8 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                 />
                 <CustomPhoneInput
                   label="Phone Number"
-                  required
                   error={errors.workPhone?.message}
-                  {...register("workPhone")}
+                 
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("workPhone");
