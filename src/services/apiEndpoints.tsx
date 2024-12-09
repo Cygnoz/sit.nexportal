@@ -40,7 +40,10 @@ export const endPoints={
  
  
   GET_ALL_AM:'/area-managers',
+  GET_COUNTRY:'/countries',
 
   // BDA
- BDA:'/bda'
+ BDA:'/bda',
+
+
 }

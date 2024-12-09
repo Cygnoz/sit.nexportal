@@ -27,6 +27,11 @@ interface RegionData {
   value: string;
 }
 
+// interface CountryData {
+//   label: string;
+//   value: string;
+// }
+
 interface AddAreaManagerProps {
   onClose: () => void; // Prop for handling modal close
 }
@@ -74,6 +79,8 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
   const { request: getAllArea } = useApi("get", 3003);
   const [regionData, setRegionData] = useState<RegionData[]>([]);
   const [submit, setSubmit] = useState(false);
+  // const {request:getCountries}=useApi('get',3003)
+  // const [countryData,setCountryData]=useState<CountryData[]>([]);
 
   const onSubmit: SubmitHandler<AMData> = async (data) => {
     console.log("dewdew");
@@ -158,6 +165,32 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
   useEffect(() => {
     getAllRegions();
   }, []);
+
+  // const getAllCountry =async()=>{
+  //   try{
+  //     const { response, error } = await getCountries(endPoints.GET_COUNTRY);
+
+  //     if (response && !error) {
+  //       // Extract only `regionName` and `_id` from each region
+  //       const filteredData = response.data?.map((country: any) => ({
+  //         // label: country.regionName,
+  //         value: String(country._id), // Ensure `value` is a string
+  //       }));
+
+  //       // Update the state with the filtered regions
+  //       setCountryData(filteredData);
+  //     } else {
+  //       toast.error(error.response.data.message);
+  //     }
+  //   }
+  //   catch(err){
+  //     console.error("error occured",err);
+      
+  //   }
+  // }
+  // useEffect(()=>{
+  //   getAllCountry()
+  // },[])
 
   const getAreas = async (regionId: any) => {
     try {
@@ -333,11 +366,16 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                   error={errors.address?.street2?.message}
                   {...register("address.street2")}
                 />
-                <Input
-                  label="City"
-                  placeholder="Enter City"
-                  error={errors.city?.message}
-                  {...register("city")}
+               <Select
+                  label="Country"
+                  placeholder="Select Country"
+                  error={errors.country?.message}
+                  options={[
+                    { value: "Kerala", label: "Kerala" },
+                    { value: "Tamilnadu", label: "Tamilnadu" },
+                    { value: "Karnataka", label: "Karnataka" },
+                  ]}
+                  {...register("country")}
                 />
                 <Select
                   label="State"
@@ -349,6 +387,12 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
                     { value: "Karnataka", label: "Karnataka" },
                   ]}
                   {...register("state")}
+                />
+                  <Input
+                  label="City"
+                  placeholder="Enter City"
+                  error={errors.city?.message}
+                  {...register("city")}
                 />
                 <Input
                   label="Aadhaar Number"
