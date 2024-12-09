@@ -25,24 +25,11 @@ import toast from "react-hot-toast";
 import { useRegularApi } from "../../../context/ApiContext";
 
 
-// interface RegionData {
-//   label: string;
-//   value: string;
-// }
 
-// interface WCData {
-//   label: string;
-//   value: string;
-// }
 
-// interface Counrty{
-//   label: string;
-//   value: string;
-
-// }
-
-interface AddRegionalManagerProps {
+interface RMProps {
   onClose: () => void;
+  editId?: string
 }
 
 const validationSchema = Yup.object({
@@ -67,13 +54,13 @@ const validationSchema = Yup.object({
     ),
 });
 
-const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
+const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const { request: addRM } = useApi("post", 3002);
   const { allRegions, allWC, allContries } = useRegularApi()
 
 
   //const { request: editRM } = useApi('put', 3002)
- 
+
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -158,12 +145,12 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
- 
 
 
- 
 
- 
+
+
+
 
 
   useEffect(() => {
@@ -175,9 +162,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     // Set the data object with updated regions
     setData((prevData) => ({ ...prevData, regions: filteredRegions }));
 
-}, [allRegions]);
-
-  
+  }, [allRegions]);
 
 
   useEffect(() => {
@@ -189,7 +174,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
 
   }, [allWC])
 
-  console.log(allWC);
+
 
   useEffect(() => {
     const filteredCountries = allContries?.map((items: any) => ({
@@ -199,39 +184,53 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     setData((prevData) => ({ ...prevData, country: filteredCountries }));
   }, [allContries])
 
-
-  useEffect(() => {
-    // Filter states based on the selected country
-    const filteredAreas = allContries.filter((state:any) => state.countries?.name === watch("country"));
-
-    // Map the filtered areas to the required format for areaData
-    const transformedAreas = filteredAreas.map((state:any) => ({
-      label: state.states,
-      value: String(state.states), // Ensure `value` is a string
-    }));
-    console.log(transformedAreas);
-
-    setData((prevData) => ({ ...prevData, state: transformedAreas }));
-  }, [watch("country")]);
-
-  // Effect to fetch and populate states based on selected country
+  // // Effect to fetch and populate states based on selected country
   useEffect(() => {
     const selectedCountry = watch("country");
     if (selectedCountry) {
-      const filteredAreas = allContries.filter(
+      const filteredStates = allContries.filter(
         (country: any) => country.name === selectedCountry
       );
 
-      const transformedAreas = filteredAreas.flatMap((country: any) =>
+      const transformedStates = filteredStates.flatMap((country: any) =>
         country.states.map((state: any) => ({
           label: state,
           value: state,
         }))
       );
-
-      setData({ ...data, state: transformedAreas })
+      setData((prevData) => ({ ...prevData, state: transformedStates }));
     }
   }, [watch("country"), allContries]);
+
+  
+  // const setFormValues = (data: RMData) => {
+  //   Object.keys(data).forEach((key) => {
+  //     setValue(key as keyof RMData, data[key as keyof RMData]);
+  //   });
+  // };
+
+
+  // useEffect(() => {
+  //   if (editId) {
+  //     (async () => {
+        
+  //         try{
+  //           const { response, error } = await addRM(`${endPoints.RM}/${editId}`);
+  //           if (response && !error) {
+  //             setFormValues(response.data);
+  //           } else {
+  //             toast.error(error.response.data.message);
+  //           }
+          
+
+  //         }
+  //        catch(err){
+  //         console.error("Error fetching region data:", err);
+          
+  //        }
+  //     })();
+  //   }
+  // }, [editId]);
 
 
 
@@ -258,12 +257,12 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     <div className="p-5 bg-white rounded shadow-md  hide-scrollbar">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-lg font-bold text-deepStateBlue ">
-            Create Regional Manager
-          </h1>
-          <p className="text-ashGray text-sm">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt
+
+          <h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Region Manager</h3>
+          <p className="text-[11px] text-[#8F99A9] mt-1">
+            {editId
+              ? "Edit the details of the region manager."
+              : "Fill in the details to create a new region manager."}
           </p>
         </div>
         <button

@@ -40,6 +40,7 @@ const RMHome = () => {
 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editId,setEditId] = useState('');
 
   // Function to toggle modal visibility
   const handleModalToggle = () => {
@@ -47,7 +48,10 @@ const RMHome = () => {
     getRMs();
   };
 
-
+const handleEdit=(id:any)=>{
+  handleModalToggle()
+  setEditId(id)
+}
   const handleView=(id:any)=>{
     navigate(`/region-managerView/${id}`)
   }
@@ -121,13 +125,19 @@ useEffect(() => {
          <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Regional Manager</h1>
      
-      <Button variant="primary" size="sm" onClick={handleModalToggle}>
+      <Button variant="primary" size="sm" onClick={()=>{
+        handleModalToggle()
+        setEditId('')
+
+      }}>
+
+
       <span className="font-bold text-xl">+</span> Create RM
       </Button>
 
       {/* Modal controlled by state */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-      <AddRegionManager  onClose={handleModalToggle} />
+      <AddRegionManager editId={editId}  onClose={handleModalToggle} />
       </Modal>
     </div>
 
@@ -162,7 +172,7 @@ useEffect(() => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleView},
+          { label: 'edit', function:handleEdit},
           { label: 'view', function: handleView },
         ]}
         />

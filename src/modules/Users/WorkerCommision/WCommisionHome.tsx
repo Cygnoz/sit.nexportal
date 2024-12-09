@@ -41,7 +41,7 @@ const WCommisionHome = () => {
   const handleDelete = async () => {
     if (!deleteId) return;
     try {
-      const { response, error } = await deleteWC(`${endPoints.DELETE_WC}/${deleteId}`);
+      const { response, error } = await deleteWC(`${endPoints.WC}/${deleteId}`);
       if (response && !error) {
         setAllWC((prev) => prev.filter((wc: any) => wc.id !== deleteId));
         toast.success(response.data.message || "Commission deleted successfully");
@@ -65,7 +65,7 @@ const WCommisionHome = () => {
 
   const getWC = async () => {
     try {
-      const { response, error } = await getALLWC(endPoints.GET_ALL_WC);
+      const { response, error } = await getALLWC(endPoints.WC);
       if (response && !error) {
         const transformedRegions = response.data.commissions?.map(
           (commission: any) => ({
