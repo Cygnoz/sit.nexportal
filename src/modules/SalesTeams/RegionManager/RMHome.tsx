@@ -86,13 +86,14 @@ const handleEdit=(id:any)=>{
       const { response, error } = await getRM(endPoints.GET_ALL_RM);
   
       if (response && !error) {
-          const transformedAreas = response.data.regionManager?.map((region: any) => ({
+          const transformedRMss = response.data.regionManager?.map((region: any) => ({
               ...region,
               dateOfJoining: region.dateOfJoining
-                  ? new Date(region.dateOfJoining).toISOString().split('T')[0]
-                  : "N/A",
+              ? new Date(region.dateOfJoining).toLocaleDateString("en-GB")
+              : "N/A",
+            loginEmail:region.user.email
           })) || [];
-          setAllRms(transformedAreas);
+          setAllRms(transformedRMss);
       } else {
          console.log(error?.response?.data?.message || "Failed to fetch data.");
       }
