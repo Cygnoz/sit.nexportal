@@ -11,16 +11,16 @@ interface Address {
   }
   
   export interface BDAData {
-    fullName: string;
-    email?: string;
-    phone: string;
+    userName: string;
+    personalEmail?: string;
+    phoneNo: string;
     age?: number |null;
     bloodGroup?: string;
     address?: Address;
     adhaarNo?: string;
     panNo?: string;
     dateOfJoining?: string;
-    loginEmail: string;  
+    email: string;  
     password?: string;
     confirmPassword?:string;   
     workEmail?: string;
@@ -32,5 +32,5 @@ interface Address {
     area?: string;
     commission?:string;
     bankDetails?: BankDetails;
-    image?: string;  
+    userImage?: string;  
   }

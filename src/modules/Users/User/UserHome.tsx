@@ -64,7 +64,6 @@ const UserHome = () => {
       { key: "email", label: "Email Address" },
       { key: "phoneNo", label: "Phone No" },
       { key: "role", label: "Role" },
-
     ];
 
 

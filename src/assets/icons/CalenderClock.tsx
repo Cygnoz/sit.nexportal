@@ -1,24 +1,20 @@
 
 type Props = {
-    size?:number;
-    color?:string;
+  size?: number;
+  color?: string;
 }
 
-const CalenderClock = ({size, color}: Props) => {
+const CalenderClock = ({ size = 19, color = "#FFFFFF" }: Props) => {
   return (
-<svg width={size} height={size} viewBox="0 0 35 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="0.800049" width="34" height="34" rx="8" fill="#FCB23E"/>
-<rect x="2.30005" y="1.5" width="31" height="31" rx="6.5" stroke={color} stroke-opacity="0.8" stroke-width="3"/>
-<g clip-path="url(#clip0_9066_13228)">
-<path d="M24.55 13.625V12.5C24.55 12.1022 24.392 11.7206 24.1107 11.4393C23.8294 11.158 23.4479 11 23.05 11H12.55C12.1522 11 11.7707 11.158 11.4894 11.4393C11.2081 11.7206 11.05 12.1022 11.05 12.5V23C11.05 23.3978 11.2081 23.7794 11.4894 24.0607C11.7707 24.342 12.1522 24.5 12.55 24.5H15.175M20.8 9.5V12.5M14.8 9.5V12.5M11.05 15.5H14.8M21.925 21.125L20.8 20.225V18.5M25.3 20C25.3 22.4853 23.2853 24.5 20.8 24.5C18.3148 24.5 16.3 22.4853 16.3 20C16.3 17.5147 18.3148 15.5 20.8 15.5C23.2853 15.5 25.3 17.5147 25.3 20Z" stroke="white" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-</g>
-<defs>
-<clipPath id="clip0_9066_13228">
-<rect width="18" height="18" fill="white" transform="translate(8.80005 8)"/>
-</clipPath>
-</defs>
+    <svg width={size} height={size} viewBox="0 0 17 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M14.75 5.625V4.5C14.75 4.10218 14.592 3.72064 14.3107 3.43934C14.0294 3.15804 13.6478 3 13.25 3H2.75C2.35218 3 1.97064 3.15804 1.68934 3.43934C1.40804 3.72064 1.25 4.10218 1.25 4.5V15C1.25 15.3978 1.40804 15.7794 1.68934 16.0607C1.97064 16.342 2.35218 16.5 2.75 16.5H5.375M11 1.5V4.5M5 1.5V4.5M1.25 7.5H5M12.125 13.125L11 12.225V10.5M15.5 12C15.5 14.4853 13.4853 16.5 11 16.5C8.51472 16.5 6.5 14.4853 6.5 12C6.5 9.51472 8.51472 7.5 11 7.5C13.4853 7.5 15.5 9.51472 15.5 12Z" stroke={color} stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
   )
 }
 
-export default CalenderClock
+export default CalenderClock;
+
+
+
+
+

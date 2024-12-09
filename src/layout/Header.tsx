@@ -13,7 +13,7 @@ const Header = () => {
   >
     <div className="w-[68%]">
       <SearchBar
-        placeholder="Search"
+        placeholder="Search licenses,clients,tickets or invoices"
         searchValue={searchValue}
         onSearchChange={setSearchValue}
       />

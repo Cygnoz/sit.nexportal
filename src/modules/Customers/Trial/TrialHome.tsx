@@ -52,7 +52,7 @@ const TrialHome = () => {
   const homeCardData = [
     { icon: <CalenderDays />, number: "78", title: "Active Trials",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
     { icon: <CalenderMultiple size={40} />, number: "56", title: "Expired Trials",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
-    { icon: <CalenderClock size={40}/>, number: "50", title: "Upcoming Expiration",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
+    { icon: <CalenderClock size={24}/>, number: "50", title: "Upcoming Expiration",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
     { icon: <Boxes />, number: "526", title: "Converted Trails",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
     { icon: <PackageMinus />, number: "30", title: "Exit Trails",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
@@ -89,7 +89,7 @@ const TrialHome = () => {
             
 
   return (
-    <div>
+    <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">Trial</h1>

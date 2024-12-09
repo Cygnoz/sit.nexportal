@@ -95,7 +95,7 @@ const BDAHome = () => {
         console.log(transformedBDA);
         
       } else {
-        toast.error(error?.response?.data?.message || "Failed to fetch data.");
+        console.log(error?.response?.data?.message || "Failed to fetch data.");
       }
     } catch (err) {
       console.error("Error:", err);
