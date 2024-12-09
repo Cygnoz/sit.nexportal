@@ -66,7 +66,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
 
   const { request: addAM } = useApi("post", 3002);
   const [submit, setSubmit] = useState(false);
-  const {allAreas,allRegions, allContries,allWC}=useRegularApi()
+  const {allAreas,allRegions, allCountries, allWc}=useRegularApi()
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -140,41 +140,41 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
 
   useEffect(() => {
     // Map the regions into the required format for regions data
-    const filteredRegions = allRegions.map((region:any) => ({
+    const filteredRegions = allRegions?.map((region:any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
  
     // Set the data object with updated regions
-    setData((prevData) => ({ ...prevData, regions: filteredRegions }));
+    setData((prevData:any) => ({ ...prevData, regions: filteredRegions }));
   }, [allRegions]);
  
   useEffect(() => {
     // Filter areas based on the selected region
-    const filteredAreas = allAreas.filter((area:any) => area.region?._id === watch("region"));
+    const filteredAreas = allAreas?.filter((area:any) => area.region?._id === watch("region"));
  
     // Map the filtered areas to the required format
-    const transformedAreas = filteredAreas.map((area:any) => ({
+    const transformedAreas = filteredAreas?.map((area:any) => ({
 label: area.areaName,
       value: String(area._id), // Ensure `value` is a string
     }));
  
     // Set the data object with updated areas
-    setData((prevData) => ({ ...prevData, areas: transformedAreas }));
+    setData((prevData:any) => ({ ...prevData, areas: transformedAreas }));
   }, [watch("region"), allAreas]); // Re-run when either selected region or allAreas changes
 
   useEffect(() => {
-    const filteredCountries = allContries?.map((items: any) => ({
+    const filteredCountries = allCountries?.map((items: any) => ({
       label: items.name,
       value: String(items.name), // Ensure `value` is a string
     }));
-    setData((prevData) => ({ ...prevData, country: filteredCountries }));
-  }, [allContries])
+    setData((prevData:any) => ({ ...prevData, country: filteredCountries }));
+  }, [allCountries])
 
   useEffect(() => {
     const selectedCountry = watch("country");
     if (selectedCountry) {
-      const filteredAreas = allContries.filter(
+      const filteredAreas = allCountries.filter(
         (country:any) => country.name === selectedCountry
       );
  
@@ -186,15 +186,15 @@ label: area.areaName,
       );
       setData((prevData) => ({ ...prevData, state: transformedState }));
     }
-  }, [watch("country"), allContries]);
+  }, [watch("country"), allCountries]);
   useEffect(() => {
-    const filteredCommissions = allWC?.map((commission: any) => ({
+    const filteredCommissions = allWc?.map((commission: any) => ({
       label: commission.profileName,
       value: String(commission._id), // Ensure `value` is a string
     }));
-    setData((prevData) => ({ ...prevData, workerCommission: filteredCommissions }));
+    setData((prevData:any) => ({ ...prevData, workerCommission: filteredCommissions }));
 
-  }, [allWC])
+  }, [allWc])
 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
