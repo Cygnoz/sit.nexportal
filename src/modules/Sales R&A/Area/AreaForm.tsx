@@ -71,7 +71,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
   
 
   useEffect(()=>{
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions:any = allRegions?.map((region: any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));

@@ -21,29 +21,34 @@ type Props = {
 };
 
 function UserForm({ onClose, editId }: Props) {
-  const addValidationSchema = Yup.object().shape({
-    userName: Yup.string().required("Full name is required"),
-    email: Yup.string()
-      .email("Invalid email format")
-      .required("Email is required"),
-    phoneNo: Yup.string().optional(), // Optional field, no need to make this required
-    password: Yup.string()
-      .min(6, "Password must be at least 6 characters")
-      .required("Password is required"),
-    confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password")], "Passwords must match")
-      .required("Confirm Password is required"),
-    role: Yup.string().required("Role is required"),
-  });
 
-  const editValidationSchema = Yup.object().shape({
-    userName: Yup.string().required("Full name is required"),
-    email: Yup.string()
-      .email("Invalid email format")
-      .required("Email is required"),
-    phoneNo: Yup.string().optional(), // Optional field, no need to make this required
-    role: Yup.string().required("Role is required"),
-  });
+
+
+ // Base schema for shared fields
+const baseSchema = {
+  userName: Yup.string().required("Full name is required"),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  phoneNo: Yup.string().optional(), // Optional field
+  role: Yup.string().required("Role is required"),
+};
+
+// Schema for "add" form with additional fields
+const addValidationSchema = Yup.object({
+  ...baseSchema,
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
+});
+
+// Schema for "edit" form with only shared fields
+const editValidationSchema = Yup.object({
+  ...baseSchema,
+});
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const { request: addUser } = useApi("post", 3002);
@@ -59,7 +64,6 @@ function UserForm({ onClose, editId }: Props) {
   } = useForm<UserData>({
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
-  console.log(editId);
   const setFormValues = (data: UserData) => {
     Object.keys(data).forEach((key) => {
       setValue(key as keyof UserData, data[key as keyof UserData]);
@@ -119,7 +123,7 @@ function UserForm({ onClose, editId }: Props) {
     { label: "Support Admin", value: "Support Admin" },
     { label: "Region Manager", value: "Region Manager" },
     { label: "Area Manager", value: "Area Manager" },
-    { label: "BDAs", value: "BDAs" },
+    { label: "BDA", value: "BDA" },
     { label: "Supervisor", value: "Supervisor" },
     { label: "Support Agent", value: "Support Agent" },
   ];

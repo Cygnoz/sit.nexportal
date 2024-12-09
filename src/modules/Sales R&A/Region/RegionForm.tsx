@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
@@ -9,6 +9,7 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { RegionData } from "../../../Interfaces/Region";
+import { useRegularApi } from "../../../context/ApiContext";
 
 interface RegionFormProps {
   onClose: () => void;
@@ -24,15 +25,17 @@ const validationSchema = Yup.object({
 
 
 const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
+  const {allCountries}=useRegularApi()
   const { request: addRegion } = useApi("post", 3003);
   const { request: editRegion } = useApi("put", 3003);
   const { request: getRegion } = useApi("get", 3003);
-
+  const [countries,setCountries]=useState<[]>([])
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
+    watch
   } = useForm<RegionData>({
     resolver: yupResolver(validationSchema),
   });
@@ -78,7 +81,13 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
       toast.error("An unexpected error occurred.");
     }
   };
-
+  useEffect(() => {
+    const filteredCountry = allCountries?.map((country: any) => ({
+      label: country.name,
+      value: country.name,
+    }));
+   setCountries(filteredCountry)
+  }, [allCountries]);
   return (
     <div className="p-5 bg-white rounded shadow-md space-y-3">
       <div className="flex justify-between">
@@ -116,12 +125,9 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
           required
           label="Country"
           placeholder="Select Country"
+          value={watch("country")}
           error={errors.country?.message}
-          options={[
-            { value: "UAE", label: "United Arab Emirates" },
-            { value: "India", label: "India" },
-            { value: "UK", label: "United Kingdom" },
-          ]}
+          options={countries}
           {...register("country")}
         />
         <Input

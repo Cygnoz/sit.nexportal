@@ -10,34 +10,31 @@ import Licensor from "../../../assets/icons/Licensor";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import TrialIcon from "../../../assets/icons/TrialIcon";
-import NewBDAForm from "./BDAForm";
+import BDAForm from "./BDAForm";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
-
-interface BDAData {
-  name: string;
-  emailAdrees: string;
-  phoneNo: string;
-  region: string;
-  area: string;
-  dateOfJoining: string;
-}
+import { BDAData } from "../../../Interfaces/BDA";
 
 const BDAHome = () => {
-  const {request:getAllBDA}=useApi('get',3002)
-  const [allBDA,setAllBDA]=useState<BDAData[]>([]);
+  const { request: getAllBDA } = useApi("get", 3002);
+  const [allBDA, setAllBDA] = useState<BDAData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+  const [editId, setEditId] = useState('');
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
-    getBDAs()
+    getBDAs();
   };
   const navigate = useNavigate();
 
   const handleView = (id: any) => {
     navigate(`/bdaView/${id}`);
+  };
+
+  const handleEdit = (id: any) => {
+    setEditId(id);
+    handleModalToggle()
   };
 
   // Data for HomeCards
@@ -72,11 +69,10 @@ const BDAHome = () => {
     },
   ];
 
-  
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
     { key: "user.userName", label: "Name" },
-    { key: "email", label: "Email Address" },
+    { key: "loginEmail", label: "Email Address" },
     { key: "user.phoneNo", label: "Phone No" },
     { key: "region.regionName", label: "Region" },
     { key: "area.areaName", label: "Area" },
@@ -85,35 +81,42 @@ const BDAHome = () => {
 
   const getBDAs = async () => {
     try {
-      const { response, error } = await getAllBDA(endPoints.BDA);   
+      const { response, error } = await getAllBDA(endPoints.BDA);
       if (response && !error) {
-          const transformedAreas = response.data.bda?.map((region: any) => ({
-              ...region,
-              dateOfJoining: region.dateOfJoining
-                  ? new Date(region.dateOfJoining).toISOString().split('T')[0]
-                  : "N/A",
+        const transformedBDA =
+          response.data.bda?.map((bda:any) => ({
+            ...bda,
+            dateOfJoining: bda.dateOfJoining
+              ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
+              : "N/A",
+            loginEmail:bda.user.email
           })) || [];
-          setAllBDA(transformedAreas);
+        setAllBDA(transformedBDA);
+        console.log(transformedBDA);
+        
       } else {
-          toast.error(error?.response?.data?.message || "Failed to fetch data.");
+        toast.error(error?.response?.data?.message || "Failed to fetch data.");
       }
-  } catch (err) {
+    } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
-  }
-  
-};
+    }
+  };
 
-useEffect(() => {
+  useEffect(() => {
     getBDAs();
-}, []);
-
+  }, []);
+  
+  
   return (
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">BDA</h1>
-        <Button variant="primary" size="sm" onClick={handleModalToggle}>
+        <Button variant="primary" size="sm" onClick={()=>{
+          handleModalToggle()
+          setEditId('')
+        }}>
           <span className="font-bold text-xl">+</span> Create BDA
         </Button>
       </div>
@@ -167,13 +170,16 @@ useEffect(() => {
               },
             ],
           }}
-          actionList={[{ label: "view", function: handleView }]}
+          actionList={[
+            { label: "view", function: handleView },
+            { label: "edit", function: handleEdit },
+          ]}
         />
       </div>
 
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <NewBDAForm onClose={handleModalToggle} />
+        <BDAForm editId={editId} onClose={handleModalToggle} />
       </Modal>
     </div>
   );

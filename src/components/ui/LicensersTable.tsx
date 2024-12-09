@@ -3,7 +3,7 @@ import NextIcon from "../../assets/icons/NextIcon";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
 import SearchBar from "./SearchBar";
 import IndiaLogo from "../../assets/image/IndiaLogo.png";
-import UKLogo from "../../assets/image/UKLogo.webp";
+import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
 import UserIcon from "../../assets/icons/UserIcon";
 import Button from "./Button";
@@ -108,21 +108,21 @@ const LicensersTable = <T extends object>({
           <p>India</p>
         </>
       );
-    } else if (key == "UK") {
-      return (
-        <>
-          <img src={UKLogo} alt="UK" className="w-5 h-5 rounded-full" />
-          <p>UK</p>
-        </>
-      );
-    } else {
+    } else if (key =="United Arab Emirates") {
       return (
         <>
           <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full" />
           <p>UAE</p>
         </>
       );
-    }
+    }else  {
+      return (
+        <>
+          <img src={SaudhiLogo} alt="Saudi Arabia" className="w-5 h-5 rounded-full" />
+          <p>Saudi</p>
+        </>
+      );
+    } 
   };
 
   // Render table header
@@ -240,7 +240,7 @@ const LicensersTable = <T extends object>({
                   
                     <td className="p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE] rounded-lg">
                       <div className="flex justify-center gap-2">
-                        <Button variant="tertiary">Upgrade</Button>
+                        <Button  variant="tertiary">Upgrade</Button>
                       </div>
                     </td>
                 </tr>

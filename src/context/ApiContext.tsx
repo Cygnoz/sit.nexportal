@@ -1,32 +1,29 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { RegionData } from '../Interfaces/Region';
-import { AreaData } from '../Interfaces/Area';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import useApi from '../Hooks/useApi';
-import { endPoints } from '../services/apiEndpoints';
-import { useRole } from './RoleContext';
+import { AreaData } from '../Interfaces/Area';
+import { RegionData } from '../Interfaces/Region';
 import { WCData } from '../Interfaces/WC';
+import { endPoints } from '../services/apiEndpoints';
 
 type ApiContextType = {
-  allRegions: RegionData[];
-  allAreas: AreaData[];
-  allContries: any;
-  allWC: WCData[];
+    allRegions?: RegionData[];
+    allAreas?: AreaData[];
+    allWc?:WCData[];
+    allCountries?:any
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
 
 export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
-  const { role } = useRole()
-  const { request: getAllRegion } = useApi("get", 3003);
-  const { request: getAllArea } = useApi("get", 3003);
-  const { request: getAllWC } = useApi("get", 3003);
-  const { request: getAllContries } = useApi("get", 3003);
+    const { request: getAllRegion } = useApi("get", 3003);  
+    const { request: getAllArea } = useApi("get", 3003);
+    const { request: getAllWc } = useApi("get", 3003);
 
-
+    const { request: getAllCountries } = useApi("get", 3003);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);
-  const [allWC, setAllWC] = useState<WCData[]>([]);
-  const [allContries, setAllContries] = useState('');
+  const [allWc, setAllWc] = useState<WCData[]>([]);
+  const [allCountries, setAllCountries] = useState<[]>([]);
 
   // Fetch all regions
   const fetchRegions = async () => {
@@ -54,49 +51,51 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const fetchContries = async () => {
+  const getWC = async () => {
     try {
-      const { response, error } = await getAllContries(endPoints.GET_COUNTRY);
-       if (response && !error) {
-         setAllContries(response.data[0].countries);
-        console.log(response.data[0].countries);
-       }
-
+      const { response, error } = await getAllWc(endPoints.WC);
+      if (response && !error) {
+        const transformedRegions = response.data.commissions?.map(
+          (commission: any) => ({
+            ...commission,
+            createdAt: new Date(commission.createdAt)
+              .toISOString()
+              .split("T")[0], // Extracts the date part
+          })
+        );
+        setAllWc(transformedRegions);
+      } else {
+        console.log(error);
+      }
     } catch (err) {
-      console.error('Error fetching contries:', err);
-
+      console.log(err);
     }
   };
-
-  const fetchWc = async () => {
+  
+  const getCountries=async()=>{
     try {
-      const { response, error } = await getAllWC(endPoints.WC);
+      const { response, error } = await getAllCountries(endPoints.GET_COUNTRY);
       if (response && !error) {
-        console.log(response.data.commissions);
-        setAllWC(response.data.commissions);
+        setAllCountries(response.data[0].countries);
       }
-
     } catch (err) {
-      console.error('Error fetching Worker Commission:', err);
-
+      console.error('Error fetching areas:', err);
     }
   }
 
-
-
+  
 
   useEffect(() => {
     fetchRegions()
     fetchAreas();
-    fetchContries();
-    fetchWc();
-  }, [role]);
+    getWC()
+    getCountries()
+  }, []);
 
-
-
+  
 
   return (
-    <ApiContext.Provider value={{ allRegions, allAreas, allWC, allContries }}>
+    <ApiContext.Provider value={{ allRegions, allAreas,allWc,allCountries }}>
       {children}
     </ApiContext.Provider>
   );
