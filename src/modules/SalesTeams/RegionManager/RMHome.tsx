@@ -164,7 +164,8 @@ useEffect(() => {
         actionList={[
           { label: 'edit', function:handleView},
           { label: 'view', function: handleView },
-        ]} />
+        ]}
+        />
       </div>
 
       {/* Modal Section */}

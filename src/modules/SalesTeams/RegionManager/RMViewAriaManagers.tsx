@@ -9,6 +9,7 @@ type Props = {};
 const RMViewAriaManagers = ({}: Props) => {
   return (
     <div>
+       <div className="rounded-xl">
       <h1 className="font-bold text-sm sticky top-0 bg-white border-b border-gray-200 pb-2 p-2">
         Area Managers
       </h1>
@@ -150,6 +151,9 @@ const RMViewAriaManagers = ({}: Props) => {
         </div>
       </div>
     </div>
+
+    </div>
+   
   );
 };
 
