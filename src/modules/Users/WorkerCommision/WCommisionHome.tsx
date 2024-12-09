@@ -71,8 +71,7 @@ const WCommisionHome = () => {
           (commission: any) => ({
             ...commission,
             createdAt: new Date(commission.createdAt)
-              .toISOString()
-              .split("T")[0], // Extracts the date part
+            .toLocaleDateString("en-GB") // Extracts the date part
           })
         );
         setAllWC(transformedRegions);

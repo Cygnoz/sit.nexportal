@@ -1,20 +1,17 @@
 import React, { useMemo, useState } from "react";
-import Eye from "../../assets/icons/Eye";
 import NextIcon from "../../assets/icons/NextIcon";
-import PencilLine from "../../assets/icons/PencilLine";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
-import Trash from "../../assets/icons/Trash";
 import SearchBar from "./SearchBar";
-import SortBy from "./SortBy";
 import IndiaLogo from "../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
 import UserIcon from "../../assets/icons/UserIcon";
+import Button from "./Button";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
   { key: "rmName", imageKey: "rmImage" },
-  {key:'user.userName',imageKey:"user.userImage"}
+  {key:'',imageKey:''}
 ];
 
 interface TableProps<T> {
@@ -23,28 +20,17 @@ interface TableProps<T> {
   headerContents: {
     title?: string;
     search?: { placeholder: string };
-    sort?: {
-      sortHead: string;
-      sortList: { label: string; icon: React.ReactNode }[];
-    }[];
+    
   };
-  actionList?: {
-    label: string;
-    function: (id: any) => void;
-  }[];
-  noAction?: boolean;
-  noPagination?: boolean;
   maxHeight?: string;
 }
 
-const Table = <T extends object>({
+const LicensersTable = <T extends object>({
   data,
   columns,
   headerContents,
-  actionList,
-  noAction,
-  noPagination,
   maxHeight,
+  
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -88,6 +74,8 @@ const Table = <T extends object>({
       case "Expired":
         return "bg-blue-300 text-white py-2 px-2 rounded-lg";
       case "Pending Renewal":
+        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        case "Upcoming Renewal":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
       case "Open":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
@@ -142,7 +130,7 @@ const Table = <T extends object>({
   const renderHeader = () => (
     <div
       className={`flex  ${
-        headerContents.search && !headerContents.title && !headerContents.sort
+        headerContents.search && !headerContents.title 
           ? "justify-start"
           : "justify-between"
       } items-center mb-4`}
@@ -159,52 +147,32 @@ const Table = <T extends object>({
           />
         </div>
       )}
-      {headerContents.sort && (
-        <div className="flex gap-2">
-          {headerContents.sort.map((sort, index) => (
-            <SortBy key={index} sort={sort} />
-          ))}
-        </div>
-      )}
     </div>
   );
 
   const renderImageAndLabel = (data: any) => {
     for (const { key, imageKey } of ImageAndLabel) {
-      const keyValue = getNestedValue(data, key); // Get the value for key, possibly nested
-      const imageValue = getNestedValue(data, imageKey); // Get the value for imageKey, possibly nested
-  
-      if (keyValue) {
-        if (imageValue && imageValue.length > 500) {
-          return (
-            <>
+      if (data[key] && data[imageKey]) {
+        return (
+          <>
+            {data[imageKey].length > 500? (
               <img
-                src={`${imageValue}`}
-                alt={keyValue}
+                src={`${data[imageKey]}`}
+                alt={data[key]}
                 className="w-5 h-5 rounded-full"
               />
-              <p>{keyValue}</p>
-            </>
-          );
-        } else {
-          return (
-            <>
-              <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
-                <UserIcon color="#768294" size={15} />
-              </p>
-              <p>{keyValue}</p>
-            </>
-          );
-        }
+            ):
+            <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+          <UserIcon color="#768294" size={15}/> 
+        </p>
+            }
+            <p>{data[key]}</p>
+          </>
+        );
       }
     }
-    return "N/A"; // Return N/A if no match is found
+    return "Null" // Return null if no match is found
   };
-  
-  
-
-  console.log(data);
-  
 
   return (
     <div className="w-full  bg-white rounded-lg p-4">
@@ -215,11 +183,11 @@ const Table = <T extends object>({
         className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
         <table
-          className={`w-full border-collapse border text-left  ${
+          className={`w-full ${
             maxHeight && "table-fixed"
           }`}
         >
-          <thead
+          {/* <thead
             className={` bg-[#F6F9FC]  ${maxHeight && "z-40 sticky top-0"}`}
           >
             <tr>
@@ -234,29 +202,29 @@ const Table = <T extends object>({
                   {col.label}
                 </th>
               ))}
-              {!noAction && (
+              
                 <th className="border p-4 text-sm text-[#303F58] text-center font-medium">
                   Action
                 </th>
-              )}
+              
             </tr>
-          </thead>
+          </thead> */}
           <tbody>
             {paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 z-10">
-                  <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
+                  <td className="p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE] rounded-lg">
                     {(currentPage - 1) * rowsPerPage + rowIndex + 1}
                   </td>
                   {columns.map((col: any) => (
                     <td
                       key={String(col.key)}
-                      className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] "
+                      className=" p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE]"
                     >
                       <div className={`flex justify-start items-center gap-2 ${col.key=='status'?'justify-center':'justify-start'}`}>
                         {col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
-                        ) : ["userName", "user.userName", "amName"].includes(
+                        ) : ["userName", "rmName", "amName"].includes(
                             col.key
                           ) ? (
                           renderImageAndLabel(row)
@@ -265,44 +233,17 @@ const Table = <T extends object>({
                             {row[col.key]}
                           </p>
                         ) : (
-                          getNestedValue(row, col.key) || "N/A"
+                          getNestedValue(row, col.key) || "Null"
                         )}
                       </div>
                     </td>
                   ))}
-                  {!noAction && (
-                    <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
+                  
+                    <td className="p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE] rounded-lg">
                       <div className="flex justify-center gap-2">
-                        {actionList?.map((action, index) =>
-                          action.label === "edit" ? (
-                            <p
-                              key={index}
-                              className="cursor-pointer"
-                              onClick={() => action.function(row?._id)}
-                            >
-                              <PencilLine color="#4B5C79" size={16} />
-                            </p>
-                          ) : action.label === "view" ? (
-                            <p
-                              key={index}
-                              className="cursor-pointer"
-                              onClick={() => action.function(1)}
-                            >
-                              <Eye color="#4B5C79" size={16} />
-                            </p>
-                          ) : action.label === "delete" ? (
-                            <p
-                              key={index}
-                              className="cursor-pointer"
-                              onClick={() => action.function(row?._id)}
-                            >
-                              <Trash color="#4B5C79" size={16} />
-                            </p>
-                          ) : "N/A"
-                        )}
+                        <Button  variant="tertiary">Upgrade</Button>
                       </div>
                     </td>
-                  )}
                 </tr>
               ))
             ) : (
@@ -319,7 +260,7 @@ const Table = <T extends object>({
         </table>
       </div>
 
-      {!noPagination && (
+      
         <div className="flex justify-between items-center mt-4">
           <div className="text-xs text-[#71736B] font-medium flex gap-2">
             Showing {currentPage} of {totalPages || 1}
@@ -358,9 +299,9 @@ const Table = <T extends object>({
             </select>
           </div>
         </div>
-      )}
+    
     </div>
   );
 };
 
-export default Table;
+export default LicensersTable;

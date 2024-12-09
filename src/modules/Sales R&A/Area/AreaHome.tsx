@@ -46,7 +46,8 @@ const AreaHome = () => {
       if(response && !error){
         const transformedAreas = response.data.areas?.map((area:any) => ({
           ...area,
-          createdAt: new Date(area.createdAt).toISOString().split('T')[0], // Extracts the date part
+          createdAt: new Date(area.createdAt)
+            .toLocaleDateString("en-GB") // Extracts the date part
         }));
         
         // Then set the transformed regions into state
