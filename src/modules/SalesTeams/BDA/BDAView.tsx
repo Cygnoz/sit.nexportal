@@ -13,6 +13,8 @@ import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import AwardIcon from "../../../assets/icons/AwardIcon";
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
+import LicensersTable from "../../../components/ui/LicensersTable";
+import { BDAData } from "../../../Interfaces/BDA";
 
 interface BDAViewData {
   leadId:string;
@@ -22,6 +24,15 @@ interface BDAViewData {
   origin:string;
   assignedDate:string;
   status: string;
+}
+
+interface Licencer {
+  name: string;
+  plan: string;
+  status: string;
+  startDate: string;
+  endDate: string;
+  action: string;
 }
 
 
@@ -66,15 +77,25 @@ const BDAView = ({}: Props) => {
   ];
   
 
-  const LicencerData = [
-    { plan: "1", name: "John Doe", startDate: "2024-01-01", endDate: "2024-12-31", status: "Active", buttonValue: "Renew" },
-    { plan: "2", name: "Jane Smith", startDate: "2023-06-15", endDate: "2024-06-14", status: "Expired", buttonValue: "Renew" },
-    { plan: "1", name: "Robert Brown", startDate: "2024-03-01", endDate: "2025-02-28", status: "Active", buttonValue: "Renew" },
-    { plan: "3", name: "Emily Clark", startDate: "2023-11-20", endDate: "2024-11-19", status: "Pending Renewal", buttonValue: "Upgrade" },
-    { plan: "2", name: "Jessica Davis", startDate: "2023-08-05", endDate: "2024-08-04", status: "Expired", buttonValue: "Renew" }
+  const LicencerData:Licencer[] = [
+    { name: "Albert Flores", plan: "Plan 1", status: "Active", startDate: "2023-01-01", endDate: "2024-01-01", action: "Renew" },
+    { name: "Devon Lane", plan: "Plan 1", status: "Expired", startDate: "2023-01-01", endDate: "2024-01-01", action: "Upgrade" },
+    { name: "Theresa Webb", plan: "Plan 3", status: "Upcoming Renewal", startDate: "2023-01-01", endDate: "2024-01-01", action: "Upgrade" },
+    { name: "Devon Lane", plan: "Plan 1", status: "Expired", startDate: "2023-01-01", endDate: "2024-01-01", action: "Upgrade" },
+    { name: "Theresa Webb", plan: "Plan 2", status: "Upcoming Renewal", startDate: "2023-01-01", endDate: "2024-01-01", action: "Upgrade" },
+    { name: "Albert Flores", plan: "Plan 1", status: "Active", startDate: "2023-01-01", endDate: "2024-01-01", action: "Renew" }
   ];
 
-const {id}=useParams()
+  const licenserColumns: { key: keyof Licencer; label: string }[] = [
+    { key: "name", label: "Name" },
+    { key: "plan", label: "Plan" },
+    { key: "status", label: "Status" },
+    { key: "startDate", label: "Start Date" },
+    { key: "endDate", label: "End Date" },
+    { key: "action", label: "Action" }
+  ];
+
+  const {id}=useParams()
   return (
     <div>
        <div className="flex items-center text-[16px] my-2 space-x-2">
@@ -199,13 +220,12 @@ const {id}=useParams()
       <GraphTable/>
 
         {/* Licenser Card */}
-        <div className="py-2">
-        <Licensers headerContents={{
-          title: 'Licensers handled by BDA',
-          search: { placeholder: 'Search License by Name or Holder Name' }
+        <div>
+        <LicensersTable<Licencer> data={LicencerData} columns={licenserColumns} headerContents={{
+          title:'Licensers handled by BDA',
+          search:{placeholder:'Search License by Name or Holder Name'},
         }}
-          cardContents={LicencerData}
-        />
+         />
       </div>
 
 

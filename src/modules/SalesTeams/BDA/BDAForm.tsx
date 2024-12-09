@@ -28,19 +28,19 @@ interface BDAProps {
 }
 
 const baseSchema = {
-  fullName: Yup.string().required("Full name is required"),
-  phone: Yup.string()
+  userName: Yup.string().required("Full name is required"),
+  phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  loginEmail: Yup.string()
+  email: Yup.string()
     .required("Email required")
     .email("Invalid work email"),
   workEmail: Yup.string().email(),
-  email: Yup.string().email(),
+  PersonalEmail: Yup.string().email(),
   age: Yup.number()
     .nullable()
     .transform((value, originalValue) =>
-      originalValue === "" ? null : value
+      originalValue === "" ?null : value
     ),
 };
 
@@ -86,8 +86,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
 
   const onSubmit: SubmitHandler<BDAData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
-    console.log("Form Data:", data);
-  
     if(submit){
       try {
         const fun = editId ? editBDA : addBDA; // Select the appropriate function based on editId
@@ -132,9 +130,9 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     let fieldsToValidate: any[] = [];
 
     if (tab === "Personal Information") {
-      fieldsToValidate = ["fullName", "phone"];
+      fieldsToValidate = ["userName", "phoneNo"];
     } else if (tab === "Company Information") {
-      fieldsToValidate = ["loginEmail", !editId&&"password", !editId&&"confirmPassword"];
+      fieldsToValidate = ["email", !editId&&"password", !editId&&"confirmPassword"];
     }
 
     const isValid = fieldsToValidate.length
@@ -240,7 +238,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setValue("image", base64String);
+        setValue("userImage", base64String);
       };
       reader.readAsDataURL(file);
     }
@@ -250,7 +248,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     e.stopPropagation(); // Prevent click propagation
 
     // Clear the leadImage value
-    setValue("image", "");
+    setValue("userImage", "");
   };
   
   const setFormValues = (data: BDAData) => {
@@ -263,27 +261,35 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     try {
       const { response, error } = await getBDA(`${endPoints.BDA}/${editId}`);
       if (response && !error) {
-        const BDA:any= response.data; // Return the fetched data
+        const BDA = response.data; // Return the fetched data
+        console.log("Fetched BDA data:", BDA);
+  
+        const { user,_id, ...bda } = BDA;
+  
         const transformedBDA = BDA ? {
-          ...BDA,
+          ...bda,
           dateOfJoining: new Date(BDA.dateOfJoining).toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
-          fullName:BDA.user?.userName,
-          phone:BDA.user?.phoneNo,
-          loginEmail:BDA.user?.email,
-          image:BDA.user?.userImage,
-          region:BDA.region?._id,
-          area:BDA.area?._id,
-          commission:BDA.commission?._id
+          userName: user?.userName,
+          phoneNo: user?.phoneNo,
+          email: user?.email,
+          userImage: user?.userImage,
+          region: BDA.region?._id,
+          area: BDA.area?._id,
+          commission: BDA.commission?._id
         } : null;
-        setFormValues(transformedBDA)
+  
+        console.log("Transformed BDA data:", transformedBDA);
+  
+        setFormValues(transformedBDA);
       } else {
         // Handle the error case if needed (for example, log the error)
-        console.error('Error fetching data:', error);
+        console.error('Error fetching BDA data:', error);
       }
     } catch (err) {
-      console.error('Error fetching areas:', err);
+      console.error('Error fetching BDA data:', err);
     }
   };
+  
   
   useEffect(() => {
     getOneBDA()
@@ -355,9 +361,9 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                     onChange={handleFileChange}
                     //   onChange={(e) => handleFileUpload(e)}
                   />
-                  <ImagePlaceHolder uploadedImage={watch("image")} />
+                  <ImagePlaceHolder uploadedImage={watch("userImage")} />
                 </label>
-                {watch("image") && (
+                {watch("userImage") && (
                   <div
                     onClick={handleRemoveImage} // Remove image handler
                     className="flex "
@@ -374,24 +380,24 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   required
                   placeholder="Enter Full Name"
                   label="Full Name"
-                  error={errors.fullName?.message}
-                  {...register("fullName")}
+                  error={errors.userName?.message}
+                  {...register("userName")}
                 />
                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
-                  error={errors.email?.message}
-                  {...register("email")}
+                  error={errors.personalEmail?.message}
+                  {...register("personalEmail")}
                 />
                 <CustomPhoneInput
                   required
                   placeholder="Phone"
                   label="Phone"
-                  error={errors.phone?.message}
-                  value={watch("phone")} // Watch phone field for changes
+                  error={errors.phoneNo?.message}
+                  value={watch("phoneNo")} // Watch phone field for changes
                   onChange={(value) => {
-                    handleInputChange("phone");
-                    setValue("phone", value); // Update the value of the phone field in React Hook Form
+                    handleInputChange("phoneNo");
+                    setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}
                 />
                 <div className="flex gap-4 w-full">
@@ -479,8 +485,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   type="email"
                   placeholder="Enter Email"
                   label="Email"
-                  error={errors.loginEmail?.message}
-                  {...register("loginEmail")}
+                  error={errors.email?.message}
+                  {...register("email")}
                 />
                {!editId&& 
                <>
@@ -658,8 +664,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                       <ViewIcon size="13" color="#565148" />
                       View
                     </Button>
-                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
                   </div>
                 </div>
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">
@@ -678,8 +682,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                       <ViewIcon size="13" color="#565148" />
                       View
                     </Button>
-                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
                   </div>
                 </div>
               </div>

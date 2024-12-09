@@ -23,13 +23,7 @@ interface AMData {
 }
 
 
-type Props = {
-  headerContents: {
-    title?: string;
-    search?: { placeholder: string };
-  };
-
-}
+type Props = {}
 
 const AMView = ({ }: Props) => {
 

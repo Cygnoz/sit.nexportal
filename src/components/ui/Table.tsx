@@ -14,7 +14,7 @@ import UserIcon from "../../assets/icons/UserIcon";
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
   { key: "rmName", imageKey: "rmImage" },
-  {key:'user.userName',imageKey:"user.userImage"}
+  { key: "user.userName", imageKey: "user.userImage" },
 ];
 
 interface TableProps<T> {
@@ -52,7 +52,7 @@ const Table = <T extends object>({
 
   // Filter data based on the search value
   const filteredData = useMemo(() => {
-    return data.filter((row) =>
+    return data?.filter((row) =>
       Object.values(row).some((value) =>
         String(value).toLowerCase().includes(searchValue.toLowerCase())
       )
@@ -62,10 +62,10 @@ const Table = <T extends object>({
   // Paginate the filtered data
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return filteredData.reverse().slice(start, start + rowsPerPage);
+    return filteredData?.reverse().slice(start, start + rowsPerPage);
   }, [filteredData, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredData?.length / rowsPerPage);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -99,6 +99,10 @@ const Table = <T extends object>({
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
       case "Low":
         return "bg-blue-300 text-white py-2 px-2 rounded-lg";
+      case "Resolved":
+        return "bg-green-200 text-black py-2 px-2 rounded-lg";
+      case "Paid":
+        return "bg-[#EDE7FB] text-black py-2 px-2 rounded-lg";
       default:
         return "";
     }
@@ -121,21 +125,25 @@ const Table = <T extends object>({
           <p>India</p>
         </>
       );
-    } else if (key =="United Arab Emirates") {
+    } else if (key == "United Arab Emirates") {
       return (
         <>
           <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full" />
           <p>UAE</p>
         </>
       );
-    }else  {
+    } else {
       return (
         <>
-          <img src={SaudhiLogo} alt="Saudi Arabia" className="w-5 h-5 rounded-full" />
+          <img
+            src={SaudhiLogo}
+            alt="Saudi Arabia"
+            className="w-5 h-5 rounded-full"
+          />
           <p>Saudi</p>
         </>
       );
-    } 
+    }
   };
 
   // Render table header
@@ -173,7 +181,7 @@ const Table = <T extends object>({
     for (const { key, imageKey } of ImageAndLabel) {
       const keyValue = getNestedValue(data, key); // Get the value for key, possibly nested
       const imageValue = getNestedValue(data, imageKey); // Get the value for imageKey, possibly nested
-  
+
       if (keyValue) {
         if (imageValue && imageValue.length > 500) {
           return (
@@ -200,11 +208,7 @@ const Table = <T extends object>({
     }
     return "N/A"; // Return N/A if no match is found
   };
-  
-  
 
-  console.log(data);
-  
 
   return (
     <div className="w-full  bg-white rounded-lg p-4">
@@ -229,7 +233,9 @@ const Table = <T extends object>({
               {columns.map((col) => (
                 <th
                   key={String(col.key)}
-                  className={`border p-4 text-sm  text-[#303F58] font-medium ${col.key=='status'&&'text-center'}`}
+                  className={`border p-4 text-sm  text-[#303F58] font-medium ${
+                    col.key == "status" && "text-center"
+                  }`}
                 >
                   {col.label}
                 </th>
@@ -242,7 +248,7 @@ const Table = <T extends object>({
             </tr>
           </thead>
           <tbody>
-            {paginatedData.length > 0 ? (
+            {paginatedData?.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 z-10">
                   <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
@@ -253,7 +259,13 @@ const Table = <T extends object>({
                       key={String(col.key)}
                       className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] "
                     >
-                      <div className={`flex justify-start items-center gap-2 ${col.key=='status'?'justify-center':'justify-start'}`}>
+                      <div
+                        className={`flex justify-start items-center gap-2 ${
+                          col.key == "status"
+                            ? "justify-center"
+                            : "justify-start"
+                        }`}
+                      >
                         {col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
                         ) : ["userName", "user.userName", "amName"].includes(
@@ -298,7 +310,9 @@ const Table = <T extends object>({
                             >
                               <Trash color="#4B5C79" size={16} />
                             </p>
-                          ) : "N/A"
+                          ) : (
+                            "N/A"
+                          )
                         )}
                       </div>
                     </td>

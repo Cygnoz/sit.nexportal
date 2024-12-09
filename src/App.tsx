@@ -11,7 +11,7 @@ import AreaView from './modules/Sales R&A/Area/AreaView';
 import RegionHome from './modules/Sales R&A/Region/RegionHome';
 import RegionView from './modules/Sales R&A/Region/RegionView';
 import AMHome from './modules/SalesTeams/AreaManager/AMHome';
-import AMView from './modules/SalesTeams/AreaManager/AMView';
+
 import BDAHome from './modules/SalesTeams/BDA/BDAHome';
 import BDAView from './modules/SalesTeams/BDA/BDAView';
 import RMHome from './modules/SalesTeams/RegionManager/RMHome';
@@ -31,7 +31,8 @@ import NoAccess from './context/NoAccess';
 import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
 import { useRole } from './context/RoleContext';
 import TrialView from './modules/Customers/Trial/TrialView';
-import LicenserView from './modules/Customers/Licensor/LicenserView';
+import LicenserView from './modules/Customers/Licensor/view/LicenserView';
+import AMView from './modules/SalesTeams/AreaManager/AMView';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
