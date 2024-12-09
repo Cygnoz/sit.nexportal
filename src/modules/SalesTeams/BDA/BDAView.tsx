@@ -1,20 +1,18 @@
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 // import Button from "../../../components/ui/Button";
-import Licensers from "../../../components/ui/Licensers";
-import Table from "../../../components/ui/Table";
-import ViewCard from "../../../components/ui/ViewCard"
-import GraphTable from "./GraphTable";
-import backGroundView from '../../../assets/image/BDAView.png'
-import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
-import profileImage from '../../../assets/image/AvatarImg.png'
-import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import AwardIcon from "../../../assets/icons/AwardIcon";
-import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
+import ChevronRight from "../../../assets/icons/ChevronRight";
+import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
+import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
+import profileImage from '../../../assets/image/AvatarImg.png';
+import backGroundView from '../../../assets/image/BDAView.png';
 import LicensersTable from "../../../components/ui/LicensersTable";
-import { BDAData } from "../../../Interfaces/BDA";
+import Table from "../../../components/ui/Table";
+import ViewCard from "../../../components/ui/ViewCard";
+import GraphTable from "./GraphTable";
 
 interface BDAViewData {
   leadId:string;

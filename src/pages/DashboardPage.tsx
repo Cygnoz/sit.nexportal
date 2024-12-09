@@ -1,9 +1,7 @@
 import AreaIcon from "../assets/icons/AreaIcon";
-import AreaManagerIcon from "../assets/icons/AreaMangerIcon";
 import FileCheck from "../assets/icons/FileCheck";
 import RowsIcon from "../assets/icons/RowsIcon";
 import TreePain from "../assets/icons/TreePain";
-import UserIcon from "../assets/icons/UserIcon";
 import Wallet from "../assets/icons/Wallet";
 import HomeCard from "../components/ui/HomeCards";
 

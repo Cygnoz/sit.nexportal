@@ -26,32 +26,43 @@ import { useRegularApi } from "../../../context/ApiContext";
 
 interface AddAreaManagerProps {
   onClose: () => void; // Prop for handling modal close
+  editId?:string
 }
 
-const validationSchema = Yup.object({
-  fullName: Yup.string().required("Full name is required"),
-  phone: Yup.string()
+const baseSchema = {
+  userName: Yup.string().required("Full name is required"),
+  phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  loginEmail: Yup.string()
-    .email("Invalid email address")
-    .required("Login Email is required"),
+    email: Yup.string()
+    .required("Email required")
+    .email("Invalid work email"),
+  workEmail: Yup.string().email(),
+  personalEmail: Yup.string().email(),
+  age: Yup.number()
+    .nullable()
+    .transform((value, originalValue) =>
+      originalValue === "" ? null : value
+    ),
+};
+
+const addValidationSchema = Yup.object().shape({
+  ...baseSchema,
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
-    age: Yup.number()
-    .nullable() // Allows null values
-    .transform((value, originalValue) =>
-      originalValue === "" ? null : value // Converts empty string to null
-    )
+});
+
+const editValidationSchema = Yup.object().shape({
+  ...baseSchema,
 });
 
 
 
-const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
+const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
   const {
     register,
     handleSubmit,
@@ -61,12 +72,14 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
     setValue,
     formState: { errors },
   } = useForm<AMData>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
   });
 
   const { request: addAM } = useApi("post", 3002);
+  const { request: editAM } = useApi("put", 3002);
+  const {request:getAM}=useApi('get',3002);
   const [submit, setSubmit] = useState(false);
-  const {allAreas,allRegions, allContries,allWC}=useRegularApi()
+  const {allAreas,allRegions, allCountries, allWc}=useRegularApi()
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -83,24 +96,36 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
     
     console.log(data);
 
-    if (submit) {
-      try {
-        const { response, error } = await addAM(endPoints.AM, data);
-        console.log("res", response);
-        console.log("err", error);
-        if (response && !error) {
-          toast.success(response.data.message);
-          onClose();
-          setSubmit(false);
+    if(submit){
+      try{
+  const fun = editId ? editAM : addAM; // Select the appropriate function based on editId
+        let response, error;
+    
+        if (editId) {
+          // Call editBDA if editId exists
+          ({ response, error } = await fun(`${endPoints.GET_ALL_AM}/${editId}`, data));
         } else {
-          toast.error(error.response.data.message);
+          // Call addBDA if editId does not exist
+          ({ response, error } = await fun(endPoints.AM, data));
         }
-      } catch (err) {
-        console.error("Error submitting region data:", err);
-        toast.error("An unexpected error occurred.");
+    
+        console.log("Response:", response);
+        console.log("Error:", error);
+    
+        if (response && !error) {
+          toast.success(response.data.message); // Show success toast
+          onClose(); // Close the form/modal
+        } else {
+          toast.error(error.response.data.message); // Show error toast
+        }
+      }
+      catch(err){
+        console.error("Error submitting AM data:", err);
+         toast.error("An unexpected error occurred."); // Handle unexpected errors
       }
     }
   };
+  
 
   const tabs = [
     "Personal Information",
@@ -116,9 +141,9 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
     let fieldsToValidate: any[] = [];
 
     if (tab === "Personal Information") {
-      fieldsToValidate = ["fullName", "phone"];
+      fieldsToValidate = ["userName", "phoneNo"];
     } else if (tab === "Company Information") {
-      fieldsToValidate = ["loginEmail", "password", "confirmPassword"];
+      fieldsToValidate = ["email", !editId&&"password", !editId&&"confirmPassword"];
     }
 
     const isValid = fieldsToValidate.length
@@ -140,41 +165,41 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose }) => {
 
   useEffect(() => {
     // Map the regions into the required format for regions data
-    const filteredRegions = allRegions.map((region:any) => ({
+    const filteredRegions = allRegions?.map((region:any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
  
     // Set the data object with updated regions
-    setData((prevData) => ({ ...prevData, regions: filteredRegions }));
+    setData((prevData:any) => ({ ...prevData, regions: filteredRegions }));
   }, [allRegions]);
  
   useEffect(() => {
     // Filter areas based on the selected region
-    const filteredAreas = allAreas.filter((area:any) => area.region?._id === watch("region"));
+    const filteredAreas = allAreas?.filter((area:any) => area.region?._id === watch("region"));
  
     // Map the filtered areas to the required format
-    const transformedAreas = filteredAreas.map((area:any) => ({
+    const transformedAreas = filteredAreas?.map((area:any) => ({
 label: area.areaName,
       value: String(area._id), // Ensure `value` is a string
     }));
  
     // Set the data object with updated areas
-    setData((prevData) => ({ ...prevData, areas: transformedAreas }));
+    setData((prevData:any) => ({ ...prevData, areas: transformedAreas }));
   }, [watch("region"), allAreas]); // Re-run when either selected region or allAreas changes
 
   useEffect(() => {
-    const filteredCountries = allContries?.map((items: any) => ({
+    const filteredCountries = allCountries?.map((items: any) => ({
       label: items.name,
       value: String(items.name), // Ensure `value` is a string
     }));
-    setData((prevData) => ({ ...prevData, country: filteredCountries }));
-  }, [allContries])
+    setData((prevData:any) => ({ ...prevData, country: filteredCountries }));
+  }, [allCountries])
 
   useEffect(() => {
     const selectedCountry = watch("country");
     if (selectedCountry) {
-      const filteredAreas = allContries.filter(
+      const filteredAreas = allCountries.filter(
         (country:any) => country.name === selectedCountry
       );
  
@@ -186,15 +211,15 @@ label: area.areaName,
       );
       setData((prevData) => ({ ...prevData, state: transformedState }));
     }
-  }, [watch("country"), allContries]);
+  }, [watch("country"), allCountries]);
   useEffect(() => {
-    const filteredCommissions = allWC?.map((commission: any) => ({
+    const filteredCommissions = allWc?.map((commission: any) => ({
       label: commission.profileName,
       value: String(commission._id), // Ensure `value` is a string
     }));
-    setData((prevData) => ({ ...prevData, workerCommission: filteredCommissions }));
+    setData((prevData:any) => ({ ...prevData, workerCommission: filteredCommissions }));
 
-  }, [allWC])
+  }, [allWc])
 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -203,7 +228,7 @@ label: area.areaName,
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setValue("image", base64String);
+        setValue("userImage", base64String);
       };
       reader.readAsDataURL(file);
     }
@@ -213,11 +238,51 @@ label: area.areaName,
     e.stopPropagation(); // Prevent click propagation
 
     // Clear the leadImage value
-    setValue("image", "");
+    setValue("userImage", "");
   };
   const handleInputChange = (field: keyof AMData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
+
+  const setFormValues = (data: AMData) => {
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof AMData, data[key as keyof AMData]);
+    });
+  };
+
+
+  const getOneAM = async()=>{
+    try{
+      const { response, error } = await getAM(`${endPoints.GET_ALL_AM}/${editId}`);
+          if (response && !error) {
+            const AM:any= response.data; // Return the fetched data
+            const { user,_id, ...am } = AM;
+            const transformedAM = AM ? {
+              ...am,
+              dateOfJoining: new Date(AM.dateOfJoining).toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
+              userName:user?.userName,
+              phoneNo:user?.phoneNo,
+              email:user?.email,
+              userImage:user?.userImage,
+              region:AM.region?._id,
+              area:AM.area?._id,
+              commission:AM.commission?._id
+            } : null;
+            setFormValues(transformedAM)
+          } else {
+            // Handle the error case if needed (for example, log the error)
+            console.error('Error fetching data:', error);
+          }
+    }
+    catch(err){
+      console.error('Error fetching areas:', err);      
+    }
+  }
+
+  useEffect(() => {
+       getOneAM()
+   }, [editId]); // Trigger the effect when editId changes
+
 
   return (
     <div className="p-5 bg-white rounded shadow-md">
@@ -225,11 +290,12 @@ label: area.areaName,
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-lg font-bold text-deepStateBlue ">
-            Create Area Manager
+          {editId?'Edit':'Create'} Area Manager
           </h1>
           <p className="text-ashGray text-sm">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt
+          {`Use this form to ${
+              editId ? "edit an existing AM" : "add a new AM"
+            } details. Please fill in the required information`}
           </p>
         </div>
         <button
@@ -283,9 +349,9 @@ label: area.areaName,
                     onChange={handleFileChange}
                     //   onChange={(e) => handleFileUpload(e)}
                   />
-                  <ImagePlaceHolder uploadedImage={watch("image")} />
+                  <ImagePlaceHolder uploadedImage={watch("userImage")} />
                 </label>
-                {watch("image") && (
+                {watch("userImage") && (
                   <div
                     onClick={handleRemoveImage} // Remove image handler
                     className="flex "
@@ -301,23 +367,23 @@ label: area.areaName,
                   required
                   placeholder="Enter Full Name"
                   label="Full Name"
-                  error={errors.fullName?.message}
-                  {...register("fullName")}
+                  error={errors.userName?.message}
+                  {...register("userName")}
                 />
                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
-                  error={errors.email?.message}
-                  {...register("email")}
+                  error={errors.personalEmail?.message}
+                  {...register("personalEmail")}
                 />
                <CustomPhoneInput
                   label="Phone Number"
                   required
-                  error={errors.phone?.message}
+                  error={errors.phoneNo?.message}
                   placeholder="Enter phone number"
                   onChange={(value) => {
-                    handleInputChange("phone");
-                    setValue("phone", value); // Update the value of the phone field in React Hook Form
+                    handleInputChange("phoneNo");
+                    setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}/>
                 <div className="flex gap-4 w-full">
                   <Input
@@ -384,6 +450,7 @@ label: area.areaName,
                   label="Date of Joining"
                   error={errors.dateOfJoining?.message}
                   {...register("dateOfJoining")}
+                  value={watch('dateOfJoining')?watch('dateOfJoining'):new Date().toISOString().split("T")[0]} // Sets current date as defau
                 />
               </div>
             </div>
@@ -399,10 +466,12 @@ label: area.areaName,
                   required
                   placeholder="Enter Email"
                   label="Email"
-                  error={errors.loginEmail?.message}
-                  {...register("loginEmail")}
+                  error={errors.email?.message}
+                  {...register("email")}
                 />
-                <Input
+               {!editId&& 
+               <>
+               <Input
                   required
                   placeholder="Enter Password"
                   label="Create Password"
@@ -416,6 +485,9 @@ label: area.areaName,
                   error={errors.confirmPassword?.message}
                   {...register("confirmPassword")}
                 />
+               </>
+               }
+                
               </div>
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
@@ -426,8 +498,7 @@ label: area.areaName,
                   {...register("workEmail")}
                 />
                  <CustomPhoneInput
-                  label="Phone Number"
-                  required
+                  label="Work Phone"
                   error={errors.workPhone?.message}
                   placeholder="Enter phone number"
                   onChange={(value) => {

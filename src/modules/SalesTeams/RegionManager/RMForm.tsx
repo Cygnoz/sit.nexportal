@@ -25,55 +25,49 @@ import toast from "react-hot-toast";
 import { useRegularApi } from "../../../context/ApiContext";
 
 
-// interface RegionData {
-//   label: string;
-//   value: string;
-// }
 
-// interface WCData {
-//   label: string;
-//   value: string;
-// }
 
-// interface Counrty{
-//   label: string;
-//   value: string;
-
-// }
-
-interface AddRegionalManagerProps {
+interface RMProps {
   onClose: () => void;
+  editId?: string
 }
-
-const validationSchema = Yup.object({
-  fullName: Yup.string().required("Full name is required"),
-
-  phone: Yup.string()
+const baseSchema = {
+  userName: Yup.string().required("Full name is required"),
+  phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  loginEmail: Yup.string()
-    .email("Invalid email address")
-    .required("Login Email.is required"),
+  email: Yup.string()
+    .required("Email required")
+    .email("Invalid work email"),
+  workEmail: Yup.string().email(),
+  personalEmail: Yup.string().email(),
+  age: Yup.number()
+    .nullable()
+    .transform((value, originalValue) =>
+      originalValue === "" ? null : value
+    ),
+};
+
+const addValidationSchema = Yup.object().shape({
+  ...baseSchema,
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
-  age: Yup.number()
-    .nullable() // Allows null values
-    .transform((value, originalValue) =>
-      originalValue === "" ? null : value // Converts empty string to null
-    ),
 });
 
-const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
+const editValidationSchema = Yup.object().shape({
+  ...baseSchema,
+});
+
+const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const { request: addRM } = useApi("post", 3002);
-  const { allRegions, allWC, allContries } = useRegularApi()
+  const { allRegions, allWc, allCountries } = useRegularApi()
+  const { request: editRM } = useApi("put", 3002);
+  const { request: getRM } = useApi('get', 3002);
 
-
-  //const { request: editRM } = useApi('put', 3002)
- 
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -100,40 +94,49 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     setValue,
     watch,
   } = useForm<RMData>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
   const onSubmit: SubmitHandler<RMData> = async (data) => {
     console.log(data);
     if (submit) {
       try {
-        const apiCall = addRM;
-        const { response, error } = await apiCall(endPoints.RM, data);
-        console.log("res", response);
-        console.log("err", error);
+        const fun = editId ? editRM : addRM; // Select the appropriate function based on editId
+        let response, error;
+
+        if (editId) {
+          // Call editRM if editId exists
+          ({ response, error } = await fun(`${endPoints.GET_ALL_RM}/${editId}`, data));
+        } else {
+          // Call addRM if editId does not exist
+          ({ response, error } = await fun(endPoints.RM, data));
+        }
+
+        console.log("Response:", response);
+        console.log("Error:", error);
 
         if (response && !error) {
-          toast.success(response.data.message);
-          onClose();
-          setSubmit(false);
+          toast.success(response.data.message); // Show success toast
+          onClose(); // Close the form/modal
         } else {
-          toast.error(error.response.data.message);
+          toast.error(error.response.data.message); // Show error toast
         }
       } catch (err) {
-        console.error("Error submitting region manager data:", err);
-        toast.error("An unexpected error occurred.");
+        console.error("Error submitting RM data:", err);
+        toast.error("An unexpected error occurred."); // Handle unexpected errors
       }
     }
   };
+
 
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
 
     if (tab === "Personal Information") {
-      fieldsToValidate = ["fullName", "phone"];
+      fieldsToValidate = ["userName", "phoneNo"];
     } else if (tab === "Company Information") {
-      fieldsToValidate = ["loginEmail", "Password", "confirmPassword"];
+      fieldsToValidate = ["email", "Password", "confirmPassword"];
     }
 
     const isValid = fieldsToValidate.length
@@ -158,80 +161,72 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
- 
 
 
- 
-
- 
 
 
+
+
+
+
+  // UseEffect for updating regions
   useEffect(() => {
-    // Map the regions into the required format for regions data
-    const filteredRegions = allRegions.map((region: any) => ({
+    const filteredRegions = allRegions?.map((region: any) => ({
+      value: String(region._id),
       label: region.regionName,
-      value: String(region._id), // Ensure `value` is a string
     }));
-    // Set the data object with updated regions
-    setData((prevData) => ({ ...prevData, regions: filteredRegions }));
+    // Update the state without using previous `data` state
+    setData((prevData: any) => ({
+      ...prevData,
+      regions: filteredRegions,
+    }));
+  }, [allRegions]);
 
-}, [allRegions]);
-
-  
 
 
+  // UseEffect for updating wc
   useEffect(() => {
-    const filteredCommissions = allWC?.map((commission: any) => ({
+    const filteredCommission = allWc?.map((commission: any) => ({
       label: commission.profileName,
-      value: String(commission._id), // Ensure `value` is a string
+      value: String(commission._id),
     }));
-    setData((prevData) => ({ ...prevData, workerCommission: filteredCommissions }));
 
-  }, [allWC])
+    // Update wc
+    setData((prevData: any) => ({
+      ...prevData,
+      workerCommission: filteredCommission,
+    }));
+  }, [allWc]);
 
-  console.log(allWC);
+
+
+
 
   useEffect(() => {
-    const filteredCountries = allContries?.map((items: any) => ({
+    const filteredCountries = allCountries?.map((items: any) => ({
       label: items.name,
       value: String(items.name), // Ensure `value` is a string
     }));
-    setData((prevData) => ({ ...prevData, country: filteredCountries }));
-  }, [allContries])
+    setData((prevData: any) => ({ ...prevData, country: filteredCountries }));
+  }, [allCountries])
 
-
-  useEffect(() => {
-    // Filter states based on the selected country
-    const filteredAreas = allContries.filter((state:any) => state.countries?.name === watch("country"));
-
-    // Map the filtered areas to the required format for areaData
-    const transformedAreas = filteredAreas.map((state:any) => ({
-      label: state.states,
-      value: String(state.states), // Ensure `value` is a string
-    }));
-    console.log(transformedAreas);
-
-    setData((prevData) => ({ ...prevData, state: transformedAreas }));
-  }, [watch("country")]);
-
-  // Effect to fetch and populate states based on selected country
+  // // Effect to fetch and populate states based on selected country
   useEffect(() => {
     const selectedCountry = watch("country");
     if (selectedCountry) {
-      const filteredAreas = allContries.filter(
+      const filteredStates = allCountries.filter(
         (country: any) => country.name === selectedCountry
       );
 
-      const transformedAreas = filteredAreas.flatMap((country: any) =>
+      const transformedStates = filteredStates.flatMap((country: any) =>
         country.states.map((state: any) => ({
           label: state,
           value: state,
         }))
       );
-
-      setData({ ...data, state: transformedAreas })
+      setData((prevData: any) => ({ ...prevData, state: transformedStates }));
     }
-  }, [watch("country"), allContries]);
+  }, [watch("country"), allCountries]);
 
 
 
@@ -241,7 +236,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setValue("image", base64String);
+        setValue("userImage", base64String);
       };
       reader.readAsDataURL(file);
     }
@@ -251,19 +246,58 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
     e.stopPropagation(); // Prevent click propagation
 
     // Clear the leadImage value
-    setValue("image", "");
+    setValue("userImage", "");
   };
+
+  const setFormValues = (data: RMData) => {
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof RMData, data[key as keyof RMData]);
+    });
+  };
+
+
+
+  const getOneRM = async () => {
+    try {
+      const { response, error } = await getRM(`${endPoints.GET_ALL_RM}/${editId}`);
+      if (response && !error) {
+        const RM: any = response.data; // Return the fetched data
+        const { user, _id, ...rm } = RM;
+        const transformedRM = RM ? {
+          ...rm,
+          dateOfJoining: new Date(RM.dateOfJoining).toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
+          userName: user?.userName,
+          phoneNo: user?.phoneNo,
+          email: user?.email,
+          userImage: user?.userImage,
+          region: RM.region?._id,
+          area: RM.area?._id,
+          commission: RM.commission?._id
+        } : null;
+        setFormValues(transformedRM)
+      } else {
+        // Handle the error case if needed (for example, log the error)
+        console.error('Error fetching data:', error);
+      }
+    } catch (err) {
+      console.error('Error fetching areas:', err);
+    }
+  };
+
+  useEffect(() => {
+    getOneRM()
+  }, [editId]); // Trigger the effect when editId changes
 
   return (
     <div className="p-5 bg-white rounded shadow-md  hide-scrollbar">
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-lg font-bold text-deepStateBlue ">
-            Create Regional Manager
-          </h1>
-          <p className="text-ashGray text-sm">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt
+
+          <h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Region Manager</h3>
+          <p className="text-[11px] text-[#8F99A9] mt-1">
+            {editId
+              ? "Edit the details of the region manager."
+              : "Fill in the details to create a new region manager."}
           </p>
         </div>
         <button
@@ -317,9 +351,9 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                     onChange={handleFileChange}
                   //   onChange={(e) => handleFileUpload(e)}
                   />
-                  <ImagePlaceHolder uploadedImage={watch("image")} />
+                  <ImagePlaceHolder uploadedImage={watch("userImage")} />
                 </label>
-                {watch("image") && (
+                {watch("userImage") && (
                   <div
                     onClick={handleRemoveImage} // Remove image handler
                     className="flex "
@@ -336,23 +370,23 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   required
                   placeholder="Enter Full Name"
                   label="Full Name"
-                  error={errors.fullName?.message}
-                  {...register("fullName")}
+                  error={errors.userName?.message}
+                  {...register("userName")}
                 />
                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
-                  error={errors.email?.message}
-                  {...register("email")}
+                  error={errors.personalEmail?.message}
+                  {...register("personalEmail")}
                 />
                 <CustomPhoneInput
                   label="Phone Number"
                   required
-                  error={errors.phone?.message}
+                  error={errors.phoneNo?.message}
                   placeholder="Enter phone number"
                   onChange={(value) => {
-                    handleInputChange("phone");
-                    setValue("phone", value); // Update the value of the phone field in React Hook Form
+                    handleInputChange("phoneNo");
+                    setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}
                 // Watch phone field for changes
                 />
@@ -423,6 +457,7 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   label="Date of Joining"
                   error={errors.dateOfJoining?.message}
                   {...register("dateOfJoining")}
+                  value={watch('dateOfJoining') ? watch('dateOfJoining') : new Date().toISOString().split("T")[0]} // Sets current date as default
                 />
               </div>
             </div>
@@ -436,23 +471,27 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                   required
                   placeholder="Enter Email"
                   label="Email"
-                  error={errors.loginEmail?.message}
-                  {...register("loginEmail")}
+                  error={errors.email?.message}
+                  {...register("email")}
                 />
-                <Input
-                  required
-                  placeholder="Create Password"
-                  label="Enter Password"
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-                <Input
-                  required
-                  placeholder="Confirm Password"
-                  label="Re-enter Password"
-                  error={errors.confirmPassword?.message}
-                  {...register("confirmPassword")}
-                />
+                {!editId &&
+                  <>
+                    <Input
+                      required
+                      placeholder="Enter Password"
+                      label="Create Password"
+                      error={errors.password?.message}
+                      {...register("password")}
+                    />
+                    <Input
+                      required
+                      placeholder="Re-enter Password"
+                      label="Confirm Password"
+                      error={errors.confirmPassword?.message}
+                      {...register("confirmPassword")}
+                    />
+                  </>
+                }
               </div>
 
               <div>
@@ -468,9 +507,8 @@ const RMForm: React.FC<AddRegionalManagerProps> = ({ onClose }) => {
                 />
                 <CustomPhoneInput
                   label="Phone Number"
-                  required
                   error={errors.workPhone?.message}
-                  {...register("workPhone")}
+                 
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("workPhone");

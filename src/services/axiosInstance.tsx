@@ -1,5 +1,4 @@
 import axios from "axios";
-import { useRole } from '../context/RoleContext';
 const BASE_URLS: Record<number, string> = {
   // 3003: import.meta.env.VITE_REACT_APP_ACCOUNTS,
   // 5002: import.meta.env.VITE_REACT_APP_CUSTOMERS,

@@ -18,6 +18,7 @@ import RMViewForm from "./RMViewForm";
 import BackgroundImage from "../../../assets/image/6.png";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
+import AwardIcon from "../../../assets/icons/AwardIcon";
 
 interface AreaData {
   areaCode: string;
@@ -148,9 +149,9 @@ const RMView = () => {
         <p className="font-bold text-[#303F58] "> {id}</p>
       </div>
 
-      <div className="flex items-center justify-between  bg-white rounded-lg  border border-gray-200">
+      <div className="flex items-center justify-between rounded-xl ">
         <div
-          className="grid grid-cols-12 gap-3 bg-cover"
+          className="grid grid-cols-12 gap-3 bg-cover rounded-xl p-2"
           style={{
             backgroundImage: `url(${BackgroundImage})`, // Use the imported image
           }}
@@ -196,7 +197,7 @@ const RMView = () => {
             <div>
               <div className="flex gap-4  text-[10px] py-2  text-white">
                 {/* Right Section: Managers and Actions */}
-                <div className="flex ms-16 mt-2">
+                <div className="flex ms-10 mt-2">
                   {/* Sales Managers */}
                   <div className=" text-end w-48">
                     <p className="text-xs text-[#D4D4D4] py-2">Role</p>
@@ -230,6 +231,13 @@ const RMView = () => {
                   </div>
                   <p className="text-center ms-3">View Details</p>
                 </div>
+
+                <div className="flex flex-col  items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+                <AwardIcon size={40} color="#D52B1E4D" />
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
+            </div>
 
                 <div className="flex flex-col  items-center space-y-1">
                   <div className="w-8 h-8 mb-2 rounded-full">
