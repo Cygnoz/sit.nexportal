@@ -7,7 +7,7 @@ import Trash from "../../assets/icons/Trash";
 import SearchBar from "./SearchBar";
 import SortBy from "./SortBy";
 import IndiaLogo from "../../assets/image/IndiaLogo.png";
-import UKLogo from "../../assets/image/UKLogo.webp";
+import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
 import UserIcon from "../../assets/icons/UserIcon";
 
@@ -120,21 +120,21 @@ const Table = <T extends object>({
           <p>India</p>
         </>
       );
-    } else if (key == "UK") {
-      return (
-        <>
-          <img src={UKLogo} alt="UK" className="w-5 h-5 rounded-full" />
-          <p>UK</p>
-        </>
-      );
-    } else {
+    } else if (key =="United Arab Emirates") {
       return (
         <>
           <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full" />
           <p>UAE</p>
         </>
       );
-    }
+    }else  {
+      return (
+        <>
+          <img src={SaudhiLogo} alt="Saudi Arabia" className="w-5 h-5 rounded-full" />
+          <p>Saudi</p>
+        </>
+      );
+    } 
   };
 
   // Render table header
@@ -170,27 +170,33 @@ const Table = <T extends object>({
 
   const renderImageAndLabel = (data: any) => {
     for (const { key, imageKey } of ImageAndLabel) {
-      if (data[key] && data[imageKey]) {
-        return (
-          <>
-            {data[imageKey].length > 500? (
+      if (data[key]) {
+        if (data[imageKey] && data[imageKey].length > 500) {
+          return (
+            <>
               <img
                 src={`${data[imageKey]}`}
                 alt={data[key]}
                 className="w-5 h-5 rounded-full"
               />
-            ):
-            <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
-          <UserIcon color="#768294" size={15}/> 
-        </p>
-            }
-            <p>{data[key]}</p>
-          </>
-        );
+              <p>{data[key]}</p>
+            </>
+          );
+        } else {
+          return (
+            <>
+              <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+                <UserIcon color="#768294" size={15} />
+              </p>
+              <p>{data[key]}</p>
+            </>
+          );
+        }
       }
     }
-    return "Null" // Return null if no match is found
+    return "N/A"; // Return N/A if no match is found
   };
+  
 
   return (
     <div className="w-full  bg-white rounded-lg p-4">
@@ -251,7 +257,7 @@ const Table = <T extends object>({
                             {row[col.key]}
                           </p>
                         ) : (
-                          getNestedValue(row, col.key) || "Null"
+                          getNestedValue(row, col.key) || "N/A"
                         )}
                       </div>
                     </td>
@@ -284,7 +290,7 @@ const Table = <T extends object>({
                             >
                               <Trash color="#4B5C79" size={16} />
                             </p>
-                          ) : null
+                          ) : "N/A"
                         )}
                       </div>
                     </td>
