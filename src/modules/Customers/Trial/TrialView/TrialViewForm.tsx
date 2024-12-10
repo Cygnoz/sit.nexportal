@@ -1,10 +1,10 @@
-import BloodGroupIcon from "../../../assets/icons/BloodGroupIcon";
-import Boxes from "../../../assets/icons/Boxes";
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import EmailIcon from "../../../assets/icons/EmailIcon";
-import LocationIcon from "../../../assets/icons/LocationIcon";
-import PhoneIcon from "../../../assets/icons/PhoneIcon";
-import UserIcon from "../../../assets/icons/UserIcon";
+import BloodGroupIcon from "../../../../assets/icons/BloodGroupIcon";
+import Boxes from "../../../../assets/icons/Boxes";
+import CalenderDays from "../../../../assets/icons/CalenderDays";
+import EmailIcon from "../../../../assets/icons/EmailIcon";
+import LocationIcon from "../../../../assets/icons/LocationIcon";
+import PhoneIcon from "../../../../assets/icons/PhoneIcon";
+import UserIcon from "../../../../assets/icons/UserIcon";
 
 type Props = {
     onClose: () => void;
