@@ -78,7 +78,7 @@ const ViewSidebar = ({}: Props) => {
                   <p className="mt-2 text-[#FFFFFF] text-xs font-medium">View Calender</p>
                 </div>
                 <div className="rounded-lg w-60 bg-[#820000] h-12 py-3 px-3 mb-4 mx-4">
-                  <p className="text-center text-[#FEFDF9] text-base font-medium">Send Proposal</p>
+                  <p className="text-center text-[#FEFDF9] text-base font-medium">Converted to Trail</p>
                 </div>
                 <hr />
                 <div className="p-4">

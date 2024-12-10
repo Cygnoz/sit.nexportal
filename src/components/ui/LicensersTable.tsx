@@ -11,7 +11,7 @@ import Button from "./Button";
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
   { key: "rmName", imageKey: "rmImage" },
-  {key:'',imageKey:''}
+  { key: '', imageKey: '' }
 ];
 
 interface TableProps<T> {
@@ -20,17 +20,17 @@ interface TableProps<T> {
   headerContents: {
     title?: string;
     search?: { placeholder: string };
-    
   };
   maxHeight?: string;
+  getButtonName?: (row: T) => string; // Function to determine button name
 }
-
 const LicensersTable = <T extends object>({
   data,
   columns,
   headerContents,
   maxHeight,
-  
+  getButtonName,
+
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -75,7 +75,7 @@ const LicensersTable = <T extends object>({
         return "bg-blue-300 text-white py-2 px-2 rounded-lg";
       case "Pending Renewal":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
-        case "Upcoming Renewal":
+      case "Upcoming Renewal":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
       case "Open":
         return "bg-green-400 text-white py-2 px-2 rounded-lg";
@@ -109,31 +109,30 @@ const LicensersTable = <T extends object>({
           <p>India</p>
         </>
       );
-    } else if (key =="United Arab Emirates") {
+    } else if (key == "United Arab Emirates") {
       return (
         <>
           <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full" />
           <p>UAE</p>
         </>
       );
-    }else  {
+    } else {
       return (
         <>
           <img src={SaudhiLogo} alt="Saudi Arabia" className="w-5 h-5 rounded-full" />
           <p>Saudi</p>
         </>
       );
-    } 
+    }
   };
 
   // Render table header
   const renderHeader = () => (
     <div
-      className={`flex  ${
-        headerContents.search && !headerContents.title 
-          ? "justify-start"
-          : "justify-between"
-      } items-center mb-4`}
+      className={`flex  ${headerContents.search && !headerContents.title
+        ? "justify-start"
+        : "justify-between"
+        } items-center mb-4`}
     >
       {headerContents.title && (
         <h2 className="text-lg font-bold">{headerContents.title}</h2>
@@ -155,16 +154,16 @@ const LicensersTable = <T extends object>({
       if (data[key] && data[imageKey]) {
         return (
           <>
-            {data[imageKey].length > 500? (
+            {data[imageKey].length > 500 ? (
               <img
                 src={`${data[imageKey]}`}
                 alt={data[key]}
                 className="w-5 h-5 rounded-full"
               />
-            ):
-            <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
-          <UserIcon color="#768294" size={15}/> 
-        </p>
+            ) :
+              <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+                <UserIcon color="#768294" size={15} />
+              </p>
             }
             <p>{data[key]}</p>
           </>
@@ -183,9 +182,8 @@ const LicensersTable = <T extends object>({
         className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
         <table
-          className={`w-full ${
-            maxHeight && "table-fixed"
-          }`}
+          className={`w-full ${maxHeight && "table-fixed"
+            }`}
         >
           {/* <thead
             className={` bg-[#F6F9FC]  ${maxHeight && "z-40 sticky top-0"}`}
@@ -219,14 +217,32 @@ const LicensersTable = <T extends object>({
                   {columns.map((col: any) => (
                     <td
                       key={String(col.key)}
-                      className=" p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE]"
+                      className="p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE]"
                     >
-                      <div className={`flex justify-start items-center gap-2 ${col.key=='status'?'justify-center':'justify-start'}`}>
-                        {col.key === "country" ? (
+                      <div className={`flex justify-start items-center gap-2 ${col.key === 'status' ? 'justify-center' : 'justify-start'}`}>
+                        {col.key === "plan" ? (
+                          <p className="text-[#4B5C79] text-sm font-bold">
+                            {getNestedValue(row, col.key) || "Null"}
+                          </p>
+                        ) : col.key === "name" ? (
+                          <p className="text-[#4B5C79] text-sm font-normal">
+                            {getNestedValue(row, col.key) || "Null"}
+                          </p>
+                        ) : col.key === "startDate" ? (
+                          <span className="text-[#72829D] text-xs font-medium flex items-center gap-1">
+                            Start Date
+                            <div className="h-1 w-1 rounded-full bg-orange-400"></div>
+                            {getNestedValue(row, col.key) || "Null"}
+                          </span>
+                        ) : col.key === "endDate" ? (
+                          <span className="text-[#72829D] text-xs font-medium flex items-center gap-1">
+                            End Date
+                            <div className="h-1 w-1 rounded-full bg-orange-400"></div>
+                            {getNestedValue(row, col.key) || "Null"}
+                          </span>
+                        ) : col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
-                        ) : ["userName", "rmName", "amName"].includes(
-                            col.key
-                          ) ? (
+                        ) : ["userName", "rmName", "amName"].includes(col.key) ? (
                           renderImageAndLabel(row)
                         ) : col.key === "status" ? (
                           <p className={getStatusClass(row[col.key])}>
@@ -238,12 +254,14 @@ const LicensersTable = <T extends object>({
                       </div>
                     </td>
                   ))}
-                  
-                    <td className="p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE] rounded-lg">
-                      <div className="flex justify-center gap-2">
-                        <Button  variant="tertiary">Upgrade</Button>
-                      </div>
-                    </td>
+
+                  <td className="p-4 border-b-8 border-y-white bg-[#F7FBFE] rounded-lg">
+                    <div className="flex justify-center gap-2">
+                      <Button variant="tertiary" className="rounded-lg w-20 h-8 border-[#585953]">
+                        <p className="text-[#585953] text-xs font-medium  px-1"> {getButtonName ? getButtonName(row) : "Default"}</p>
+                      </Button>
+                    </div>
+                  </td>
                 </tr>
               ))
             ) : (
@@ -260,46 +278,46 @@ const LicensersTable = <T extends object>({
         </table>
       </div>
 
-      
-        <div className="flex justify-between items-center mt-4">
-          <div className="text-xs text-[#71736B] font-medium flex gap-2">
-            Showing {currentPage} of {totalPages || 1}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                <PreviousIcon size={20} color="#71736B" />
-              </button>
-              <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
-                {currentPage}
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                <NextIcon size={20} color="#71736B" />
-              </button>
-            </div>
-          </div>
-          <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
-            Rows per page
-            <select
-              value={rowsPerPage}
-              onChange={handleRowsPerPageChange}
-              className="border border-gray-300 rounded-md p-1 text-sm"
+
+      <div className="flex justify-between items-center mt-4">
+        <div className="text-xs text-[#71736B] font-medium flex gap-2">
+          Showing {currentPage} of {totalPages || 1}
+          <div className="flex gap-2">
+            <button
+              onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
             >
-              {[5, 10, 20, 50].map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+              <PreviousIcon size={20} color="#71736B" />
+            </button>
+            <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
+              {currentPage}
+            </button>
+            <button
+              onClick={() =>
+                setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+              }
+              disabled={currentPage === totalPages || totalPages === 0}
+            >
+              <NextIcon size={20} color="#71736B" />
+            </button>
           </div>
         </div>
-    
+        <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
+          Rows per page
+          <select
+            value={rowsPerPage}
+            onChange={handleRowsPerPageChange}
+            className="border border-gray-300 rounded-md p-1 text-sm"
+          >
+            {[5, 10, 20, 50].map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
     </div>
   );
 };
