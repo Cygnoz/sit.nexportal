@@ -15,10 +15,10 @@ type Props = {
 
 interface TicketsData {
   subject: string;
-  email?: string;
-  state?:string;
   requestor:string;
-
+agent?:string;
+priority?:string;
+question?:string;
  
   
 }
@@ -53,7 +53,7 @@ function TicketsForm({ onClose }: Props) {
   
   return (
     <div>
-        <div className="p-5 space-y-2 text-[#4B5C79] py-2 w-[100%]">
+        <div className="p-2 space-y-1 text-[#4B5C79] py-2 w-[100%]">
       <div className="flex justify-between p-2">
         <div>
           <h3 className="text-[#303F58] font-bold text-lg">Add Commission Profile</h3>
@@ -100,13 +100,13 @@ function TicketsForm({ onClose }: Props) {
             <Select
                                     label="Assigned To"
                                     placeholder="Select Agent"
-                                    error={errors.state?.message}
+                                    error={errors.agent?.message}
                                     options={[
                                         { value: "name", label: "Kkkk" },
                                         { value: "name", label: "Taattuu" },
                                         { value: "name", label: "pipi" },
                                     ]}
-                                    {...register("state")}
+                                    {...register("agent")}
                                 />
 
                                 <div className="grid grid-cols-2 gap-4">
@@ -114,24 +114,24 @@ function TicketsForm({ onClose }: Props) {
                                 <Select
                                     label="Priority"
                                     placeholder="High"
-                                    error={errors.state?.message}
+                                    error={errors.priority?.message}
                                     options={[
                                         { value: "name", label: "normal" },
                                         { value: "name", label: "High" },
                                         { value: "name", label: "normal" },
                                     ]}
-                                    {...register("state")}
+                                    {...register("priority")}
                                 />
                                 <Select
                                     label="Type"
                                     placeholder="Question"
-                                    error={errors.state?.message}
+                                    error={errors.question?.message}
                                     options={[
                                         { value: "name", label: "Kkkk" },
                                         { value: "name", label: "Taattuu" },
                                         { value: "name", label: "pipi" },
                                     ]}
-                                    {...register("state")}
+                                    {...register("question")}
                                 />
 
 
