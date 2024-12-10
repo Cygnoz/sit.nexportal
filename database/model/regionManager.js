@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const regionManagerSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     personalEmail: { type: String},
   age: { type: Number},
   bloodGroup: { type: String},
@@ -17,8 +17,8 @@ const regionManagerSchema = new mongoose.Schema({
   dateOfJoining: { type: Date },
   workEmail: { type: String},
   workPhone: { type: String},
-  region : { type: mongoose.Schema.Types.ObjectId, ref: 'Region', required: true },
-  commission: { type: mongoose.Schema.Types.ObjectId, ref: 'Commission', required: true },
+  region : { type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
+  commission: { type: mongoose.Schema.Types.ObjectId, ref: 'Commission'},
   bankDetails: {
     bankName: { type: String},
     bankBranch: { type: String},

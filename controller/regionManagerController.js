@@ -206,7 +206,7 @@ const logOperation = (req, status, operationId = null) => {
     // Extract the user field (ObjectId)
     const existingUserId = existingRegionManager.user;
 
-
+  
         
         // Validate required fields
         const requiredFields = ["userName", "phoneNo", "email"];
@@ -247,4 +247,7 @@ const logOperation = (req, status, operationId = null) => {
     };
     
     
+
+
+
 
