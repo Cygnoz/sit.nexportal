@@ -3,46 +3,96 @@ const Region = require('../database/model/region')
 
 
 
+// exports.addArea = async (req, res, next) => {
+//     try {
+//       const { areaCode, areaName, region, description } = req.body;
+  
+//       // Validate the required fields
+//       if (!areaCode || !areaName || !region) {
+//         return res.status(400).json({ message: "All required fields must be provided" });
+//       }
+  
+//       // Check if the region exists in the Region collection
+//       const existingRegion = await Region.findById(region);
+//       if (!existingRegion) {
+//         return res.status(404).json({ message: "The specified region does not exist" });
+//       }
+  
+//       // Check if the areaCode or areaName already exists
+//       const existingArea = await Area.findOne({
+//         $or: [{ areaCode }, { areaName }],
+//       });
+//       if (existingArea) {
+//         return res.status(400).json({ message: "Area code or name already exists" });
+//       }
+  
+//       // Create a new area entry
+//       const newArea = new Area({ areaCode, areaName, region, description });
+  
+//       await newArea.save();
+//       res.status(201).json({ message: "Area added successfully"});
+  
+//       // Pass operation details to middleware
+//       logOperation(req, "successfully", newArea._id);
+//       next();
+//     } catch (error) {
+//       console.error("Error adding area:", error);
+//       res.status(500).json({ message: "Internal server error" });
+//       logOperation(req, "Failed");
+//       next();
+//     }
+//   };
+  
+
 exports.addArea = async (req, res, next) => {
-    try {
-      const { areaCode, areaName, region, description } = req.body;
-  
-      // Validate the required fields
-      if (!areaCode || !areaName || !region) {
-        return res.status(400).json({ message: "All required fields must be provided" });
-      }
-  
-      // Check if the region exists in the Region collection
-      const existingRegion = await Region.findById(region);
-      if (!existingRegion) {
-        return res.status(404).json({ message: "The specified region does not exist" });
-      }
-  
-      // Check if the areaCode or areaName already exists
-      const existingArea = await Area.findOne({
-        $or: [{ areaCode }, { areaName }],
-      });
-      if (existingArea) {
-        return res.status(400).json({ message: "Area code or name already exists" });
-      }
-  
-      // Create a new area entry
-      const newArea = new Area({ areaCode, areaName, region, description });
-  
-      await newArea.save();
-      res.status(201).json({ message: "Area added successfully"});
-  
-      // Pass operation details to middleware
-      logOperation(req, "successfully", newArea._id);
-      next();
-    } catch (error) {
-      console.error("Error adding area:", error);
-      res.status(500).json({ message: "Internal server error" });
-      logOperation(req, "Failed");
-      next();
+  try {
+    const { areaName, region, description } = req.body;
+
+    // Validate the required fields
+    if ( !areaName || !region) {
+      return res.status(400).json({ message: "All required fields must be provided" });
     }
-  };
-  
+
+    // Count existing organizations to generate the next organizationId
+  let nextId = 1;
+  const lastArea = await Area.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+  if (lastArea) {
+    const lastId = parseInt(lastArea.regionCode.slice(4)); // Extract the numeric part from the customerID
+    nextId = lastId + 1; // Increment the last numeric part
+  }    
+  const areaCode = `AR-${nextId.toString().padStart(4, '0')}`;
+
+
+    // Check if the region exists in the Region collection
+    const existingRegion = await Region.findById(region);
+    if (!existingRegion) {
+      return res.status(404).json({ message: "The specified region does not exist" });
+    }
+
+    // Check if the areaCode or areaName already exists
+    const existingArea = await Area.findOne({
+      $or: [ { areaName }],
+    });
+    if (existingArea) {
+      return res.status(400).json({ message: "Area name already exists" });
+    }
+
+    // Create a new area entry
+    const newArea = new Area({ areaCode, areaName, region, description });
+
+    await newArea.save();
+    res.status(201).json({ message: "Area added successfully"});
+
+    // Pass operation details to middleware
+    logOperation(req, "successfully", newArea._id);
+    next();
+  } catch (error) {
+    console.error("Error adding area:", error);
+    res.status(500).json({ message: "Internal server error" });
+    logOperation(req, "Failed");
+    next();
+  }
+};
 
 exports.getArea = async (req, res) => {
   try {

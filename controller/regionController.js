@@ -1,40 +1,84 @@
 const Region = require('../database/model/region')
 
 
+// exports.addRegion = async (req, res, next) => {
+//     try {
+//       const { regionCode, regionName, country, description } = req.body;
+  
+//       // Validate the required fields
+//       if (!regionCode || !regionName || !country) {
+//         return res.status(400).json({ message: "All required fields must be provided" });
+//       }
+  
+//       // Check if the regionCode already exists
+//       const existingRegion = await Region.findOne({
+//         $or: [{ regionCode }, { regionName }],
+//       });
+//       if (existingRegion) {
+//         return res.status(400).json({ message: "Region code or name already exists" });
+//       }
+//       // Create a new region entry
+//       const newRegion = new Region({ regionCode, regionName, country, description });
+  
+//       await newRegion.save();
+//       res.status(201).json({ message: "Region added successfully", region: newRegion });
+  
+//       // Pass operation details to middleware
+//       ActivityLog(req, "successfully", newRegion._id );
+//       next();
+  
+//     } catch (error) {
+//       console.error("Error adding region:", error);
+//       res.status(500).json({ message: "Internal server error" });
+//       ActivityLog(req, "Failed");
+//       next();
+//     }
+//   };
+  
+
 exports.addRegion = async (req, res, next) => {
-    try {
-      const { regionCode, regionName, country, description } = req.body;
-  
-      // Validate the required fields
-      if (!regionCode || !regionName || !country) {
-        return res.status(400).json({ message: "All required fields must be provided" });
-      }
-  
-      // Check if the regionCode already exists
-      const existingRegion = await Region.findOne({
-        $or: [{ regionCode }, { regionName }],
-      });
-      if (existingRegion) {
-        return res.status(400).json({ message: "Region code or name already exists" });
-      }
-      // Create a new region entry
-      const newRegion = new Region({ regionCode, regionName, country, description });
-  
-      await newRegion.save();
-      res.status(201).json({ message: "Region added successfully", region: newRegion });
-  
-      // Pass operation details to middleware
-      ActivityLog(req, "successfully", newRegion._id );
-      next();
-  
-    } catch (error) {
-      console.error("Error adding region:", error);
-      res.status(500).json({ message: "Internal server error" });
-      ActivityLog(req, "Failed");
-      next();
+  try {
+    const {  regionName, country, description } = req.body;
+
+    // Validate the required fields
+    if ( !regionName || !country) {
+      return res.status(400).json({ message: "All required fields must be provided" });
     }
-  };
+    // Count existing organizations to generate the next organizationId
+  let nextId = 1;
+  const lastRegion = await Region.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+  if (lastRegion) {
+    const lastId = parseInt(lastRegion.regionCode.slice(4)); // Extract the numeric part from the customerID
+    nextId = lastId + 1; // Increment the last numeric part
+  }    
+  const regionCode = `REG-${nextId.toString().padStart(4, '0')}`;
+
   
+
+    // Check if the regionCode already exists
+    const existingRegion = await Region.findOne({
+      $or: [ { regionName }],
+    });
+    if (existingRegion) {
+      return res.status(400).json({ message: "Region name already exists" });
+    }
+    // Create a new region entry
+    const newRegion = new Region({ regionCode, regionName, country, description });
+
+    await newRegion.save();
+    res.status(201).json({ message: "Region added successfully", region: newRegion });
+
+    // Pass operation details to middleware
+    ActivityLog(req, "successfully", newRegion._id );
+    next();
+
+  } catch (error) {
+    console.error("Error adding region:", error);
+    res.status(500).json({ message: "Internal server error" });
+    ActivityLog(req, "Failed");
+    next();
+  }
+};
   
 
   exports.getRegion = async (req, res) => {
