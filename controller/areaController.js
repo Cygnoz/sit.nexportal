@@ -57,7 +57,7 @@ exports.addArea = async (req, res, next) => {
   let nextId = 1;
   const lastArea = await Area.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
   if (lastArea) {
-    const lastId = parseInt(lastArea.regionCode.slice(4)); // Extract the numeric part from the customerID
+    const lastId = parseInt(lastArea.areaCode.slice(4)); // Extract the numeric part from the customerID
     nextId = lastId + 1; // Increment the last numeric part
   }    
   const areaCode = `AR-${nextId.toString().padStart(4, '0')}`;
