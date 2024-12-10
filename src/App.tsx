@@ -33,6 +33,7 @@ import { useRole } from './context/RoleContext';
 import TrialView from './modules/Customers/Trial/TrialView';
 import LicenserView from './modules/Customers/Licensor/view/LicenserView';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
+import PraiseHome from './modules/Awards/Praise/PraiseHome';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -77,6 +78,7 @@ const App: React.FC = () => {
             <Route path="worker-commission" element={<WCommisionHome/>} />
             <Route path="tickets" element={<TicketsHome/>} />
             <Route path="user-log" element={<UserLogHome/>} />
+            <Route path='prises' element={<PraiseHome/>} />
             
             {/* Add more authenticated routes as needed */}
           </Route>

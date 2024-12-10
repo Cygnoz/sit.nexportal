@@ -146,6 +146,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
   actionList={[
     { label: 'view', function: handleView },
   ]}
+  
 />
       </div>
       {/* Modal controlled by state */}

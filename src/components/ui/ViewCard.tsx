@@ -7,7 +7,7 @@ interface HomeCardProps {
   }
   const ViewCard = ({ icon: Icon, title, number, iconFrameColor, iconFrameBorderColor }: HomeCardProps) => {
     return (
-      <div className="flex items-start w-56 h-28 p-4 gap-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300">
+      <div className="flex items-start w-full h-28 p-4 gap-4 bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300">
         {/* Icon Frame */}
         <div
           className="flex-shrink-0 flex justify-center items-center w-[40px] h-[40px] rounded-lg gap-4"

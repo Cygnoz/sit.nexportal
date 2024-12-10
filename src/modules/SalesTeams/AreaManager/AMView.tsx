@@ -12,14 +12,15 @@ import AMViewForm from "./AMViewForm";
 import Modal from "../../../components/modal/Modal";
 import AMViewCardandTable from "./AMViewCardandTable";
 import LicensersTable from '../../../components/ui/LicensersTable';
+import AMViewAward from './AMViewAward';
 // import AMViewAward from './AMViewAward';
 // import SearchBar from "../../../components/ui/SearchBar";
 interface AMData {
   name: string;
-  emailAdrees: string;
+  plan: string;
   status: string;
-  region:string;
-  area: string;
+  startDate: string;
+  endDate: string;
 }
 
 
@@ -28,37 +29,34 @@ type Props = {}
 const AMView = ({ }: Props) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAwardOpen, setIsAwardOpen] = useState(false);
 
   // Function to toggle modal visibility
   const handleModalToggle = () => {
-      setIsModalOpen((prev) => !prev);
+    setIsModalOpen((prev) => !prev);
   };
-//   const handleToggle = () => {
-//     setIsModalOpen((prev) => !prev);
-// };
+  const AwardhandleToggle = () => {
+    setIsAwardOpen((prev) => !prev);
+  };
 
-      const data: AMData[] = [
-        { name: "Devid Billie", emailAdrees: "nathan.roberts@example.com", status: "Active", region: "Region 1", area: "Area 2" },
-        { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", status: "Expired", region: "Region 1", area: "Area 2"},
-        { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", status: "Upcoming Renewal", region: "Region 1", area: "Area 2" },
-        { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", status: "Expired", region: "Region 1", area: "Area 2" },
-        { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", status: "Upcoming Renewal", region: "Region 1", area: "Area 2" },
-        { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", status: "Active", region: "Region 1", area: "Area 2" },
-        { name: "Sudeep Kumar", emailAdrees: "nathan.roberts@example.com", status: "Expired", region: "Region 1", area: "Area 2" },
-        { name: "Kathryn Murphy", emailAdrees: "nathan.roberts@example.com", status: "Upcoming Renewal", region: "Region 1", area: "Area 2" },
-        { name: "Darrell Steward", emailAdrees: "nathan.roberts@example.com", status: "Active", region: "Region 1", area: "Area 2" },
-        { name: "Ronald Richards", emailAdrees: "nathan.roberts@example.com", status: "Expired", region: "Region 1", area: "Area 2" },
-        { name: "Jane Cooper", emailAdrees: "nathan.roberts@example.com", status: "Active", region: "Region 1", area: "Area 2" },
-      ];
-        // Define the columns with strict keys
+  const data: AMData[] = [
+    { name: "Devid Billie", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
+    { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
+    { name: "Kathryn Murphy", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: "2/12/2024" },
+    { name: "Darrell Steward", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
+    { name: "Ronald Richards", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: " 2/12/2024" },
+    { name: "Jane Cooper", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
+    { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
+  ];
+  // Define the columns with strict keys
 
-        const columns: { key: any; label: string }[] = [
-          { key: "name", label: "Name" },
-          { key: "emailAdrees", label: "Email Address" },
-          { key: "status", label: "Phone No" },
-          { key: "region", label: "Region" },
-          { key: "area", label: "Area" },
-        ];
+  const columns: { key: any; label: string }[] = [
+    { key: "name", label: "Name" },
+    { key: "plan", label: "Plan" },
+    { key: "status", label: "Phone No" },
+    { key: "startDate", label: "Start Date" },
+    { key: "endDate", label: "End Date" },
+  ];
 
 
   // const [searchValue, setSearchValue] = useState<string>("");
@@ -82,7 +80,7 @@ const AMView = ({ }: Props) => {
   //         />
   //       </div>
   //     )}
-      
+
   //   </div>
   // );
 
@@ -141,35 +139,35 @@ const AMView = ({ }: Props) => {
               <p className="text-[#FFFFFF] text-sm font-medium">13 June 2023</p>
             </div>
             <div className="flex -mt-9 ms-10 gap-3">
-            <div className="flex flex-col items-center space-y-1">
-              <div className="w-8 h-8 mb-2 rounded-full">
-                <EditIcon size={36} color="#C4A25D24" />
+              <div className="flex flex-col items-center space-y-1">
+                <div className="w-8 h-8 mb-2 rounded-full">
+                  <EditIcon size={36} color="#C4A25D24" />
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
               </div>
-              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
-             </div>
 
-            <div className="flex flex-col  items-center space-y-1">
-              <div onClick={handleModalToggle} className="w-8 h-8 mb-2 rounded-full">
-                <ViewRoundIcon  size={36} color="#D52B1E4D" />
+              <div className="flex flex-col  items-center space-y-1">
+                <div onClick={handleModalToggle} className="w-8 h-8 mb-2 rounded-full">
+                  <ViewRoundIcon size={36} color="#D52B1E4D" />
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
               </div>
-              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
+
+              <div className="flex flex-col  items-center space-y-1">
+                <div onClick={AwardhandleToggle} className="w-8 h-8 mb-2 rounded-full">
+                  <AwardIcon size={36} color="#D52B1E4D" />
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
+              </div>
+
+              <div className="flex flex-col  items-center space-y-1">
+                <div className="w-8 h-8 mb-2 rounded-full">
+                  <DeActivateIcon size={36} color="#D52B1E4D" />
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
+              </div>
+
             </div>
-
-            <div className="flex flex-col  items-center space-y-1">
-              <div className="w-8 h-8 mb-2 rounded-full">
-                <AwardIcon size={36} color="#D52B1E4D" />
-              </div>
-              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
-            </div>
-
-            <div className="flex flex-col  items-center space-y-1">
-              <div className="w-8 h-8 mb-2 rounded-full">
-                <DeActivateIcon size={36} color="#D52B1E4D" />
-              </div>
-              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
-            </div>
-
-        </div>
 
           </div>
 
@@ -177,7 +175,7 @@ const AMView = ({ }: Props) => {
 
       </div>
       {/* Card & table */}
-          <AMViewCardandTable/>
+      <AMViewCardandTable />
       {/* Charts */}
       <div className="grid grid-cols-12 py-12">
         <div className="col-span-4">
@@ -200,15 +198,22 @@ const AMView = ({ }: Props) => {
       {/* <div className="w-full  bg-white rounded-lg p-4">
       {renderHeader()}
       </div> */}
-            <div>
-        <LicensersTable<AMData> data={data} columns={columns} headerContents={{
-          title:'Licensers handled by BDA',
-          search:{placeholder:'Search License by Name or Holder Name'},
-          
-        }}
-         />
+      <div>
+        <LicensersTable<AMData>
+          data={data}
+          columns={columns}
+          headerContents={{
+            title: 'Licensers handled by BDA',
+            search: { placeholder: 'Search License by Name or Holder Name' },
+          }}
+          getButtonName={(row) => {
+            if (row.status === "Expired" || row.status === "Upcoming Renewal") {
+              return "Upgrade";
+            }
+            return "Renew";
+          }}
+        />
       </div>
-
       {/* Graph */}
       <div className="flex gap-3 py-2 mt-6">
         {/* {VieCardData.map((card,index)=>(
@@ -223,16 +228,16 @@ const AMView = ({ }: Props) => {
         ))} */}
         <p>Leads Converted by Area Manager Over Time</p>
       </div>
-       {/* Modal controlled by state */}
-       <Modal open={isModalOpen} onClose={handleModalToggle}>
-                <AMViewForm onClose={handleModalToggle} />
-            </Modal>
-      
-      {/* <Modal align='right' open={isModalOpen} onClose={handleToggle}>
-        <AMViewAward onClose={handleToggle} />
-      </Modal> */}
+      {/* Modal controlled by state */}
+      <Modal open={isModalOpen} onClose={handleModalToggle}>
+        <AMViewForm onClose={handleModalToggle} />
+      </Modal>
+
+      <Modal align='right' className='w-[25%] me-16' open={isAwardOpen} onClose={AwardhandleToggle}>
+        <AMViewAward onClose={AwardhandleToggle} />
+      </Modal>
     </div>
   )
 }
 
-export default AMView
+export default AMView;

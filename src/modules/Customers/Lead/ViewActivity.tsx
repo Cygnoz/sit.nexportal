@@ -1,5 +1,4 @@
 import { useState } from "react";
-import ArrowRight from "../../../assets/icons/ArrowRight";
 import EditIcon from "../../../assets/icons/EditIcon";
 import SortBy from "../../../components/ui/SortBy";
 // import SearchBar from "../../../components/ui/SearchBar";
@@ -17,6 +16,8 @@ import Table from "../../../components/ui/Table";
 import PackageCheck from "../../../assets/icons/PackageCheck";
 import Boxes from "../../../assets/icons/Boxes";
 import profileImage from '../../../assets/image/AvatarImg.png'
+import rightArrow from '../../../assets/image/right-arrow.png'
+import Notebook from "../../../assets/icons/Notebook";
 
 interface LeadViewData {
     task: string;
@@ -73,6 +74,7 @@ const leadData: LeadViewData[] = [
             <SortBy
             sort={[length=4, ]}
             />
+            
              <SortBy
             sort={[length=4, ]}
             />
@@ -80,70 +82,94 @@ const leadData: LeadViewData[] = [
             <p className="text-[#303F58] text-sm font-bold">Today, November 21,2024</p>
             <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
                 <div className="flex gap-6">
-                <div className="mt-2"><ArrowRight size={48}/></div>
-                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold">Lead Lifecycle Stage Updated</p></div>
-                <div className="flex gap-2">
+                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                    <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
+                </div>
+                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold mt-1">Lead Lifecycle Stage Updated</p></div>
+                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
+                <div className="flex gap-2 mt-1">
                     <EditIcon size={20}/>
-                    <div className="rounded-full w-5 h-5 overflow-hidden">
+                    <div className="flex gap-2 bg-[#FFFFFF] w-32 h-8 p-1 rounded-3xl -mt-1">
+                    <div className="rounded-full w-5 h-5 overflow-hidden ms-1 mt-[1%]">
                         <img src={profileImage} alt="" />
                     </div>
-                    <p className="text-[#4B5C79] text-xs font-medium">Kristin Watson</p>
+                    <p className="text-[#4B5C79] text-xs font-medium mt-1">Kristin Watson</p>
+                    </div>
                 </div>
-                <div><p className="text-[#4B5C79] text-xs font-medium">19 minutes ago</p></div>
+                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
+                <div><p className="text-[#4B5C79] text-xs font-medium mt-2">19 minutes ago</p></div>
                 </div>
                 <div className="ms-20 -mt-4">
-                    <p className="text-[#4B5C79] text-xs font-medium">Updated to <span className="text-[#4B5C79] text-sm font-bold">Lead: Trail</span></p>
+                    <p className="text-[#4B5C79] text-xs font-medium">Updated to <span className="text-[#4B5C79] text-sm font-bold ms-1">Lead: Trail</span></p>
                 </div>
             </div>
-            <div className="bg-[#F5F9FC] p-5 rounded-lg mb-4">
+            <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
                 <div className="flex gap-6">
-                <div className="mt-2"><ArrowRight size={48}/></div>
-                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold">In-person meeting scheduled</p></div>
-                <div className="flex gap-2">
+                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                    <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
+                </div>
+                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold mt-1">In-person meeting scheduled</p></div>
+                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
+                <div className="flex gap-2 mt-1">
                     <EditIcon size={20}/>
-                    <div className="rounded-full w-5 h-5 overflow-hidden">
+                    <div className="flex gap-2 bg-[#FFFFFF] w-32 h-8 p-1 rounded-3xl -mt-1">
+                    <div className="rounded-full w-5 h-5 overflow-hidden ms-1 mt-[1%]">
                         <img src={profileImage} alt="" />
                     </div>
-                    <p className="text-[#4B5C79] text-xs font-medium">Kristin Watson</p>
+                    <p className="text-[#4B5C79] text-xs font-medium mt-1">Kristin Watson</p>
+                    </div>
                 </div>
-                <div><p className="text-[#4B5C79] text-xs font-medium">19 minutes ago</p></div>
+                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
+                <div><p className="text-[#4B5C79] text-xs font-medium mt-2">11 minutes ago</p></div>
                 </div>
                 <div className="ms-20 -mt-4">
-                    <p className="text-[#4B5C79] text-xs font-medium">Details<span className="text-[#4B5C79] text-sm font-bold">Location: ABC Ltd. Office</span></p>
+                    <p className="text-[#4B5C79] text-xs font-medium">Details <span className="text-[#4B5C79] text-sm font-bold ms-1">Location: ABC Ltd. Office</span></p>
                 </div>
             </div>
-            <div className="bg-[#F5F9FC] p-5 rounded-lg mb-4">
+            <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
                 <div className="flex gap-6">
-                <div className="mt-2"><ArrowRight size={48}/></div>
-                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold">Meeting completed</p></div>
-                <div className="flex gap-2">
+                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                    <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
+                </div>
+                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold mt-1">Meeting completed</p></div>
+                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
+                <div className="flex gap-2 mt-1">
                     <EditIcon size={20}/>
-                    <div className="rounded-full w-5 h-5 overflow-hidden">
+                    <div className="flex gap-2 bg-[#FFFFFF] w-32 h-8 p-1 rounded-3xl -mt-1">
+                    <div className="rounded-full w-5 h-5 overflow-hidden ms-1 mt-[1%]">
                         <img src={profileImage} alt="" />
                     </div>
-                    <p className="text-[#4B5C79] text-xs font-medium">Kristin Watson</p>
+                    <p className="text-[#4B5C79] text-xs font-medium mt-1">Kristin Watson</p>
+                    </div>
                 </div>
-                <div><p className="text-[#4B5C79] text-xs font-medium">19 minutes ago</p></div>
+                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
+                <div><p className="text-[#4B5C79] text-xs font-medium mt-2">19 minutes ago</p></div>
                 </div>
                 <div className="ms-20 -mt-4">
-                    <p className="text-[#4B5C79] text-xs font-medium">Details<span className="text-[#4B5C79] text-sm font-bold">Provided demo, answered queries, discussed custom solutions</span></p>
+                    <p className="text-[#4B5C79] text-xs font-medium">Details <span className="text-[#4B5C79] text-sm font-bold ms-1">Provided demo, answered queries, discussed custom solutions</span></p>
                 </div>
             </div>
-            <div className="bg-[#F5F9FC] p-5 rounded-lg mb-4">
+            <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
                 <div className="flex gap-6">
-                <div className="mt-2"><ArrowRight size={48}/></div>
-                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold">Lead Lifecycle Stage Updated</p></div>
-                <div className="flex gap-2">
+                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                    <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
+                </div>
+                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold mt-1">Lead Lifecycle Stage Updated</p></div>
+                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
+                <div className="flex gap-2 mt-1">
                     <EditIcon size={20}/>
-                    <div className="rounded-full w-5 h-5 overflow-hidden">
+                    <div className="flex gap-2 bg-[#FFFFFF] w-32 h-8 p-1 rounded-3xl -mt-1">
+                    <div className="rounded-full w-5 h-5 overflow-hidden ms-1 mt-[1%]">
                         <img src={profileImage} alt="" />
                     </div>
-                    <p className="text-[#4B5C79] text-xs font-medium">Kristin Watson</p>
+                    <p className="text-[#4B5C79] text-xs font-medium mt-1">Kristin Watson</p>
+                    </div>
                 </div>
-                <div><p className="text-[#4B5C79] text-xs font-medium">19 minutes ago</p></div>
+                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
+                <div><p className="text-[#4B5C79] text-xs font-medium mt-2">19 minutes ago</p></div>
                 </div>
                 <div className="ms-20 -mt-4">
-                    <p className="text-[#4B5C79] text-xs font-medium">Updated to <span className="text-[#4B5C79] text-sm font-bold">Lead : Trail</span></p>
+                    <p className="text-[#4B5C79] text-xs font-medium">Updated to <span className="text-[#4B5C79] text-sm font-bold ms-1">Lead: Trail</span></p>
                 </div>
             </div>
         </div>
@@ -169,8 +195,20 @@ const leadData: LeadViewData[] = [
             <hr className="text-[#BBB6B6]" /> 
             <div className="flex justify-between p-5">
             <div className="flex gap-4 ms-2">
-                <p className="text-[#4B5C79] text-xs font-normal">From: <span className="mt-1 text-[#303F58] text-xs font-semibold">Ronald J</span></p>
-                <p className="text-[#4B5C79] text-xs font-normal">To: <span className="mt-1 text-[#303F58] text-xs font-semibold">Anjela John</span></p>
+                <div className="flex gap-2">
+                <p className="text-[#4B5C79] text-xs font-normal">From:</p>
+                <div className="rounded-full w-5 h-5 overflow-hidden">
+                        <img src={profileImage} alt="" />
+                    </div>
+                <p className="mt-[1%] text-[#303F58] text-xs font-semibold">Ronald J</p>
+                </div>
+                <div className="flex gap-2">
+                <p className="text-[#4B5C79] text-xs font-normal">To:</p>
+                <div className="rounded-full w-5 h-5 overflow-hidden">
+                        <img src={profileImage} alt="" />
+                    </div>
+                <p className="mt-[1%] text-[#303F58] text-xs font-semibold">Anjela John</p>
+                </div>
             </div>
             <div>
                 <ChevronRight size={18} color="#768296"/>
@@ -191,8 +229,20 @@ const leadData: LeadViewData[] = [
             <hr className="text-[#BBB6B6]" /> 
             <div className="flex justify-between p-5">
             <div className="flex gap-4 ms-2">
-                <p className="text-[#4B5C79] text-xs font-normal">From: <span  className="mt-1 text-[#303F58] text-xs font-semibold">Ronald J</span></p>
-                <p className="text-[#4B5C79] text-xs font-normal">To: <span  className="mt-1 text-[#303F58] text-xs font-semibold">Anjela John</span></p>
+                <div className="flex gap-2">
+                <p className="text-[#4B5C79] text-xs font-normal">From:</p>
+                <div className="rounded-full w-5 h-5 overflow-hidden">
+                        <img src={profileImage} alt="" />
+                    </div>
+                <p className="mt-[1%] text-[#303F58] text-xs font-semibold">Ronald J</p>
+                </div>
+                <div className="flex gap-2">
+                <p className="text-[#4B5C79] text-xs font-normal">To:</p>
+                <div className="rounded-full w-5 h-5 overflow-hidden">
+                        <img src={profileImage} alt="" />
+                    </div>
+                <p className="mt-[1%] text-[#303F58] text-xs font-semibold">Anjela John</p>
+                </div>
             </div>
             <div>
                 <ChevronRight size={18} color="#768296"/>
@@ -213,8 +263,20 @@ const leadData: LeadViewData[] = [
             <hr className="text-[#BBB6B6]" /> 
             <div className="flex justify-between p-5">
             <div className="flex gap-4 ms-2">
-                <p className="text-[#4B5C79] text-xs font-normal">From: <span  className="mt-1 text-[#303F58] text-xs font-semibold">Ronald J</span></p>
-                <p className="text-[#4B5C79] text-xs font-normal">To: <span  className="mt-1 text-[#303F58] text-xs font-semibold">Anjela John</span></p>
+                <div className="flex gap-2">
+                <p className="text-[#4B5C79] text-xs font-normal">From:</p>
+                <div className="rounded-full w-5 h-5 overflow-hidden">
+                        <img src={profileImage} alt="" />
+                    </div>
+                <p className="mt-[1%] text-[#303F58] text-xs font-semibold">Ronald J</p>
+                </div>
+                <div className="flex gap-2">
+                <p className="text-[#4B5C79] text-xs font-normal">To:</p>
+                <div className="rounded-full w-5 h-5 overflow-hidden">
+                        <img src={profileImage} alt="" />
+                    </div>
+                <p className="mt-[1%] text-[#303F58] text-xs font-semibold">Anjela John</p>
+                </div>
             </div>
             <div>
                 <ChevronRight size={18} color="#768296"/>
@@ -235,8 +297,20 @@ const leadData: LeadViewData[] = [
             <hr className="text-[#BBB6B6]" /> 
             <div className="flex justify-between p-5">
             <div className="flex gap-4 ms-2">
-                <p className="text-[#4B5C79] text-xs font-normal">From: <span  className="mt-1 text-[#303F58] text-xs font-semibold">Ronald J</span></p>
-                <p className="text-[#4B5C79] text-xs font-normal">To: <span  className="mt-1 text-[#303F58] text-xs font-semibold">Anjela John</span></p>
+                <div className="flex gap-2">
+                <p className="text-[#4B5C79] text-xs font-normal">From:</p>
+                <div className="rounded-full w-5 h-5 overflow-hidden">
+                        <img src={profileImage} alt="" />
+                    </div>
+                <p className="mt-[1%] text-[#303F58] text-xs font-semibold">Ronald J</p>
+                </div>
+                <div className="flex gap-2">
+                <p className="text-[#4B5C79] text-xs font-normal">To:</p>
+                <div className="rounded-full w-5 h-5 overflow-hidden">
+                        <img src={profileImage} alt="" />
+                    </div>
+                <p className="mt-[1%] text-[#303F58] text-xs font-semibold">Anjela John</p>
+                </div>
             </div>
             <div>
                 <ChevronRight size={18} color="#768296"/>
@@ -253,12 +327,12 @@ const leadData: LeadViewData[] = [
         <div className="flex justify-between">
             <p className="text-[#303F58] text-sm font-bold">Notes</p>
             {/* <SearchBar placeholder="Search" searchValue="" onSearchChange={} /> */}
-            <Button className="text-[#565148] text-base rounded-lg w-24 h-9 bg-[#FEFDFA] border-[#565148]" variant="secondary">+<span className="text-xs -ms-1">Add Notes</span></Button>
+            <Button className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148]" variant="secondary">+<span className="text-xs">Add Notes</span></Button>
         </div>
         <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5">
             <div className="flex justify-between p-5">
             <div className="flex gap-3">
-                <div className="bg-[#F3E6E6] rounded-full size-8 px-2 py-2"> <EmailIcon color="#820000" size={18}/></div>
+                <div className="bg-[#F3E6E6] rounded-full size-8 px-2 py-2"> <Notebook color="#820000" size={18}/></div>
                 <p className="mt-1 text-[#303F58] text-xs font-semibold">Anjela Interested in premium package</p>
             </div>
             <div>
@@ -285,7 +359,7 @@ const leadData: LeadViewData[] = [
         <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5">
             <div className="flex justify-between p-5">
             <div className="flex gap-3">
-                <div className="bg-[#F3E6E6] rounded-full size-8 px-2 py-2"> <EmailIcon color="#820000" size={18}/></div>
+                <div className="bg-[#E6F3F1] rounded-full size-8 px-2 py-2"> <Notebook color="#006A82" size={18}/></div>
                 <p className="mt-1 text-[#303F58] text-xs font-semibold">Needs Mention By Anjela</p>
             </div>
             <div>
@@ -312,7 +386,7 @@ const leadData: LeadViewData[] = [
         <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5">
             <div className="flex justify-between p-5">
             <div className="flex gap-3">
-                <div className="bg-[#F3E6E6] rounded-full size-8 px-2 py-2"> <EmailIcon color="#820000" size={18}/></div>
+                <div className="bg-[#E6F3F1] rounded-full size-8 px-2 py-2"> <Notebook color="#006A82" size={18}/></div>
                 <p className="mt-1 text-[#303F58] text-xs font-semibold">Concerns the lead has raised</p>
             </div>
             <div>
@@ -339,7 +413,7 @@ const leadData: LeadViewData[] = [
         <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5">
             <div className="flex justify-between p-5">
             <div className="flex gap-3">
-                <div className="bg-[#F3E6E6] rounded-full size-8 px-2 py-2"> <EmailIcon color="#820000" size={18}/></div>
+                <div className="bg-[#E6F3F1] rounded-full size-8 px-2 py-2"> <Notebook color="#006A82" size={18}/></div>
                 <p className="mt-1 text-[#303F58] text-xs font-semibold">Needs Mention By Anjela</p>
             </div>
             <div>
@@ -395,7 +469,7 @@ const leadData: LeadViewData[] = [
         <div className="flex justify-between">
             <p className="text-[#303F58] text-sm font-bold">Meetings</p>
             {/* <SearchBar placeholder="Search" searchValue="" onSearchChange={} /> */}
-            <Button className="text-[#565148] text-base rounded-lg w-28 h-9 bg-[#FEFDFA] border-[#565148]" variant="secondary">+<span className="text-xs -ms-1">Add Meeting</span></Button>
+            <Button className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148]" variant="secondary">+<span className="text-xs">Add Meeting</span></Button>
         </div>
         <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5 py-3">
             <div className="flex justify-between p-5">
