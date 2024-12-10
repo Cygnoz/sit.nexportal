@@ -10,6 +10,8 @@ import IndiaLogo from "../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
 import UserIcon from "../../assets/icons/UserIcon";
+// import Button from "./Button";
+// import ArrowRight from "../../assets/icons/ArrowRight";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -32,6 +34,7 @@ interface TableProps<T> {
     label: string;
     function: (id: any) => void;
   }[];
+  // noButton?:boolean;
   noAction?: boolean;
   noPagination?: boolean;
   maxHeight?: string;
@@ -42,6 +45,7 @@ const Table = <T extends object>({
   columns,
   headerContents,
   actionList,
+  // noButton,
   noAction,
   noPagination,
   maxHeight,
@@ -281,7 +285,21 @@ const Table = <T extends object>({
                         )}
                       </div>
                     </td>
+                    
                   ))}
+                      {/* {!noButton&&(
+                    <td className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
+                    {row.status === "New" && (
+                      <div className="flex justify-center gap-2">
+                        <Button variant="tertiary">
+                          convert to Trail
+                          <ArrowRight size={10} color="#565148" />
+                        </Button>
+                      </div>
+                    )}
+                  </td>
+                  )} */}
+
                   {!noAction && (
                     <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
                       <div className="flex justify-center gap-2">
@@ -316,6 +334,7 @@ const Table = <T extends object>({
                         )}
                       </div>
                     </td>
+                    
                   )}
                 </tr>
               ))

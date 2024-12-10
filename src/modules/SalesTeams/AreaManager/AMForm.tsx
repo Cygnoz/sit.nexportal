@@ -160,6 +160,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
     if (currentIndex > 0) {
       setActiveTab(tabs[currentIndex - 1]);
     }
+    setSubmit(false);
   };
 
 
@@ -380,6 +381,7 @@ label: area.areaName,
                   label="Phone Number"
                   required
                   error={errors.phoneNo?.message}
+                  value={watch("phoneNo")} 
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("phoneNo");
@@ -501,6 +503,7 @@ label: area.areaName,
                   label="Work Phone"
                   error={errors.workPhone?.message}
                   placeholder="Enter phone number"
+                  value={watch("workPhone")}
                   onChange={(value) => {
                     handleInputChange("workPhone");
                     setValue("workPhone", value); // Update the value of the phone field in React Hook Form
