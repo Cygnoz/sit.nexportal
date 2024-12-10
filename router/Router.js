@@ -7,6 +7,7 @@ const regionController = require("../controller/regionController");
 const areaController = require("../controller/areaController");
 const commissionController = require('../controller/commissionController');
 const supervisorController = require('../controller/supervisorController');
+const supportAgentController = require('../controller/supportAgentController');
 
 
 const checkPermission = require('../controller/authController/permission');
@@ -68,13 +69,13 @@ router.put("/supervisor/:id",verifyToken,checkPermission('Edit Supervisor'), sup
 // router.delete("/user/:userId",verifyToken,checkPermission('Delete BDA'), supervisorController.deleteUser,ActivityLogGeneration('Delete BDA'));
 
 // Support Agent
-router.post('/supportAgent',verifyToken,checkPermission('Add Support Agent'),supervisorController.addSupervisor,ActivityLogGeneration('Add Support Agent'))
+router.post('/supportAgent',verifyToken,checkPermission('Add Support Agent'),supportAgentController.addSupportAgent,ActivityLogGeneration('Add Support Agent'))
 
-router.get("/supportAgent",verifyToken,checkPermission('View Support Agent'), supervisorController.getAllSupervisor);
+router.get("/supportAgent",verifyToken,checkPermission('View Support Agent'), supportAgentController.getAllSupportAgent);
 
-router.get("/supportAgent/:id",verifyToken,checkPermission('View Support Agent'), supervisorController.getSupervisor);
+router.get("/supportAgent/:id",verifyToken,checkPermission('View Support Agent'), supportAgentController.getSupportAgent);
 
-router.put("/supportAgent/:id",verifyToken,checkPermission('Edit Support Agent'), supervisorController.editSupervisor,ActivityLogGeneration('Edit Support Agent'));
+router.put("/supportAgent/:id",verifyToken,checkPermission('Edit Support Agent'), supportAgentController.editSupportAgent,ActivityLogGeneration('Edit Support Agent'));
 
 // router.delete("/user/:userId",verifyToken,checkPermission('Delete BDA'), supervisorController.deleteUser,ActivityLogGeneration('Delete BDA'));
 

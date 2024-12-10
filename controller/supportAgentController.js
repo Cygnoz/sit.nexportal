@@ -106,7 +106,7 @@ const logOperation = (req, status, operationId = null) => {
     }
     return true;
   }
-  exports.addSupervisor = async (req, res, next) => {
+  exports.addSupportAgent = async (req, res, next) => {
     try {
       // Destructure and validate
       const data = cleanData(req.body);
