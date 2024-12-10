@@ -30,7 +30,7 @@ import Otp from './pages/login/Otp';
 import NoAccess from './context/NoAccess';
 import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
 import { useRole } from './context/RoleContext';
-import TrialView from './modules/Customers/Trial/TrialView';
+import TrialView from './modules/Customers/Trial/TrialView/TrialView';
 import LicenserView from './modules/Customers/Licensor/view/LicenserView';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
