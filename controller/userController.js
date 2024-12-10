@@ -344,6 +344,18 @@ const roles = [
       { action: "Edit Commission", note: "Edit Commission" },
       { action: "Delete Commission", note: "Delete Commission" },
 
+      // Supervisor
+      { action: "Add Supervisor", note: "Add Supervisor" },
+      { action: "View Supervisor", note: "View Supervisor" },
+      { action: "Edit Supervisor", note: "Edit Supervisor" },
+      { action: "Delete Supervisor", note: "Delete Supervisor" },
+      
+      // Support Agent
+      { action: "Add Support Agent", note: "Add Support Agent" },
+      { action: "View Support Agent", note: "View Support Agent" },
+      { action: "Edit Support Agent", note: "Edit Support Agent" },
+      { action: "Delete Support Agent", note: "Delete Support Agent" },
+
       // Lead
       { action: "Add Lead", note: "Add Lead" },
       { action: "View Lead", note: "View Lead" },
