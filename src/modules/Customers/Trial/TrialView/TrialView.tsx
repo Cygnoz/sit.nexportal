@@ -20,8 +20,8 @@ import ArrowRight from "../../../../assets/icons/ArrowRight"
 import TrialEditForm from "./TrialEditForm"
 import Button from "../../../../components/ui/Button"
 import ExtentTrail from "./ExtentTrail"
-import ConvertLicenser from "./CovertLicenser"
-import ResumePauseTrail from "./resumePauseTrail"
+import ConvertModal from "../../../../components/modal/ConvertionModal/CovertLicenser"
+
 
 type Props = {}
 
@@ -31,7 +31,7 @@ const TrialView = ({}: Props) => {
      const [editModalOpen, setEditModalOpen] = useState(false);
      const [extentModalOpen, setExtentModalOpen]= useState(false);
      const [conLicModalOpen, setConvLicModalOpen]= useState(false);
-     const [pausModalOpen, setPausModalOpen]= useState(false)
+    // const [pausModalOpen, setPausModalOpen]= useState(false)
    
        // Function to toggle modal visibility
     const handleModalToggle = () => {
@@ -50,9 +50,9 @@ const TrialView = ({}: Props) => {
       setConvLicModalOpen((prev)=> !prev);
     }
 
-    const pauseModalToggle= () =>{
-      setPausModalOpen((prev) => !prev);
-    }
+    // const pauseModalToggle= () =>{
+    //   setPausModalOpen((prev) => !prev);
+    // }
 
 
 
@@ -179,7 +179,7 @@ const TrialView = ({}: Props) => {
                 <p className="text-#565148 font-medium text-xs">Extent Trial</p>
                </Button>
               </div>
-              <div onClick={pauseModalToggle}>
+              <div>
               <Button className="w-28 h-10" variant="secondary">
                <CalenderDays size={16} color="#4B5C79"/>
                <p className="text-#585953 font-medium text-xs">Resume Trial</p>
@@ -301,13 +301,13 @@ const TrialView = ({}: Props) => {
 
              {/* Modal controlled by state */}
              <Modal open={conLicModalOpen} align="center" onClose={covertModalToggle} className="w-[30%]">
-                <ConvertLicenser onClose={covertModalToggle} />
+                <ConvertModal onClose={covertModalToggle} type="trial" />
             </Modal>
 
-            {/* Modal controlled by state */}
+            {/* Modal controlled by state
             <Modal open={pausModalOpen} align="center" onClose={pauseModalToggle} className="w-[35%]">
                 <ResumePauseTrail onClose={pauseModalToggle} />
-            </Modal>
+            </Modal> */}
 
           
     </div>
