@@ -1,15 +1,18 @@
-// Path: components/ConvertLicenser.tsx
-import Button from "../../../../components/ui/Button";
-import bgpicturee from "../../../../assets/image/Group.png";
-import Modal from "../../../../components/modal/Modal";
+// Path: components/ConvertModal.tsx
+import Button from "../../ui/Button";
+import bgpicturee from "../../../assets/image/Group 629978 (1).png";
+import Modal from "../Modal";
 import { useState } from "react";
 import OrganisationForm from "./OrganisationForm";
 
 type Props = {
     onClose: () => void;
+    type:"lead"|"trial";
+    
 };
 
-function ConvertLicenser({ onClose }: Props) {
+function ConvertModal({ onClose, type }: Props) {
+
     const [isCurrentModalOpen, setIsCurrentModalOpen] = useState(true);
     const [isNextModalOpen, setIsNextModalOpen] = useState(false);
 
@@ -37,7 +40,7 @@ function ConvertLicenser({ onClose }: Props) {
                     <div className="p-2 space-y-1 text-[#4B5C79] py-2 w-[100%]">
                         <div className="flex justify-between p-2">
                             <div>
-                                <h3 className="text-[#303F58] font-bold text-lg">Lead Conversion</h3>
+                                <h3 className="text-[#303F58] font-bold text-lg">{type=='lead'?"Lead": "Trial"} Conversion</h3>
                                 <p className="text-[11px] text-[#8F99A9] mt-1">
                                     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
                                     eiusmod tempor incididunt.
@@ -52,7 +55,7 @@ function ConvertLicenser({ onClose }: Props) {
                             <div className="my-2">
                                 <div className="justify-center">
                                     <img
-                                        className="h-44 w-28 ms-56"
+                                        className="h-44 w-56 ms-56"
                                         src={bgpicturee}
                                         alt="Background"
                                     />
@@ -100,4 +103,4 @@ function ConvertLicenser({ onClose }: Props) {
     );
 }
 
-export default ConvertLicenser;
+export default ConvertModal;
