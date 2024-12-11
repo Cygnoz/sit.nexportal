@@ -107,56 +107,11 @@ exports.getAllLeads = async (req, res) => {
 
 
 
-// exports.updateLead = async (req, res, next) => {
-//   try {
-//     const { leadId } = req.params;
-
-//     // Extract fields dynamically from req.body
-//     const updateFields = { ...req.body };
-
-//     // Check for duplicate email or phone (excluding the current lead)
-//     const existingLead = await Leads.findOne({
-//       $or: [{ email: updateFields.email }, { phone: updateFields.phone }],
-//       _id: { $ne: leadId },
-//     });
-
-//     if (existingLead) {
-//       let message = "Conflict: ";
-//       if (existingLead.email === updateFields.email) message += "Email already exists. ";
-//       if (existingLead.phone === updateFields.phone) message += "Phone already exists. ";
-//       return res.status(400).json({ message: message.trim() });
-//     }
-
-//     // Update the lead
-//     const updatedLead = await Leads.findByIdAndUpdate(
-//       leadId,
-//       updateFields, // Dynamically apply fields from req.body
-//       { new: true } // Return the updated document
-//     );
-
-//     if (!updatedLead) {
-//       return res.status(404).json({ message: "Lead not found" });
-//     }
-
-//     res.status(200).json({ message: "Lead updated successfully", lead: updatedLead });
-
-//     // Pass operation details to middleware
-//     ActivityLog(req, "successfully", updatedLead._id);
-//     next();
-//   } catch (error) {
-//     console.error("Error updating lead:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//     ActivityLog(req, "Failed");
-//     next();
-//    }
-// };
-
-
-
 exports.editLead = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const data = cleanData(req.body);
+    const data = cleanLeadData(req.body);
+
     // Fetch the existing document to get the user field
 const existingLead = await Leads.findById(id);
 if (!existingLead) {
@@ -186,7 +141,7 @@ const existingUserId = existingLead.user;
       message: "Lead updated successfully"
     });
     ActivityLog(req, "Successfully", updatedLead._id);
-  next()
+    next()
   } catch (error) {
     console.error("Error editing Lead:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -225,6 +180,8 @@ const existingUserId = existingLead.user;
 // };
 
 
+
+
 const ActivityLog = (req, status, operationId = null) => {
   const { id, userName } = req.user;
   const log = { id, userName, status };
@@ -235,6 +192,8 @@ const ActivityLog = (req, status, operationId = null) => {
 
   req.user = log;
 };
+
+
 
 
   // Validate Organization Tax Currency
@@ -279,7 +238,7 @@ const ActivityLog = (req, status, operationId = null) => {
       duplicateMessages.push("Full name already exists");
     if (existingUser.email === email)
       duplicateMessages.push("Login email already exists");
-    if (existingUser.phone === phoneNo)
+    if (existingUser.phone === phone)
       duplicateMessages.push("Phone number already exists");
   
     return duplicateMessages.join(". ");
@@ -327,7 +286,7 @@ function validateLeadsData( data, regionExists, areaExists, bdaExists ) {
   //Basic Info
   validateReqFields( data, regionExists, areaExists, bdaExists, errors );
   validateSalutation(data.salutation, errors);
-  validateSalutation(data.leadStatus, errors);
+  validLeadStatus(data.leadStatus, errors);
 
 
   return errors;
@@ -347,7 +306,7 @@ function validateSalutation(salutation, errors) {
 }
 
 //Validate Salutation
-function validateSalutation(leadStatus, errors) {
+function validLeadStatus(leadStatus, errors) {
   validateField(leadStatus && !validLeadStatus.includes(leadStatus),
     "Invalid leadStatus: " + leadStatus, errors);
 }
