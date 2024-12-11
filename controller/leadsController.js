@@ -286,7 +286,7 @@ function validateLeadsData( data, regionExists, areaExists, bdaExists ) {
   //Basic Info
   validateReqFields( data, regionExists, areaExists, bdaExists, errors );
   validateSalutation(data.salutation, errors);
-  validLeadStatus(data.leadStatus, errors);
+  validateLeadStatus(data.leadStatus, errors);
 
 
   return errors;
@@ -306,7 +306,7 @@ function validateSalutation(salutation, errors) {
 }
 
 //Validate Salutation
-function validLeadStatus(leadStatus, errors) {
+function validateLeadStatus(leadStatus, errors) {
   validateField(leadStatus && !validLeadStatus.includes(leadStatus),
     "Invalid leadStatus: " + leadStatus, errors);
 }
