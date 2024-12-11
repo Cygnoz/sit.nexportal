@@ -56,7 +56,7 @@ function TicketsForm({ onClose }: Props) {
         <div className="p-2 space-y-1 text-[#4B5C79] py-2 w-[100%]">
       <div className="flex justify-between p-2">
         <div>
-          <h3 className="text-[#303F58] font-bold text-lg">Add Commission Profile</h3>
+          <h3 className="text-[#303F58] font-bold text-lg">Create Tickets</h3>
           <p className="text-[11px] text-[#8F99A9] mt-1">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
             eiusmod tempor incididunt.
@@ -141,7 +141,7 @@ function TicketsForm({ onClose }: Props) {
           </div>
         </div>
         </div>
-        <div className=" flex justify-end gap-2 mt-3 pb-2">
+        <div className=" flex justify-end gap-2 mt-3 pb-2 me-5">
         <Button
           variant="tertiary"
           className="h-8 text-sm border rounded-lg"
@@ -156,7 +156,7 @@ function TicketsForm({ onClose }: Props) {
           size="lg"
           type="submit"
         >
-          Submit
+          Save
         </Button>
       </div>
       </form>

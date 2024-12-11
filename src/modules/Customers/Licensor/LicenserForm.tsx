@@ -85,13 +85,15 @@ function LicenserForm({ onClose ,editId}: Props) {
   return (
     <div className="px-5 py-3 bg-white rounded shadow-md">
       <div className="flex justify-between">
-        <div>
-          <h3 className="text-[#303F58] font-bold text-lg">Create Licenser</h3>
-          <p className="text-[11px] text-[#8F99A9] my-2">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt{" "}
-          </p>
-        </div>
+      <div>
+
+<h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Licenser</h3>
+<p className="text-[11px] text-[#8F99A9] mt-1">
+  {editId
+    ? "Edit the details of the Licenser."
+    : "Fill in the details to create a new Licenser."}
+</p>
+</div>
         <p onClick={onClose} className="text-2xl cursor-pointer">
           &times;
         </p>
