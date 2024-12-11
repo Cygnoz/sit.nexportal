@@ -187,7 +187,7 @@ const salutation = [
         const Lead = response.data; // Return the fetched data
         console.log("Fetched Lead data:", Lead);
   
-        const { user,_id, ...lead } = Lead;
+        // const { user,_id, ...lead } = Lead;
   
         // const transformedLead = Lead ? {
         //   ...lead,

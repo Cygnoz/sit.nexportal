@@ -257,6 +257,8 @@ label: area.areaName,
       const { response, error } = await getAM(`${endPoints.GET_ALL_AM}/${editId}`);
           if (response && !error) {
             const AM:any= response.data; // Return the fetched data
+            console.log("cdsds",AM);
+            
             const { user,_id, ...am } = AM;
             const transformedAM = AM ? {
               ...am,

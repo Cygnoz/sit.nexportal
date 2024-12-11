@@ -117,7 +117,7 @@ const DashboardPage = () => {
             padding: 5
           }
         }}
-        tickFormat={(t, index) => `${data[index].flag} ${data[index].country}`}
+        tickFormat={(_, index) => `${data[index].flag} ${data[index].country}`}
       />
       <VictoryAxis
         style={{

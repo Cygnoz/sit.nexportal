@@ -138,7 +138,7 @@ const AMView = ({ }: Props) => {
               <p className="text-[#D4D4D4] text-xs font-medium">Joining Date</p>
               <p className="text-[#FFFFFF] text-sm font-medium">13 June 2023</p>
             </div>
-            <div className="flex -mt-9 ms-10 gap-3">
+            <div className="flex -mt-9 ms-20 gap-3 justify-end">
               <div className="flex flex-col items-center space-y-1">
                 <div className="w-8 h-8 mb-2 rounded-full">
                   <EditIcon size={36} color="#C4A25D24" />

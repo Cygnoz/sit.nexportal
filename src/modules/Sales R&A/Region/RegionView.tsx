@@ -1,27 +1,26 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
 import ChevronDown from "../../../assets/icons/ChevronDown";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import ChevronUp from "../../../assets/icons/ChevronUp";
-import DeleteIcon from "../../../assets/icons/DeleteIcon";
+import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
 import EmailIcon from "../../../assets/icons/EmailIcon";
 import PhoneIcon from "../../../assets/icons/PhoneIcon";
 import PlusCircleIcon from "../../../assets/icons/PlusCircleIcon";
 import region from "../../../assets/image/Ellipse 14 (3).png";
-import RegionAriaView from "./RegionAriaView";
-import RegionPerformanceView from "./RegionPerformanceView";
-import RegionTeamView from "./RegionTeamView";
-import { endPoints } from "../../../services/apiEndpoints";
-import useApi from "../../../Hooks/useApi";
 import IndiaLogo from "../../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../../assets/image/SaudiLogo.png";
 import UAELogo from "../../../assets/image/UAELogo.webp";
 import Modal from "../../../components/modal/Modal";
-import RegionForm from "./RegionForm";
+import { endPoints } from "../../../services/apiEndpoints";
 import AreaForm from "../Area/AreaForm";
-import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
-import toast from "react-hot-toast";
+import RegionAriaView from "./RegionAriaView";
+import RegionForm from "./RegionForm";
+import RegionPerformanceView from "./RegionPerformanceView";
+import RegionTeamView from "./RegionTeamView";
 type Props = {};
 
 function RegionView({}: Props) {

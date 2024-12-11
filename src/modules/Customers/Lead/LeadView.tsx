@@ -5,12 +5,17 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import ComputerTick from "../../../assets/icons/ComputerTick";
 import DivisionIcon from "../../../assets/icons/DivisionIcon";
 import LeadScoreIcon from "../../../assets/icons/LeadScoreIcon";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Button from "../../../components/ui/Button";
 import ChevronDown from "../../../assets/icons/ChevronDown";
-import ViewActivity from "./ViewActivity";
 import ViewOverflow from "./ViewOverflow";
 import ViewSidebar from "./ViewSidebar";
+import EmailIcon from "../../../assets/icons/EmailIcon";
+import PencilLine from "../../../assets/icons/PencilLine";
+import CalenderDays from "../../../assets/icons/CalenderDays";
+import Video from "../../../assets/icons/Video";
+import ClipboardPenLine from "../../../assets/icons/ClipboardPenLine";
+import ViewActivities from "./ViewActivity/ViewActivities";
 
 type Props = {}
 
@@ -25,8 +30,29 @@ function LeadView({}: Props) {
 
     const tabs=["Overview","Activities"]
     const [activeTab, setActiveTab] = useState<string>("Overview");
-
+    const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
   
+    const dropdownOptions = [
+      { label: "Email", icon: <EmailIcon size={14} color="#4B5C79"/> }, // Replace with your Email icon component
+      { label: "Note", icon: <PencilLine size={14} color="#4B5C79" /> },
+      { label: "Meeting", icon: <Video size={14} color="#4B5C79" /> },
+      { label: "Task", icon: <CalenderDays size={14} color="#4B5C79" /> },
+      { label: "Proposal", icon: <ClipboardPenLine size={14} color="#4B5C79" /> },
+    ];
+  
+    // Handle click outside dropdown
+    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+          setDropdownOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+    })
+      
+  
+    
   return (
     <div >
       <div className="flex items-center text-[16px] space-x-2">
@@ -71,13 +97,29 @@ function LeadView({}: Props) {
       ))}
         </div>
 
-      <div className="">
-      <Button variant="primary"  size="sm">
-        <span className="">+</span>New Activity
-        <ChevronDown size={20} color="#FEFDF9"/>
-      </Button>
-      </div>
-
+        <div className="relative" ref={dropdownRef}>
+              <Button variant="primary" size="sm" onClick={() => setDropdownOpen(!dropdownOpen)}>
+                <span className="">+</span> New Activity
+                <ChevronDown size={20} color="#FEFDF9" />
+              </Button>
+              {dropdownOpen && (
+                <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow-lg w-40">
+                  {dropdownOptions.map((option, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center px-4 py-2 text-sm cursor-pointer border-[#DFDFDF] border-b hover:bg-gray-100"
+                      onClick={() => {
+                        console.log(`${option.label} selected`);
+                        setDropdownOpen(false); // Close dropdown after selection
+                      }}
+                    >
+                      <span className="mr-2">{option.icon}</span>
+                      {option.label}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
     </div>
       {activeTab==="Overview"&&(
@@ -85,7 +127,7 @@ function LeadView({}: Props) {
       )}
 
     {activeTab==="Activities"&&(
-      <ViewActivity/>
+      <ViewActivities/>
     )}
     
 
