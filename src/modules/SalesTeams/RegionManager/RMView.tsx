@@ -19,6 +19,7 @@ import BackgroundImage from "../../../assets/image/6.png";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
 import AwardIcon from "../../../assets/icons/AwardIcon";
+import RMViewAward from "./RMViewAward";
 
 interface AreaData {
   areaCode: string;
@@ -30,11 +31,16 @@ interface AreaData {
 const RMView = () => {
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAwardOpen, setIsAwardOpen] = useState(false)
 
   // Function to toggle modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
+  const AwardhandleToggle = () => {
+    setIsAwardOpen((prev) => !prev);
+  };
+
 
   // Data for HomeCards
   const homeCardData = [
@@ -233,7 +239,7 @@ const RMView = () => {
                 </div>
 
                 <div className="flex flex-col  items-center space-y-1">
-              <div className="w-8 h-8 mb-2 rounded-full">
+              <div onClick={AwardhandleToggle} className="w-8 h-8 mb-2 rounded-full">
                 <AwardIcon size={40} color="#D52B1E4D" />
               </div>
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
@@ -297,6 +303,11 @@ const RMView = () => {
       {/* Modal controlled by state */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
         <RMViewForm onClose={handleModalToggle} />
+      </Modal>
+
+      
+      <Modal align='right' className='w-[25%] me-16' open={isAwardOpen} onClose={AwardhandleToggle}>
+        <RMViewAward onClose={AwardhandleToggle} />
       </Modal>
     </div>
   );
