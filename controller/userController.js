@@ -23,8 +23,20 @@ exports.addUser = async (req, res,next) => {
       return res.status(400).json({ message: message.trim() });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    let nextId = 1;
+    const lastUser = await User.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+    if (lastUser) {
+      const lastId = parseInt(lastUser.employeeId.slice(6));
+      console.log(lastId) // Extract the numeric part from the customerID
+      nextId = lastId + 1; // Increment the last numeric part
+    }    
+    const employeeId = `EMPID-${nextId.toString().padStart(4, '0')}`;
+  
+
     // Create a new user entry
     const newUser = new User({
+      employeeId,
       userImage,
       userName,
       phoneNo,

@@ -4,7 +4,64 @@ const Region = require("../database/model/region");
 const Commission = require("../database/model/commission");
 const RegionManager = require("../database/model/regionManager");
 const bcrypt = require("bcrypt");
+const crypto = require('crypto');
 const { ObjectId } = require('mongoose').Types;
+
+const key = Buffer.from(process.env.ENCRYPTION_KEY, 'utf8'); 
+const iv = Buffer.from(process.env.ENCRYPTION_IV, 'utf8'); 
+
+
+//Encrpytion 
+function encrypt(text) {
+  try {
+      const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
+      let encrypted = cipher.update(text, 'utf8', 'hex');
+      encrypted += cipher.final('hex');
+
+      const authTag = cipher.getAuthTag().toString('hex'); // Get authentication tag
+
+      return `${iv.toString('hex')}:${encrypted}:${authTag}`; // Return IV, encrypted text, and tag
+  } catch (error) {
+      console.error("Encryption error:", error);
+      throw error;
+  }
+}
+
+
+//Decrpytion
+function decrypt(encryptedText) {
+  try {
+      // Split the encrypted text to get the IV, encrypted data, and authentication tag
+      const [ivHex, encryptedData, authTagHex] = encryptedText.split(':');
+      const iv = Buffer.from(ivHex, 'hex');
+      const authTag = Buffer.from(authTagHex, 'hex');
+
+      // Create the decipher with the algorithm, key, and IV
+      const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
+      decipher.setAuthTag(authTag); // Set the authentication tag
+
+      let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+      decrypted += decipher.final('utf8');
+      return decrypted;
+  } catch (error) {
+      console.error("Decryption error:", error);
+      throw error;
+  }
+}
+
+// A function to encrypt sensitive fields if they exist
+const encryptSensitiveFields = (data) => {
+  const encryptIfExists = (field) => field ? encrypt(field) : field;
+
+  data.adhaarNo = encryptIfExists(data.adhaarNo);
+  data.panNo = encryptIfExists(data.panNo);
+  if (data.bankDetails) {
+    data.bankDetails.bankAccountNo = encryptIfExists(data.bankDetails.bankAccountNo);
+  }
+
+  return data;
+};
+
 
 // Validation utility function
 const validateRequiredFields = (requiredFields, data) => {
@@ -13,6 +70,8 @@ const validateRequiredFields = (requiredFields, data) => {
     ? null 
     : `Missing required fields: ${missingFields.join(", ")}`;
 };
+
+
 
 // Duplicate check utility function
 
@@ -67,8 +126,20 @@ const logOperation = (req, status, operationId = null) => {
   async function createUser(data) {
     const { password, ...rest } = data; // Extract password and the rest of the data
     const hashedPassword = await bcrypt.hash(password, 10);
+
+    // employee id
+    let nextId = 1;
+    const lastUser = await User.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+    if (lastUser) {
+      const lastId = parseInt(lastUser.employeeId.slice(6));
+      // Extract the numeric part from the customerID
+      nextId = lastId + 1; // Increment the last numeric part
+    }    
+    const employeeId = `EMPID-${nextId.toString().padStart(4, '0')}`;
+  
     const newUser = new User({
       ...rest, // Spread other properties from data
+      employeeId,
       password: hashedPassword, // Use hashed password
       role: "Region Manager", // Set default role
     });
@@ -109,7 +180,7 @@ const logOperation = (req, status, operationId = null) => {
   exports.addRegionManager = async (req, res, next) => {
     try {
       // Destructure and validate
-      const data = cleanData(req.body);
+      let data = cleanData(req.body);
     //   const data = req.body;
     
       const requiredFields = ["userName", "phoneNo", "email", "password"];
@@ -129,8 +200,13 @@ const logOperation = (req, status, operationId = null) => {
   
       // Create user
       const newUser = await createUser(data);
-  
-      // Create region manager
+      
+      // Encrypt sensitive fields
+    data = encryptSensitiveFields(data);
+
+
+
+       // Create region manager
       const newRegionManager = await createRegionManager(data, newUser._id);
   
       logOperation(req, "Successfully", newRegionManager._id);
@@ -155,7 +231,7 @@ const logOperation = (req, status, operationId = null) => {
       const { id } = req.params;
   
       const regionManager = await RegionManager.findById(id).populate([
-        { path: 'user', select: 'userName phoneNo userImage email' },
+        { path: 'user', select: 'userName phoneNo userImage  employeeId email' },
         { path: 'region', select: 'regionName' },
         { path: 'commission', select: 'profileName' },
       ]);
@@ -164,12 +240,21 @@ const logOperation = (req, status, operationId = null) => {
         return res.status(404).json({ message: "Region Manager not found" });
       }
   
+      const decryptField = (field) => field ? decrypt(field) : field;
+  
+      regionManager.adhaarNo = decryptField(regionManager.adhaarNo);
+      regionManager.panNo = decryptField(regionManager.panNo);
+      if (regionManager.bankDetails) {
+        regionManager.bankDetails.bankAccountNo = decryptField(regionManager.bankDetails.bankAccountNo);
+      }
+  
       res.status(200).json(regionManager);
     } catch (error) {
       console.error("Error fetching Region Manager:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   };
+  
   
   
   exports.getAllRegionManager = async (req, res) => {
@@ -196,7 +281,7 @@ const logOperation = (req, status, operationId = null) => {
     exports.editRegionManager = async (req, res,next) => {
       try {
         const { id } = req.params;
-        const data = cleanData(req.body);
+        let data = cleanData(req.body);
         // Fetch the existing document to get the user field
     const existingRegionManager = await RegionManager.findById(id);
     if (!existingRegionManager) {
@@ -221,7 +306,10 @@ const logOperation = (req, status, operationId = null) => {
         if (duplicateCheck) {
           return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
         }
-    
+        
+     // Encrypt sensitive fields
+     data = encryptSensitiveFields(data);
+
         const user = await User.findById(existingUserId);
         Object.assign(user, data);
         await user.save();
