@@ -6,12 +6,13 @@ import CalenderDays from "../../assets/icons/CalenderDays";
 import Package from "../../assets/icons/Package";
 import SortBy from "../../components/ui/SortBy";
 import CreateTickets from "./TicketsForm";
+import { useNavigate } from "react-router-dom";
 
 
 type Props = {}
 
 function TicketsHome({}: Props) {
- 
+  const navigate=useNavigate()
   interface LeadData {
     status: string;
     subject: string;
@@ -31,10 +32,11 @@ function TicketsHome({}: Props) {
 
 
 
+ 
   const handleView=(id:any)=>{
-   console.log(id);
-   
+    navigate(`/ticketsView/${id}`)
   }
+
 
   
 
@@ -143,7 +145,7 @@ const sort=
         </div>
      </div>
       {/* Modal controlled by state */}
-      <Modal className="w-[40%]" open={isModalOpen} onClose={handleModalToggle}>
+      <Modal className="w-[35%]" open={isModalOpen} onClose={handleModalToggle}>
       <CreateTickets  onClose={handleModalToggle}/>
       </Modal>
     </div>

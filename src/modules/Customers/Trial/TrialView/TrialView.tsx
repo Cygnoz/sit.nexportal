@@ -23,17 +23,23 @@ import ExtentTrail from "./ExtentTrail"
 import ConvertModal from "../../../../components/modal/ConvertionModal/CovertLicenser"
 import ResumePauseTrail from "./ResumePauseTrail"
 import rightArrow from '../../../../assets/image/right-arrow.png'
+import CalenderModal from "./CalenderModal"
 
 
-type Props = {}
+type Props = {
+  
+}
 
-const TrialView = ({}: Props) => {
+const TrialView = ({  }: Props) => {
      // State to manage modal visibility
      const [isModalOpen, setIsModalOpen] = useState(false);
      const [editModalOpen, setEditModalOpen] = useState(false);
      const [extentModalOpen, setExtentModalOpen]= useState(false);
      const [conLicModalOpen, setConvLicModalOpen]= useState(false);
-     const [pausModalOpen, setPausModalOpen]= useState(false)
+     const [pausModalOpen, setPausModalOpen]= useState(false);
+     const [calenderModalOpen, setCalenderModalOpen]= useState(false)
+
+    
    
        // Function to toggle modal visibility
     const handleModalToggle = () => {
@@ -56,6 +62,10 @@ const TrialView = ({}: Props) => {
       setPausModalOpen((prev) => !prev);
     }
 
+    const calenderModalToggle= () =>{
+      setCalenderModalOpen((prev) => !prev);
+    }
+
 
 
     const {id}=useParams()
@@ -65,6 +75,35 @@ const TrialView = ({}: Props) => {
        <p className="font-bold text-[#820000] ">Trail</p>
         <ChevronRight color="#4B5C79" size={18}/>
         <p className="font-bold text-[#303F58] "> {id}</p>
+      </div>
+
+      <div className="bg-[#F3E6E6] rounded-lg mt-2">
+        <div className="p-2 flex justify-between"> 
+        <div className="p-2">
+        <h1 className="bg-[#B08E20] p-1 rounded-lg text-white text-xs font-semibold">Trail On Hold</h1>
+         </div>
+        <div className="justify-end">
+        <button
+          type="button"
+          
+          className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900 me-auto"
+        >
+          &times;
+        </button>
+        </div>
+        </div>
+        <div className="flex p-2">
+          <h1 className="mt-2 ml-2">This trial is currently paused. No activities are allowed until resumed</h1>
+          <Button className="ml-96">Resume Trail</Button>
+          <div className="w-12 h-12 rounded-full overflow-hidden ml-64">
+          <img
+            src={profileImage} // Replace with the actual image URL
+            alt="Profile"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        </div>
+      
       </div>
 
       <div className="grid grid-cols-12 mt-5">
@@ -169,7 +208,7 @@ const TrialView = ({}: Props) => {
                  </div>
 
                 </div>
-                <div className="flex gap-2 rounded-xl bg-[#FFFFFF33] w-60 py-3 px-2 h-14 my-4 mx-4">
+                <div onClick={calenderModalToggle} className="flex gap-2 rounded-xl bg-[#FFFFFF33] w-60 py-3 px-2 h-14 my-4 mx-4">
                   <div className="px-2 ms-6"><CalenderRound size={32}/></div>
                   <p className="mt-2 text-[#FFFFFF] text-xs font-medium">View Calender</p>
                 </div>
@@ -184,7 +223,7 @@ const TrialView = ({}: Props) => {
               <div onClick={pauseModalToggle}>
               <Button className="w-28 h-10" variant="secondary">
                <CalenderDays size={16} color="#4B5C79"/>
-               <p className="text-#585953 font-medium text-xs">Resume Trial</p>
+               <p className="text-#585953 font-medium text-xs">Pause Trial</p>
                </Button>
 
               </div>
@@ -315,6 +354,11 @@ const TrialView = ({}: Props) => {
             {/* Modal controlled by state */}
             <Modal open={pausModalOpen} align="center" onClose={pauseModalToggle} className="w-[35%]">
                 <ResumePauseTrail onClose={pauseModalToggle} />
+            </Modal> 
+
+             {/* Modal controlled by state */}
+             <Modal open={calenderModalOpen} align="center" onClose={calenderModalToggle} className="w-[65%]">
+                <CalenderModal onClose={calenderModalToggle} />
             </Modal> 
 
           

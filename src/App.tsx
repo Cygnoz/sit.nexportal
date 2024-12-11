@@ -34,6 +34,7 @@ import TrialView from './modules/Customers/Trial/TrialView/TrialView';
 import LicenserView from './modules/Customers/Licensor/view/LicenserView';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
 import PraiseHome from './modules/Awards/Praise/PraiseHome';
+import TicketsView from './modules/Tickets/TicketsView';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -77,6 +78,7 @@ const App: React.FC = () => {
             <Route path="user" element={<UserHome/>} />
             <Route path="worker-commission" element={<WCommisionHome/>} />
             <Route path="tickets" element={<TicketsHome/>} />
+            <Route path="ticketsView/:id" element={<TicketsView/>} />
             <Route path="user-log" element={<UserLogHome/>} />
             <Route path='prises' element={<PraiseHome/>} />
             

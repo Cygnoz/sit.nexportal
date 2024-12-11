@@ -31,13 +31,18 @@ const LicensorHome = () => {
     const navigate=useNavigate()
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editId,setEditId] = useState('');
+
+
+    const handleEdit=(id:any)=>{
+      handleModalToggle()
+      setEditId(id)
+    }
 
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
       };
-     
-
-      const handleView=(id:any)=>{
+       const handleView=(id:any)=>{
         navigate(`/licenserView/${id}`)
       }
     
@@ -82,7 +87,11 @@ const LicensorHome = () => {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">Licenser</h1>
-        <Button variant="primary" size="sm" onClick={handleModalToggle}>
+        <Button variant="primary" size="sm" onClick={()=>{
+        handleModalToggle()
+        setEditId('')
+
+      }}>
         <span className="text-xl font-bold">+</span> Create Licenser
         </Button>
       </div>
@@ -136,14 +145,14 @@ const LicensorHome = () => {
           ]
         }}
         actionList={[
-            { label: 'edit', function:handleView },
+            { label: 'edit', function: handleEdit},
             { label: 'view', function: handleView },
           ]}  />
       </div>
 
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <AddLicenser onClose={handleModalToggle} />
+        <AddLicenser editId={editId} onClose={handleModalToggle} />
       </Modal>
     </div>
   )
