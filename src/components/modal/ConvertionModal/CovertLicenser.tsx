@@ -1,6 +1,6 @@
 // Path: components/ConvertModal.tsx
 import Button from "../../ui/Button";
-import bgpicturee from "../../../assets/image/Group.png";
+import bgpicturee from "../../../assets/image/Group 629978 (1).png";
 import Modal from "../Modal";
 import { useState } from "react";
 import OrganisationForm from "./OrganisationForm";
@@ -55,7 +55,7 @@ function ConvertModal({ onClose, type }: Props) {
                             <div className="my-2">
                                 <div className="justify-center">
                                     <img
-                                        className="h-44 w-28 ms-56"
+                                        className="h-44 w-56 ms-56"
                                         src={bgpicturee}
                                         alt="Background"
                                     />

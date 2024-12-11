@@ -16,11 +16,13 @@ import CalenderDays from "../../../../assets/icons/CalenderDays"
 import Modal from "../../../../components/modal/Modal"
 import TrialViewForm from "./TrialViewForm"
 import { useState } from "react"
-import ArrowRight from "../../../../assets/icons/ArrowRight"
+// import ArrowRight from "../../../../assets/icons/ArrowRight"
 import TrialEditForm from "./TrialEditForm"
 import Button from "../../../../components/ui/Button"
 import ExtentTrail from "./ExtentTrail"
 import ConvertModal from "../../../../components/modal/ConvertionModal/CovertLicenser"
+import ResumePauseTrail from "./ResumePauseTrail"
+import rightArrow from '../../../../assets/image/right-arrow.png'
 
 
 type Props = {}
@@ -31,7 +33,7 @@ const TrialView = ({}: Props) => {
      const [editModalOpen, setEditModalOpen] = useState(false);
      const [extentModalOpen, setExtentModalOpen]= useState(false);
      const [conLicModalOpen, setConvLicModalOpen]= useState(false);
-    // const [pausModalOpen, setPausModalOpen]= useState(false)
+     const [pausModalOpen, setPausModalOpen]= useState(false)
    
        // Function to toggle modal visibility
     const handleModalToggle = () => {
@@ -50,9 +52,9 @@ const TrialView = ({}: Props) => {
       setConvLicModalOpen((prev)=> !prev);
     }
 
-    // const pauseModalToggle= () =>{
-    //   setPausModalOpen((prev) => !prev);
-    // }
+    const pauseModalToggle= () =>{
+      setPausModalOpen((prev) => !prev);
+    }
 
 
 
@@ -179,7 +181,7 @@ const TrialView = ({}: Props) => {
                 <p className="text-#565148 font-medium text-xs">Extent Trial</p>
                </Button>
               </div>
-              <div>
+              <div onClick={pauseModalToggle}>
               <Button className="w-28 h-10" variant="secondary">
                <CalenderDays size={16} color="#4B5C79"/>
                <p className="text-#585953 font-medium text-xs">Resume Trial</p>
@@ -211,7 +213,9 @@ const TrialView = ({}: Props) => {
         <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
         <div className="ml-24 my-1 text-sm font-bold"><p>Email Sent</p></div>
                 <div className="flex gap-6">
-                <div className="-mt-2"><ArrowRight size={48}/></div>
+                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                    <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
+                </div>
                 <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
 
                 <div className="flex gap-2 mt-2 -ml-2">
@@ -234,7 +238,9 @@ const TrialView = ({}: Props) => {
             <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
         <div className="ml-24 my-1 text-sm font-bold"><p>Email Sent</p></div>
                 <div className="flex gap-6">
-                <div className="-mt-2"><ArrowRight size={48}/></div>
+                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                    <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
+                </div>
                 <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
 
                 <div className="flex gap-2 mt-2 -ml-2">
@@ -256,7 +262,9 @@ const TrialView = ({}: Props) => {
             <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
         <div className="ml-24 my-1 text-sm font-bold"><p>Email Sent</p></div>
                 <div className="flex gap-6">
-                <div className="-mt-2"><ArrowRight size={48}/></div>
+                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                    <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
+                </div>
                 <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
 
                 <div className="flex gap-2 mt-2 -ml-2">
@@ -304,10 +312,10 @@ const TrialView = ({}: Props) => {
                 <ConvertModal onClose={covertModalToggle} type="trial" />
             </Modal>
 
-            {/* Modal controlled by state
+            {/* Modal controlled by state */}
             <Modal open={pausModalOpen} align="center" onClose={pauseModalToggle} className="w-[35%]">
                 <ResumePauseTrail onClose={pauseModalToggle} />
-            </Modal> */}
+            </Modal> 
 
           
     </div>

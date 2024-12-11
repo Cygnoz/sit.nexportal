@@ -5,7 +5,7 @@ import Button from "../../ui/Button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
-import Select from "../../form/Select";
+// import Select from "../../form/Select";
 //import CustomPhoneInput from "../../../components/form/CustomPhone";
 //import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
@@ -18,7 +18,10 @@ interface TrialData {
     mail: string;
     phone?: string;
     status?: string;
-
+password?:string;
+confirmPassword?:string;
+startDate?:string;
+endDate?:string;
 
 
 }
@@ -88,17 +91,36 @@ const OrganisationForm = ({onClose}: Props) => {
                             error={errors.phone?.message}
                             {...register("phone")}
                         />
-                        <Select
-                            label="Status"
-                            placeholder="Select Status"
-                            error={errors.status?.message}
-                            options={[
-                                { value: "name", label: "In progress" },
-                                { value: "name", label: "Completed" },
-                                { value: "name", label: "Pending" },
-                            ]}
-                            {...register("status")}
-                        />
+                         <Input
+                      required
+                      placeholder="Enter Password"
+                      label="New Password"
+                      type="password"
+                      error={errors.password?.message}
+                      {...register("password")}
+                    />
+                    <Input
+                      required
+                      placeholder="Re-enter Password"
+                      label="Confirm Password"
+                      type="password"
+                      error={errors.confirmPassword?.message}
+                      {...register("confirmPassword")}
+                    />
+                         <Input
+                  type="date"
+                  label="Start Date"
+                  error={errors.startDate?.message}
+                  {...register("startDate")}
+                />
+
+<Input
+                  type="date"
+                  label="End Date"
+                  error={errors.endDate?.message}
+                  {...register("endDate")}
+                />
+                       
 
 
 
