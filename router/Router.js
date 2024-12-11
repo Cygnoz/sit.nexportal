@@ -13,14 +13,16 @@ const ActivityLogGeneration = require('../controller/authController/activityLogC
 const leadController = require('../controller/leadsController')
 
 //add lead
-router.post('/add-lead',verifyToken,checkPermission('Add User'),leadController.addLead,ActivityLogGeneration('Add Lead'))
+router.post('/leads',verifyToken,checkPermission('Add Lead'),leadController.addLead,ActivityLogGeneration('Add Lead'))
 
-router.get('/get-all-lead',leadController.getAllLeads)
+router.get('/leads',verifyToken,checkPermission('View Lead'),leadController.getAllLeads) 
 
-router.get('/get-lead/:leadId',leadController.getLead)
+router.get('/lead/:leadId',verifyToken,checkPermission('View Lead'),leadController.getLead)
 
-router.put('/update-lead/:leadId',leadController.updateLead)
+router.put('/lead/:id',verifyToken,checkPermission('Edit Lead'),leadController.editLead,ActivityLogGeneration('Edit Lead'))
 
-router.delete('/delete-lead/:leadId',leadController.deleteLead)
+// router.delete('/delete-lead/:leadId',verifyToken,checkPermission('Delete User'),leadController.deleteLead,ActivityLogGeneration('Delete Lead'))
+
 
 module.exports = router
+
