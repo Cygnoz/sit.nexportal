@@ -95,6 +95,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
 ];
 
   return (
+    <div>
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
@@ -149,8 +150,10 @@ const columns: { key: keyof LeadData; label: string }[] = [
   
 />
       </div>
-      {/* Modal controlled by state */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
+      
+    </div>
+{/* Modal controlled by state */}
+<Modal open={isModalOpen} onClose={handleModalToggle}>
       <LeadForm  onClose={handleModalToggle}/>
       </Modal>
     </div>
