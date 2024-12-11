@@ -1,6 +1,6 @@
 export interface AreaData {
     areaName: string;
-    areaCode: string;
+    areaCode?: string;
     createdAt?: string;
     description?: string;
     region: string;

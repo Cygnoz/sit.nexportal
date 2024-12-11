@@ -31,7 +31,7 @@ interface TableProps<T> {
     }[];
   };
   actionList?: {
-    label: string;
+    label: "view" | "edit" | "delete";
     function: (id: any) => void;
   }[];
   // noButton?:boolean;
@@ -193,7 +193,7 @@ const Table = <T extends object>({
               <img
                 src={`${imageValue}`}
                 alt={keyValue}
-                className="w-5 h-5 rounded-full"
+                className="w-6 h-6 rounded-full"
               />
               <p>{keyValue}</p>
             </>
@@ -201,7 +201,7 @@ const Table = <T extends object>({
         } else {
           return (
             <>
-              <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+              <p className="w-6 h-6  border border-[#a6a6a8] bg-[#FFFFFF] rounded-full flex justify-center items-center">
                 <UserIcon color="#768294" size={15} />
               </p>
               <p>{keyValue}</p>
@@ -316,7 +316,7 @@ const Table = <T extends object>({
                             <p
                               key={index}
                               className="cursor-pointer"
-                              onClick={() => action.function(1)}
+                              onClick={() => action.function(row?._id)}
                             >
                               <Eye color="#4B5C79" size={16} />
                             </p>

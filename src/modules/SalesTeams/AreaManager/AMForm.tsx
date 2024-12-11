@@ -36,9 +36,9 @@ const baseSchema = {
     .required("Phone number is required"),
     email: Yup.string()
     .required("Email required")
-    .email("Invalid work email"),
-  workEmail: Yup.string().email(),
-  personalEmail: Yup.string().email(),
+    .email("Invalid email"),
+    workEmail: Yup.string().email("Invalid work email"),
+    personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
     .transform((value, originalValue) =>
@@ -257,6 +257,8 @@ label: area.areaName,
       const { response, error } = await getAM(`${endPoints.GET_ALL_AM}/${editId}`);
           if (response && !error) {
             const AM:any= response.data; // Return the fetched data
+            console.log("cdsds",AM);
+            
             const { user,_id, ...am } = AM;
             const transformedAM = AM ? {
               ...am,
@@ -423,7 +425,7 @@ label: area.areaName,
                 />
                 <Select
                   label="State"
-                  placeholder="Select State"
+                  placeholder={data.state.length==0?"Choose Country":"Select State"}
                   error={errors.state?.message}
                   options={data.state}
                   {...register("state")}
@@ -518,13 +520,9 @@ label: area.areaName,
                 />
                 <Select
                   label="Select Area"
-                  placeholder="Choose Area"
+                  placeholder={data.areas.length==0?'Select Region':"Select Area"}
                   value={watch("area")}
                   error={errors.area?.message}
-                  // options={allAreas.map((area: any) => ({
-                  //   value: area?._id,
-                  //   label: area.areaName,
-                  // }))}
                   options={data.areas}
                   {...register("area")}
                 />
@@ -676,7 +674,7 @@ label: area.areaName,
           )}
         </div>
 
-        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2">
+        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
           {tabs.indexOf(activeTab) > 0 ? (
             <Button
               variant="tertiary"

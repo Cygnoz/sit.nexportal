@@ -135,6 +135,7 @@ const RegionHome = () => {
   ];
 
   return (
+    <>
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -184,12 +185,13 @@ const RegionHome = () => {
         ]}
          />
       </div>
-
+      </div>
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[35%]">
         <RegionForm editId={editId} onClose={handleModalToggle} />
       </Modal>
-    </div>
+   
+    </>
   );
 };
 

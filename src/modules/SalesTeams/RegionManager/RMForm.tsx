@@ -38,14 +38,9 @@ const baseSchema = {
     .required("Phone number is required"),
   email: Yup.string()
     .required("Email required")
-    .email("Invalid work email"),
-    // region: Yup.string()
-    // .required("Region is required"),
-    // commission: Yup.string()
-    // .required("Commission is required"),
-   
-  workEmail: Yup.string().email(),
-  personalEmail: Yup.string().email(),
+    .email("Invalid email"),
+  workEmail: Yup.string().email("Invalid work email"),
+  personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
     .transform((value, originalValue) =>
@@ -427,7 +422,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   {...register("country")}
                 />
                 <Select
-                  placeholder="Select State"
+                  placeholder={data.state.length==0?"Choose Country":"Select State"}
                   label="State"
                   error={errors.state?.message}
                   options={data.state}
@@ -678,7 +673,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
           )}
         </div>
 
-        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2">
+        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
           {tabs.indexOf(activeTab) > 0 ? (
             <Button
               variant="tertiary"

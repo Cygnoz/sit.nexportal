@@ -34,9 +34,9 @@ const baseSchema = {
     .required("Phone number is required"),
   email: Yup.string()
     .required("Email required")
-    .email("Invalid work email"),
-  workEmail: Yup.string().email(),
-  PersonalEmail: Yup.string().email(),
+    .email("Invalid email"),
+  workEmail: Yup.string().email("Invalid work email"),
+  personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
     .transform((value, originalValue) =>
@@ -437,7 +437,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 <Select
                   label="State"
                   value={watch('state')}
-                  placeholder="Select State"
+                  placeholder={data.state.length==0?"Choose Country":"Select State"}
                   error={errors.state?.message}
                   options={data.state}
                   {...register("state")}
@@ -536,7 +536,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 />
                 <Select
                   label="Select Area"
-                  placeholder="Choose Area"
+                  placeholder={data.areas.length==0?'Select Region':"Select Area"}
                   value={watch('area')}
                   error={errors.area?.message}
                   options={data.areas}
@@ -688,8 +688,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
             </div>
           )}
         </div>
-
-        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2">
+ 
+        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
           {tabs.indexOf(activeTab) > 0 ? (
             <Button
               variant="tertiary"

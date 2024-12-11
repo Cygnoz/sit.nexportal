@@ -2,19 +2,16 @@ import { useState } from "react";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
-//import DeleteIcon from "../../assets/icons/DeleteIcon"
 import EditIcon from "../../../assets/icons/EditIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
 import person from "../../../assets/image/Ellipse 14 (2).png";
 import Modal from "../../../components/modal/Modal";
 import HomeCard from "../../../components/ui/HomeCards";
-//import HomeCard from "../../../components/ui/HomeCards"
 import Table from "../../../components/ui/Table";
 import RMViewAriaManagers from "./RMViewAriaManagers";
 import RMViewBDAandGraph from "./RMViewBDAandGraph";
 import RMViewForm from "./RMViewForm";
-// import HomeCard from "../../components/ui/HomeCards"
 import BackgroundImage from "../../../assets/image/6.png";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import { useParams } from "react-router-dom";
@@ -31,7 +28,7 @@ interface AreaData {
 const RMView = () => {
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAwardOpen, setIsAwardOpen] = useState(false)
+  const [isAwardOpen, setIsAwardOpen] = useState(false);
 
   // Function to toggle modal visibility
   const handleModalToggle = () => {
@@ -40,7 +37,6 @@ const RMView = () => {
   const AwardhandleToggle = () => {
     setIsAwardOpen((prev) => !prev);
   };
-
 
   // Data for HomeCards
   const homeCardData = [
@@ -157,7 +153,7 @@ const RMView = () => {
 
       <div className="flex items-center justify-between rounded-xl ">
         <div
-          className="grid grid-cols-12 gap-3 bg-cover rounded-xl p-2"
+          className="grid grid-cols-12 gap-3 bg-cover rounded-xl p-2 w-full"
           style={{
             backgroundImage: `url(${BackgroundImage})`, // Use the imported image
           }}
@@ -201,32 +197,36 @@ const RMView = () => {
 
           <div className="col-span-6 m-3">
             <div>
-              <div className="flex gap-4  text-[10px] py-2  text-white">
+              <div className="flex gap-4 ms-auto text-[10px] py-2  text-white">
                 {/* Right Section: Managers and Actions */}
-                <div className="flex ms-10 mt-2">
-                  {/* Sales Managers */}
-                  <div className=" text-end w-48">
-                    <p className="text-xs text-[#D4D4D4] py-2">Role</p>
-                    <h3 className="text-xs">Regional Manager</h3>
+                
+                  <div className="flex -ms-3 mt-2">
+                    {/* Sales Managers */}
+                    <div className=" text-end w-48">
+                      <p className="text-xs text-[#D4D4D4] py-2">Role</p>
+                      <h3 className="text-xs">Regional Manager</h3>
+                    </div>
+
+                    <div className="text-center w-24">
+                      <p className="text-xs text-[#D4D4D4] py-2">Employee ID</p>
+                      <p className="text-xs">EMC-NEOO1</p>
+                    </div>
+
+                    <div className="text-center w-24">
+                      <p className="text-xs text-[#D4D4D4] py-2">
+                        Joining Date
+                      </p>
+                      <p className="text-xs ">13 June 2023</p>
+                    </div>
                   </div>
 
-                  <div className="text-center w-24">
-                    <p className="text-xs text-[#D4D4D4] py-2">Employee ID</p>
-                    <p className="text-xs">EMC-NEOO1</p>
+                  <div className="flex flex-col w-fit items-center space-y-1">
+                    <div className="w-8 h-8 mb-2 rounded-full">
+                      <EditIcon size={40} color="#C4A25D24" />
+                    </div>
+                    <p className="text-center ms-3">Edit Profile</p>
                   </div>
-
-                  <div className="text-center w-24">
-                    <p className="text-xs text-[#D4D4D4] py-2">Joining Date</p>
-                    <p className="text-xs ">13 June 2023</p>
-                  </div>
-                </div>
-
-                <div className="flex flex-col items-center space-y-1">
-                  <div className="w-8 h-8 mb-2 rounded-full">
-                    <EditIcon size={40} color="#C4A25D24" />
-                  </div>
-                  <p className="text-center ms-3">Edit Profile</p>
-                </div>
+                
 
                 <div className="flex flex-col  items-center space-y-1">
                   <div
@@ -238,21 +238,26 @@ const RMView = () => {
                   <p className="text-center ms-3">View Details</p>
                 </div>
 
-                <div className="flex flex-col  items-center space-y-1">
-              <div onClick={AwardhandleToggle} className="w-8 h-8 mb-2 rounded-full">
-                <AwardIcon size={40} color="#D52B1E4D" />
-              </div>
-              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
-            </div>
+                <div className="flex flex-col   items-center space-y-1">
+                  <div
+                    onClick={AwardhandleToggle}
+                    className="w-8 h-8 mb-2 rounded-full"
+                  >
+                    <AwardIcon size={40} color="#D52B1E4D" />
+                  </div>
+                  <p className="text-center ms-3">
+                    Awards
+                  </p>
+                </div>
 
-                <div className="flex flex-col  items-center space-y-1">
+                <div className="flex flex-col -ms-2 items-center space-y-1">
                   <div className="w-8 h-8 mb-2 rounded-full">
                     <DeActivateIcon size={40} color="#D52B1E4D" />
                   </div>
                   <p className="text-center ms-3">DeActivate</p>
                 </div>
-              </div>
-
+              
+            </div>
               {/* HomeCards Section */}
 
               <div className="flex gap-3 py-2 justify-between mt-4">
@@ -287,7 +292,7 @@ const RMView = () => {
               }}
               noAction
               noPagination
-                maxHeight="345px"
+              maxHeight="345px"
             />
           </div>
         </div>
@@ -305,8 +310,12 @@ const RMView = () => {
         <RMViewForm onClose={handleModalToggle} />
       </Modal>
 
-      
-      <Modal align='right' className='w-[25%] me-16' open={isAwardOpen} onClose={AwardhandleToggle}>
+      <Modal
+        align="right"
+        className="w-[25%] me-16"
+        open={isAwardOpen}
+        onClose={AwardhandleToggle}
+      >
         <RMViewAward onClose={AwardhandleToggle} />
       </Modal>
     </div>

@@ -1,5 +1,5 @@
 export interface RegionData {
-    regionCode: string;
+    regionCode?: string;
     regionName: string;
     createdAt?: string;
     country: string;

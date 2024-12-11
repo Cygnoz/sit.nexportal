@@ -12,26 +12,22 @@ import LeadForm from './LeadForm'
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
+import { LeadData } from "../../../Interfaces/Lead";
 
 type Props = {}
 
 function LeadHome({}: Props) {
   const {request:getAllLeads}=useApi('get',3001)
+  const [allLead, setAllLead] = useState<LeadData[]>([]);
+  const [editId, setEditId] = useState('');
   const navigate=useNavigate()
-  interface LeadData {
-    leadID: string;
-    leadName: string;
-    phoneNumber: string;
-    emailAddress: string;
-    source: string;
-    status: string;
-  }
 
    // State to manage modal visibility
    const [isModalOpen, setIsModalOpen] = useState(false);
    // Function to toggle modal visibility
    const handleModalToggle = () => {
      setIsModalOpen((prev) => !prev);
+     getLeads()
    };
 
 
@@ -39,12 +35,18 @@ function LeadHome({}: Props) {
     navigate(`/leadView/${id}`)
   }
 
+  const handleEdit = (id: any) => {
+    setEditId(id);
+    handleModalToggle()
+  };
+
+
   const getLeads=async()=>{
     try{
-      const {response,error}=await getAllLeads(endPoints.GET_ALL_LEAD)
+      const {response,error}=await getAllLeads(endPoints.LEADS)
       if(response && !error){
         console.log(response.data.leads);
-        
+        setAllLead(response.data.leads)
       }
     }catch(err){
       console.log(err);
@@ -64,29 +66,29 @@ function LeadHome({}: Props) {
   ];
 
  // Data for the table
-const leadData: LeadData[] = [
-  { leadID: "BDA12345", leadName: "Anjela John", phoneNumber: "(406) 555-0120", emailAddress: "danten@mail.ru", source: "Website", status: "New"},
-  { leadID: "BDA12345", leadName: "Kristin Watson", phoneNumber: "(480) 555-0103", emailAddress: "warn@mail.ru", source: "Referral", status: "Contacted"},
-  { leadID: "BDA12345", leadName: "Jacob Jones", phoneNumber: "(208) 555-0112", emailAddress: "irnabela@gmail.com", source: "Website", status: "Closed"},
-  { leadID: "BDA12345", leadName: "Wade Warren", phoneNumber: "(702) 555-0122", emailAddress: "tinest@mail.ru", source: "Event", status: "Closed"},
-  { leadID: "BDA12345", leadName: "Jacob Jones", phoneNumber: "(208) 555-0112", emailAddress: "irnabela@gmail.com", source: "Website", status: "Closed" },
-  { leadID: "BDA12345", leadName: "Devon Lane", phoneNumber: "(308) 555-0121", emailAddress: "qmaho@mail.ru", source: "Website", status: "New" },
-  { leadID: "BDA12345", leadName: "Kathryn Murphy", phoneNumber: "(406) 555-0120", emailAddress: "danten@mail.ru", source: "Website", status: "New" },
-  { leadID: "BDA12346", leadName: "Mason Edwards", phoneNumber: "(512) 555-0133", emailAddress: "masonedwards@mail.com", source: "Referral", status: "Contacted" },
-  { leadID: "BDA12347", leadName: "Lily Anderson", phoneNumber: "(315) 555-0144", emailAddress: "lily.anderson@mail.com", source: "Website", status: "New" },
-  { leadID: "BDA12348", leadName: "Oliver Hall", phoneNumber: "(401) 555-0155", emailAddress: "oliverhall@mail.com", source: "Event", status: "New" },
-  { leadID: "BDA12349", leadName: "Sophia Lee", phoneNumber: "(216) 555-0166", emailAddress: "sophia.lee@mail.com", source: "Referral", status: "Closed" },
-  { leadID: "BDA12350", leadName: "Ethan Clark", phoneNumber: "(334) 555-0177", emailAddress: "ethan.clark@mail.com", source: "Website", status: "Contacted"},
-  { leadID: "BDA12351", leadName: "Isabella Carter", phoneNumber: "(518) 555-0188", emailAddress: "isabella.carter@mail.com", source: "Website", status: "New" },
-  { leadID: "BDA12352", leadName: "Henry Thomas", phoneNumber: "(609) 555-0199", emailAddress: "henry.thomas@mail.com", source: "Event", status: "Closed" },
-  { leadID: "BDA12353", leadName: "Ava Jackson", phoneNumber: "(202) 555-0200", emailAddress: "ava.jackson@mail.com", source: "Website", status: "Contacted"},
-  { leadID: "BDA12354", leadName: "Lucas Wright", phoneNumber: "(703) 555-0211", emailAddress: "lucas.wright@mail.com", source: "Referral", status: "Closed"},
-];
+// const leadData: any[] = [
+//   { leadID: "BDA12345", leadName: "Anjela John", phoneNumber: "(406) 555-0120", emailAddress: "danten@mail.ru", source: "Website", status: "New"},
+//   { leadID: "BDA12345", leadName: "Kristin Watson", phoneNumber: "(480) 555-0103", emailAddress: "warn@mail.ru", source: "Referral", status: "Contacted"},
+//   { leadID: "BDA12345", leadName: "Jacob Jones", phoneNumber: "(208) 555-0112", emailAddress: "irnabela@gmail.com", source: "Website", status: "Closed"},
+//   { leadID: "BDA12345", leadName: "Wade Warren", phoneNumber: "(702) 555-0122", emailAddress: "tinest@mail.ru", source: "Event", status: "Closed"},
+//   { leadID: "BDA12345", leadName: "Jacob Jones", phoneNumber: "(208) 555-0112", emailAddress: "irnabela@gmail.com", source: "Website", status: "Closed" },
+//   { leadID: "BDA12345", leadName: "Devon Lane", phoneNumber: "(308) 555-0121", emailAddress: "qmaho@mail.ru", source: "Website", status: "New" },
+//   { leadID: "BDA12345", leadName: "Kathryn Murphy", phoneNumber: "(406) 555-0120", emailAddress: "danten@mail.ru", source: "Website", status: "New" },
+//   { leadID: "BDA12346", leadName: "Mason Edwards", phoneNumber: "(512) 555-0133", emailAddress: "masonedwards@mail.com", source: "Referral", status: "Contacted" },
+//   { leadID: "BDA12347", leadName: "Lily Anderson", phoneNumber: "(315) 555-0144", emailAddress: "lily.anderson@mail.com", source: "Website", status: "New" },
+//   { leadID: "BDA12348", leadName: "Oliver Hall", phoneNumber: "(401) 555-0155", emailAddress: "oliverhall@mail.com", source: "Event", status: "New" },
+//   { leadID: "BDA12349", leadName: "Sophia Lee", phoneNumber: "(216) 555-0166", emailAddress: "sophia.lee@mail.com", source: "Referral", status: "Closed" },
+//   { leadID: "BDA12350", leadName: "Ethan Clark", phoneNumber: "(334) 555-0177", emailAddress: "ethan.clark@mail.com", source: "Website", status: "Contacted"},
+//   { leadID: "BDA12351", leadName: "Isabella Carter", phoneNumber: "(518) 555-0188", emailAddress: "isabella.carter@mail.com", source: "Website", status: "New" },
+//   { leadID: "BDA12352", leadName: "Henry Thomas", phoneNumber: "(609) 555-0199", emailAddress: "henry.thomas@mail.com", source: "Event", status: "Closed" },
+//   { leadID: "BDA12353", leadName: "Ava Jackson", phoneNumber: "(202) 555-0200", emailAddress: "ava.jackson@mail.com", source: "Website", status: "Contacted"},
+//   { leadID: "BDA12354", leadName: "Lucas Wright", phoneNumber: "(703) 555-0211", emailAddress: "lucas.wright@mail.com", source: "Referral", status: "Closed"},
+// ];
 
   // Define the columns with strict keys
   // Define the columns with strict keys for LeadData
-const columns: { key: keyof LeadData; label: string }[] = [
-  { key: "leadID", label: "Lead ID" },
+const columns: { key: any; label: string }[] = [
+  { key: "leadId", label: "Lead ID" },
   { key: "leadName", label: "Lead Name" },
   { key: "phoneNumber", label: "Phone Number" },
   { key: "emailAddress", label: "Email Address" },
@@ -95,7 +97,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
 ];
 
   return (
-    <div>
+    <>
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
@@ -120,7 +122,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
       {/* Table Section */}
       <div>
       <Table<LeadData>
-  data={leadData}
+  data={allLead}
   columns={columns}
   headerContents={{
     title: "Lead Details",
@@ -146,17 +148,17 @@ const columns: { key: keyof LeadData; label: string }[] = [
   }}
   actionList={[
     { label: 'view', function: handleView },
+    { label: "edit", function: handleEdit },
   ]}
   
 />
       </div>
-      
     </div>
-{/* Modal controlled by state */}
-<Modal open={isModalOpen} onClose={handleModalToggle}>
-      <LeadForm  onClose={handleModalToggle}/>
-      </Modal>
-    </div>
+    {/* Modal controlled by state */}
+    <Modal open={isModalOpen} onClose={handleModalToggle}>
+    <LeadForm editId={editId} onClose={handleModalToggle}/>
+    </Modal>
+    </>
   )
 }
 
