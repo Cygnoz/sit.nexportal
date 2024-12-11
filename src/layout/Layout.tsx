@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   return (
-    <div className="flex h-screen text-[#303F58]">
+    <div className="flex h-screen text-[#303F58] ">
       {/* Sidebar */}
       <Sidebar />
       {/* Main Content (Header + Outlet) */}

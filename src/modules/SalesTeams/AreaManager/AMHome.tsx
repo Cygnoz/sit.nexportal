@@ -82,7 +82,7 @@ const AMHome = () => {
         // Define the columns with strict keys
         const columns: { key: any; label: string }[] = [
           { key: "user.userName", label: "Name" },
-          { key: "email", label: "Email Address" },
+          { key: "loginEmail", label: "Email Address" },
           { key: "user.phoneNo", label: "Phone No" },
           { key: "region.regionName", label: "Region" },
           { key: "area.areaName", label: "Area" },

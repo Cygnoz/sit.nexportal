@@ -11,72 +11,59 @@ import DownloadIcon from "../../../assets/icons/DownloadIcon";
 import Trash from "../../../assets/icons/Trash";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
 import CheckIcon from "../../../assets/icons/CheckIcon";
+import { SAData } from "../../../Interfaces/SA";
+import { useRegularApi } from "../../../context/ApiContext";
+import useApi from "../../../Hooks/useApi";
 
-interface AddSupportAgentData {
-  fullName: string;
-  emailAddress: string;
-  phone: string;
-  dateOfBirth?: string;
-  bloodGroup?: string;
-  addressStreet1?: string;
-  addressStreet2?: string;
-  city?: string;
-  state?: string;
-  adhaarNo?: string;
-  panNo?: string;
-  dateOfJoining?: string;
-  // Additional fields for Bank and Company information
-  bankName?: string;
-  branchName?: string;
-  accountName?: string;
-  ifscCode?: string;
-  companyId?: string;
-  workEmail?: string;
-  workPhone?: string;
-  role?: string;
-  region?: string;
-}
 
 interface AddSupportAgentProps {
   onClose: () => void;
+  editId?:string
 }
 
-const validationSchema = Yup.object({
-  fullName: Yup.string().required("Full name is required"),
-  emailAddress: Yup.string()
-    .email("Invalid email address")
-    .required("Email address is required"),
-  phone: Yup.string()
+const baseSchema = {
+  userName: Yup.string().required("Full name is required"),
+  phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  dateOfBirth: Yup.string(),
-  bloodGroup: Yup.string(),
-  addressStreet1: Yup.string(),
-  addressStreet2: Yup.string(),
-  city: Yup.string(),
-  state: Yup.string(),
-  adhaarNo: Yup.string().matches(
-    /^\d{12}$/,
-    "Aadhaar number must be 12 digits"
-  ),
-  panNo: Yup.string().matches(/^[A-Z]{5}\d{4}[A-Z]{1}$/, "Invalid PAN number"),
-  dateOfJoining: Yup.string(),
-  // Additional validation
-  bankName: Yup.string(),
-  branchName: Yup.string(),
-  accountName: Yup.string(),
-  ifscCode: Yup.string(),
-  companyId: Yup.string(),
+  email: Yup.string()
+    .required("Email required")
+    .email("Invalid email"),
   workEmail: Yup.string().email("Invalid work email"),
-  workPhone: Yup.string().matches(
-    /^\d+$/,
-    "Work phone number must contain only digits"
-  ),
-  role: Yup.string(),
-  region: Yup.string(),
+  personalEmail: Yup.string().email("Invalid personal email"),
+  age: Yup.number()
+    .nullable()
+    .transform((value, originalValue) =>
+      originalValue === "" ?null : value
+    ),
+};
+
+const addValidationSchema = Yup.object().shape({
+  ...baseSchema,
+  password: Yup.string()
+    .min(6, "Password must be at least 6 characters")
+    .required("Password is required"),
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
+    .required("Confirm Password is required"),
 });
 
-const SupportAgentForm: React.FC<AddSupportAgentProps> = ({ onClose }) => {
+const editValidationSchema = Yup.object().shape({
+  ...baseSchema,
+});
+
+const SupportAgentForm: React.FC<AddSupportAgentProps> = ({ onClose,editId }) => {
+  const {  allRegions, allWc, allCountries } = useRegularApi();
+  const { request: addSV } = useApi("post", 3003);
+  const { request: editSV } = useApi("put", 3003);
+  const {request:getSV}=useApi('get',3003);
+  const [submit, setSubmit] = useState(false);
+  const [data, setData] = useState<{
+    regions: { label: string; value: string }[];
+    wc: { label: string; value: string }[];
+    country: { label: string; value: string }[];
+    state: { label: string; value: string }[];
+  }>({ regions: [], wc: [], country: [], state: [] });
     const tabs = [
         "Personal Information",
         "Bank Information",
@@ -98,11 +85,11 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({ onClose }) => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<AddSupportAgentData>({
-    resolver: yupResolver(validationSchema),
+  } = useForm<SAData>({
+    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
   });
 
-  const onSubmit: SubmitHandler<AddSupportAgentData> = (data) => {
+  const onSubmit: SubmitHandler<SAData> = (data) => {
     console.log(data);
   };
 

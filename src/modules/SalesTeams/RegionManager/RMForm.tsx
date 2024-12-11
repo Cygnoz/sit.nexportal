@@ -38,9 +38,9 @@ const baseSchema = {
     .required("Phone number is required"),
   email: Yup.string()
     .required("Email required")
-    .email("Invalid work email"),
-  workEmail: Yup.string().email(),
-  personalEmail: Yup.string().email(),
+    .email("Invalid email"),
+  workEmail: Yup.string().email("Invalid work email"),
+  personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
     .transform((value, originalValue) =>
@@ -675,7 +675,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
           )}
         </div>
 
-        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2">
+        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
           {tabs.indexOf(activeTab) > 0 ? (
             <Button
               variant="tertiary"

@@ -18,7 +18,7 @@ interface RegionFormProps {
 
 const validationSchema = Yup.object({
   regionName: Yup.string().required("Region name is required"),
-  regionCode: Yup.string().required("Region code is required"),
+  // regionCode: Yup.string().required("Region code is required"),
   country: Yup.string().required("Country is required"),
 });
 
@@ -64,6 +64,8 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
   }, [editId]);
 
   const onSubmit: SubmitHandler<RegionData> = async (data) => {
+    console.log(data);
+    
     try {
       const apiCall = editId ? editRegion : addRegion;
       const { response, error } = await apiCall(
@@ -114,13 +116,13 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
           error={errors.regionName?.message}
           {...register("regionName")}
         />
-        <Input
+        {/* <Input
           required
           placeholder="Enter Region Code"
           label="Region Code"
           error={errors.regionCode?.message}
           {...register("regionCode")}
-        />
+        /> */}
         <Select
           required
           label="Country"

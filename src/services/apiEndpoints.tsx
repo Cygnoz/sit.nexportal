@@ -29,21 +29,25 @@ export const endPoints={
   //RM
   RM:'/region-manager',
   GET_ALL_RM:'/region-managers',
-   GET_COUNTRY:'/countries',
-  
 
+  //Country and State
+  GET_COUNTRY:'/countries',
+  
   // Area Manager
   AM:'/area-manager',
 
   //Worker Commission
   WC:'/commissions',
  
- 
   GET_ALL_AM:'/area-managers',
   
-
   // BDA
  BDA:'/bda',
 
+  //SuperVisor 
+  SUPER_VISOR:'/supervisor',
+
+  //Support Agent
+  SUPPORT_AGENT:'/supportAgent'
 
 }

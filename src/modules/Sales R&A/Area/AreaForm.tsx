@@ -24,7 +24,7 @@ interface NewAreaProps {
 
 const validationSchema = Yup.object({
   areaName: Yup.string().required("Area name is required"),
-  areaCode: Yup.string().required("Area code is required"),
+  // areaCode: Yup.string().required("Area code is required"),
   region: Yup.string().required("Region is required"),
 });
 
@@ -142,13 +142,13 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
           error={errors.areaName?.message}
           {...register("areaName")}
         />
-        <Input
+        {/* <Input
           required
           placeholder="Enter Area Code"
           label="Area Code"
           error={errors.areaCode?.message}
           {...register("areaCode")}
-        />
+        /> */}
     
         <Select
           required
