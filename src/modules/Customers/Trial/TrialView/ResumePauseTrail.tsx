@@ -1,6 +1,7 @@
 import Button from "../../../../components/ui/Button";
 
 import bgpicturee from "../../../../assets/image/Group.png"
+//import { useState } from "react";
 
 
 type Props = {
@@ -9,6 +10,11 @@ type Props = {
 
 
 const ResumePauseTrail = ({ onClose }: Props) => {
+    // const [isPaused, setIsPaused] = useState(false);
+
+    // const handlePauseToggle = () => {
+    //   setIsPaused((prev) => !prev);
+    // };
   return (
     <div className="p-2 bg-white rounded shadow-md space-y-2">
     <div className="p-2 space-y-1 text-[#4B5C79] py-2 w-[100%]">
@@ -55,14 +61,14 @@ const ResumePauseTrail = ({ onClose }: Props) => {
                 Cancel
             </Button>
             <Button
-                variant="primary"
-                className="h-8 text-sm border rounded-lg"
-                size="lg"
-                type="submit"
-                
-            >
-                Pause
-            </Button>
+        variant="primary"
+        className="h-8 text-sm border rounded-lg"
+        size="lg"
+        type="submit"
+       
+      >
+        Pause
+      </Button>
         </div>
 
 

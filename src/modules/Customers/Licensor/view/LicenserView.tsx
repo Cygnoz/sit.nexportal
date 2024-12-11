@@ -13,10 +13,31 @@ import HomeCard from "../../../../components/ui/HomeCards";
 import PaymentTable from "./PaymentTable";
 import RecentActivityView from "./RecenetActivity";
 import SupportTicketTable from "./SupportTicketTable";
+import Modal from "../../../../components/modal/Modal";
+import LicenserViewForm from "./LicenserViewForm";
+import { useState } from "react";
+import LicenserForm from "../LicenserForm";
 
-type Props = {};
+type Props = {
+  
+};
 
 function LicenserView({}: Props) {
+
+  const [isModalOpen, setIsModalOpen] = useState({
+    editLicenser:false,
+    viewLicenser:false
+  });
+  const handleModalToggle = (editLicenser=false, viewLicenser=false) => {
+    setIsModalOpen((prevState:any )=> ({
+        ...prevState,
+        editLicenser: editLicenser,
+        viewLicenser: viewLicenser
+    }));
+}
+ 
+  // Function to toggle modal visibility
+ 
   const { id } = useParams();
   const homeCardData = [
     {
@@ -119,14 +140,15 @@ function LicenserView({}: Props) {
 
 
                             <div className="flex flex-col items-center space-y-2">
-                                <div className="w-4 h-4 mb-2 rounded-full border-white">
-                                    <EditIcon size={40} color="#C4A25D24" />
+                                <div onClick={()=>handleModalToggle(true,false)} className="w-4 h-4 mb-2 rounded-full border-white" >
+                                    <EditIcon  size={40} color="#C4A25D24" />
                                 </div>
                                 <p className="text-center font-medium  text-white text-[10px] ms-3" >Edit Profile</p>
                             </div>
 
                             <div className="flex flex-col  items-center space-y-1">
-                                <div  className="w-8 h-8 mb-2 rounded-full">
+                                <div   onClick={()=>handleModalToggle(false,true)}
+                                 className="w-8 h-8 mb-2 rounded-full">
                                     <ViewRoundIcon size={40} color="#D52B1E4D" />
 
                                 </div>
@@ -160,6 +182,13 @@ function LicenserView({}: Props) {
           <PaymentTable/>
         </div>
       </div>
+      {/* Modal controlled by state */}
+      <Modal open={isModalOpen.viewLicenser} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <LicenserViewForm onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.editLicenser} onClose={()=>handleModalToggle()} className="w-[60%]">
+        <LicenserForm onClose={()=>handleModalToggle()} />
+      </Modal>
     </div>
   );
 }
