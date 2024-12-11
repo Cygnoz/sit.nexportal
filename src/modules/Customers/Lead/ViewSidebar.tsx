@@ -8,10 +8,19 @@ import PhoneRingIcon from "../../../assets/icons/PhoneRingIcon"
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon"
 import BackgroundImage from '../../../assets/image/LeadView.jpg'
 import profileImage from '../../../assets/image/AvatarImg.png'
+import { useState } from "react"
+import Modal from "../../../components/modal/Modal"
+import LeadViewInfo from "./View/LeadViewInfo"
 
 type Props = {}
 
 const ViewSidebar = ({}: Props) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleModalToggle = () => {
+    setIsModalOpen((prev) => !prev);
+    };
+
   return (
     <div>
             <div className="h-fit w-fit bg-cover rounded-xl p-6" style={{backgroundImage:`url(${BackgroundImage})`}}>
@@ -63,7 +72,7 @@ const ViewSidebar = ({}: Props) => {
                  <EditIcon size={32}/>
                  <p className="text-[#FFF9F9] text-[10px] font-medium mt-1 ms-2">Edit</p>
                  </div>
-                 <div>
+                 <div onClick={handleModalToggle}>
                  <ViewRoundIcon size={32} color=""/>
                  <p className="text-[#FFF9F9] text-[10px] font-medium ms-1 mt-1">View</p>
                  </div>
@@ -90,6 +99,10 @@ const ViewSidebar = ({}: Props) => {
                   <p className="text-[#FFFFFF] text-xs font-bold py-2 px-1">Ronald J</p>
                   </div>
                 </div>  
+                  {/* Modal controlled by state */}
+            <Modal open={isModalOpen} align="center" onClose={handleModalToggle} className="w-fit h-fit mt-12">
+                <LeadViewInfo onClose={handleModalToggle} />
+            </Modal>
             </div>
               {/* Graph */}
               <div>Graph</div>
