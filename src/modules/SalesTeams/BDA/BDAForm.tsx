@@ -437,7 +437,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 <Select
                   label="State"
                   value={watch('state')}
-                  placeholder="Select State"
+                  placeholder={data.state.length==0?"Choose Country":"Select State"}
                   error={errors.state?.message}
                   options={data.state}
                   {...register("state")}
@@ -536,7 +536,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 />
                 <Select
                   label="Select Area"
-                  placeholder="Choose Area"
+                  placeholder={data.areas.length==0?'Select Region':"Select Area"}
                   value={watch('area')}
                   error={errors.area?.message}
                   options={data.areas}

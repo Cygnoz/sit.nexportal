@@ -4,7 +4,7 @@ type Props = {
     onClose: () => void;
 }
 
-const AMViewAward = ({ }: Props) => {
+const RMViewAward = ({ }: Props) => {
     return (
         <div>
             <div className="p-3 bg-[#FFFFFF] gap-4 mt-3 rounded-lg">
@@ -45,4 +45,4 @@ const AMViewAward = ({ }: Props) => {
     )
 }
 
-export default AMViewAward
+export default RMViewAward

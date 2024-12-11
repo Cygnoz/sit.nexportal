@@ -1,53 +1,48 @@
-export const endPoints={
-
-   // Login
+export const endPoints = {
+  // Login
   LOGIN: "/login",
   GET_OTP: "/verify-otp",
 
   //User
-  USER:'/user',
-  GET_USERS:'/users',
-  
+  USER: "/user",
+  GET_USERS: "/users",
+
   // Activity Logs
-  GET_ACTIVITY_LOGS:'/get-activity-logs',
+  GET_ACTIVITY_LOGS: "/get-activity-logs",
 
   // Region
-  REGION:'/region',
-  GET_REGIONS:'/regions',
-
-  // Lead
-  ADD_LEAD:'/add-lead',
-  GET_ALL_LEAD:'/get-all-lead',
-  GET_LEAD:'/get-lead',
-  UPDATE_LEAD:'/update-lead',
-  DELETE_LEAD:'/delete-lead',
+  REGION: "/region",
+  GET_REGIONS: "/regions",
 
   // Area
-  AREA:'/area',
-  GET_AREAS:'/areas',
+  AREA: "/area",
+  GET_AREAS: "/areas",
 
   //RM
-  RM:'/region-manager',
-  GET_ALL_RM:'/region-managers',
+  RM: "/region-manager",
+  GET_ALL_RM: "/region-managers",
 
   //Country and State
-  GET_COUNTRY:'/countries',
-  
+  GET_COUNTRY: "/countries",
+
   // Area Manager
-  AM:'/area-manager',
+  AM: "/area-manager",
 
   //Worker Commission
-  WC:'/commissions',
- 
-  GET_ALL_AM:'/area-managers',
-  
-  // BDA
- BDA:'/bda',
+  WC: "/commissions",
 
-  //SuperVisor 
-  SUPER_VISOR:'/supervisor',
+  GET_ALL_AM: "/area-managers",
+
+  // BDA
+  BDA: "/bda",
+
+  //SuperVisor
+  SUPER_VISOR: "/supervisor",
 
   //Support Agent
-  SUPPORT_AGENT:'/supportAgent'
+  SUPPORT_AGENT: "/supportAgent",
 
-}
+  // Lead
+  LEADS: "/leads",
+  LEAD: "/lead",
+};

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../../components/ui/Button";
 import Modal from "../../../components/modal/Modal";
 import HomeCard from "../../../components/ui/HomeCards";
@@ -10,71 +10,126 @@ import CalenderDays from "../../../assets/icons/CalenderDays";
 import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
 import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
-import AddSupportAgent from "./SupportAgentForm";
+import SupportAgentForm from "./SupportAgentForm";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+import { endPoints } from "../../../services/apiEndpoints";
+import { SAData } from "../../../Interfaces/SA";
+import useApi from "../../../Hooks/useApi";
 
 
 
-interface SupportAgentData {
-    supportAgentId: string;
-    name:string;
-    emailAdrees: string;
-    phoneNo: string;
-    assignedSupervisor:string;
-  }
   
 const SupervisorHome = () => {
 
-    const [isModalOpen, setIsModalOpen] = useState(false);
+  const { request: getAllSA } = useApi("get", 3003);
+  const [allSA, setAllSA] = useState<SAData[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
+  const [editId, setEditId] = useState('');
 
-    const handleModalToggle = () => {
-        setIsModalOpen((prev) => !prev);
-      };
-      const navigate=useNavigate()
-      
-      const handleView=(id:any)=>{
-        navigate(`/supportAgentView/${id}`)
-      }
+  const handleModalToggle = () => {
+    setIsModalOpen((prev) => !prev);
+    getSAs();
+  };
 
-      // Data for HomeCards
+  const handleView = (id: any) => {
+    navigate(`/supportAgentView/${id}`);
+  };
+
+  const handleEdit = (id: any) => {
+    setEditId(id);
+    handleModalToggle()
+  };
+
+  // Data for HomeCards
   const homeCardData = [
-    { icon: <UserIcon />, number: "167", title: "Total Support Agents",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
-    { icon: <TicketCardIcon size={40}/>, number: "46", title: "Total Tickets",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
-    { icon: <EscalatedTicket/>, number: "86", title: "Total Escalated Tickets",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-    { icon: <ResolvedTicket />, number: "498", title: "Total Resolved Tickets",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
+    {
+      icon: <AreaManagerIcon />,
+      number: "8",
+      title: "Total Supervisors",
+      iconFrameColor: "#F9A51A",
+      iconFrameBorderColor: "#FFF2DDCC",
+    },
+    {
+      icon: <UserIcon />,
+      number: "167",
+      title: "Total Support Agents",
+      iconFrameColor: "#30B777",
+      iconFrameBorderColor: "#B3F0D3CC",
+    },
+    {
+      icon: <TicketCardIcon size={40} />,
+      number: "46",
+      title: "Total Tickets",
+      iconFrameColor: "#51BFDA",
+      iconFrameBorderColor: "#C1E7F1CC",
+    },
+    {
+      icon: <EscalatedTicket />,
+      number: "86",
+      title: "Total Escalated Tickets",
+      iconFrameColor: "#1A9CF9",
+      iconFrameBorderColor: "#BBD8EDCC",
+    },
+    {
+      icon: <ResolvedTicket />,
+      number: "498",
+      title: "Total Resolved Tickets",
+      iconFrameColor: "#D786DD",
+      iconFrameBorderColor: "#FADDFCCC",
+    },
   ];
 
-    // Data for the table
-    const data: SupportAgentData[] = [
-        { supportAgentId: "Devid Billie",name:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Sudeep Kumar",name:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Kathryn Murphy",name:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",  },
-        { supportAgentId: "Darrell Steward",name:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
-        { supportAgentId: "Ronald Richards", name:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
-        { supportAgentId: "Jane Cooper", name:"George W", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
-        { supportAgentId: "Sudeep Kumar", name:"Thimothee Charlet", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Kathryn Murphy", name:"Dustin", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1",},
-        { supportAgentId: "Darrell Steward", name:"Willy Don", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Ronald Richards", name:"Frederikson G", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-        { supportAgentId: "Jane Cooper", name:"Von hue", emailAdrees: "nathan.roberts@example.com", phoneNo: "+91 9878675667", assignedSupervisor: "Region 1", },
-      ];
-        // Define the columns with strict keys
-        const columns: { key: keyof SupportAgentData; label: string }[] = [
-          { key: "supportAgentId", label: "Support Agent Id" },
-          { key: "name", label: "Name" },
-          { key: "emailAdrees", label: "Email" },
-          { key: "phoneNo", label: "Phone" },
-          { key: "assignedSupervisor", label: "Assigned Supervisor" },
+  // Define the columns with strict keys
+  const columns: { key: any; label: string }[] = [
+    { key: "user.userName", label: "Name" },
+    { key: "loginEmail", label: "Email Address" },
+    { key: "user.phoneNo", label: "Phone No" },
+    { key: "region.regionName", label: "Region" },
+    { key: "dateOfJoining", label: "Date Of Joining" },
+  ];
 
-        ];
-      
+  const getSAs = async () => {
+    try {
+      const { response, error } = await getAllSA(endPoints.SUPPORT_AGENT);
+      console.log("res",response);
+      console.log("err",error);
+      if (response && !error) {
+        console.log(response);
+        
+        const transformedSA =
+          response.data.supportAgent?.map((SA:any) => ({
+            ...SA,
+            dateOfJoining: SA.dateOfJoining
+              ? new Date(SA.dateOfJoining).toLocaleDateString("en-GB")
+              : "N/A",
+            loginEmail:SA.user.email
+          })) || [];
+        setAllSA(transformedSA);
+        console.log(transformedSA);
+        
+      } else {
+        console.log(error?.response?.data?.message || "Failed to fetch data.");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      toast.error("An unexpected error occurred.");
+    }
+  };
 
+  useEffect(() => {
+    getSAs();
+  }, []);
   return (
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">Support Agent</h1>
-        <Button variant="primary" size="sm" onClick={handleModalToggle}>
+        <Button variant="primary" size="sm" onClick={()=>{
+          handleModalToggle()
+          setEditId('')
+        }}>
         <span className="font-bold text-xl">+</span> Create Support Agent
         </Button>
       </div>
@@ -95,8 +150,8 @@ const SupervisorHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<SupportAgentData> data={data} columns={columns} headerContents={{
-          title:'Supervisor Overview',
+        <Table<SAData> data={allSA} columns={columns} headerContents={{
+          title:'Support Agent Overview',
           search:{placeholder:'Search Support Agent'},
           sort: [
                 {
@@ -111,15 +166,14 @@ const SupervisorHome = () => {
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleView },
-          { label: 'delete', function: handleView},
+          { label: 'edit', function:handleEdit },
           { label: 'view', function:handleView },
         ]}  />
       </div>
 
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <AddSupportAgent onClose={handleModalToggle} />
+        <SupportAgentForm  editId={editId} onClose={handleModalToggle} />
       </Modal>
     </div>
   )

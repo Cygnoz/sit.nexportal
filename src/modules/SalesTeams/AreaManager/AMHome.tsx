@@ -14,6 +14,7 @@ import useApi from "../../../Hooks/useApi";
 import { AMData } from "../../../Interfaces/AM";
 import { endPoints } from "../../../services/apiEndpoints";
 import AMForm from "./AMForm";
+import toast from "react-hot-toast";
 
 
 
@@ -22,14 +23,11 @@ const AMHome = () => {
   const {request:getAllAM}=useApi('get',3002)
   const [allAM,setAllAM]=useState<AMData[]>([]);
   const [editId, setEditId] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const navigate = useNavigate()
 
-
-    const [isModalOpen, setIsModalOpen] = useState(false);
-
-    const navigate = useNavigate()
-
-    const handleModalToggle = () => {
+  const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
         getAM()
       };
@@ -62,14 +60,15 @@ const AMHome = () => {
             setAllAM(transformedAreas);
 
           } else {
-            console.error(error.response.data.message);
+            console.error(error?.response?.data?.message);
           }
         } catch (err) {
-          console.error(err);}}
+          console.error(err);
+          toast.error("An unexpected error occurred.");
+        }}
       useEffect(() => {
         getAM();
       }, []);
-      console.log(allAM);
       
       // Data for HomeCards
   const homeCardData = [
@@ -137,7 +136,10 @@ const AMHome = () => {
         actionList={[
           { label: 'edit', function:handleEdit},
           { label: 'view', function: handleView },
-        ]}  />
+        ]} 
+        // noButton
+         />
+        
       </div>
 
       {/* Modal Section */}

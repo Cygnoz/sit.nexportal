@@ -90,6 +90,10 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
     }));
    setCountries(filteredCountry)
   }, [allCountries]);
+
+ console.log(allCountries);
+ 
+  
   return (
     <div className="p-5 bg-white rounded shadow-md space-y-3">
       <div className="flex justify-between">

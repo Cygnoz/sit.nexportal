@@ -1,24 +1,30 @@
-import { useForm, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import * as Yup from "yup";
+import CheckIcon from "../../../assets/icons/CheckIcon";
+import DownloadIcon from "../../../assets/icons/DownloadIcon";
+import Files from "../../../assets/icons/Files";
+import PlusCircle from "../../../assets/icons/PlusCircle";
+import Trash from "../../../assets/icons/Trash";
+import ViewIcon from "../../../assets/icons/ViewIcon";
+import bcardback from "../../../assets/image/Business-card-back.png";
+import bcardfront from "../../../assets/image/Business-card-front.png";
+import idcard from "../../../assets/image/ID-card 1.png";
+import CustomPhoneInput from "../../../components/form/CustomPhone";
 import Input from "../../../components/form/Input";
 import Select from "../../../components/form/Select";
 import Button from "../../../components/ui/Button";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { useState } from "react";
-import PlusCircle from "../../../assets/icons/PlusCircle";
-import Files from "../../../assets/icons/Files";
-import DownloadIcon from "../../../assets/icons/DownloadIcon";
-import Trash from "../../../assets/icons/Trash";
-import CustomPhoneInput from "../../../components/form/CustomPhone";
-import CheckIcon from "../../../assets/icons/CheckIcon";
-import { SAData } from "../../../Interfaces/SA";
 import { useRegularApi } from "../../../context/ApiContext";
 import useApi from "../../../Hooks/useApi";
-
+import { SAData } from "../../../Interfaces/SA";
+import { endPoints } from "../../../services/apiEndpoints";
+import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
 
 interface AddSupportAgentProps {
   onClose: () => void;
-  editId?:string
+  editId?: string;
 }
 
 const baseSchema = {
@@ -26,16 +32,12 @@ const baseSchema = {
   phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  email: Yup.string()
-    .required("Email required")
-    .email("Invalid email"),
+  email: Yup.string().required("Email required").email("Invalid email"),
   workEmail: Yup.string().email("Invalid work email"),
   personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
-    .transform((value, originalValue) =>
-      originalValue === "" ?null : value
-    ),
+    .transform((value, originalValue) => (originalValue === "" ? null : value)),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -52,11 +54,14 @@ const editValidationSchema = Yup.object().shape({
   ...baseSchema,
 });
 
-const SupportAgentForm: React.FC<AddSupportAgentProps> = ({ onClose,editId }) => {
-  const {  allRegions, allWc, allCountries } = useRegularApi();
-  const { request: addSV } = useApi("post", 3003);
-  const { request: editSV } = useApi("put", 3003);
-  const {request:getSV}=useApi('get',3003);
+const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
+  onClose,
+  editId,
+}) => {
+  const { allRegions, allWc, allCountries } = useRegularApi();
+  const { request: addSA } = useApi("post", 3003);
+  const { request: editSA } = useApi("put", 3003);
+  const { request: getSA } = useApi("get", 3003);
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -64,294 +69,652 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({ onClose,editId }) =>
     country: { label: string; value: string }[];
     state: { label: string; value: string }[];
   }>({ regions: [], wc: [], country: [], state: [] });
-    const tabs = [
-        "Personal Information",
-        "Bank Information",
-        "Company Information",
-        "Upload Files",
-      ];
-    const [activeTab, setActiveTab] = useState<string>(tabs[0]);
-
-
-  const handleNext = () => {
-    const currentIndex = tabs.indexOf(activeTab); 
-    if (currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1]); 
-    }
-  };
-
 
   const {
     register,
     handleSubmit,
+    watch,
+    trigger,
+    setValue,
+    clearErrors,
     formState: { errors },
   } = useForm<SAData>({
-    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
-  const onSubmit: SubmitHandler<SAData> = (data) => {
-    console.log(data);
+  const onSubmit: SubmitHandler<SAData> = async (data, event) => {
+    event?.preventDefault(); // Prevent default form submission behavior
+    console.log("data", data);
+
+    if (submit) {
+      try {
+        const fun = editId ? editSA : addSA; // Select the appropriate function based on editId
+        let response, error;
+
+        if (editId) {
+          // Call editSA if editId exists
+          ({ response, error } = await fun(
+            `${endPoints.SUPPORT_AGENT}/${editId}`,
+            data
+          ));
+        } else {
+          // Call addSA if editId does not exist
+          ({ response, error } = await fun(endPoints.SUPPORT_AGENT, data));
+          console.log("Response:", response);
+          console.log("Error:", error);
+        }
+
+        if (response && !error) {
+          toast.success(response.data.message); // Show success toast
+          onClose(); // Close the form/modal
+        } else {
+          toast.error(error.response.data.message); // Show error toast
+        }
+      } catch (err) {
+        console.error("Error submitting SA data:", err);
+        toast.error("An unexpected error occurred."); // Handle unexpected errors
+      }
+    }
   };
 
+  const tabs = [
+    "Personal Information",
+    "Company Information",
+    "Upload Files",
+    "Bank Information",
+    "ID & Business Card",
+  ];
+  const [activeTab, setActiveTab] = useState<string>(tabs[0]);
+
+  const handleNext = async (tab: string) => {
+    const currentIndex = tabs.indexOf(activeTab);
+    let fieldsToValidate: any[] = [];
+
+    if (tab === "Personal Information") {
+      fieldsToValidate = ["userName", "phoneNo"];
+    } else if (tab === "Company Information") {
+      fieldsToValidate = [
+        "email",
+        !editId && "password",
+        !editId && "confirmPassword",
+      ];
+    }
+
+    const iSAalid = fieldsToValidate.length
+      ? await trigger(fieldsToValidate)
+      : true;
+
+    if (iSAalid && currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1]);
+      clearErrors();
+    }
+  };
+
+  const handleBack = () => {
+    const currentIndex = tabs.indexOf(activeTab);
+    if (currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1]);
+    }
+    setSubmit(false);
+  };
+
+  const handleInputChange = (field: keyof SAData) => {
+    clearErrors(field); // Clear the error for the specific field when the user starts typing
+  };
+
+  // UseEffect for updating regions
+  useEffect(() => {
+    const filteredRegions = allRegions?.map((region: any) => ({
+      value: String(region._id),
+      label: region.regionName,
+    }));
+    // Update the state without using previous `data` state
+    setData((prevData: any) => ({
+      ...prevData,
+      regions: filteredRegions,
+    }));
+  }, [allRegions]);
+
+  // UseEffect for updating wc
+  useEffect(() => {
+    const filteredCommission = allWc?.map((commission: any) => ({
+      label: commission.profileName,
+      value: String(commission._id),
+    }));
+
+    // Update wc
+    setData((prevData: any) => ({
+      ...prevData,
+      wc: filteredCommission,
+    }));
+  }, [allWc]);
+
+  // UseEffect for updating countries
+  useEffect(() => {
+    const filteredCountry = allCountries?.map((country: any) => ({
+      label: country.name,
+      value: country.name,
+    }));
+
+    // Update country
+    setData((prevData: any) => ({
+      ...prevData,
+      country: filteredCountry,
+    }));
+  }, [allCountries]);
+
+  useEffect(() => {
+    const filteredState = allCountries
+      .filter((country: any) => country.name === watch("country"))
+      .map((country: any) => country.states)
+      .flat();
+    const transformedState = filteredState.map((state: any) => ({
+      label: state,
+      value: String(state),
+    }));
+
+    // Update areas
+    setData((prevData: any) => ({
+      ...prevData,
+      state: transformedState,
+    }));
+  }, [watch("country")]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        setValue("userImage", base64String);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemoveImage = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent click propagation
+
+    // Clear the leadImage value
+    setValue("userImage", "");
+  };
+
+  const setFormValues = (data: SAData) => {
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof SAData, data[key as keyof SAData]);
+    });
+  };
+
+  const getOneSA = async () => {
+    try {
+      const { response, error } = await getSA(
+        `${endPoints.SUPPORT_AGENT}/${editId}`
+      );
+      if (response && !error) {
+        const SA = response.data; // Return the fetched data
+        console.log("Fetched SA data:", SA);
+
+        const { user, _id, ...sa } = SA;
+
+        const transformedSA = SA
+          ? {
+              ...sa,
+              dateOfJoining: new Date(SA.dateOfJoining)
+                .toISOString()
+                .split("T")[0], // Format as 'YYYY-MM-DD'
+              userName: user?.userName,
+              phoneNo: user?.phoneNo,
+              email: user?.email,
+              userImage: user?.userImage,
+              region: SA.region?._id,
+              commission: SA.commission?._id,
+            }
+          : null;
+
+        console.log("Transformed SA data:", transformedSA);
+
+        setFormValues(transformedSA);
+      } else {
+        // Handle the error case if needed (for example, log the error)
+        console.error("Error fetching SA data:", error);
+      }
+    } catch (err) {
+      console.error("Error fetching SA data:", err);
+    }
+  };
+
+  useEffect(() => {
+    getOneSA();
+  }, [editId]); // Trigger the effect when editId changes
+
   return (
-    <div className="p-5 bg-white rounded shadow-md h-[638px] overflow-auto ">
+    <div className="p-5 bg-white rounded shadow-md">
+      {/* Close button */}
       <div className="flex justify-between items-center mb-4">
         <div>
-          <h1 className="text-lg font-bold text-deepStateBlue mt-2">
-            Create Support Agent
+          <h1 className="text-lg font-bold text-deepStateBlue ">
+            {editId ? "Edit" : "Create"} Supervisor
           </h1>
           <p className="text-ashGray text-sm">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt
+            {`Use this form to ${
+              editId ? "edit an existing Supervisor" : "add a new Supervisor"
+            } details. Please fill in the required information`}
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="text-gray-600 hover:text-gray-900 font-bold"
+          className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
         >
-          X
+          &times;
         </button>
       </div>
 
       <div className="flex gap-8 items-center justify-center text-base font-bold my-5">
-       {tabs.map((tab, index) => (
-        <div
-          key={tab}
-          className={`cursor-pointer py-3 px-[16px] ${
-            activeTab === tab
-              ? "text-deepStateBlue border-b-2 border-secondary2"
-              : "text-gray-600"
-          }`}
-        >
-          <p>
-            {index < tabs.indexOf(activeTab) ? (
-              <div className="flex items-center justify-center gap-2">
-                <CheckIcon  /> {tab}
-              </div>
-            ) : (
-              tab
-            )}
-          </p>
-        </div>
-      ))}
-
+        {tabs.map((tab, index) => (
+          <div
+            key={tab}
+            className={`cursor-pointer py-3 px-[16px] ${
+              activeTab === tab
+                ? "text-deepStateBlue border-b-2 border-secondary2"
+                : "text-gray-600"
+            }`}
+          >
+            <p>
+              {index < tabs.indexOf(activeTab) ? (
+                <div className="flex items-center justify-center gap-2">
+                  <CheckIcon /> {tab}
+                </div>
+              ) : (
+                tab
+              )}
+            </p>
+          </div>
+        ))}
       </div>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="min-h-[413px] ">
+        <div
+          className="transition-all duration-300"
+          style={{ minHeight: "450px" }}
+        >
           {activeTab === "Personal Information" && (
-          <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-2"></div>
-                <div className="col-span-10 grid grid-cols-2 gap-4">
-                  <Input
-                    placeholder="Enter Full Name"
-                    label="Full Name"
-                    error={errors.fullName?.message}
-                    {...register("fullName")}
+            <div className="grid grid-cols-12">
+              <div className="col-span-2 flex flex-col items-center">
+                <label
+                  className="cursor-pointer text-center"
+                  htmlFor="file-upload"
+                >
+                  <input
+                    id="file-upload"
+                    type="file"
+                    className="hidden"
+                    onChange={handleFileChange}
+                    //   onChange={(e) => handleFileUpload(e)}
                   />
-                  <Input
-                    placeholder="Enter Email Address"
-                    label="Email Address"
-                    error={errors.emailAddress?.message}
-                    {...register("emailAddress")}
-                  />
-                  <CustomPhoneInput
-                    label="Phone Number"
-                    error={errors.phone?.message}
-                    placeholder="Enter phone number"
-                  />
-                  <div className="grid grid-cols-2 gap-4  w-full">
-                    <Input
-                      type="date"
-                      label="Date of Birth"
-                      error={errors.dateOfBirth?.message}
-                      {...register("dateOfBirth")}
-                    />
-                    <Input
-                      label="Blood Group"
-                      error={errors.bloodGroup?.message}
-                      {...register("bloodGroup")}
-                      placeholder="Enter Blood Group"
-
-                    />
+                  <ImagePlaceHolder uploadedImage={watch("userImage")} />
+                </label>
+                {watch("userImage") && (
+                  <div
+                    onClick={handleRemoveImage} // Remove image handler
+                    className="flex "
+                  >
+                    <div className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
+                      <Trash color="red" size={16} />
+                    </div>
                   </div>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-2 col-span-10">
+                <Input
+                  required
+                  placeholder="Enter Full Name"
+                  label="Full Name"
+                  error={errors.userName?.message}
+                  {...register("userName")}
+                />
+                <Input
+                  placeholder="Enter Email Address"
+                  label="Email Address"
+                  error={errors.personalEmail?.message}
+                  {...register("personalEmail")}
+                />
+                <CustomPhoneInput
+                  required
+                  placeholder="Phone"
+                  label="Phone"
+                  error={errors.phoneNo?.message}
+                  value={watch("phoneNo")} // Watch phone field for changes
+                  onChange={(value) => {
+                    handleInputChange("phoneNo");
+                    setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
+                  }}
+                />
+                <div className="flex gap-4 w-full">
                   <Input
-                    label="Address Line 1"
-                    error={errors.addressStreet1?.message}
-                    {...register("addressStreet1")}
-                    placeholder=" Street 1"
-
+                    placeholder="Enter Age"
+                    label="Age"
+                    type="number"
+                    {...register("age")}
                   />
                   <Input
-                    label="Address Line 2"
-                    error={errors.addressStreet2?.message}
-                    {...register("addressStreet2")}
-                    placeholder=" Street 2"
-
-                  />
-                  <Input
-                    label="City"
-                    error={errors.city?.message}
-                    {...register("city")}
-                    placeholder="Enter City"
-
-                  />
-                  <Select
-                    label="State"
-                    error={errors.state?.message}
-                    options={[
-                      { value: "Kerala", label: "Kerala" },
-                      { value: "Tamilnadu", label: "Tamilnadu" },
-                      { value: "Karnataka", label: "Karnataka" },
-                    ]}
-                    {...register("state")}
-                  />
-                  <Input
-                    label="Aadhaar Number"
-                    error={errors.adhaarNo?.message}
-                    {...register("adhaarNo")}
-                    placeholder="Enter Adhaar Number"
-
-                  />
-                  <Input
-                    label="PAN Number"
-                    error={errors.panNo?.message}
-                    {...register("panNo")}
-                    placeholder="Enter Pan Number"
-
-                  />
-                  <Input
-                    type="date"
-                    label="Date of Joining"
-                    error={errors.dateOfJoining?.message}
-                    {...register("dateOfJoining")}
-
+                    label="Blood Group"
+                    placeholder="Enter Blood Group"
+                    error={errors.bloodGroup?.message}
+                    {...register("bloodGroup")}
                   />
                 </div>
-          </div >
-          )}
+                <Input
+                  label="Address"
+                  placeholder="Street 1"
+                  error={errors.address?.street1?.message}
+                  {...register("address.street1")}
+                />
+                <Input
+                  label="Address"
+                  placeholder="Street 2"
+                  error={errors.address?.street2?.message}
+                  {...register("address.street2")}
+                />
+                <Select
+                  label="Country"
+                  placeholder="Select Country"
+                  value={watch("country")}
+                  error={errors.country?.message}
+                  options={data.country}
+                  {...register("country")}
+                />
+                <Select
+                  label="State"
+                  value={watch("state")}
+                  placeholder="Select State"
+                  error={errors.state?.message}
+                  options={data.state}
+                  {...register("state")}
+                />
+                <Input
+                  label="City"
+                  placeholder="Enter City"
+                  error={errors.city?.message}
+                  {...register("city")}
+                />
+                <Input
+                  label="Aadhaar No"
+                  type="number"
+                  placeholder="Enter Aadhar"
+                  error={errors.adhaarNo?.message}
+                  {...register("adhaarNo")}
+                />
+                <Input
+                  label="PAN No"
+                  type="number"
+                  placeholder="Enter Pan Number"
+                  error={errors.panNo?.message}
+                  {...register("panNo")}
+                />
 
-          {activeTab === "Bank Information" && (
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                placeholder="Enter Bank Name"
-                label="Bank Name"
-                error={errors.bankName?.message}
-                {...register("bankName")}
-              />
-              <Input
-                placeholder="Enter Branch Name"
-                label="Branch Name"
-                error={errors.branchName?.message}
-                {...register("branchName")}
-              />
-              <Input
-                placeholder="Enter Account Name"
-                label="Account Name"
-                error={errors.accountName?.message}
-                {...register("accountName")}
-              />
-              <Input
-                placeholder="Enter IFSC Code"
-                label="IFSC Code"
-                error={errors.ifscCode?.message}
-                {...register("ifscCode")}
-              />
+                <Input
+                  type="date"
+                  label="Date of Joining"
+                  error={errors.dateOfJoining?.message}
+                  {...register("dateOfJoining")}
+                  value={
+                    watch("dateOfJoining")
+                      ? watch("dateOfJoining")
+                      : new Date().toISOString().split("T")[0]
+                  } // Sets current date as default
+                />
+              </div>
             </div>
           )}
 
           {activeTab === "Company Information" && (
-            <>
-              <div className="grid grid-cols-3 gap-4 ">
+            <div>
+              <p className="my-4 text-[#303F58] text-sm font-semibold">
+                {editId ? "Edit" : "Set"} Login Credential
+              </p>
+              <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
                 <Input
-                  placeholder="Enter Company ID"
-                  label="Company ID"
-                  error={errors.companyId?.message}
-                  {...register("companyId")}
+                  required
+                  type="email"
+                  placeholder="Enter Email"
+                  label="Email"
+                  error={errors.email?.message}
+                  {...register("email")}
                 />
+                {!editId && (
+                  <>
+                    <Input
+                      required
+                      placeholder="Enter Password"
+                      label="Create Password"
+                      error={errors.password?.message}
+                      {...register("password")}
+                    />
+                    <Input
+                      required
+                      placeholder="Re-enter Password"
+                      label="Confirm Password"
+                      error={errors.confirmPassword?.message}
+                      {...register("confirmPassword")}
+                    />
+                  </>
+                )}
+              </div>
+              <hr className="" />
+              <div className="grid grid-cols-2 gap-4 mt-4">
                 <Input
                   placeholder="Enter Work Email"
+                  type="email"
                   label="Work Email"
                   error={errors.workEmail?.message}
                   {...register("workEmail")}
                 />
-                <Input
-                  placeholder="Enter Work Phone"
-                  label="Work Phone"
+                <CustomPhoneInput
+                  placeholder="Phone"
+                  label="Work phone"
                   error={errors.workPhone?.message}
-                  {...register("workPhone")}
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <Select
-                  label="Role"
-                  error={errors.role?.message}
-                  options={[
-                    { value: "Admin", label: "Admin" },
-                    { value: "Support", label: "Support" },
-                  ]}
-                  {...register("role")}
+                  value={watch("workPhone")} // Watch phone field for changes
+                  onChange={(value) => {
+                    handleInputChange("workPhone");
+                    setValue("workPhone", value); // Update the value of the phone field in React Hook Form
+                  }}
                 />
                 <Select
-                  label="Region"
+                  label="Select Region"
+                  placeholder="Choose Region"
+                  value={watch("region")}
                   error={errors.region?.message}
-                  options={[
-                    { value: "North", label: "North" },
-                    { value: "South", label: "South" },
-                  ]}
+                  options={data.regions}
                   {...register("region")}
                 />
+                <Select
+                  label="Choose Commission Profile"
+                  placeholder="Commission Profile"
+                  value={watch("commission")}
+                  error={errors.commission?.message}
+                  options={data.wc}
+                  {...register("commission")}
+                />
               </div>
-            </>
+            </div>
           )}
 
           {activeTab === "Upload Files" && (
-            <>
-              <div className="border-2 border-dashed h-[145px] rounded-lg bg-[#f5f5f5] text-[#4B5C79] flex items-center justify-center flex-col">
+            <div>
+              <h6 className="font-bold text-sm text-[#303F58]">
+                Upload ID Proofs
+              </h6>
+              <p className="font-normal text-[#8F99A9] text-xs my-1 ">
+                Please Upload Your Scanned Adhaar and Pan card files
+              </p>
+              <div className="border-2 border-dashed h-[145px] rounded-lg bg-[#f5f5f5] text-[#4B5C79] flex items-center justify-center flex-col mt-6">
                 <PlusCircle color="#4B5C79" size={25} />
-                <p className="font-semibold text-lg mt-2">
+                <p className="font-medium text-xs mt-2">
                   Drag & Drop or Click to Choose Files
                 </p>
-                <p className="text-sm mt-1">Max file size: 5 MB</p>
+                <p className="text-xs mt-1 font-medium">Max file size: 5 MB</p>
               </div>
 
-              <div className="grid grid-cols-2 gap-4 mt-5">
-                <div className="flex items-center gap-5  border-2  rounded-lg py-3 px-5 ">
-                  <Files />
-                  <div>
-                    <p className="text-deepStateBlue ">File 001</p>
-                    <p className="text-secondary2 text-sm">.zip | 9.33 MB</p>
-                  </div>
+              <div className="grid grid-cols-2 gap-4 mt-3">
+                {/* Uploaded Files */}
 
-                  <div className="ml-auto flex gap-2">
-                    <div className="border rounded-full p-4">
-                      <DownloadIcon />
+                <div className="flex items-center justify-between border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex w-full items-center space-x-4">
+                    <div className="flex items-center justify-center">
+                      <Files />
                     </div>
-                    <div className="border rounded-full p-4">
-                      <Trash />
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">
+                        Adhaar
+                      </p>
+                      <p className="text-xs text-gray-500">.PDF | 9.83MB</p>
                     </div>
+                  </div>
+                  <div className="flex space-x-4">
+                    <DownloadIcon size={20} />
+                    <Trash size={20} />
                   </div>
                 </div>
-                <div></div>
+                <div className="flex items-center justify-between border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="flex items-center space-x-4">
+                    <div className="flex items-center justify-center">
+                      <Files />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-700">
+                        Pancard
+                      </p>
+                      <p className="text-xs text-gray-500">.PDF | 9.83MB</p>
+                    </div>
+                  </div>
+                  <div className="flex space-x-4">
+                    <DownloadIcon size={20} />
+                    <Trash size={20} />
+                  </div>
+                </div>
               </div>
-            </>
+            </div>
+          )}
+          {activeTab === "Bank Information" && (
+            <div>
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  placeholder="Enter Bank Name"
+                  label="Bank Name"
+                  error={errors.bankDetails?.bankName?.message}
+                  {...register("bankDetails.bankName")}
+                />
+                <Input
+                  placeholder="Enter Bank Branch"
+                  label="Bank Branch"
+                  error={errors.bankDetails?.bankBranch?.message}
+                  {...register("bankDetails.bankBranch")}
+                />
+                <Input
+                  placeholder="Enter Account No"
+                  type="number"
+                  label="Bank Account No"
+                  error={errors.bankDetails?.bankAccountNo?.message}
+                  {...register("bankDetails.bankAccountNo")}
+                />
+                <Input
+                  placeholder="Enter IFSC Code"
+                  label="IFSC Code"
+                  error={errors.bankDetails?.ifscCode?.message}
+                  {...register("bankDetails.ifscCode")}
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "ID & Business Card" && (
+            <div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                  <p className="text-[#303F58] text-base font-bold">
+                    Business Card
+                  </p>
+                  <p className="text-xs font-normal text-[#8F99A9] mt-1">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt
+                  </p>
+                  <img src={bcardfront} className="my-3" alt="" />
+                  <img src={bcardback} className="mb-3" alt="" />
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      variant="tertiary"
+                      size="sm"
+                      className="text-xs text-[#565148] font-medium rounded-md"
+                    >
+                      <ViewIcon size="13" color="#565148" />
+                      View
+                    </Button>
+                  </div>
+                </div>
+                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                  <p className="text-[#303F58] text-base font-bold">ID Card</p>
+                  <p className="text-xs font-normal text-[#8F99A9] mt-1">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                    do eiusmod tempor incididunt
+                  </p>
+                  <img src={idcard} className="my-3" alt="" />
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      variant="tertiary"
+                      size="sm"
+                      className="text-xs text-[#565148] font-medium rounded-md"
+                    >
+                      <ViewIcon size="13" color="#565148" />
+                      View
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
         </div>
-
-        <div className=" bottom-0 left-0 w-full p-4 bg-white flex justify-end gap-2">
-          <Button variant="tertiary" size="sm" onClick={onClose}>
-            Cancel
-          </Button>
-          {tabs.indexOf(activeTab) === 3 ? (
-          <Button variant="primary" size="sm" type="submit">
-            Done
-          </Button>
-        ) : (
-          <Button variant="primary" size="sm" onClick={handleNext}>
-            Next
-          </Button>
-        )}
+        <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
+          {tabs.indexOf(activeTab) > 0 ? (
+            <Button
+              variant="tertiary"
+              className="h-8 text-sm border rounded-lg"
+              size="lg"
+              onClick={handleBack}
+            >
+              Back
+            </Button>
+          ) : (
+            <Button
+              variant="tertiary"
+              className="h-8 text-sm border rounded-lg"
+              size="lg"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+          )}
+          {tabs.indexOf(activeTab) === tabs.length - 1 ? (
+            <Button
+              variant="primary"
+              className="h-8 text-sm border rounded-lg"
+              size="lg"
+              type="submit"
+              onClick={() => setSubmit(true)}
+            >
+              Done
+            </Button>
+          ) : (
+            <Button
+              variant="primary"
+              className="h-8 text-sm border rounded-lg"
+              size="lg"
+              type="submit"
+              onClick={() => handleNext(activeTab)}
+            >
+              Next
+            </Button>
+          )}
         </div>
       </form>
     </div>

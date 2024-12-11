@@ -160,6 +160,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
     if (currentIndex > 0) {
       setActiveTab(tabs[currentIndex - 1]);
     }
+    setSubmit(false);
   };
 
 
@@ -380,6 +381,7 @@ label: area.areaName,
                   label="Phone Number"
                   required
                   error={errors.phoneNo?.message}
+                  value={watch("phoneNo")} 
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("phoneNo");
@@ -421,7 +423,7 @@ label: area.areaName,
                 />
                 <Select
                   label="State"
-                  placeholder="Select State"
+                  placeholder={data.state.length==0?"Choose Country":"Select State"}
                   error={errors.state?.message}
                   options={data.state}
                   {...register("state")}
@@ -501,6 +503,7 @@ label: area.areaName,
                   label="Work Phone"
                   error={errors.workPhone?.message}
                   placeholder="Enter phone number"
+                  value={watch("workPhone")}
                   onChange={(value) => {
                     handleInputChange("workPhone");
                     setValue("workPhone", value); // Update the value of the phone field in React Hook Form
@@ -515,13 +518,9 @@ label: area.areaName,
                 />
                 <Select
                   label="Select Area"
-                  placeholder="Choose Area"
+                  placeholder={data.areas.length==0?'Select Region':"Select Area"}
                   value={watch("area")}
                   error={errors.area?.message}
-                  // options={allAreas.map((area: any) => ({
-                  //   value: area?._id,
-                  //   label: area.areaName,
-                  // }))}
                   options={data.areas}
                   {...register("area")}
                 />

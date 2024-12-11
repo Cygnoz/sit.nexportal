@@ -12,26 +12,22 @@ import LeadForm from './LeadForm'
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
+import { LeadData } from "../../../Interfaces/Lead";
 
 type Props = {}
 
 function LeadHome({}: Props) {
   const {request:getAllLeads}=useApi('get',3001)
+  const [allLead, setAllLead] = useState<LeadData[]>([]);
+  const [editId, setEditId] = useState('');
   const navigate=useNavigate()
-  interface LeadData {
-    leadID: string;
-    leadName: string;
-    phoneNumber: string;
-    emailAddress: string;
-    source: string;
-    status: string;
-  }
 
    // State to manage modal visibility
    const [isModalOpen, setIsModalOpen] = useState(false);
    // Function to toggle modal visibility
    const handleModalToggle = () => {
      setIsModalOpen((prev) => !prev);
+     getLeads()
    };
 
 
@@ -39,12 +35,18 @@ function LeadHome({}: Props) {
     navigate(`/leadView/${id}`)
   }
 
+  const handleEdit = (id: any) => {
+    setEditId(id);
+    handleModalToggle()
+  };
+
+
   const getLeads=async()=>{
     try{
-      const {response,error}=await getAllLeads(endPoints.GET_ALL_LEAD)
+      const {response,error}=await getAllLeads(endPoints.LEADS)
       if(response && !error){
         console.log(response.data.leads);
-        
+        setAllLead(response.data.leads)
       }
     }catch(err){
       console.log(err);
@@ -64,7 +66,7 @@ function LeadHome({}: Props) {
   ];
 
  // Data for the table
-const leadData: LeadData[] = [
+const leadData: any[] = [
   { leadID: "BDA12345", leadName: "Anjela John", phoneNumber: "(406) 555-0120", emailAddress: "danten@mail.ru", source: "Website", status: "New"},
   { leadID: "BDA12345", leadName: "Kristin Watson", phoneNumber: "(480) 555-0103", emailAddress: "warn@mail.ru", source: "Referral", status: "Contacted"},
   { leadID: "BDA12345", leadName: "Jacob Jones", phoneNumber: "(208) 555-0112", emailAddress: "irnabela@gmail.com", source: "Website", status: "Closed"},
@@ -85,8 +87,8 @@ const leadData: LeadData[] = [
 
   // Define the columns with strict keys
   // Define the columns with strict keys for LeadData
-const columns: { key: keyof LeadData; label: string }[] = [
-  { key: "leadID", label: "Lead ID" },
+const columns: { key: any; label: string }[] = [
+  { key: "leadId", label: "Lead ID" },
   { key: "leadName", label: "Lead Name" },
   { key: "phoneNumber", label: "Phone Number" },
   { key: "emailAddress", label: "Email Address" },
@@ -95,6 +97,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
 ];
 
   return (
+    <>
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
@@ -119,7 +122,7 @@ const columns: { key: keyof LeadData; label: string }[] = [
       {/* Table Section */}
       <div>
       <Table<LeadData>
-  data={leadData}
+  data={allLead}
   columns={columns}
   headerContents={{
     title: "Lead Details",
@@ -145,14 +148,17 @@ const columns: { key: keyof LeadData; label: string }[] = [
   }}
   actionList={[
     { label: 'view', function: handleView },
+    { label: "edit", function: handleEdit },
   ]}
+  
 />
       </div>
-      {/* Modal controlled by state */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
-      <LeadForm  onClose={handleModalToggle}/>
-      </Modal>
     </div>
+    {/* Modal controlled by state */}
+    <Modal open={isModalOpen} onClose={handleModalToggle}>
+    <LeadForm editId={editId} onClose={handleModalToggle}/>
+    </Modal>
+    </>
   )
 }
 

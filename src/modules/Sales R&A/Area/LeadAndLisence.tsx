@@ -1,8 +1,9 @@
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import LicenserCardIcon from "../../../assets/icons/LicenserCardIcon";
 import HomeCard from "../../../components/ui/HomeCards";
-import Licensers from "../../../components/ui/Licensers";
+// import Licensers from "../../../components/ui/Licensers";
 import Table from "../../../components/ui/Table";
+import LicenserTable from "./LicenserTable";
 
 
 
@@ -15,6 +16,9 @@ interface AreaData {
     assignedTo: string;
     status: string;
   }
+
+
+  
 type Props = {}
 
 const LeadAndLisence = ({}: Props) => {
@@ -92,13 +96,9 @@ const LeadAndLisence = ({}: Props) => {
         { key: "status", label: "Status" },
       ];
 
-      const LicencerData = [
-        { plan: "1", name: "John Doe", startDate: "2024-01-01", endDate: "2024-12-31", status: "Active", buttonValue: "Renew" },
-        { plan: "2", name: "Jane Smith", startDate: "2023-06-15", endDate: "2024-06-14", status: "Expired", buttonValue: "Renew" },
-        { plan: "1", name: "Robert Brown", startDate: "2024-03-01", endDate: "2025-02-28", status: "Active", buttonValue: "Renew" },
-        { plan: "3", name: "Emily Clark", startDate: "2023-11-20", endDate: "2024-11-19", status: "Pending Renewal", buttonValue: "Upgrade" },
-        { plan: "2", name: "Jessica Davis", startDate: "2023-08-05", endDate: "2024-08-04", status: "Expired", buttonValue: "Renew" }
-      ];
+
+      
+
   return (
     <div>
           {/* HomeCards Section */}
@@ -139,16 +139,12 @@ const LeadAndLisence = ({}: Props) => {
          />
       </div>
 
-       {/* Licensers handled by BDA */}
-       <div className="my-3">
-        <Licensers headerContents={{
-          title: 'Licensers handled by BDA',
-          search: { placeholder: 'Search License by Name or Holder Name' }
-        }}
-          cardContents={LicencerData}
-        />
+      <div className="my-4">
+         {/* Licensers handled by BDA */}
+       <LicenserTable/>
       </div>
 
+      
     </div>
   )
 }

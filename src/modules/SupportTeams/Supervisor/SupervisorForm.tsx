@@ -96,10 +96,10 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
         
         if (editId) {
           // Call editSV if editId exists
-          ({ response, error } = await fun(`${endPoints.SUPER_VISOR}/${editId}`, data));
+          ({ response, error } = await fun(`${endPoints.SUPPORT_AGENT}/${editId}`, data));
         } else {
           // Call addSV if editId does not exist
-          ({ response, error } = await fun(endPoints.SUPER_VISOR, data));
+          ({ response, error } = await fun(endPoints.SUPPORT_AGENT, data));
           console.log("Response:", response);
         console.log("Error:", error);
         }
@@ -249,7 +249,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
 
   const getOneSV = async () => {
     try {
-      const { response, error } = await getSV(`${endPoints.SUPER_VISOR}/${editId}`);
+      const { response, error } = await getSV(`${endPoints.SUPPORT_AGENT}/${editId}`);
       if (response && !error) {
         const SV = response.data; // Return the fetched data
         console.log("Fetched SV data:", SV);

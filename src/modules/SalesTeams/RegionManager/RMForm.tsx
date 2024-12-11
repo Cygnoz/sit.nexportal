@@ -71,10 +71,10 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
-    workerCommission: { label: string; value: string }[];
+    wc: { label: string; value: string }[];
     country: { label: string; value: string }[];
     state: { label: string; value: string }[]
-  }>({ workerCommission: [], country: [], state: [], regions: [] });
+  }>({ wc: [], country: [], state: [], regions: [] });
 
   const tabs = [
     "Personal Information",
@@ -97,37 +97,38 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
-  const onSubmit: SubmitHandler<RMData> = async (data) => {
-    console.log(data);
-    if (submit) {
-      try {
-        const fun = editId ? editRM : addRM; // Select the appropriate function based on editId
-        let response, error;
-
-        if (editId) {
-          // Call editRM if editId exists
-          ({ response, error } = await fun(`${endPoints.GET_ALL_RM}/${editId}`, data));
-        } else {
-          // Call addRM if editId does not exist
-          ({ response, error } = await fun(endPoints.RM, data));
-        }
-
+  const onSubmit: SubmitHandler<RMData> = async (data, event) => {
+    event?.preventDefault(); // Prevent default form submission behavior
+  
+    if (!submit) {
+      console.warn("Submit flag is not set. Skipping submission.");
+      return;
+    }
+  
+    try {
+      const endpoint = editId
+        ? `${endPoints.GET_ALL_RM}/${editId}`
+        : endPoints.RM; // Determine endpoint based on editId
+      const fun = editId ? editRM : addRM; // Determine function based on editId
+  
+      const { response, error } = await fun(endpoint, data);
+  
+      if (response && !error) {
         console.log("Response:", response);
-        console.log("Error:", error);
-
-        if (response && !error) {
-          toast.success(response.data.message); // Show success toast
-          onClose(); // Close the form/modal
-        } else {
-          toast.error(error.response.data.message); // Show error toast
-        }
-      } catch (err) {
-        console.error("Error submitting RM data:", err);
-        toast.error("An unexpected error occurred."); // Handle unexpected errors
+        toast.success(response.data.message); // Show success toast
+        onClose(); // Close the form/modal
+      } else if (error) {
+        console.error("Error:", error.response || error.message);
+        const errorMessage =
+          error.response?.data?.message || "An unexpected error occurred.";
+        toast.error(errorMessage); // Show error toast
       }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      toast.error("An unexpected error occurred."); // Handle unexpected errors
     }
   };
-
+  
 
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -136,7 +137,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
     } else if (tab === "Company Information") {
-      fieldsToValidate = ["email", "Password", "confirmPassword"];
+      fieldsToValidate = ["email", editId && "password", !editId && "confirmPassword"];
     }
 
     const isValid = fieldsToValidate.length
@@ -160,13 +161,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const handleInputChange = (field: keyof RMData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
-
-
-
-
-
-
-
 
 
   // UseEffect for updating regions
@@ -194,13 +188,9 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     // Update wc
     setData((prevData: any) => ({
       ...prevData,
-      workerCommission: filteredCommission,
+      wc: filteredCommission,
     }));
   }, [allWc]);
-
-
-
-
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
@@ -262,6 +252,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       const { response, error } = await getRM(`${endPoints.GET_ALL_RM}/${editId}`);
       if (response && !error) {
         const RM: any = response.data; // Return the fetched data
+        console.log("Fetched RM data:", RM);
         const { user, _id, ...rm } = RM;
         const transformedRM = RM ? {
           ...rm,
@@ -271,16 +262,19 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
           email: user?.email,
           userImage: user?.userImage,
           region: RM.region?._id,
-          area: RM.area?._id,
           commission: RM.commission?._id
         } : null;
+
+        console.log("Transformed RM data:", transformedRM);
+
+
         setFormValues(transformedRM)
       } else {
         // Handle the error case if needed (for example, log the error)
-        console.error('Error fetching data:', error);
+        console.error('Error fetching RM data:', error);
       }
     } catch (err) {
-      console.error('Error fetching areas:', err);
+      console.error('Error fetching RM data:', err);
     }
   };
 
@@ -384,6 +378,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   required
                   error={errors.phoneNo?.message}
                   placeholder="Enter phone number"
+                  value={watch("phoneNo")} // Watch phone field for changes
                   onChange={(value) => {
                     handleInputChange("phoneNo");
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
@@ -427,7 +422,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   {...register("country")}
                 />
                 <Select
-                  placeholder="Select State"
+                  placeholder={data.state.length==0?"Choose Country":"Select State"}
                   label="State"
                   error={errors.state?.message}
                   options={data.state}
@@ -506,9 +501,10 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   {...register("workEmail")}
                 />
                 <CustomPhoneInput
-                  label="Phone Number"
+                  label="Work phone"
                   error={errors.workPhone?.message}
-                 
+                  value={watch("workPhone")} // Watch phone field for changes
+              
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("workPhone");
@@ -519,19 +515,21 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
               </div>
               <div className="grid grid-cols-2 gap-4 my-4">
                 <Select
+                
                   placeholder="Select Region"
                   label="Select Region"
-                  // value={watch("region")}
+                  value={watch("region")}
                   error={errors.region?.message}
                   options={data.regions}
                   {...register("region")}
                 />
                 <Select
+              
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
+                  value={watch('commission')}
                   error={errors.commission?.message}
-                  options={data.workerCommission}
-
+                  options={data.wc}
                   {...register("commission")}
                 />
               </div>

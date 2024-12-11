@@ -10,6 +10,8 @@ import IndiaLogo from "../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
 import UserIcon from "../../assets/icons/UserIcon";
+// import Button from "./Button";
+// import ArrowRight from "../../assets/icons/ArrowRight";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -29,9 +31,10 @@ interface TableProps<T> {
     }[];
   };
   actionList?: {
-    label: string;
+    label: "view" | "edit" | "delete";
     function: (id: any) => void;
   }[];
+  // noButton?:boolean;
   noAction?: boolean;
   noPagination?: boolean;
   maxHeight?: string;
@@ -42,6 +45,7 @@ const Table = <T extends object>({
   columns,
   headerContents,
   actionList,
+  // noButton,
   noAction,
   noPagination,
   maxHeight,
@@ -189,7 +193,7 @@ const Table = <T extends object>({
               <img
                 src={`${imageValue}`}
                 alt={keyValue}
-                className="w-5 h-5 rounded-full"
+                className="w-6 h-6 rounded-full"
               />
               <p>{keyValue}</p>
             </>
@@ -197,7 +201,7 @@ const Table = <T extends object>({
         } else {
           return (
             <>
-              <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
+              <p className="w-6 h-6  border border-[#a6a6a8] bg-[#FFFFFF] rounded-full flex justify-center items-center">
                 <UserIcon color="#768294" size={15} />
               </p>
               <p>{keyValue}</p>
@@ -281,7 +285,21 @@ const Table = <T extends object>({
                         )}
                       </div>
                     </td>
+                    
                   ))}
+                      {/* {!noButton&&(
+                    <td className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
+                    {row.status === "New" && (
+                      <div className="flex justify-center gap-2">
+                        <Button variant="tertiary">
+                          convert to Trail
+                          <ArrowRight size={10} color="#565148" />
+                        </Button>
+                      </div>
+                    )}
+                  </td>
+                  )} */}
+
                   {!noAction && (
                     <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
                       <div className="flex justify-center gap-2">
@@ -298,7 +316,7 @@ const Table = <T extends object>({
                             <p
                               key={index}
                               className="cursor-pointer"
-                              onClick={() => action.function(1)}
+                              onClick={() => action.function(row?._id)}
                             >
                               <Eye color="#4B5C79" size={16} />
                             </p>
@@ -316,6 +334,7 @@ const Table = <T extends object>({
                         )}
                       </div>
                     </td>
+                    
                   )}
                 </tr>
               ))

@@ -12,35 +12,15 @@ import { useEffect, useRef, useState } from "react";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+import { LeadData } from "../../../Interfaces/Lead";
+import { useRegularApi } from "../../../context/ApiContext";
 
 type Props = {
   onClose: () => void;
   editId?:string
 };
 
-interface RegionData {
-  label: string;
-  value: string;
-}
 
-interface LeadFormData {
-  leadImage?: any;
-  salutation?: string;
-  firstName: string;
-  lastName?: string;
-  email: string;
-  phone: string;
-  website?: string;
-  leadSource?: string;
-  region: string;
-  area: string;
-  assignBda: string; 
-  companyId?: string;
-  companyName?: string;
-  companyPhone?: string;
-  companyAddress?: string;
-  pinCode?: string;
-}
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First name is required"),
@@ -48,15 +28,24 @@ const validationSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string().required("Phone is required"),
-  region:Yup.string().required('Region is required'),
-  area:Yup.string().required('Area is required'),
-  assignBda:Yup.string().required('Bda is required'),
+  regionId:Yup.string().required('Region is required'),
+  areaId:Yup.string().required('Area is required'),
+  bdaId:Yup.string().required('Bda is required'),
 });
 
 function LeadForm({ onClose ,editId}: Props) {
-  const [regionData, setRegionData] = useState<RegionData[]>([]);
   const {request:addLead}=useApi('post',3001)
-  const {request:getAllRegion}=useApi('get',3003)
+  const {request:ediLead}=useApi('put',3001)
+  const {request:getLead}=useApi('get',3001)
+  const {allRegions,allAreas,allBDA}=useRegularApi()
+  const [data, setData] = useState<{
+    regions: { label: string; value: string }[];
+    areas: { label: string; value: string }[];
+    bdas:{ label: string; value: string }[];
+  }>({ regions: [], areas: [],bdas:[] });
+  
+  
+
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const {
     register,
@@ -65,65 +54,51 @@ function LeadForm({ onClose ,editId}: Props) {
     clearErrors,
     watch,
     setValue
-  } = useForm<LeadFormData>({
+  } = useForm<LeadData>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      salutation: "mr", // Default value for salutation
+      salutation: "mr.", // Default value for salutation
     },
   });
 
-  const onSubmit: SubmitHandler<LeadFormData> =async (data) => {
-    console.log("Form Data", data);
-    try{
-      const {response,error}=await addLead(endPoints.ADD_LEAD,data)
-      if(response && !error){
-        toast.success(response.data.message)
-        onClose()
-      }else{
-        toast.error(error.response.data.message)
-      }
-    }catch(err){
-      console.log(err);
-    }
-  };
-  const getAllRegions = async () => {
-    try {
-      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
-  
-      if (response && !error) {
-        // Extract only `regionName` and `_id` from each region
-        const filteredRegions = response.data.regions?.map((region: any) => ({
-          label: region.regionName,
-          value: String(region._id), // Ensure `value` is a string
-        }));
-  
-        // Update the state with the filtered regions
-        setRegionData(filteredRegions);
-      } else {
-        toast.error(error.response.data.message);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  
+  const onSubmit: SubmitHandler<LeadData> = async (data, event) => {
+    event?.preventDefault(); // Prevent default form submission behavior
+      try {
+        const fun = editId ? ediLead : addLead; // Select the appropriate function based on editId
+        let response, error;
 
-  useEffect(()=>{
-    getAllRegions()
-  },[])
-  const leadSource = [
-    { label: "Hi", value: "hi" },
-    { label: "Bi", value: "bi" },
-    { label: "Ci", value: "ci" },
-  ];
+        if (editId) {
+          // Call updateLead if editId exists (editing a lead)
+          ({ response, error } = await fun(`${endPoints.LEAD}/${editId}`, data));
+        } else {
+          // Call addLead if editId does not exist (adding a new lead)
+          ({ response, error } = await fun(endPoints.LEADS, data));
+        }
 
-  const salutation = [
-    { value: "mr", label: "Mr." },
-    { value: "mrs", label: "Mrs." },
-    { value: "ms", label: "Ms." },
-    { value: "dr", label: "Dr." },
-  ];
-  console.log(editId)
+        console.log("Response:", response);
+        console.log("Error:", error);
+
+        if (response && !error) {
+          toast.success(response.data.message); // Show success toast
+          onClose(); // Close the form/modal
+        } else {
+          toast.error(error.response.data.message); // Show error toast
+        }
+      } catch (err) {
+        console.error("Error submitting lead data:", err);
+        toast.error("An unexpected error occurred."); // Handle unexpected errors
+      }
+    
+};
+
+
+const salutation = [
+  { value: "Mr.", label: "Mr." },
+  { value: "Mrs.", label: "Mrs." },
+  { value: "Ms.", label: "Ms." },
+  { value: "Miss.", label: "Miss." },
+  { value: "Dr.", label: "Dr." },
+];
 
   const handleRemoveImage = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent click propagation
@@ -148,23 +123,127 @@ function LeadForm({ onClose ,editId}: Props) {
     }
   };
 
-  const handleInputChange = (field: keyof LeadFormData) => {
+  const handleInputChange = (field: keyof LeadData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
+  // UseEffect for updating regions
+  useEffect(() => {
+    const filteredRegions = allRegions?.map((region: any) => ({
+      value: String(region._id),
+      label: region.regionName,
+    }));
+    // Update the state without using previous `data` state
+    setData((prevData:any) => ({
+      ...prevData,
+      regions: filteredRegions,
+    }));
+  }, [allRegions]);
+
+  // UseEffect for updating areas based on selected region
+  useEffect(() => {
+    const filteredAreas = allAreas?.filter(
+      (area: any) => area.region?._id === watch("regionId")
+    );
+    const transformedAreas = filteredAreas?.map((area: any) => ({
+      label: area.areaName,
+      value: String(area._id),
+    }));
+
+    // Update areas
+    setData((prevData:any) => ({
+      ...prevData,
+      areas: transformedAreas,
+    }));
+  }, [watch("regionId"), allAreas]);
+
+  // UseEffect for updating regions
+  useEffect(() => {
+    const filteredBDA = allBDA?.map((bda: any) => ({
+      value: String(bda._id),
+      label: bda.bdaName,
+    }));
+    // Update the state without using previous `data` state
+    setData((prevData:any) => ({
+      ...prevData,
+      bdas: filteredBDA,
+    }));
+  }, [allBDA]);
+
+  const setFormValues = (data: LeadData) => {
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof LeadData, data[key as keyof LeadData]);
+    });
+    console.log(watch("firstName"));
+    
+    console.log(watch("areaId"));
+    console.log(watch("regionId"));
+  };
+
+  const getOneLead = async () => {
+    try {
+      const { response, error } = await getLead(`${endPoints.LEAD}/${editId}`);
+      if (response && !error) {
+        const Lead = response.data; // Return the fetched data
+        console.log("Fetched Lead data:", Lead);
+  
+        const { user,_id, ...lead } = Lead;
+  
+        // const transformedLead = Lead ? {
+        //   ...lead,
+        //   regionId: Lead.regionId,
+        //   areaId: Lead.areaId,
+        //   bdaId: Lead.bdaId
+        // } : null;
+  
+        // console.log("Transformed Lead data:", transformedLead);
+  
+        setFormValues(Lead);
+      } else {
+        // Handle the error case if needed (for example, log the error)
+        console.error('Error fetching Lead data:', error);
+      }
+    } catch (err) {
+      console.error('Error fetching Lead data:', err);
+    }
+  };
+
+
+  
+  
+  useEffect(() => {
+    getOneLead()
+    
+    
+  }, [editId]);
+
+  console.log(data.areas);
+
+  console.log(data.bdas);
+  
+  
+  
+
   return (
     <div className="px-5 py-3 space-y-6 text-[#4B5C79]">
-      <div className="flex justify-between">
+       <div className="flex justify-between items-center mb-4">
         <div>
-          <h3 className="text-[#303F58] font-bold text-lg">Create Lead</h3>
-          <p className="text-[11px] text-[#8F99A9] mt-1">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt{" "}
+          <h1 className="text-lg font-bold text-deepStateBlue ">
+            {editId?'Edit':'Create'} Lead
+          </h1>
+          <p className="text-ashGray text-sm">
+          {`Use this form to ${
+              editId ? "edit an existing Lead" : "add a new Lead"
+            } details. Please fill in the required information`}
           </p>
         </div>
-        <p onClick={onClose} className="text-3xl cursor-pointer">
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
+        >
           &times;
-        </p>
+        </button>
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -245,10 +324,9 @@ function LeadForm({ onClose ,editId}: Props) {
               placeholder="Enter Website URL"
               {...register("website")}
             />
-            <Select
+             <Input
               label="Lead Source"
-              placeholder="Select Lead Source"
-              options={leadSource}
+              placeholder="Enter Lead Source"
               {...register("leadSource")}
             />
           </div>
@@ -257,25 +335,25 @@ function LeadForm({ onClose ,editId}: Props) {
             required
               label="Region"
               placeholder="Select Region"
-              options={regionData}
-              error={errors.region?.message}
-              {...register("region")}
+              options={data.regions}
+              error={errors.regionId?.message}
+              {...register("regionId")}
             />
             <Select
               required
               label="Area"
-              placeholder="Select Area"
-              error={errors.area?.message}
-              options={leadSource}
-              {...register("area")}
+              placeholder={data.areas.length==0?'Select Region':"Select Area"}
+              error={errors.areaId?.message}
+              options={data.areas}
+              {...register("areaId")}
             />
             <Select
               required
               label="Assign BDA"
               placeholder="Select BDA"
-              error={errors.assignBda?.message}
-              options={leadSource}
-              {...register("assignBda")}
+              error={errors.bdaId?.message}
+              options={data.bdas}
+              {...register("bdaId")}
             />
           </div>
         </div>
@@ -295,11 +373,17 @@ function LeadForm({ onClose ,editId}: Props) {
             />
           </div>
           <div className="col-span-4">
-            <Input
+          <CustomPhoneInput
+              required
               label="Company Phone"
-              type="number"
-              placeholder="Enter Company Phone"
-              {...register("companyPhone")}
+              name="companyPhone"
+              error={errors.companyPhone?.message}
+              placeholder="Enter phone number"
+              value={watch("companyPhone")} // Watch phone field for changes
+              onChange={(value) => {
+                handleInputChange("companyPhone");
+                setValue("companyPhone", value); // Update the value of the phone field in React Hook Form
+              }}
             />
           </div>
           <div className="col-span-8">

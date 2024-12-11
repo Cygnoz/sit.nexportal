@@ -37,8 +37,8 @@ const AMViewCardandTable = ({}: Props) => {
         { icon: <Licensor />, number: "147", title: "Total Licensers", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
       ];
       const ThirdCard = [
-        { icon: <LeadsCardIcon />, number: "147", title: "Lead Conversion rate", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
-        { icon: <Licensor />, number: "147", title: "Closed Licenses", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
+        // { icon: <LeadsCardIcon />, number: "147", title: "Lead Conversion rate", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+        { icon: <Licensor />, number: "147", title: "Closed Licenses", iconFrameColor: '#DD8686', iconFrameBorderColor: '#E9CBCBCC' },
       ];
     
       // Data for the table
@@ -87,7 +87,7 @@ const AMViewCardandTable = ({}: Props) => {
               />
             ))}
           </div>
-          <div className="flex gap-4 py-2 justify-between mt-2 ">
+          <div className="py-2 w-full mt-2 ">
             {ThirdCard.map((card, index) => (
               <ViewCard
                 iconFrameColor={card.iconFrameColor}

@@ -1,18 +1,13 @@
 
 type Props = {
     size?:number;
+    color?:string;
 }
 
-const ArrowRight = ({size}: Props) => {
+const ArrowRight = ({size=9, color}: Props) => {
   return (
-<svg width={size} height={size} viewBox="0 0 44 45" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect y="0.5" width="44" height="44" rx="22" fill="#EBEFF4"/>
-<rect x="10" y="10.5" width="24" height="24" fill="url(#pattern0_9715_32544)"/>
-<defs>
-<pattern id="pattern0_9715_32544" patternContentUnits="objectBoundingBox" width="1" height="1">
-<use transform="scale(0.00195312)"/>
-</pattern>
-<image id="image0_9715_32544" width="512" height="512" /></defs>
+<svg width={size} height={size} viewBox="0 0 9 9" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.700073 4.6001H7.70007M7.70007 4.6001L4.20007 1.1001M7.70007 4.6001L4.20007 8.1001" stroke={color?color:"#565148"} stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
   )
 }

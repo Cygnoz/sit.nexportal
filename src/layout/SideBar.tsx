@@ -21,7 +21,7 @@ const Sidebar: React.FC = () => {
       {/* Logo */}
       <div className="flex p-5 items-center gap-3">
         <img src={BillBizz} alt="billbizz logo" className="w-6" />
-        <h1 className="text-secondary">NEXSELL</h1>
+        <h1 className="text-secondary">NEX</h1>
       </div>
 
       {/* Sidebar Links */}
