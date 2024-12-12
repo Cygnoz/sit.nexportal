@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 //import CalenderDays from "../../../assets/icons/CalenderDays";
 //import RegionIcon from "../../../assets/icons/RegionIcon";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
@@ -23,6 +23,7 @@ const AreaView = ({}: // status,
 //areaCode,region
 Props) => {
   const { id } = useParams();
+  const navigate=useNavigate()
   const {request:getArea}=useApi('get',3003)
   const [area,setArea]=useState<any>()
   const tabs = [
@@ -71,8 +72,8 @@ Props) => {
           {/* Left Section: Area Icon and Details */}
 
           <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-20 h-20 bg-blue py-4  flex flex-col items-center justify-center rounded-full ">
+            <div className="flex items-center gap-2 ">
+              <div className=" bg-blue space-y-1 flex flex-col items-center justify-center rounded-full ">
                 <img className="w-10 h-10" src={region} alt="" />
                 <h2 className="font-bold">{area?.areaName}</h2>
               </div>
@@ -98,7 +99,7 @@ Props) => {
             <div className="border-r border-[#DADADA] h-10 me-4 "></div>
             <div className="text-center">
               <p className="text-xs text-[#8F99A9]">Region</p>
-              <p className="text-xs ">{area?.region?.regionCode}</p>
+              <p  onClick={()=>navigate(`/regionView/${area?.region?._id}`)} className="text-xs underline cursor-pointer">{area?.region?.regionCode}</p>
             </div>
           </div>
         </div>
