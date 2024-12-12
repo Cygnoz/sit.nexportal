@@ -16,11 +16,16 @@ import CalenderDays from "../../../assets/icons/CalenderDays";
 import Video from "../../../assets/icons/Video";
 import ClipboardPenLine from "../../../assets/icons/ClipboardPenLine";
 import ViewActivities from "./ViewActivity/ViewActivities";
+import { endPoints } from "../../../services/apiEndpoints";
+import useApi from "../../../Hooks/useApi";
+import { LeadData } from "../../../Interfaces/Lead";
 
 type Props = {}
 
 function LeadView({}: Props) {
     const {id}=useParams()
+    const {request:getLead}=useApi('get',3001)
+    const [leadData,setLeadData]=useState<LeadData>()
     const homeCardData = [
       { icon: <ComputerTick />, number: "Warm", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
       { icon: <RegionIcon />, number: "Website", title: "Closed Leads",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
@@ -51,6 +56,31 @@ function LeadView({}: Props) {
       document.addEventListener("mousedown", handleClickOutside);
     })
       
+    const getOneLead = async () => {
+      try {
+        const { response, error } = await getLead(`${endPoints.LEAD}/${id}`);
+        if (response && !error) {
+          const Lead = response.data; // Return the fetched data
+          console.log("Fetched Lead data:", Lead);
+          setLeadData(Lead)
+        } else {
+          // Handle the error case if needed (for example, log the error)
+          console.error('Error fetching Lead data:', error);
+        }
+      } catch (err) {
+        console.error('Error fetching Lead data:', err);
+      }
+    };
+    
+    
+    
+  
+    useEffect(() => {
+      getOneLead()
+    }, [id]);
+
+    console.log(leadData);
+    
   
     
   return (
@@ -58,12 +88,12 @@ function LeadView({}: Props) {
       <div className="flex items-center text-[16px] space-x-2">
        <p className="font-bold text-[#820000] ">Lead</p>
         <ChevronRight color="#4B5C79" size={18}/>
-        <p className="font-bold text-[#303F58] ">Lead {id}</p>
+        <p className="font-bold text-[#303F58] ">{leadData?.firstName}{leadData?.lastName&&leadData?.lastName}</p>
       </div>
 
       <div className="grid grid-cols-12 mt-5">
         <div className="col-span-3">
-          <ViewSidebar/>
+          <ViewSidebar getLead={getOneLead} leadData={leadData}/>
         </div>
 
         <div className="col-span-9 ms-4"> 
