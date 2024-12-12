@@ -1,7 +1,7 @@
 interface HomeCardProps {
   icon: React.ReactNode; // Accepts rendered JSX, e.g., <UserIcon color="red" />
   title: string;
-  number: string | number;
+  number: any;
   iconFrameColor: string; // Frame background color
   iconFrameBorderColor: string; // Frame border color
   bgColor?:string
