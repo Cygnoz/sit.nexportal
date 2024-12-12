@@ -1,18 +1,24 @@
-import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
-import UserIcon from "../../../assets/icons/UserIcon";
+import LeadsCardIcon from "../../../../assets/icons/LeadsCardIcon";
+import UserIcon from "../../../../assets/icons/UserIcon";
 // import Button from "../../../components/ui/Button";
-import { useParams } from "react-router-dom";
-import AwardIcon from "../../../assets/icons/AwardIcon";
-import ChevronRight from "../../../assets/icons/ChevronRight";
-import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
-import EditIcon from "../../../assets/icons/EditIcon";
-import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
-import profileImage from '../../../assets/image/AvatarImg.png';
-import backGroundView from '../../../assets/image/BDAView.png';
-import LicensersTable from "../../../components/ui/LicensersTable";
-import Table from "../../../components/ui/Table";
-import ViewCard from "../../../components/ui/ViewCard";
-import GraphTable from "./GraphTable";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import useApi from "../../../../Hooks/useApi";
+import AwardIcon from "../../../../assets/icons/AwardIcon";
+import ChevronRight from "../../../../assets/icons/ChevronRight";
+import DeActivateIcon from "../../../../assets/icons/DeActivateIcon";
+import EditIcon from "../../../../assets/icons/EditIcon";
+import ViewRoundIcon from "../../../../assets/icons/ViewRoundIcon";
+import backGroundView from '../../../../assets/image/BDAView.png';
+import Modal from "../../../../components/modal/Modal";
+import LicensersTable from "../../../../components/ui/LicensersTable";
+import Table from "../../../../components/ui/Table";
+import ViewCard from "../../../../components/ui/ViewCard";
+import { endPoints } from "../../../../services/apiEndpoints";
+import BDAForm from "../BDAForm";
+import GraphTable from "../GraphTable";
+import BDAViewAward from "./BDAViewAward";
+import BDAViewForm from "./BDAViewForm";
 
 interface BDAViewData {
   leadId:string;
@@ -37,6 +43,13 @@ interface Licencer {
 type Props = {}
 
 const BDAView = ({}: Props) => {
+  const navigate=useNavigate()
+  const {id}=useParams()
+  const {request:getBDA}=useApi('get',3002);
+  const [data, setData] = useState<{
+    bdaData:any;
+    regionManager:any;
+  }>({ bdaData:{},regionManager:[] });
   const viewCardData = [
     { icon: <LeadsCardIcon />, number: "32", title: "Total Leads Assigned", iconFrameColor: '#DD9F86', iconFrameBorderColor: '#F6DCD2' },
     { icon: <UserIcon />, number: "17", title: "Total Licenses Sold", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
@@ -46,6 +59,23 @@ const BDAView = ({}: Props) => {
     // { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
   ];
 
+  const [isModalOpen, setIsModalOpen] = useState({
+    editBda: false,
+    viewBda: false,
+    awards:false
+  });
+
+  // Function to toggle modal visibility
+  const handleModalToggle = (editBda = false, viewBda = false,awards=false) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      editBda: editBda,
+      viewBda: viewBda,
+      awards:awards
+    }));
+    getOneBDA();
+  };
+
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
       // navigate(`/amView/${viewId}`)
@@ -54,10 +84,9 @@ const BDAView = ({}: Props) => {
     }
     console.log(editId);
     console.log(deleteId);
-    
   }
   // Data for the table
-  const data: BDAViewData[] = [
+  const bdaData: BDAViewData[] = [
     { leadId:"LD12345", leadName: "Devid Billie", phoneNo: "(406) 555-0120", email: "danten@mail.ru", origin:"Website", assignedDate:"7/11/19", status: "New",  },
     { leadId:"LD12345", leadName: "Sudeep Kumar", phoneNo: "(406) 555-0120", email: "danten@mail.ru", origin:"Referral", assignedDate:"7/11/19", status: "Contacted",  },
     { leadId:"LD12345", leadName: "Kathryn Murphy", phoneNo: "(406) 555-0120", email: "irnabela@gmail.com", origin:"Website", assignedDate:"7/11/19", status: "Closed",  },
@@ -93,13 +122,38 @@ const BDAView = ({}: Props) => {
     { key: "action", label: "Action" }
   ];
 
-  const {id}=useParams()
+  
+
+  const getOneBDA = async () => {
+    try {
+      const { response, error } = await getBDA(`${endPoints.BDA}/${id}`);
+      if (response && !error) {
+        console.log(response.data);
+        
+        const BDA:any = response.data; // Return the fetched data
+        console.log("Fetched BDA data:", BDA);
+  
+       setData((prev)=>({...prev,bdaData:BDA}))
+      } else {
+        // Handle the error case if needed (for example, log the error)
+        console.error('Error fetching BDA data:', error);
+      }
+    } catch (err) {
+      console.error('Error fetching BDA data:', err);
+    }
+  };
+  
+  
+  useEffect(() => {
+    getOneBDA()
+  }, [id]);
   return (
+    <>
     <div>
        <div className="flex items-center text-[16px] my-2 space-x-2">
        <p className="font-bold text-[#820000] ">BDa</p>
         <ChevronRight color="#4B5C79" size={18}/>
-        <p className="font-bold text-[#303F58] ">BDA {id}</p>
+        <p className="font-bold text-[#303F58] ">{data.bdaData?.user?.userName}</p>
       </div>
       <div className="grid grid-cols-12">
         <div className="col-span-2">
@@ -125,35 +179,37 @@ const BDAView = ({}: Props) => {
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
             <div className="w-20 h-20 rounded-full overflow-hidden">
-          <img
-            src={profileImage} // Replace with the actual image URL
+          {data.bdaData?.user?.userImage?<img
+            src={data.bdaData?.user?.userImage} // Replace with the actual image URL
             alt="Profile"
             className="w-full h-full object-cover"
-          />
+          />:
+          <p className="w-full h-full    bg-black rounded-full flex justify-center items-center">
+                <UserIcon color="white" size={40} />
+          </p>}
         </div>
-          <p className="text-[#FFFEFB] text-2xl font-normal p-4">Darrell Steward</p>
+          <p className="text-[#FFFEFB] text-2xl font-normal p-4">{data.bdaData?.user?.userName}</p>
             </div>
             <div className="flex -mt-4 ms-20 mb-6">
             <div className="border-r">
           <p className="mx-4 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
-          <p className="mx-4 text-[#FFFFFF] text-sm font-medium">+91 9834546756</p>
+          <p className="mx-4 text-[#FFFFFF] text-sm font-medium">{data.bdaData?.user?.phoneNo}</p>
         </div>
         <div>
           <p className="text-[#D4D4D4] text-xs font-medium mx-4">Email</p>
-          <p className="text-[#FFFFFF] text-sm font-medium mx-4">dean@example.com</p>
+          <p className="text-[#FFFFFF] text-sm font-medium mx-4">{data.bdaData?.user?.email}</p>
         </div>
             </div>
             <div className="flex ms-20">
             <div className="border-r">
           <p className="mx-4 text-[#D4D4D4] text-xs font-medium">Region</p>
-          <p className="mx-4 underline text-[#FFFFFF] text-sm font-normal">RE6-NE001</p>
+          <p onClick={()=>navigate(`/regionView/${data.bdaData?.region?._id}`)} className="mx-4 underline cursor-pointer text-[#FFFFFF] text-sm font-normal">{data.bdaData?.region?.regionCode?data.bdaData?.region?.regionCode:'N/A'}</p>
         </div>
         <div>
           <p className="mx-4 text-[#D4D4D4] text-xs font-medium">Area</p>
-          <p className="mx-4 underline text-[#FFFFFF] text-sm font-normal">AE6-NE001</p>
+          <p onClick={()=>navigate(`/areaView/${data.bdaData?.area?._id}`)} className="mx-4 underline cursor-pointer text-[#FFFFFF] text-sm font-normal">{data.bdaData?.area?.areaCode?data.bdaData?.area?.areaCode:'N/A'}</p>
         </div>
             </div>
-
             <div className="flex gap-8 ms-6 my-12">
               <div>
                 <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Role</p>
@@ -162,29 +218,29 @@ const BDAView = ({}: Props) => {
               </div>
               <div>
                 <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Employee ID</p>
-                <p className="text-[#FFFFFF] text-sm font-medium">BMC-NE001</p>
+                <p className="text-[#FFFFFF] text-sm font-medium">{data.bdaData?.user?.employeeId}</p>
               </div>
               <div>
                 <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Joining Date</p>
-                <p className="text-[#FFFFFF] text-sm font-medium">13 June 2023</p>
+                <p className="text-[#FFFFFF] text-sm font-medium">{new Date(data.bdaData.dateOfJoining).toLocaleDateString("en-GB")}</p>
               </div>
             </div>
             <div className="flex gap-1">
-            <div className="flex flex-col items-center space-y-1">
-              <div className="w-8 h-8 mb-2 rounded-full">
+            <div onClick={()=>handleModalToggle(true,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
+              <div className="w-8 h-8 mb-2  rounded-full">
                 <EditIcon size={36} color="#C4A25D24" />
               </div>
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
              </div>
 
-            <div className="flex flex-col  items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,true,false)} className="flex flex-col  items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
                 <ViewRoundIcon  size={36} color="#D52B1E4D" />  
               </div>
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
             </div>
 
-            <div className="flex flex-col  items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
                 <AwardIcon size={36} color="#D52B1E4D" />
               </div>
@@ -205,7 +261,7 @@ const BDAView = ({}: Props) => {
         
      {/* Table Section */}
       <div className="ms-4 mt-4">
-        <Table<BDAViewData> data={data} columns={columns} headerContents={{
+        <Table<BDAViewData> data={bdaData} columns={columns} headerContents={{
           title: "Leads Details",
           search: { placeholder: 'Search BDA by Name' },
         }}
@@ -228,6 +284,19 @@ const BDAView = ({}: Props) => {
 
 
     </div>
+    <Modal open={isModalOpen.editBda} onClose={()=>handleModalToggle()}>
+    <BDAForm editId={id} onClose={()=>handleModalToggle()} />
+  </Modal>
+
+  <Modal align='right' className='w-[25%] mt-[500px] me-16' open={isModalOpen.awards} onClose={()=>handleModalToggle()}>
+        <BDAViewAward onClose={()=>handleModalToggle()} />
+      </Modal>
+
+      <Modal open={isModalOpen.viewBda} onClose={()=>handleModalToggle()}>
+        <BDAViewForm bdaData={data.bdaData} onClose={()=>handleModalToggle()} />
+      </Modal>
+
+  </>
   )
 }
 
