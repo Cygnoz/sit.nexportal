@@ -232,7 +232,7 @@ const logOperation = (req, status, operationId = null) => {
   
       const supervisor = await Supervisor.findById(id).populate([
         { path: 'user', select: 'userName phoneNo userImage email employeeId' },
-        { path: 'region', select: 'regionName' },
+        { path: 'region', select: 'regionName regionCode' },
         { path: 'commission', select: 'profileName' },
       ]);
   
