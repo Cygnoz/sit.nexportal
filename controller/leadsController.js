@@ -21,7 +21,8 @@ return { regionExists, areaExists , bdaExists };
 exports.addLead = async (req, res , next ) => {
   try {
     const { id: userId, userName } = req.user;
-
+    
+    
     const cleanedData = cleanLeadData(req.body);
 
     const { email, phone , regionId, areaId , bdaId } = cleanedData;
@@ -348,6 +349,7 @@ function validateSalutation(salutation, errors) {
 
 //Validate Salutation
 function validateSalutation(leadStatus, errors) {
+  
   validateField(leadStatus && !validLeadStatus.includes(leadStatus),
     "Invalid leadStatus: " + leadStatus, errors);
 }
