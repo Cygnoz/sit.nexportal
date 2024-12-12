@@ -146,6 +146,8 @@ exports.verifyOtp = [otpRateLimiter, async (req, res) => {
           id: user._id,
           email: user.userEmail,
           userName: user.userName,
+          userImage: user.userImage,
+          employeeId: user.employeeId,
           role: user.role,
         },
       });
