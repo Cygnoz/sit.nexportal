@@ -36,21 +36,7 @@ exports.addLead = async (req, res , next ) => {
 
     const { email, regionId, areaId , bdaId } = cleanedData;
 
-
-    // //Validate Account Id
-    // if (!mongoose.Types.ObjectId.isValid(regionId) || regionId.length !== 24) {
-    //   return res.status(400).json({ message: `Select a Region` });
-    // }    
-
-    // //Validate Account Id
-    // if (!mongoose.Types.ObjectId.isValid(areaId) || areaId.length !== 24) {
-    //   return res.status(400).json({ message: `Select a Area` });
-    // }    
-
-    // // //Validate Account Id
-    // // if (!mongoose.Types.ObjectId.isValid(bdaId) || bdaId.length !== 24) {
-    // //   return res.status(400).json({ message: `Select a BDA` });
-    // // }    
+    
     // Check if a lead with the same email already exists
     const existingLead = await Leads.findOne({ email });
     if (existingLead) {
