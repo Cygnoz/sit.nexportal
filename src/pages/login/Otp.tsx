@@ -6,12 +6,12 @@ import axios from 'axios';
 import useApi from '../../Hooks/useApi';
 import { endPoints } from '../../services/apiEndpoints';
 import LoginBgRight from './LoginBgRight';
-import { useRole } from '../../context/RoleContext';
+import { useUser } from '../../context/UserContext';
 
 type Props = {}
 
 function Otp({}: Props) {
-  const {setRole}=useRole()
+  const {setUser}=useUser()
   const navigate = useNavigate();
   const location = useLocation();
   const { request: verifyOtp } = useApi("post", 3003);
@@ -96,11 +96,10 @@ function Otp({}: Props) {
       const result = await verifyOtp(endPoints.GET_OTP, { email, otp: enteredOtp });
   
       if (result?.response) {
-        console.log(result.response)
         // OTP verified successfully
         const successMessage = result.response.data?.message || 'OTP verified successfully!';
         sessionStorage.setItem('authToken', result.response.data.token);
-        setRole(result.response.data.user.role)
+        setUser(result.response.data.user)
         setTimeout(() => {
           setIsLoading(false)
           navigate('/dashboard')

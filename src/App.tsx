@@ -13,7 +13,7 @@ import RegionView from './modules/Sales R&A/Region/RegionView';
 import AMHome from './modules/SalesTeams/AreaManager/AMHome';
 
 import BDAHome from './modules/SalesTeams/BDA/BDAHome';
-import BDAView from './modules/SalesTeams/BDA/BDAView';
+import BDAView from './modules/SalesTeams/BDA/view/BDAView';
 import RMHome from './modules/SalesTeams/RegionManager/RMHome';
 import RMView from './modules/SalesTeams/RegionManager/RMView';
 import SupervisorHome from './modules/SupportTeams/Supervisor/SupervisorHome';
@@ -29,7 +29,7 @@ import Otp from './pages/login/Otp';
 // import RMViewForm from './modules/RegionalManager/RegionManager/RMViewForm';
 import NoAccess from './context/NoAccess';
 import SuperVisorView from './modules/SupportTeams/Supervisor/SuperVisorView';
-import { useRole } from './context/RoleContext';
+import {  useUser } from './context/UserContext';
 import TrialView from './modules/Customers/Trial/TrialView/TrialView';
 import LicenserView from './modules/Customers/Licensor/view/LicenserView';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
@@ -38,7 +38,7 @@ import TicketsView from './modules/Tickets/TicketsView';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
-  const {role}=useRole()
+  const {user}=useUser()
 
   return (
     <>
@@ -46,7 +46,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path='/' element={<Login/>}/>
         <Route path='/otp' element={<Otp/>}/>
-        {sessionStorage.getItem('authToken') || role ? (
+        {sessionStorage.getItem('authToken') || user ? (
           // If role exists, show the layout with nested routes
           <Route path="/*" element={<Layout />}>
             {/* Define authenticated routes inside Layout */}

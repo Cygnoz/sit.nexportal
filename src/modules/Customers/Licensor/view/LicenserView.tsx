@@ -136,32 +136,33 @@ function LicenserView({ }: Props) {
           <div className="h-[130px] relative flex flex-col  bg-white rounded-lg">
             <img src={profileImage} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>
             <div className="h-[65px] bg-cover rounded-t-lg w-full flex justify-end" style={{ backgroundImage: `url(${licenserImg})` }}>
-              <div className="flex py-1 mt-3">
+              <div className="flex py-1 me-3">
 
 
                 <div className="flex flex-col items-center space-y-2">
-                  <div onClick={() => handleModalToggle(true, false)} className="w-4 h-4 mb-2 rounded-full border-white" >
+                  <div onClick={() => handleModalToggle(true, false)} className="w-6 h-6 mb-2 rounded-full border-white" >
                     <EditIcon size={40} color="#C4A25D24" />
                   </div>
-                  <p className="text-center font-medium  text-white text-[10px] ms-3" >Edit Profile</p>
+                  <p className="text-center font-medium  text-white text-[10px] ms-3">Edit Profile</p>
+
                 </div>
 
-                <div className="flex flex-col  items-center space-y-1">
+                <div className="flex flex-col  items-center space-y-2 ">
                   <div onClick={() => handleModalToggle(false, true)}
-                    className="w-8 h-8 mb-2 rounded-full">
+                    className="w-6 h-6 mb-2 rounded-full">
                     <ViewRoundIcon size={40} color="#D52B1E4D" />
 
                   </div>
-                  <p className="text-center font-medium  text-white text-xs ms-3">View Details</p>
+                  <p className="text-center font-medium  text-white text-[10px] ms-3">View Details</p>
                 </div>
 
 
 
-                <div className="flex flex-col  items-center space-y-1">
-                  <div className="w-8 h-8 mb-2 rounded-full">
+                <div className="flex flex-col  items-center space-y-2">
+                  <div className="w-6 h-6 mb-2 rounded-full">
                     <DeActivateIcon size={40} color="#D52B1E4D" />
                   </div>
-                  <p className="text-center font-medium  text-white text-xs ms-3">DeActivate</p>
+                  <p className="text-center font-medium  text-white text-[10px] ms-3">DeActivate</p>
 
                 </div>
 

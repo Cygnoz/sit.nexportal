@@ -89,7 +89,7 @@ const BDAHome = () => {
             dateOfJoining: bda.dateOfJoining
               ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail:bda.user.email
+            loginEmail:bda.user?.email
           })) || [];
         setAllBDA(transformedBDA);
         console.log(transformedBDA);
@@ -109,6 +109,7 @@ const BDAHome = () => {
   
   
   return (
+    <>
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -178,10 +179,12 @@ const BDAHome = () => {
       </div>
 
       {/* Modal Section */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <BDAForm editId={editId} onClose={handleModalToggle} />
-      </Modal>
+      
     </div>
+    <Modal open={isModalOpen} onClose={handleModalToggle}>
+    <BDAForm editId={editId} onClose={handleModalToggle} />
+  </Modal>
+  </>
   );
 };
 

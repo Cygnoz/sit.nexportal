@@ -1,6 +1,6 @@
 export interface LeadData {
     salutation?:string
-    leadImage?:string;
+    image?:string;
     firstName: string;
     lastName?: string;
     email: string;

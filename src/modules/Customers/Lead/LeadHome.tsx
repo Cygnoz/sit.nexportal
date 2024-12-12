@@ -44,15 +44,23 @@ function LeadHome({}: Props) {
   const getLeads=async()=>{
     try{
       const {response,error}=await getAllLeads(endPoints.LEADS)
+      console.log("res",response);
+      
       if(response && !error){
         console.log(response.data.leads);
-        setAllLead(response.data.leads)
+       const transformLead= response.data.leads?.map((lead:any) => ({
+          ...lead,
+          leadName:`${lead.firstName} ${lead.lastName?lead.lastName:''}`,
+          leadImage:lead.image
+        })) || [];
+        setAllLead(transformLead)
       }
     }catch(err){
       console.log(err);
     }
   }
-
+  console.log(allLead);
+  
   useEffect(()=>{
     getLeads()
   },[])
@@ -90,10 +98,10 @@ function LeadHome({}: Props) {
 const columns: { key: any; label: string }[] = [
   { key: "leadId", label: "Lead ID" },
   { key: "leadName", label: "Lead Name" },
-  { key: "phoneNumber", label: "Phone Number" },
-  { key: "emailAddress", label: "Email Address" },
-  { key: "source", label: "Source" },
-  { key: "status", label: "Status" },
+  { key: "phone", label: "Phone Number" },
+  { key: "email", label: "Email Address" },
+  { key: "leadSource", label: "Source" },
+  { key: "leadStatus", label: "Status" },
 ];
 
   return (
@@ -101,7 +109,10 @@ const columns: { key: any; label: string }[] = [
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
-      <Button variant="primary"  size="sm" onClick={handleModalToggle}>
+      <Button variant="primary"  size="sm" onClick={()=>{
+        handleModalToggle()
+        setEditId('')
+      }}>
         <span className="text-xl font-bold">+</span>Create Lead
       </Button>
       </div>

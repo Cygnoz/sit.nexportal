@@ -4,7 +4,7 @@ import { AreaData } from "../Interfaces/Area";
 import { RegionData } from "../Interfaces/Region";
 import { WCData } from "../Interfaces/WC";
 import { endPoints } from "../services/apiEndpoints";
-import { useRole } from "./RoleContext";
+import {  useUser } from "./UserContext";
 import { BDAData } from "../Interfaces/BDA";
 
 type ApiContextType = {
@@ -18,7 +18,7 @@ type ApiContextType = {
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
 
 export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
-  const { role } = useRole();
+  const { user } = useUser();
   const { request: getAllRegion } = useApi("get", 3003);
   const { request: getAllArea } = useApi("get", 3003);
   const { request: getAllWc } = useApi("get", 3003);
@@ -92,15 +92,19 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { response, error } = await getAllBDA(endPoints.BDA);
       if (response && !error) {
+        console.log(response);
+        
         const transformedBDA =
           response.data.bda?.map((bda: any) => ({
             ...bda,
-            dateOfJoining: bda.dateOfJoining
+            dateOfJoining: bda?.dateOfJoining
               ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail: bda.user.email,
-            bdaName:bda.user.userName
+            loginEmail: bda.user?.email,
+            bdaName:bda.user?.userName
           })) || [];
+          // console.log("dssd",transformedBDA);
+          
         setAllBDA(transformedBDA);
       } else {
         console.log(error);
@@ -110,13 +114,15 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  
+
   useEffect(() => {
     fetchRegions();
     fetchAreas();
     getWC();
     getCountries();
     getBDAs();
-  }, [role]);
+  }, [user]);
 
   return (
     <ApiContext.Provider

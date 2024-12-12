@@ -1,65 +1,26 @@
-import { useParams } from "react-router-dom";
-import BankIcon from "../../../assets/icons/BankIcon";
-import BloodGroupIcon from "../../../assets/icons/BloodGroupIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays"
-import EmailIcon from "../../../assets/icons/EmailIcon";
-import LocationIcon from "../../../assets/icons/LocationIcon";
-import PhoneIcon from "../../../assets/icons/PhoneIcon";
-import RegionIcon from "../../../assets/icons/RegionIcon"
-import UserIcon from "../../../assets/icons/UserIcon"
-import { useEffect, useState } from "react";
-import { endPoints } from "../../../services/apiEndpoints";
-import useApi from "../../../Hooks/useApi";
+import BankIcon from "../../../../assets/icons/BankIcon";
+import BloodGroupIcon from "../../../../assets/icons/BloodGroupIcon";
+import CalenderDays from "../../../../assets/icons/CalenderDays";
+import EmailIcon from "../../../../assets/icons/EmailIcon";
+import LocationIcon from "../../../../assets/icons/LocationIcon";
+import PhoneIcon from "../../../../assets/icons/PhoneIcon";
+import RegionIcon from "../../../../assets/icons/RegionIcon";
+import UserIcon from "../../../../assets/icons/UserIcon";
 
 type Props = {
   onClose: () => void;
+  bdaData:any
 }
 
 
 
-const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
-
-  
-  const { request: getaSV } = useApi('get', 3003)
-
-  const { id } = useParams()
-
-
-  const [data, setData] = useState<{
-    svData: any;
-  }>
-    ({ svData: [] })
-
-
-  const getASV = async () => {
-    try {
-      const { response, error } = await getaSV(`${endPoints.SUPER_VISOR}/${id}`);
-      if (response && !error) {
-        setData((prevData) => ({
-          ...prevData,
-          svData: response.data
-        }))
-      }
-      else {
-        console.error(error.response.data.message)
-      }
-    }
-    catch (err) {
-      console.error("Error fetching Super Visor data:", err);
-    }
-  }
-
-  useEffect(() => {
-    getASV();
-  }, [id])
-  console.log(data);
-
+const BDAViewForm: React.FC<Props> = ({ onClose,bdaData }) => {
   return (
     <div>
       <div className="p-5 bg-white rounded shadow-md  ">
         <div className="flex justify-between items-center">
         <div className="px-2 ">
-      <h1 className="font-bold text-sm">SuperVisor Info</h1>
+      <h1 className="font-bold text-sm">BDA Info</h1>
         <p className="text-xs mt-2 font-normal text-[#8F99A9]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore quisquam pos</p>
        
       </div>
@@ -83,7 +44,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Name</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.user?.userName ? data.svData?.user?.userName : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.user.userName}</p>
 
               </div>
              
@@ -94,7 +55,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
          
               <div className="flex">
                 <CalenderDays color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2 ">{data.svData?.age ? data.svData?.age : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2 ">{bdaData.age?bdaData.age:'N/A'}</p>
 
               </div>
              
@@ -102,7 +63,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Blood Group</h3>
               <div className="flex">
                 <BloodGroupIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.bloodGroup ? data.svData?.bloodGroup : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.bloodGroup?bdaData.bloodGroup:'N/A'}</p>
 
               </div>
               
@@ -115,7 +76,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Address</h3>
               <div className="flex">
                 <LocationIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.address?.street1 ? data.svData?.address?.street1 : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.address.street1?bdaData.address.street1:'N/A'}</p>
 
               </div>
               
@@ -123,7 +84,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Phone</h3>
               <div className="flex">
                 <PhoneIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.user?.phoneNo ? data.svData?.user?.phoneNo : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.user.phone?bdaData.user.phone:'N/A'}</p>
 
               </div>
               
@@ -131,7 +92,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Email Address</h3>
               <div className="flex">
                 <EmailIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.personalEmail ? data.svData?.personalEmail : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.user.email?bdaData.user.email:'N/A'}</p>
 
               </div>
             </div>
@@ -144,7 +105,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Adhar Number</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.adhaarNo ? data.svData?.adhaarNo : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.adhaarNo?bdaData.adhaarNo:'N/A'}</p>
 
               </div>
              
@@ -152,17 +113,15 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Pan Number</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.panNo ? data?.svData?.panNo : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.panNo?bdaData.panNo:'N/A'}</p>
 
               </div>
               <hr />
-              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Date Of Joining</h3>
+              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Date Of Joining</h3>
               
               <div className="flex">
                 <CalenderDays color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2 ">{data.svData?.dateOfJoining
-                  ? new Date(data.svData.dateOfJoining).toLocaleDateString()
-                  : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2 ">{new Date(bdaData.dateOfJoining).toLocaleDateString("en-GB")}</p>
 
               </div>
             </div>
@@ -180,7 +139,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Name</h3>
               <div className="flex">
                 <BankIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.bankDetails?.bankName ? data.svData?.bankDetails?.bankName : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.bankDetails.bankName?bdaData.bankDetails.bankName:'N/A'}</p>
 
               </div>
             
@@ -188,14 +147,14 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Branch</h3>
               <div className="flex">
                 <BankIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.bankDetails?.bankBranch ? data.svData?.bankDetails?.bankBranch : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.bankDetails.bankBranch?bdaData.bankDetails.bankBranch:'N/A'}</p>
 
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Account number</h3>
               <div className="flex">
                 <PhoneIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.bankDetails?.bankAccountNo ? data.svData?.bankDetails?.bankAccountNo : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.bankDetails.bankAccountNo?bdaData.bankDetails.bankAccountNo:'N/A'}</p>
 
               </div>
               
@@ -203,8 +162,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">IFSC Code</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.bankDetails?.ifscCode ? data.svData?.bankDetails?.ifscCode : 'N/A'}</p>
-
+                <p className="text-sm font-semibold ms-2">{bdaData.bankDetails.ifscCode?bdaData.bankDetails.ifscCode:'N/A'}</p>
               </div>
              
             </div>
@@ -224,21 +182,21 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Work Mail</h3>
               <div className="flex">
                 <EmailIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.workEmail ? data?.svData?.workEmail : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.workEmail?bdaData.workEmail:'N/A'}</p>
 
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Work Phone</h3>
               <div className="flex">
                 <PhoneIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.workPhone ? data.svData?.workPhone : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.workPhone?bdaData.workPhone:'N/A'}</p>
 
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Role </h3>
               <div className="flex">
                 <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">Super Visor</p>
+                <p className="text-sm font-semibold ms-2">BDA</p>
 
               </div>
               <hr />
@@ -246,7 +204,7 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
               
               <div className="flex">
                 <RegionIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">{data.svData?.region?.regionCode ? data.svData?.region?.regionCode : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.region.regionCode?bdaData.region.regionCode:'N/A'}</p>
 
               </div>
             </div>
@@ -264,4 +222,4 @@ const SuperVisorViewForm: React.FC<Props> = ({ onClose }) => {
   )
 }
 
-export default SuperVisorViewForm
+export default BDAViewForm

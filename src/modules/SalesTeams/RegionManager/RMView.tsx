@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
-import person from "../../../assets/image/Ellipse 14 (2).png";
 import Modal from "../../../components/modal/Modal";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
@@ -14,9 +13,12 @@ import RMViewBDAandGraph from "./RMViewBDAandGraph";
 import RMViewForm from "./RMViewForm";
 import BackgroundImage from "../../../assets/image/6.png";
 import ChevronRight from "../../../assets/icons/ChevronRight";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import AwardIcon from "../../../assets/icons/AwardIcon";
-import RMViewAward from "./RMViewAward";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import RMForm from "./RMForm";
+import AMViewAward from "../AreaManager/AMViewAward";
 
 interface AreaData {
   areaCode: string;
@@ -27,16 +29,51 @@ interface AreaData {
 
 const RMView = () => {
   // State to manage modal visibility
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isAwardOpen, setIsAwardOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState({
+    editRM:false,
+    viewRM:false,
+    awardRM:false
+  });
+  const handleModalToggle = (editRM=false, viewRM=false, awardRM=false) => {
+    setIsModalOpen((prevState:any )=> ({
+        ...prevState,
+        editRM: editRM,
+        viewRM: viewRM,
+        awardRM: awardRM
+    }));
+    getARM();
+}
 
-  // Function to toggle modal visibility
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
-  };
-  const AwardhandleToggle = () => {
-    setIsAwardOpen((prev) => !prev);
-  };
+
+  const {request: getaRM}=useApi('get',3002)
+  const {id} =useParams()
+  const [getData, setGetData] = useState<{
+    rmData:any;}>
+    ({rmData:[]})
+ 
+    const getARM = async()=>{
+      try{
+        const {response,error}= await getaRM(`${endPoints.GET_ALL_RM}/${id}`);
+        if(response && !error){
+          setGetData((prevData)=>({
+            ...prevData,
+            rmData:response.data
+          }))
+        }
+        else{
+          console.error(error.response.data.message)
+        }
+      }
+      catch(err){
+        console.error("Error fetching AM data:", err);
+      }
+    }
+    useEffect(()=>{
+      getARM();
+    },[id])
+    console.log(getData);
+   
+    const navigate=useNavigate()
 
   // Data for HomeCards
   const homeCardData = [
@@ -136,19 +173,19 @@ const RMView = () => {
   const columns: { key: keyof AreaData; label: string }[] = [
     { key: "areaCode", label: "Area Code" },
     { key: "areaName", label: "Area Name" },
-
     { key: "region", label: "Region" },
     { key: "areaManagers", label: "Area Managers" },
   ];
 
-  const { id } = useParams();
+ // const { id } = useParams();
 
   return (
+    <>
     <div>
       <div className="flex items-center text-[16px] my-2 space-x-2">
         <p className="font-bold text-[#820000] ">RM</p>
         <ChevronRight color="#4B5C79" size={18} />
-        <p className="font-bold text-[#303F58] "> {id}</p>
+        <p className="font-bold text-[#303F58] ">{getData.rmData?.user?.userName?getData.rmData?.user?.userName:'N/A'}</p>
       </div>
 
       <div className="flex items-center justify-between rounded-xl ">
@@ -165,8 +202,15 @@ const RMView = () => {
               <div className="flex items-center gap-4 text-white">
                 <div className="flex items-center gap-2">
                   <div className="w-25 h-25 bg-blue ms-2 py-2 items-center justify-center rounded-full ">
-                    <img className="w-16 h-16" src={person} alt="" />
-                    <h2 className="font-normal text-2xl py-2">Sudeep Kumar</h2>
+                  {
+              getData.rmData?.user?.userImage?
+              <img className="w-16 h-16 rounded-full" src={getData.rmData?.user?.userImage} alt="" />
+              :
+              <p className="w-16 h-16    bg-black rounded-full flex justify-center items-center">
+              <UserIcon color="white" size={34} />
+              </p>
+            }
+                    <h2 className="font-normal text-center text-2xl py-2">{getData.rmData?.user?.userName?getData.rmData?.user?.userName:'N/A'}</h2>
                   </div>
                 </div>
               </div>
@@ -175,22 +219,21 @@ const RMView = () => {
                   <p className="text-xs font-medium text-[#8F99A9] py-2">
                     Contact Number
                   </p>
-                  <h3 className="text-sm font-medium">+91 9846984699</h3>
+                  <h3 className="text-sm font-medium">{getData.rmData?.user?.phoneNo?getData.rmData?.user?.phoneNo:'N/A'}</h3>
                 </div>
                 <div className="border-r border-[#DADADA] h-10 me-4"></div>
                 <div className="">
                   <p className="text-xs font-medium text-[#8F99A9] py-2">
                     Email
                   </p>
-                  <p className="text-sm font-medium">dean@example.com</p>
+                  <p className="text-sm font-medium">{getData.rmData?.user?.email ? getData.rmData?.user?.email:'N/A'}</p>
                 </div>
                 <div className="border-r border-[#DADADA] h-10 me-4 "></div>
-                <div className="">
+                <div className="cursor-pointer">
                   <p className="text-xs font-medium text-[#8F99A9] py-2">
                     Region
                   </p>
-                  <p className="text-sm font-medium ">REG-NE001</p>
-                </div>
+                  <p onClick={()=>navigate(`/regionView/${getData.rmData?.region?._id}`)} className=" text-[#FFFFFF] text-sm font-medium underline">{getData.rmData?.region?.regionCode ?getData.rmData?.region?.regionCode:'N/A'}</p>                </div>
               </div>
             </div>
           </div>
@@ -209,19 +252,22 @@ const RMView = () => {
 
                     <div className="text-center w-24">
                       <p className="text-xs text-[#D4D4D4] py-2">Employee ID</p>
-                      <p className="text-xs">EMC-NEOO1</p>
+                      <p className="text-xs">{getData.rmData?.user?.employeeId ? getData.rmData?.user?.employeeId:'N/A'}</p>
                     </div>
 
                     <div className="text-center w-24">
                       <p className="text-xs text-[#D4D4D4] py-2">
                         Joining Date
                       </p>
-                      <p className="text-xs ">13 June 2023</p>
+                      <p className="text-xs ">{getData.rmData?.dateOfJoining
+                  ? new Date(getData.rmData.dateOfJoining).toLocaleDateString()
+                  : 'N/A'}</p>
                     </div>
                   </div>
 
                   <div className="flex flex-col w-fit items-center space-y-1">
-                    <div className="w-8 h-8 mb-2 rounded-full">
+                    <div  onClick={()=>handleModalToggle(true,false,false)} 
+                    className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                       <EditIcon size={40} color="#C4A25D24" />
                     </div>
                     <p className="text-center ms-3">Edit Profile</p>
@@ -230,8 +276,8 @@ const RMView = () => {
 
                 <div className="flex flex-col  items-center space-y-1">
                   <div
-                    onClick={handleModalToggle}
-                    className="w-8 h-8 mb-2 rounded-full"
+                     onClick={()=>handleModalToggle(false,true,false)}
+                    className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                   >
                     <ViewRoundIcon size={40} color="#D52B1E4D" />
                   </div>
@@ -240,8 +286,8 @@ const RMView = () => {
 
                 <div className="flex flex-col   items-center space-y-1">
                   <div
-                    onClick={AwardhandleToggle}
-                    className="w-8 h-8 mb-2 rounded-full"
+                    onClick={()=>handleModalToggle(false,false,true)}
+                    className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                   >
                     <AwardIcon size={40} color="#D52B1E4D" />
                   </div>
@@ -251,7 +297,7 @@ const RMView = () => {
                 </div>
 
                 <div className="flex flex-col -ms-2 items-center space-y-1">
-                  <div className="w-8 h-8 mb-2 rounded-full">
+                  <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                     <DeActivateIcon size={40} color="#D52B1E4D" />
                   </div>
                   <p className="text-center ms-3">DeActivate</p>
@@ -305,20 +351,19 @@ const RMView = () => {
         <RMViewBDAandGraph />
       </div>
 
-      {/* Modal controlled by state */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <RMViewForm onClose={handleModalToggle} />
-      </Modal>
-
-      <Modal
-        align="right"
-        className="w-[25%] me-16"
-        open={isAwardOpen}
-        onClose={AwardhandleToggle}
-      >
-        <RMViewAward onClose={AwardhandleToggle} />
-      </Modal>
+     
     </div>
+     {/* Modal controlled by state */}
+     <Modal open={isModalOpen.viewRM} onClose={()=>handleModalToggle()}>
+        <RMViewForm onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.editRM} onClose={()=>handleModalToggle()}>
+        <RMForm editId={id} onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.awardRM} onClose={()=>handleModalToggle()} align="right" className="w-[25%] me-16">
+        <AMViewAward onClose={()=>handleModalToggle()} />
+      </Modal>
+    </>
   );
 };
 

@@ -57,7 +57,7 @@ function LeadForm({ onClose ,editId}: Props) {
   } = useForm<LeadData>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      salutation: "mr.", // Default value for salutation
+      salutation: "Mr.", // Default value for salutation
     },
   });
 
@@ -103,8 +103,8 @@ const salutation = [
   const handleRemoveImage = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent click propagation
  
-    // Clear the leadImage value
-    setValue("leadImage","")
+    // Clear the image value
+    setValue("image","")
  
     // Reset the file input value
     if (fileInputRef?.current) {
@@ -117,7 +117,7 @@ const salutation = [
       const reader = new FileReader();
       reader.onloadend = () => {
         const base64String = reader.result as string;
-        setValue("leadImage", base64String);
+        setValue("image", base64String);
       };
       reader.readAsDataURL(file);
     }
@@ -159,10 +159,11 @@ const salutation = [
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredBDA = allBDA?.map((bda: any) => ({
-      value: String(bda._id),
-      label: bda.bdaName,
+    const filteredBDA:any = allBDA?.map((bda: any) => ({
+      value: String(bda?._id),
+      label: bda?.bdaName,
     }));
+    setValue("bdaId",filteredBDA?.value)
     // Update the state without using previous `data` state
     setData((prevData:any) => ({
       ...prevData,
@@ -170,6 +171,8 @@ const salutation = [
     }));
   }, [allBDA]);
 
+  
+   
   const setFormValues = (data: LeadData) => {
     Object.keys(data).forEach((key) => {
       setValue(key as keyof LeadData, data[key as keyof LeadData]);
@@ -187,16 +190,7 @@ const salutation = [
         const Lead = response.data; // Return the fetched data
         console.log("Fetched Lead data:", Lead);
   
-        // const { user,_id, ...lead } = Lead;
-  
-        // const transformedLead = Lead ? {
-        //   ...lead,
-        //   regionId: Lead.regionId,
-        //   areaId: Lead.areaId,
-        //   bdaId: Lead.bdaId
-        // } : null;
-  
-        // console.log("Transformed Lead data:", transformedLead);
+       
   
         setFormValues(Lead);
       } else {
@@ -207,22 +201,13 @@ const salutation = [
       console.error('Error fetching Lead data:', err);
     }
   };
-
-
   
   
+  
+
   useEffect(() => {
     getOneLead()
-    
-    
   }, [editId]);
-
-  console.log(data.areas);
-
-  console.log(data.bdas);
-  
-  
-  
 
   return (
     <div className="px-5 py-3 space-y-6 text-[#4B5C79]">
@@ -257,9 +242,9 @@ const salutation = [
               className="hidden"
               onChange={handleFileChange}
             />
-            <ImagePlaceHolder uploadedImage={watch("leadImage")} />
+            <ImagePlaceHolder uploadedImage={watch("image")} />
           </label>
-          {watch('leadImage') && (
+          {watch('image') && (
         <div
           onClick={handleRemoveImage} // Remove image handler
           className="flex justify-center  items-center"
