@@ -311,7 +311,7 @@ const ActivityLog = (req, status, operationId = null) => {
 
 
   // Create New Debit Note
-  function createNewLeads( data, regionId, bdaId, areaId, userId, userName ) {
+  function createNewLeads( data, regionId, areaId, bdaId, userId, userName ) {
     const newLeads = new Leads({ ...data, regionId, areaId, bdaId, userId, userName , leadStatus: "New" // Explicitly set leadStatus to "New" for new leads
     });
     return newLeads.save();
@@ -375,6 +375,8 @@ validateField( typeof data.email === 'undefined', "email required", errors  );
 validateField( typeof data.phone === 'undefined', "Phone number required", errors  );
 
 }
+
+
 
 
 
