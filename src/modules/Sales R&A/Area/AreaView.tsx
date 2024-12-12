@@ -3,19 +3,18 @@ import { useEffect, useState } from "react";
 //import RegionIcon from "../../../assets/icons/RegionIcon";
 import { useParams } from "react-router-dom";
 import ChevronRight from "../../../assets/icons/ChevronRight";
-import DeleteIcon from "../../../assets/icons/DeleteIcon";
+import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
 import region from "../../../assets/image/Ellipse 14 (1).png";
 import person1 from "../../../assets/image/Ellipse 14.png";
 import person2 from "../../../assets/image/Ellipse 43.png";
+import Modal from "../../../components/modal/Modal";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
+import AreaForm from "./AreaForm";
 import LeadAndLisence from "./LeadAndLisence";
 import ResendActivity from "./ResendActivity";
 import TeamOverview from "./TeamOverview";
-import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
-import Modal from "../../../components/modal/Modal";
-import AreaForm from "./AreaForm";
 
 type Props = {};
 
