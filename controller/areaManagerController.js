@@ -121,6 +121,7 @@ const logOperation = (req, status, operationId = null) => {
     }, {});
   }
 
+
   async function createUser(data) {
     const { password, ...rest } = data; // Extract password and the rest of the data
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -200,8 +201,8 @@ const logOperation = (req, status, operationId = null) => {
   
       const areaManager = await AreaManager.findById(id).populate([
         { path: 'user', select: 'userName phoneNo userImage email employeeId' },
-        { path: 'region', select: 'regionName' },
-        { path: 'area', select: 'areaName' },
+        { path: 'region', select: 'regionName regionCode' },
+        { path: 'area', select: 'areaName areaCode' },
         { path: 'commission', select: 'profileName' },
       ]);
       if (!areaManager) {

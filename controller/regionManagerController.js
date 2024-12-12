@@ -232,7 +232,7 @@ const logOperation = (req, status, operationId = null) => {
   
       const regionManager = await RegionManager.findById(id).populate([
         { path: 'user', select: 'userName phoneNo userImage  employeeId email' },
-        { path: 'region', select: 'regionName' },
+        { path: 'region', select: 'regionName regionCode' },
         { path: 'commission', select: 'profileName' },
       ]);
   

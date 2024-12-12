@@ -200,8 +200,8 @@ const logOperation = (req, status, operationId = null) => {
   
       const bda = await Bda.findById(id).populate([
         { path: 'user', select: 'userName phoneNo userImage email employeeId' },
-        { path: 'region', select: 'regionName' },
-        { path: 'area', select: 'areaName' },
+        { path: 'region', select: 'regionName regionCode' },
+        { path: 'area', select: 'areaName areaCode' },
         { path: 'commission', select: 'profileName' },
       ]);
       if (!bda) {
