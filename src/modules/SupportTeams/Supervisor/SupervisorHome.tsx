@@ -122,6 +122,7 @@ const SupervisorHome = () => {
   }, []);
 
   return (
+    <>
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -187,11 +188,13 @@ const SupervisorHome = () => {
         />
       </div>
 
+    
+    </div>
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle}>
         <AddSupervisor editId={editId} onClose={handleModalToggle} />
       </Modal>
-    </div>
+    </>
   );
 };
 
