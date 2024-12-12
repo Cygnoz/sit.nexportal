@@ -159,10 +159,11 @@ const salutation = [
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredBDA = allBDA?.map((bda: any) => ({
-      value: String(bda._id),
-      label: bda.bdaName,
+    const filteredBDA:any = allBDA?.map((bda: any) => ({
+      value: String(bda?._id),
+      label: bda?.bdaName,
     }));
+    setValue("bdaId",filteredBDA?.value)
     // Update the state without using previous `data` state
     setData((prevData:any) => ({
       ...prevData,
@@ -170,6 +171,8 @@ const salutation = [
     }));
   }, [allBDA]);
 
+  
+   
   const setFormValues = (data: LeadData) => {
     Object.keys(data).forEach((key) => {
       setValue(key as keyof LeadData, data[key as keyof LeadData]);
