@@ -224,7 +224,7 @@ const Comment: React.FC<Props> = () => {
   // const imgSrc = "https://s3-alpha-sig.figma.com/img/1d07/dd79/425caa4701d548ea67930c965b34768d?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=BDNG1uH8kJDCORYIU6gY2OiXnwJ45TKOIHXSp5rpFlxBxG-ezjO7zF9CJHJ0u7nvfXp81pS0uiL9NFk3ZXnnnrWXBCl8lYcI34QSkmPZ9LeX1IYnaCDbkT1pbgsshNh78rQV8YKUVyR2DGe89caWnTzWaiK46tQR1DFEbg4BrK9GbDG3Zk9gYPMg8hzd5vHdkprIcs6tMdO0E~g66m1qJnzYtasiiq93tpppjbHECvc3nIIN7OOgL0hNimgwX6oVQlLmvwGXf113NtG4haH~loXVngkLCjfEceHqEjEMhUIBD4zKLLHucYEBPLeMBbrrREit~SC5tQ1oAIiVRMjwuA__";
 
   return (
-    <div className="mt-6 flex justify-between">
+    <div className="mt-6 flex p-4">
       <div className="w-full h-[80%] align-middle">
         <div className='flex items-start w-[100%] h-[250px]'>
         {/* <img
@@ -232,16 +232,19 @@ const Comment: React.FC<Props> = () => {
           className="w-8 h-8 rounded-full"
           alt="User Avatar"
         /> */}
+        
         <ReactQuill
           value={value}
           onChange={setValue}
           placeholder="Write text here..."
-          className="quill-editor ml-4 w-[90%] h-[80%]"
+          className="quill-editor ml-4 w-[100%] h-[80%] me-4"
           theme="snow"
           modules={modules}
           />
           </div>
+          <div className='mb-4 ms-[530px]'>
           <Button className='ml-12 text-sm font-medium bg-[#FCFFED] mt-5' variant='secondary' size='sm'>Add Comments</Button>
+          </div>
       </div>
       {/* <div className="w-[50%] ml-6">
         <p className="text-textColor font-bold text-base">
