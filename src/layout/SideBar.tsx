@@ -1,27 +1,28 @@
 import { Link } from "react-router-dom";
 import { getSidebarOptions } from "../util/getSidebarOptions";
-import { useRole } from "../context/RoleContext";
+
 import BillBizz from "../assets/logo/BillBizzLogo.png";
 import { sidebarRoutes, sidebarIcons } from "../types/rolePermissions";
 import DashboardIcon from "../assets/icons/DashboardIcon";
 import Settings from "../assets/icons/Settings";
+import { useUser } from "../context/UserContext";
 const Sidebar: React.FC = () => {
-  const { role } = useRole(); // Get the role from context
+  const { user } = useUser(); // Get the role from context
 
-  if (!role) {
+  if (!user?.role) {
     return <div>Please log in to access the sidebar.</div>;
   }
 
   
 
-  const sidebarOptions = getSidebarOptions(role); // Get sidebar options based on the role
+  const sidebarOptions = getSidebarOptions(user?.role); // Get sidebar options based on the role
 
   return (
     <aside className="sidebar bg-primary min-h-screen  overflow-y-auto hide-scrollbar w-[12%]">
       {/* Logo */}
       <div className="flex p-5 items-center gap-3">
         <img src={BillBizz} alt="billbizz logo" className="w-6" />
-        <h1 className="text-secondary">NEX</h1>
+        <h1 className="text-secondary">NEX PORTAL</h1>
       </div>
 
       {/* Sidebar Links */}

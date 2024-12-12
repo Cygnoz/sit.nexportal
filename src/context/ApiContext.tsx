@@ -4,7 +4,7 @@ import { AreaData } from "../Interfaces/Area";
 import { RegionData } from "../Interfaces/Region";
 import { WCData } from "../Interfaces/WC";
 import { endPoints } from "../services/apiEndpoints";
-import { useRole } from "./RoleContext";
+import {  useUser } from "./UserContext";
 import { BDAData } from "../Interfaces/BDA";
 
 type ApiContextType = {
@@ -18,7 +18,7 @@ type ApiContextType = {
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
 
 export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
-  const { role } = useRole();
+  const { user } = useUser();
   const { request: getAllRegion } = useApi("get", 3003);
   const { request: getAllArea } = useApi("get", 3003);
   const { request: getAllWc } = useApi("get", 3003);
@@ -116,7 +116,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     getWC();
     getCountries();
     getBDAs();
-  }, [role]);
+  }, [user]);
 
   return (
     <ApiContext.Provider

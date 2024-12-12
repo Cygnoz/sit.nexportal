@@ -17,6 +17,7 @@ const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
   { key: "rmName", imageKey: "rmImage" },
   { key: "user.userName", imageKey: "user.userImage" },
+  {key:'leadName',imageKey:'image'}
 ];
 
 interface TableProps<T> {
@@ -79,38 +80,39 @@ const Table = <T extends object>({
   // Function to determine row styles based on `status`
   const getStatusClass = (status: string | undefined) => {
     switch (status) {
-      case "New":
-        return "bg-red-500 text-white py-2  px-2 w-fit rounded-lg";
-      case "Contacted":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
-      case "Closed":
-        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
-      case "Active":
-        return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
-      case "Converted":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
-      case "Expired":
-        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
-      case "Pending Renewal":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
-      case "Open":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
-      case "Pending":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
-      case "High":
-        return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
-      case "Medium":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
-      case "Low":
-        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
-      case "Resolved":
-        return "bg-green-200 text-black py-2 px-2 rounded-lg";
-      case "Paid":
-        return "bg-[#EDE7FB] text-black py-2 px-2 rounded-lg";
-      default:
-        return "";
+        case "New":
+            return "bg-blue-500 text-white py-1 px-2 w-fit rounded-lg"; // Same
+        case "Contacted":
+            return "bg-yellow-400 text-black py-1 px-2 rounded-lg"; // Changed text color to black for better contrast
+        case "Closed":
+            return "bg-gray-400 text-white py-1 px-2 rounded-lg"; // Changed to gray to indicate closure
+        case "Active":
+            return "bg-green-500 text-white py-1 px-2 w-fit rounded-lg"; // Changed to green for active status
+        case "Converted":
+            return "bg-purple-500 text-white py-1 px-2 rounded-lg"; // Changed to purple to indicate conversion
+        case "Expired":
+            return "bg-red-500 text-white py-1 px-2 rounded-lg"; // Changed to red to indicate expiration
+        case "Pending Renewal":
+            return "bg-orange-400 text-white py-1 px-2 rounded-lg"; // Changed to orange for pending renewal
+        case "Open":
+            return "bg-green-400 text-white py-1 px-2 rounded-lg"; // Same
+        case "Pending":
+            return "bg-yellow-400 text-black py-1 px-2 rounded-lg"; // Changed text color to black for better contrast
+        case "High":
+            return "bg-red-500 text-white py-1 px-2 w-fit rounded-lg"; // Same
+        case "Medium":
+            return "bg-orange-300 text-white py-1 px-2 rounded-lg"; // Changed to orange for medium status
+        case "Low":
+            return "bg-green-300 text-white py-1 px-2 rounded-lg"; // Changed to green for low status
+        case "Resolved":
+            return "bg-green-200 text-black py-1 px-2 rounded-lg"; // Same
+        case "Paid":
+            return "bg-purple-200 text-black py-1 px-2 rounded-lg"; // Changed to light purple
+        default:
+            return "";
     }
-  };
+};
+
 
   function getNestedValue(obj: any, path: string): any {
     // If no dots in path, return the direct property value
@@ -193,7 +195,7 @@ const Table = <T extends object>({
               <img
                 src={`${imageValue}`}
                 alt={keyValue}
-                className="w-6 h-6 rounded-full"
+                className="w-6 h-6 rounded-full bg"
               />
               <p>{keyValue}</p>
             </>
@@ -201,8 +203,8 @@ const Table = <T extends object>({
         } else {
           return (
             <>
-              <p className="w-6 h-6  border border-[#a6a6a8] bg-[#FFFFFF] rounded-full flex justify-center items-center">
-                <UserIcon color="#768294" size={15} />
+              <p className="w-6 h-6  bg-black rounded-full flex justify-center items-center">
+                <UserIcon color="white" size={15} />
               </p>
               <p>{keyValue}</p>
             </>
@@ -265,18 +267,18 @@ const Table = <T extends object>({
                     >
                       <div
                         className={`flex justify-start items-center gap-2 ${
-                          col.key == "status"
+                          col.key.toLowerCase().includes('status')
                             ? "justify-center"
                             : "justify-start"
                         }`}
                       >
                         {col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
-                        ) : ["userName", "user.userName", "amName"].includes(
+                        ) : ["userName", "user.userName","leadName"].includes(
                             col.key
                           ) ? (
                           renderImageAndLabel(row)
-                        ) : col.key === "status" ? (
+                        ) : col.key.toLowerCase().includes('status') ? (
                           <p className={getStatusClass(row[col.key])}>
                             {row[col.key]}
                           </p>
