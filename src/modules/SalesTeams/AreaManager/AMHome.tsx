@@ -90,7 +90,8 @@ const AMHome = () => {
       
 
   return (
-    <div className="space-y-4">
+    <div>
+          <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">Area Manager</h1>
@@ -141,12 +142,13 @@ const AMHome = () => {
          />
         
       </div>
-
-      {/* Modal Section */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
+    </div>
+     {/* Modal Section */}
+     <Modal className="" open={isModalOpen} onClose={handleModalToggle}>
         <AMForm editId={editId} onClose={handleModalToggle} />
       </Modal>
     </div>
+
   )
 }
       

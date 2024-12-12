@@ -439,6 +439,7 @@ label: area.areaName,
                 <Input
                   label="Aadhaar Number"
                   placeholder="Enter Aadhar"
+                  type="number"
                   error={errors.adhaarNo?.message}
                   {...register("adhaarNo")}
                 />
@@ -611,6 +612,7 @@ label: area.areaName,
                 <Input
                   placeholder="Enter Account No"
                   label="Bank Account No"
+                  type="number"
                   error={errors.bankDetails?.bankAccountNo?.message}
                   {...register("bankDetails.bankAccountNo")}
                 />

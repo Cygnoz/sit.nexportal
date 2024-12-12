@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
+import ChevronRight from "../../../assets/icons/ChevronRight";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
 import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
@@ -6,6 +8,9 @@ import HomeCard from "../../../components/ui/HomeCards";
 import GraphHomeView from "./GraphHomeView";
 import ViewHeader from "./ViewHeader";
 import ViewHomwTable from "./ViewHomwTable";
+import { endPoints } from "../../../services/apiEndpoints";
+import { useParams } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
 
 type Props = {}
 
@@ -18,10 +23,42 @@ const SupportAgentView = ({}: Props) => {
           { icon: <UserIcon />, number: "1 hr", title: "Average Resolution Time",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
           { icon: <EscalatedTicket />, number: "16", title: "Total Escalated Tickets",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
         ];    
+
+        const {request: getaSA}=useApi('get',3003)
+        const {id} =useParams()
+        const [getData, setGetData] = useState<{
+            saData:any;}>
+          ({saData:[]})
+      
+      const getASA = async()=>{
+        try{
+    const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
+            if(response && !error){
+              setGetData((prevData)=>({
+                ...prevData,
+                saData:response.data
+              }))
+            }
+            else{
+              console.error(error.response.data.message)
+            }
+        }
+        catch(err){
+            console.error("Error fetching data",err)
+        }
+      }
+      useEffect(()=>{
+        getASA();
+      },[id])
+    
      
   return (
     <div>
-      View Header
+      <div className="flex items-center text-[16px] my-2 space-x-2">
+        <p className="font-bold text-[#820000] ">Support Agent</p>
+        <ChevronRight color="#4B5C79" size={18} />
+        <p className="font-bold text-[#303F58] ">{getData.saData?.user?.userName ? getData.saData?.user?.userName:'N/A'}</p>
+      </div>
       <div>
         <ViewHeader/>
       </div>
