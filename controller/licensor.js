@@ -9,9 +9,9 @@ const User = require("../database/model/user");
 // Fetch existing data
 const dataExist = async ( regionId, areaId , bdaId ) => {  
   const [regionExists, areaExists , bdaExists  ] = await Promise.all([
-    Region.find({ _id:regionId }, { _id: 1, regionName: 1 }),
-    Area.find({ _id:areaId}, { _id: 1, areaName: 1 }),
-    Bda.find({ _id:bdaId},{ _id: 1 , user : 1})
+    Region.find({ _id:regionId }, { regionId: 1, regionName: 1 }),
+    Area.find({ _id:areaId}, { areaId: 1, areaName: 1 }),
+    Bda.find({ _id:bdaId},{bdaId: 1 ,user : 1})
   ]);    
   
 return { regionExists, areaExists , bdaExists };
@@ -24,7 +24,7 @@ exports.addLead = async (req, res , next ) => {
 
     const cleanedData = cleanLeadData(req.body);
 
-    const { email, regionId, areaId , bdaId } = cleanedData;
+    const { email, phone , regionId, areaId , bdaId } = cleanedData;
 
 
     //Validate Account Id
@@ -74,89 +74,35 @@ exports.getLead = async (req, res) => {
   try {
     const { leadId } = req.params;
 
-    // Fetch the lead by ID
     const lead = await Leads.findById(leadId);
     if (!lead) {
-      return res.status(404).json({ message: "Lead not found" });
+      return res.status(404).json({ message: "Leads not found" });
     }
 
-    const { regionId, areaId, bdaId } = lead;
-
-    // Validate related entities using dataExist
-    const { regionExists, areaExists, bdaExists } = await dataExist(regionId, areaId, bdaId);
-
-    // Enrich the response with validation results and related data
-    const enrichedLead = {
-      ...lead.toObject(),
-      validationErrors: {
-        region: !regionExists ? "Invalid regionId" : undefined,
-        area: !areaExists ? "Invalid areaId" : undefined,
-        bda: !bdaExists ? "Invalid bdaId" : undefined,
-      },
-      regionDetails: regionExists ? regionExists[0] : null, // Assuming regionExists is an array
-      areaDetails: areaExists ? areaExists[0] : null,       // Assuming areaExists is an array
-      bdaDetails: bdaExists ? bdaExists[0] : null,         // Assuming bdaExists is an array
-    };
-
-    res.status(200).json(enrichedLead);
+    res.status(200).json(lead);
 
   } catch (error) {
-    console.error("Error fetching lead:", error);
+    console.error("Error fetching region:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
 
 
-
-// Get All Leads
 exports.getAllLeads = async (req, res) => {
   try {
-    // Fetch all leads from the database
     const leads = await Leads.find();
 
-    // Check if leads exist
-    if (!leads || leads.length === 0) {
-      return res.status(404).json({ message: "No leads found." });
+    if (leads.length === 0) {
+      return res.status(404).json({ message: "No Leads found" });
     }
 
-    // Validate and enrich data for each lead
-    const enrichedLeads = await Promise.all(
-      leads.map(async (lead) => {
-        const { regionId, areaId, bdaId } = lead;
+    res.status(200).json({ message: "Leads retrieved successfully", leads });
 
-        // Use dataExist to validate and fetch related details
-        const { regionExists, areaExists, bdaExists } = await dataExist(regionId, areaId, bdaId);
-
-        // Validate related entities
-        if (!regionExists || !areaExists || !bdaExists) {
-          return {
-            ...lead.toObject(),
-            validationErrors: {
-              region: !regionExists ? "Invalid regionId" : undefined,
-              area: !areaExists ? "Invalid areaId" : undefined,
-              bda: !bdaExists ? "Invalid bdaId" : undefined,
-            },
-          };
-        }
-
-        // Include validated data
-        return {
-          ...lead.toObject(),
-          regionDetails: regionExists[0], // Assuming regionExists is an array
-          areaDetails: areaExists[0],    // Assuming areaExists is an array
-          bdaDetails: bdaExists[0],      // Assuming bdaExists is an array
-        };
-      })
-    );
-
-    // Respond with the enriched leads data
-    res.status(200).json({ leads: enrichedLeads });
   } catch (error) {
-    console.error("Error fetching leads:", error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error fetching all Leads:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 
 
@@ -203,6 +149,7 @@ const existingUserId = existingLead.user;
    next();
   }
 };
+
 
 
 
@@ -367,8 +314,8 @@ function validateLeadStatus(leadStatus, errors) {
 //Valid Req Fields
 function validateReqFields( data, errors ) {
 
-validateField( typeof data.regionId === 'undefined' || typeof data.regionName === 'undefined', "Please select a Region", errors  );
-validateField( typeof data.areaId === 'undefined' || typeof data.areaName === 'undefined', "Please select a Area", errors  );
+validateField( typeof data.regionId === 'undefined' || typeof data.region === 'undefined', "Please select a Region", errors  );
+validateField( typeof data.areaId === 'undefined' || typeof data.area === 'undefined', "Please select a Area", errors  );
 validateField( typeof data.bdaId === 'undefined' || typeof data.user === 'undefined', "Please select a BDA", errors  );
 validateField( typeof data.firstName === 'undefined', "Firstname required", errors  );
 validateField( typeof data.email === 'undefined', "email required", errors  );
@@ -378,7 +325,8 @@ validateField( typeof data.phone === 'undefined', "Phone number required", error
 
 
 
+
 const validSalutations = ["Mr.", "Mrs.", "Ms.", "Miss.", "Dr."];
-const validLeadStatus = ["New", "Contacted", "Inprogress", "Lost", "Won"];
+const validLeadStatus = ["Active", "Expired", "Pending Renewal"];
 
 
