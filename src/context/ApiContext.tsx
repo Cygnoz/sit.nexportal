@@ -92,15 +92,19 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { response, error } = await getAllBDA(endPoints.BDA);
       if (response && !error) {
+        console.log(response);
+        
         const transformedBDA =
           response.data.bda?.map((bda: any) => ({
             ...bda,
-            dateOfJoining: bda.dateOfJoining
+            dateOfJoining: bda?.dateOfJoining
               ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail: bda.user.email,
-            bdaName:bda.user.userName
+            loginEmail: bda.user?.email,
+            bdaName:bda.user?.userName
           })) || [];
+          // console.log("dssd",transformedBDA);
+          
         setAllBDA(transformedBDA);
       } else {
         console.log(error);
@@ -109,6 +113,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       console.log(err);
     }
   };
+
+  
 
   useEffect(() => {
     fetchRegions();
