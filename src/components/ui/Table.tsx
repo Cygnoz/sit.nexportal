@@ -10,18 +10,17 @@ import IndiaLogo from "../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
 import UserIcon from "../../assets/icons/UserIcon";
-// import Button from "./Button";
-// import ArrowRight from "../../assets/icons/ArrowRight";
+import No_Data_found from '../../assets/image/NO_DATA.png'
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
   { key: "rmName", imageKey: "rmImage" },
   { key: "user.userName", imageKey: "user.userImage" },
-  {key:'leadName',imageKey:'image'}
+  { key: "leadName", imageKey: "image" }
 ];
 
 interface TableProps<T> {
-  data: T[];
+  data: T[] | null;
   columns: { key: keyof T; label: string }[];
   headerContents: {
     title?: string;
@@ -35,7 +34,6 @@ interface TableProps<T> {
     label: "view" | "edit" | "delete";
     function: (id: any) => void;
   }[];
-  // noButton?:boolean;
   noAction?: boolean;
   noPagination?: boolean;
   maxHeight?: string;
@@ -46,7 +44,6 @@ const Table = <T extends object>({
   columns,
   headerContents,
   actionList,
-  // noButton,
   noAction,
   noPagination,
   maxHeight,
@@ -56,7 +53,7 @@ const Table = <T extends object>({
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
 
   // Filter data based on the search value
-  const filteredData = useMemo(() => {
+  const filteredData:any = useMemo(() => {
     return data?.filter((row) =>
       Object.values(row).some((value) =>
         String(value).toLowerCase().includes(searchValue.toLowerCase())
@@ -65,7 +62,7 @@ const Table = <T extends object>({
   }, [data, searchValue]);
 
   // Paginate the filtered data
-  const paginatedData = useMemo(() => {
+  const paginatedData:any = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
     return filteredData?.reverse().slice(start, start + rowsPerPage);
   }, [filteredData, currentPage, rowsPerPage]);
@@ -80,46 +77,43 @@ const Table = <T extends object>({
   // Function to determine row styles based on `status`
   const getStatusClass = (status: string | undefined) => {
     switch (status) {
-        case "New":
-            return "bg-blue-500 text-white py-1 px-2 w-fit rounded-lg"; // Same
-        case "Contacted":
-            return "bg-yellow-400 text-black py-1 px-2 rounded-lg"; // Changed text color to black for better contrast
-        case "Closed":
-            return "bg-gray-400 text-white py-1 px-2 rounded-lg"; // Changed to gray to indicate closure
-        case "Active":
-            return "bg-green-500 text-white py-1 px-2 w-fit rounded-lg"; // Changed to green for active status
-        case "Converted":
-            return "bg-purple-500 text-white py-1 px-2 rounded-lg"; // Changed to purple to indicate conversion
-        case "Expired":
-            return "bg-red-500 text-white py-1 px-2 rounded-lg"; // Changed to red to indicate expiration
-        case "Pending Renewal":
-            return "bg-orange-400 text-white py-1 px-2 rounded-lg"; // Changed to orange for pending renewal
-        case "Open":
-            return "bg-green-400 text-white py-1 px-2 rounded-lg"; // Same
-        case "Pending":
-            return "bg-yellow-400 text-black py-1 px-2 rounded-lg"; // Changed text color to black for better contrast
-        case "High":
-            return "bg-red-500 text-white py-1 px-2 w-fit rounded-lg"; // Same
-        case "Medium":
-            return "bg-orange-300 text-white py-1 px-2 rounded-lg"; // Changed to orange for medium status
-        case "Low":
-            return "bg-green-300 text-white py-1 px-2 rounded-lg"; // Changed to green for low status
-        case "Resolved":
-            return "bg-green-200 text-black py-1 px-2 rounded-lg"; // Same
-        case "Paid":
-            return "bg-purple-200 text-black py-1 px-2 rounded-lg"; // Changed to light purple
-        default:
-            return "";
+      case "New":
+        return "bg-blue-500 text-white py-1 px-2 w-fit rounded-lg";
+      case "Contacted":
+        return "bg-yellow-400 text-black py-1 px-2 rounded-lg";
+      case "Closed":
+        return "bg-gray-400 text-white py-1 px-2 rounded-lg";
+      case "Active":
+        return "bg-green-500 text-white py-1 px-2 w-fit rounded-lg";
+      case "Converted":
+        return "bg-purple-500 text-white py-1 px-2 rounded-lg";
+      case "Expired":
+        return "bg-red-500 text-white py-1 px-2 rounded-lg";
+      case "Pending Renewal":
+        return "bg-orange-400 text-white py-1 px-2 rounded-lg";
+      case "Open":
+        return "bg-green-400 text-white py-1 px-2 rounded-lg";
+      case "Pending":
+        return "bg-yellow-400 text-black py-1 px-2 rounded-lg";
+      case "High":
+        return "bg-red-500 text-white py-1 px-2 w-fit rounded-lg";
+      case "Medium":
+        return "bg-orange-300 text-white py-1 px-2 rounded-lg";
+      case "Low":
+        return "bg-green-300 text-white py-1 px-2 rounded-lg";
+      case "Resolved":
+        return "bg-green-200 text-black py-1 px-2 rounded-lg";
+      case "Paid":
+        return "bg-purple-200 text-black py-1 px-2 rounded-lg";
+      default:
+        return "";
     }
-};
-
+  };
 
   function getNestedValue(obj: any, path: string): any {
-    // If no dots in path, return the direct property value
     if (!path.includes(".")) {
       return obj?.[path];
     }
-    // Otherwise, traverse the nested structure
     return path.split(".").reduce((acc, part) => acc?.[part], obj);
   }
 
@@ -141,11 +135,7 @@ const Table = <T extends object>({
     } else {
       return (
         <>
-          <img
-            src={SaudhiLogo}
-            alt="Saudi Arabia"
-            className="w-5 h-5 rounded-full"
-          />
+          <img src={SaudhiLogo} alt="Saudi Arabia" className="w-5 h-5 rounded-full" />
           <p>Saudi</p>
         </>
       );
@@ -161,9 +151,7 @@ const Table = <T extends object>({
           : "justify-between"
       } items-center mb-4`}
     >
-      {headerContents.title && (
-        <h2 className="text-lg font-bold">{headerContents.title}</h2>
-      )}
+      {headerContents.title && <h2 className="text-lg font-bold">{headerContents.title}</h2>}
       {headerContents.search && (
         <div className={`w-[440px] ${headerContents.title && "ms-auto me-2"}`}>
           <SearchBar
@@ -185,18 +173,14 @@ const Table = <T extends object>({
 
   const renderImageAndLabel = (data: any) => {
     for (const { key, imageKey } of ImageAndLabel) {
-      const keyValue = getNestedValue(data, key); // Get the value for key, possibly nested
-      const imageValue = getNestedValue(data, imageKey); // Get the value for imageKey, possibly nested
+      const keyValue = getNestedValue(data, key);
+      const imageValue = getNestedValue(data, imageKey);
 
       if (keyValue) {
         if (imageValue && imageValue.length > 500) {
           return (
             <>
-              <img
-                src={`${imageValue}`}
-                alt={keyValue}
-                className="w-6 h-6 rounded-full bg"
-              />
+              <img src={`${imageValue}`} alt={keyValue} className="w-6 h-6 rounded-full bg" />
               <p>{keyValue}</p>
             </>
           );
@@ -212,9 +196,27 @@ const Table = <T extends object>({
         }
       }
     }
-    return "N/A"; // Return N/A if no match is found
+    return "N/A";
   };
 
+  const renderSkeletonLoader = () => (
+    <tr>
+      <td colSpan={columns.length+2}>
+        <div className="flex flex-col gap-2 mt-2">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="flex gap-2 animate-pulse">
+              {columns.map((_, colIndex) => (
+                <div key={colIndex} className="h-6 w-full bg-gray-200 rounded-lg skeleton"></div>
+              ))}
+              {!noAction && (
+                <div className="h-6 w-full bg-gray-200 skeleton"></div>
+              )}
+            </div>
+          ))}
+        </div>
+      </td>
+    </tr>
+  );
 
   return (
     <div className="w-full  bg-white rounded-lg p-4">
@@ -254,7 +256,11 @@ const Table = <T extends object>({
             </tr>
           </thead>
           <tbody>
-            {paginatedData?.length > 0 ? (
+            {data?.length===0 ? (
+              
+                renderSkeletonLoader()
+              
+            ) : paginatedData?.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 z-10">
                   <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
@@ -289,19 +295,6 @@ const Table = <T extends object>({
                     </td>
                     
                   ))}
-                      {/* {!noButton&&(
-                    <td className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
-                    {row.status === "New" && (
-                      <div className="flex justify-center gap-2">
-                        <Button variant="tertiary">
-                          convert to Trail
-                          <ArrowRight size={10} color="#565148" />
-                        </Button>
-                      </div>
-                    )}
-                  </td>
-                  )} */}
-
                   {!noAction && (
                     <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
                       <div className="flex justify-center gap-2">
@@ -346,7 +339,10 @@ const Table = <T extends object>({
                   colSpan={columns.length + 2}
                   className="text-center py-4 text-gray-500"
                 >
-                  No results found.
+                 <div className="flex justify-center flex-col items-center">
+          <img width={70} src={No_Data_found} alt="No Data Found" />
+          <p className="font-bold text-red-700">No Records Found!</p>
+        </div>
                 </td>
               </tr>
             )}

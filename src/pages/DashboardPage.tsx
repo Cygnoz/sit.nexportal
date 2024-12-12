@@ -12,19 +12,21 @@ import {
   VictoryLabel,
   VictoryPie
 } from "victory";
+import { useRegularApi } from "../context/ApiContext";
 
 const DashboardPage = () => {
+  const {allAreas,allRegions}=useRegularApi()
   const homeCardData = [
     { 
       icon: <RowsIcon size={24}/>, 
-      number: "875", 
+      number: allRegions?.length, 
       title: "Total Regions", 
       iconFrameColor: "#FCB23E", 
       iconFrameBorderColor: "#FDE3BBCC" 
     },
     { 
       icon: <AreaIcon size={24}/>, 
-      number: "1235", 
+      number: allAreas?.length, 
       title: "Total Area", 
       iconFrameColor: "#51BFDA", 
       iconFrameBorderColor: "#C1E7F1CC" 
@@ -72,7 +74,7 @@ const DashboardPage = () => {
             iconFrameBorderColor={card.iconFrameBorderColor}
             key={index} 
             icon={card.icon} 
-            number={card.number} 
+            number={card?.number} 
             title={card.title} 
           />
         ))}

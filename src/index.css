@@ -48,5 +48,20 @@ body{
   border-radius: 6px; /* Border radius for the track */
 }
 
+/* Add this CSS to your stylesheet */
+.skeleton {
+  background: linear-gradient(-90deg, #f0f0f0 0%, #e0e0e0 50%, #f0f0f0 100%);
+  background-size: 200% 200%;
+  animation: shimmer 1.5s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
 
 

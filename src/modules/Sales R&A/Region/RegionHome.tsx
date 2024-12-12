@@ -14,12 +14,14 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { RegionData } from "../../../Interfaces/Region";
+import { useRegularApi } from "../../../context/ApiContext";
 
 // Define the type for data items
 
 
 const RegionHome = () => {
-  const [allRegions,setAllRegions]=useState<RegionData[]>([]);
+  const {allAreas,allRegions,allBDA}=useRegularApi()
+  const [allRegion,setAllRegion]=useState<RegionData[]>([]);
   const {request:getAllRegion}=useApi('get',3003)
   const navigate=useNavigate()
   const [editId,setEditId]=useState('')
@@ -69,7 +71,7 @@ const RegionHome = () => {
         }));
         
         // Then set the transformed regions into state
-        setAllRegions(transformedRegions);
+        setAllRegion(transformedRegions);
       }else{
         toast.error(error.response.data.message)
       }
@@ -96,7 +98,7 @@ const RegionHome = () => {
     },
     { 
       icon: <AreaIcon size={24}/>, 
-      number: "167", 
+      number: allAreas?.length, 
       title: "Total Area", 
       iconFrameColor: "#30B777", 
       iconFrameBorderColor: "#B3F0D3CC" 
@@ -117,7 +119,7 @@ const RegionHome = () => {
     },
     { 
       icon: <AreaManagerIcon size={24} />, 
-      number: "98", 
+      number: allBDA?.length, 
       title: "Total BDA's", 
       iconFrameColor: "#D786DD", 
       iconFrameBorderColor: "#FADDFCCC" 
@@ -164,7 +166,7 @@ const RegionHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<RegionData> data={allRegions} columns={columns}  headerContents={{
+        <Table<RegionData> data={allRegion} columns={columns}  headerContents={{
           title:'Region',
           search:{placeholder:'Search Region By Name Country'},
           sort: [
