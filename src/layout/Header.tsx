@@ -3,9 +3,11 @@ import Bell from "../assets/icons/Bell";
 import Settings from "../assets/icons/Settings";
 import UserIcon from "../assets/icons/UserIcon";
 import SearchBar from "../components/ui/SearchBar";
+import { useUser } from "../context/UserContext";
 
 const Header = () => {
   const [searchValue, setSearchValue] = useState<string>("");
+  const {user}=useUser()
   return (
     <div
     className="p-4 flex items-center gap-2 w-full border-b-slate-400 border-y-orange-200"
@@ -38,9 +40,12 @@ const Header = () => {
       </div>
       <p className="tooltip" data-tooltip="user">
         {/* <SettingsIcons /> */}
+        {user?.userImage?
+        <img className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full" src={user?.userImage} alt="" />:
         <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
           <UserIcon color="#768294"/> 
-        </p>
+          
+        </p>}
       </p>
       <div className="tooltip" data-tooltip="Organization">
         {/* <Organization organizationData={organizationData} /> */}

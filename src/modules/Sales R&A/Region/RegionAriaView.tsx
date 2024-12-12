@@ -1,3 +1,5 @@
+import { useState } from "react";
+import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import LicenserCardIcon from "../../../assets/icons/LicenserCardIcon";
@@ -22,6 +24,7 @@ interface LicensersData {
 type Props = {};
 
 const RegionAriaView = ({}: Props) => {
+ 
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
       //   navigate(`/areaView/${viewId}`)
@@ -37,7 +40,7 @@ const RegionAriaView = ({}: Props) => {
   // Data for HomeCards
   const homeCardData = [
     {
-      icon: <LeadsCardIcon size={40} />,
+      icon: <AreaIcon size={20} />,
       number: "222",
       title: "Total Area's",
       iconFrameColor: "#DD9F86",
@@ -46,7 +49,7 @@ const RegionAriaView = ({}: Props) => {
     {
       icon: <UserIcon />,
       number: "189",
-      title: "Total ASM",
+      title: "Total AM",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
@@ -172,7 +175,7 @@ const RegionAriaView = ({}: Props) => {
     { key: "status", label: "Status" },
   ];
 
-  // Data for the table
+  // // Data for the table
   const data: AreaData[] = [
     { areaCode: "LDA1234", areaName: "Area1", areaManager: "Sanujith" },
     { areaCode: "LDA2154", areaName: "Area2", areaManager: "Jithinraj" },
@@ -191,8 +194,7 @@ const RegionAriaView = ({}: Props) => {
     { key: "areaName", label: "Area Name" },
     { key: "areaManager", label: "AreaManager" },
   ];
-
-
+  
 
   return (
     <div>
@@ -246,22 +248,20 @@ const RegionAriaView = ({}: Props) => {
         </div>
       </div>
 
-      
-        {/* Table Section */}
-        <div >
-          <Table<LicensersData>
-            data={data1}
-            columns={columns1}
-            headerContents={{
-              title: "Licensers by Area",
-              search: { placeholder: "Search Area By Name,Manager" },
-            }}
-            noPagination
-            maxHeight='370px'
-            actionList={[{ label: "view", function: handleEditDeleteView }]}
-          />
-        </div>
-      
+      {/* Table Section */}
+      <div>
+        <Table<LicensersData>
+          data={data1}
+          columns={columns1}
+          headerContents={{
+            title: "Licensers by Area",
+            search: { placeholder: "Search Area By Name,Manager" },
+          }}
+          noPagination
+          maxHeight="370px"
+          actionList={[{ label: "view", function: handleEditDeleteView }]}
+        />
+      </div>
     </div>
   );
 };

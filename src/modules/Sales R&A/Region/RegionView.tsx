@@ -21,26 +21,27 @@ import RegionAriaView from "./RegionAriaView";
 import RegionForm from "./RegionForm";
 import RegionPerformanceView from "./RegionPerformanceView";
 import RegionTeamView from "./RegionTeamView";
+import UserIcon from "../../../assets/icons/UserIcon";
 type Props = {};
 
 function RegionView({}: Props) {
-  const {request:getRM}=useApi('get',3002)
+  const { request: getRM } = useApi("get", 3002);
   const [dropDown, setDropDown] = useState([]);
 
   // Function to toggle dropdown state
-  const handleDropdownToggle = (index:number) => {
+  const handleDropdownToggle = (index: number) => {
     setDropDown((prev) => {
-      const newState:any = [...prev];
+      const newState: any = [...prev];
       newState[index] = !newState[index];
       return newState;
     });
-  }
+  };
   const { id } = useParams();
   const { request: getRegion } = useApi("get", 3003);
   const [data, setData] = useState<{
     regionData: any;
-    regionManager:any;
-  }>({ regionData: [],regionManager:[] });
+    regionManager: any;
+  }>({ regionData: [], regionManager: [] });
 
   const countyLogo = [
     { countryName: "India", countryLogo: IndiaLogo },
@@ -53,6 +54,7 @@ function RegionView({}: Props) {
   const getARegion = async () => {
     try {
       const { response, error } = await getRegion(`${endPoints.REGION}/${id}`);
+
       if (response && !error) {
         // setFormValues(response.data);
         setData((prevData) => ({
@@ -66,9 +68,8 @@ function RegionView({}: Props) {
       console.error("Error fetching region data:", err);
     }
   };
-  useEffect(() => {
-    getARegion();
-  }, [id]);
+
+  console.log(id);
 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
@@ -96,39 +97,39 @@ function RegionView({}: Props) {
     try {
       const { response, error } = await getRM(endPoints.GET_ALL_RM);
       console.log(response);
-      
+
       if (response && !error) {
-          const transformedRMss = response.data.regionManager?.map((region: any) => ({
+        const transformedRMss =
+          response.data.regionManager?.map((region: any) => ({
             //   ...region,
             //   dateOfJoining: region.dateOfJoining
             //   ? new Date(region.dateOfJoining).toLocaleDateString("en-GB")
             //   : "N/A",
             // loginEmail:region.user.email
-            userName:region.user.userName,
-            email:region.user.email,
-            phoneNo:region.user.phoneNo,
-            userImage:region.user.userImage
+            userName: region.user.userName,
+            email: region.user.email,
+            phoneNo: region.user.phoneNo,
+            userImage: region.user.userImage,
           })) || [];
-          setData((prevData) => ({
-            ...prevData,
-            regionManager:transformedRMss,
-          }));
+        setData((prevData) => ({
+          ...prevData,
+          regionManager: transformedRMss,
+        }));
       } else {
-         console.log(error?.response?.data?.message || "Failed to fetch data.");
+        console.log(error?.response?.data?.message || "Failed to fetch data.");
       }
-  } catch (err) {
+    } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
-  }
-  
-};
+    }
+  };
 
-useEffect(() => {
+  useEffect(() => {
     getRMs();
-}, [id]);
+    getARegion();
+  }, [id]);
 
-console.log(data.regionManager);
-
+  console.log(data.regionManager);
 
   return (
     <>
@@ -204,61 +205,74 @@ console.log(data.regionManager);
                 </div>
               </div>
               <hr className="w-full" />
-      {data.regionManager.length>0&&<div className="space-y-1 w-full text-xs mt-2">
-                <p className="font-bold text-[12px]">Regional Manager Info</p>
-                <p className="text-[#8F99A9]">Total RM</p>
-                <p>{data.regionManager.length}</p>
-                {data.regionManager.map((rm:any, index:number) => (
-        <div key={index} className="flex flex-col w-full">
-          <div className="flex justify-between items-center w-full mt-2">
-            <div className="flex items-center gap-1">
-              <div className="rounded-full">
-                <img className="w-10 h-10 rounded-full" src={rm.userImage} alt="" />
-              </div>
-              <div className="flex flex-col space-y-1">
-                <p className="text-[11px] text-[#8F99A9]">Name</p>
-                <p className="text-xs">{rm.userName}</p>
-              </div>
-            </div>
+              {data.regionManager.length > 0 && (
+                <div className="space-y-1 w-full text-xs mt-2">
+                  <p className="font-bold text-[12px]">Regional Manager Info</p>
+                  <p className="text-[#8F99A9]">Total RM</p>
+                  <p>{data.regionManager.length}</p>
+                  {data.regionManager.map((rm: any, index: number) => (
+                    <div key={index} className="flex flex-col w-full">
+                      <div className="flex justify-between items-center w-full mt-2">
+                        <div className="flex items-center gap-1">
+                          {rm.userImage ? (
+                            <img
+                              className="w-10 h-10 rounded-full"
+                              src={rm.userImage}
+                              alt=""
+                            />
+                          ) : (
+                            <p className="w-10 h-10    bg-black rounded-full flex justify-center items-center">
+                              <UserIcon color="white" size={22} />
+                            </p>
+                          )}
+                          <div className="flex flex-col space-y-1">
+                            <p className="text-[11px] text-[#8F99A9]">Name</p>
+                            <p className="text-xs">{rm.userName}</p>
+                          </div>
+                        </div>
 
-            <div
-              className="cursor-pointer"
-              onClick={() => handleDropdownToggle(index)}
-            >
-              {dropDown[index] ? (
-                <ChevronUp size={18} color="#303F58" />
-              ) : (
-                <ChevronDown size={18} color="#303F58" />
+                        <div
+                          className="cursor-pointer"
+                          onClick={() => handleDropdownToggle(index)}
+                        >
+                          {dropDown[index] ? (
+                            <ChevronUp size={18} color="#303F58" />
+                          ) : (
+                            <ChevronDown size={18} color="#303F58" />
+                          )}
+                        </div>
+                      </div>
+
+                      {dropDown[index] && (
+                        <>
+                          <div className="flex items-center gap-1 pt-2">
+                            <div className="w-10 rounded-full flex justify-center items-center border h-10">
+                              <EmailIcon size={18} />
+                            </div>
+                            <div className="flex flex-col space-y-1">
+                              <p className="text-[11px] text-[#8F99A9]">
+                                Email Address
+                              </p>
+                              <p className="text-xs">{rm.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 pt-2">
+                            <div className="w-10 rounded-full flex justify-center items-center border h-10">
+                              <PhoneIcon size={18} />
+                            </div>
+                            <div className="flex flex-col space-y-1">
+                              <p className="text-[11px] text-[#8F99A9]">
+                                Phone Number
+                              </p>
+                              <p className="text-xs">{rm.phoneNo}</p>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
               )}
-            </div>
-          </div>
-
-          {dropDown[index] && (
-            <>
-              <div className="flex items-center gap-1 pt-2">
-                <div className="w-10 rounded-full flex justify-center items-center border h-10">
-                  <EmailIcon size={18} />
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-[11px] text-[#8F99A9]">Email Address</p>
-                  <p className="text-xs">{rm.email}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 pt-2">
-                <div className="w-10 rounded-full flex justify-center items-center border h-10">
-                  <PhoneIcon size={18} />
-                </div>
-                <div className="flex flex-col space-y-1">
-                  <p className="text-[11px] text-[#8F99A9]">Phone Number</p>
-                  <p className="text-xs">{rm.phoneNo}</p>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      ))}
-               
-              </div>}
             </div>
           </div>
         </div>

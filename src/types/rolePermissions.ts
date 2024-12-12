@@ -101,7 +101,7 @@ const rolePermissions: RolePermissions = {
     "Work Commission",
     "Prise",
   ],
-  'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets","Prise"],
+  'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser","User","User Log", "Tickets","Prise"],
   'Region Manager': ["Area", "Area Manager", "BDA", "Lead", "Trial", "Licenser"],
   'Area Manager': ["BDA", "Lead", "Trial", "Licenser"],
   'BDAs': ["Lead", "Trial", "Licenser"],
