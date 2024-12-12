@@ -1,7 +1,5 @@
-import { useState } from "react";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import LicenserCardIcon from "../../../assets/icons/LicenserCardIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import HomeCard from "../../../components/ui/HomeCards";
