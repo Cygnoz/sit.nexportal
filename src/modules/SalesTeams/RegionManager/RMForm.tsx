@@ -437,6 +437,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                 <Input
                   label="Aadhaar Number"
                   placeholder="Enter Aadhar"
+                  type="number"
                   error={errors.adhaarNo?.message}
                   {...register("adhaarNo")}
                 />
@@ -610,6 +611,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
               <Input
                 placeholder="Enter Account No"
                 label="Bank Account No"
+                type="number"
                 error={errors.bankDetails?.bankAccountNo?.message}
                 {...register("bankDetails.bankAccountNo")}
               />

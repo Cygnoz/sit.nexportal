@@ -15,10 +15,6 @@ import useApi from "../../../Hooks/useApi";
 import { RMData } from "../../../Interfaces/RM";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
-// import toast from "react-hot-toast";
-// import { RMData } from "../../../Interfaces/RM";
-// import { endPoints } from "../../../services/apiEndpoints";
-
 
 
 
@@ -55,29 +51,6 @@ const handleEdit=(id:any)=>{
   const handleView=(id:any)=>{
     navigate(`/region-managerView/${id}`)
   }
-
-  // const getAllRM=async()=>{
-  //   const url=endPoints.GET_ALL_RM
-  //   try{
-  //     const {response,error}=await getRM(url)
-  //     console.log(response)
-  //     console.log(error)
-  //     if(response && !error){
-
-  //       // toast.success(response.data.message)
-  //       setAllRms(response.data.allRms)
-  //     }else{
-  //       console.log(error)
-  //     }
-
-  //   }catch(err){
-  //     console.log(err)
-  //   }
-  // }
-
-  // useEffect(()=>{
-  //   getAllRM()
-  // },[])
 
 
 
@@ -122,7 +95,8 @@ useEffect(() => {
     
 
   return (
-    <div>
+    <>
+    <div className="space-y-4">
          <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Regional Manager</h1>
      
@@ -136,10 +110,7 @@ useEffect(() => {
       <span className="font-bold text-xl">+</span> Create RM
       </Button>
 
-      {/* Modal controlled by state */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
-      <AddRegionManager editId={editId}  onClose={handleModalToggle} />
-      </Modal>
+    
     </div>
 
     <div className="flex gap-3 py-2 justify-between mt-6">
@@ -185,6 +156,11 @@ useEffect(() => {
 
 
     </div>
+      {/* Modal controlled by state */}
+      <Modal open={isModalOpen} onClose={handleModalToggle}>
+      <AddRegionManager editId={editId}  onClose={handleModalToggle} />
+      </Modal>
+    </>
    
     
   );

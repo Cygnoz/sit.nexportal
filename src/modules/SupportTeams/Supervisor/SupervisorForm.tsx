@@ -44,6 +44,16 @@ const baseSchema = {
     .transform((value, originalValue) =>
       originalValue === "" ?null : value
     ),
+    adhaarNo: Yup.string()
+    
+    .matches(/^\d+$/, "Adhaar number must contain only digits")
+    .min(12, "adhaar number must be  12 characters")
+    .max(12, "PanNo must be 10 characters"), // Ensure exactly 10 characters
+    panNo: Yup.string()
+    .matches(/^[a-zA-Z0-9]+$/, "PanNo must be alphanumeric only")
+    .min(10, "PanNo must be 10 characters")
+    .max(10, "PanNo must be 10 characters"), // Ensure exactly 10 characters
+
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -54,6 +64,7 @@ const addValidationSchema = Yup.object().shape({
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
+
 });
 
 const editValidationSchema = Yup.object().shape({
@@ -285,6 +296,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
   }, [editId]); // Trigger the effect when editId changes
 
   return (
+    <>
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
       <div className="flex justify-between items-center mb-4">
@@ -446,7 +458,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
                 />
                 <Input
                   label="PAN No"
-                  type="number"
+                  
                   placeholder="Enter Pan Number"
                   error={errors.panNo?.message}
                   {...register("panNo")}
@@ -726,6 +738,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
         </div>
       </form>
     </div>
+    </>
   );
 };
 
