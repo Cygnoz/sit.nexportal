@@ -293,11 +293,11 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-lg font-bold text-deepStateBlue ">
-            {editId ? "Edit" : "Create"} Supervisor
+            {editId ? "Edit" : "Create"} Support Agent
           </h1>
           <p className="text-ashGray text-sm">
             {`Use this form to ${
-              editId ? "edit an existing Supervisor" : "add a new Supervisor"
+              editId ? "edit an existing Support Agent" : "add a new Support Agent"
             } details. Please fill in the required information`}
           </p>
         </div>

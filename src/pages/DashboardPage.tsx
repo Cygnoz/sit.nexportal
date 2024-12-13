@@ -63,6 +63,14 @@ const DashboardPage = () => {
     { country: "Sri Lanka", value: 4918, color: "#f44336", flag: "🇱🇰" }
   ];
 
+  const roles = [
+    { name: 'Regional Managers', count: 50, color: 'bg-blue-500' },
+    { name: 'Area Managers', count: 250, color: 'bg-green-500' },
+    { name: 'BDA', count: 802, color: 'bg-blue-300' },
+    { name: 'Supervisors', count: 89, color: 'bg-green-300' },
+    { name: 'Support Agent', count: 89, color: 'bg-teal-500' }
+  ];
+
   return (
     <div >
       <h1 className="text-[#303F58] text-xl font-bold">Dashboard</h1>
@@ -133,7 +141,7 @@ const DashboardPage = () => {
       </div>
       </div>
       <div className="col-span-4">
-      <div className="bg-white h-[475px] rounded-lg w-full -p-3">
+      <div className="bg-white h-[530px] rounded-lg w-full -p-3">
       <h1 className="text-[#303F58] text-lg font-bold p-3">Top Break Down By Region</h1>
       <div className="-mt-3">
       <VictoryPie
@@ -170,6 +178,17 @@ const DashboardPage = () => {
         },
       }}
     />
+     <div className="space-y-4  ms-28">
+      {roles.map((role) => (
+        <div key={role.name} className="flex items-center justify-between w-72 space-x-3">
+          <div className="flex items-center gap-2">
+          <div className={`w-3 h-3 rounded-full ${role.color}`} />
+          <span className="text-gray-800 font-medium text-xs">{role.name}</span>
+          </div>
+          <span className="ml-auto text-gray-600 text-xs">{role.count}</span>
+        </div>
+      ))}
+    </div>
       </div>
 </div>
       </div>

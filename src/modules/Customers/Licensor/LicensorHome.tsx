@@ -56,7 +56,7 @@ const LicensorHome = () => {
     { icon: <PackageMinus />, number: "147", title: "Licenser Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
-    // Data for the table
+  
     const data: LicenserData[] = [
         { licenserId: "Devid Billie",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Active" },
         { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Expired" },
@@ -70,6 +70,8 @@ const LicensorHome = () => {
         { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Pending Renewal"},
         { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
       ];
+
+
         // Define the columns with strict keys
         const columns: { key: keyof LicenserData; label: string }[] = [
           { key: "licenserId", label: "Licenser Id" },
