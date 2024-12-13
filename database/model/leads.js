@@ -8,6 +8,8 @@ const leadSchema = new Schema({
   regionId:{ type: String },
   areaId:{ type: String },
   bdaId:{ type: String },
+  leadId:{type:String},
+  licenserId:{type:String},
   image:{ type: String },
   salutation :{ type: String },
   firstName: { type: String },
