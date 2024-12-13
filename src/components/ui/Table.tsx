@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Eye from "../../assets/icons/Eye";
 import NextIcon from "../../assets/icons/NextIcon";
 import PencilLine from "../../assets/icons/PencilLine";
@@ -51,7 +51,7 @@ const Table = <T extends object>({
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-
+  const [noDataFound,setNoDataFound]=useState(false)
   // Filter data based on the search value
   const filteredData:any = useMemo(() => {
     return data?.filter((row) =>
@@ -218,6 +218,22 @@ const Table = <T extends object>({
     </tr>
   );
 
+  
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      if (data?.length === 0) {
+        setNoDataFound(true);
+      } else {
+        setNoDataFound(false);
+      }
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [data]);
+
+  
+
+  
+
   return (
     <div className="w-full  bg-white rounded-lg p-4">
       {renderHeader()}
@@ -256,96 +272,75 @@ const Table = <T extends object>({
             </tr>
           </thead>
           <tbody>
-            {data?.length===0 ? (
-              
-                renderSkeletonLoader()
-              
-            ) : paginatedData?.length > 0 ? (
-              paginatedData.map((row: any, rowIndex: number) => (
-                <tr key={rowIndex} className="hover:bg-gray-50 z-10">
-                  <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
-                    {(currentPage - 1) * rowsPerPage + rowIndex + 1}
-                  </td>
-                  {columns.map((col: any) => (
-                    <td
-                      key={String(col.key)}
-                      className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] "
-                    >
-                      <div
-                        className={`flex justify-start items-center gap-2 ${
-                          col.key.toLowerCase().includes('status')
-                            ? "justify-center"
-                            : "justify-start"
-                        }`}
-                      >
-                        {col.key === "country" ? (
-                          countryLogo(getNestedValue(row, col.key))
-                        ) : ["userName", "user.userName","leadName"].includes(
-                            col.key
-                          ) ? (
-                          renderImageAndLabel(row)
-                        ) : col.key.toLowerCase().includes('status') ? (
-                          <p className={getStatusClass(row[col.key])}>
-                            {row[col.key]}
-                          </p>
-                        ) : (
-                          getNestedValue(row, col.key) || "N/A"
-                        )}
-                      </div>
-                    </td>
-                    
-                  ))}
-                  {!noAction && (
-                    <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF] ">
-                      <div className="flex justify-center gap-2">
-                        {actionList?.map((action, index) =>
-                          action.label === "edit" ? (
-                            <p
-                              key={index}
-                              className="cursor-pointer"
-                              onClick={() => action.function(row?._id)}
-                            >
-                              <PencilLine color="#4B5C79" size={16} />
-                            </p>
-                          ) : action.label === "view" ? (
-                            <p
-                              key={index}
-                              className="cursor-pointer"
-                              onClick={() => action.function(row?._id)}
-                            >
-                              <Eye color="#4B5C79" size={16} />
-                            </p>
-                          ) : action.label === "delete" ? (
-                            <p
-                              key={index}
-                              className="cursor-pointer"
-                              onClick={() => action.function(row?._id)}
-                            >
-                              <Trash color="#4B5C79" size={16} />
-                            </p>
-                          ) : (
-                            "N/A"
-                          )
-                        )}
-                      </div>
-                    </td>
-                    
-                  )}
-                </tr>
-              ))
+          {noDataFound ? (
+  <tr>
+    <td colSpan={columns.length + 2} className="text-center py-4 text-gray-500">
+      <div className="flex justify-center flex-col items-center">
+        <img width={70} src={No_Data_found} alt="No Data Found" />
+        <p className="font-bold text-red-700">No Records Found!</p>
+      </div>
+    </td>
+  </tr>
+) : data?.length === 0 ? (
+  renderSkeletonLoader()
+) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
+  paginatedData.map((row: any, rowIndex: number) => (
+    <tr key={rowIndex} className="hover:bg-gray-50 z-10">
+      <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
+        {(currentPage - 1) * rowsPerPage + rowIndex + 1}
+      </td>
+      {columns.map((col: any) => (
+        <td
+          key={col.key}
+          className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
+        >
+          <div
+            className={`flex ${
+              col.key.toLowerCase().includes('status') ? 'justify-center' : 'justify-start'
+            } items-center gap-2`}
+          >
+            {col.key === "country" ? (
+              countryLogo(getNestedValue(row, col.key))
+            ) : ["userName", "user.userName", "leadName"].includes(col.key) ? (
+              renderImageAndLabel(row)
+            ) : col.key.toLowerCase().includes('status') ? (
+              <p className={getStatusClass(row[col.key])}>{row[col.key]}</p>
             ) : (
-              <tr>
-                <td
-                  colSpan={columns.length + 2}
-                  className="text-center py-4 text-gray-500"
-                >
-                 <div className="flex justify-center flex-col items-center">
-          <img width={70} src={No_Data_found} alt="No Data Found" />
-          <p className="font-bold text-red-700">No Records Found!</p>
-        </div>
-                </td>
-              </tr>
+              getNestedValue(row, col.key) || "N/A"
             )}
+          </div>
+        </td>
+      ))}
+      {!noAction && (
+        <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
+          <div className="flex justify-center gap-2">
+            {actionList?.map((action, index) => {
+              if (["edit", "view", "delete"].includes(action.label)) {
+                return (
+                  <p
+                    key={index}
+                    className="cursor-pointer"
+                    onClick={() => action.function(row?._id)}
+                  >
+                    {action.label === "edit" ? (
+                      <PencilLine color="#4B5C79" size={16} />
+                    ) : action.label === "view" ? (
+                      <Eye color="#4B5C79" size={16} />
+                    ) : (
+                      <Trash color="#4B5C79" size={16} />
+                    )}
+                  </p>
+                );
+              }
+              return null;
+            })}
+          </div>
+        </td>
+      )}
+    </tr>
+  ))
+) : null}
+
           </tbody>
         </table>
       </div>
