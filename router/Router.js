@@ -12,6 +12,9 @@ const ActivityLogGeneration = require('../controller/authController/activityLogC
 
 const leadController = require('../controller/leadsController')
 
+const licenserController = require('../controller/licenserController')
+
+
 //add lead
 router.post('/leads',verifyToken,checkPermission('Add Lead'),leadController.addLead,ActivityLogGeneration('Add Lead'))
 
@@ -23,6 +26,18 @@ router.put('/lead/:id',verifyToken,checkPermission('Edit Lead'),leadController.e
 
 // router.delete('/delete-lead/:leadId',verifyToken,checkPermission('Delete User'),leadController.deleteLead,ActivityLogGeneration('Delete Lead'))
 
+
+
+//add licenser
+router.post('/licenser',verifyToken,checkPermission('Add Licenser'),licenserController.addLicenser,ActivityLogGeneration('Add Licenser'))
+
+router.get('/licenser',verifyToken,checkPermission('View Licenser'),licenserController.getAllLicesner) 
+
+router.get('/licenser/:licenserId',verifyToken,checkPermission('View Licenser'),licenserController.getLicenser)
+
+router.put('/licenser/:id',verifyToken,checkPermission('Edit Licenser'),licenserController.editLicenser,ActivityLogGeneration('Edit Licenser'))
+
+// router.delete('/delete-lead/:leadId',verifyToken,checkPermission('Delete User'),leadController.deleteLead,ActivityLogGeneration('Delete Lead'))
 
 module.exports = router
 
