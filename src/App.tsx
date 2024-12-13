@@ -35,6 +35,7 @@ import LicenserView from './modules/Customers/Licensor/view/LicenserView';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
 import PraiseHome from './modules/Awards/Praise/PraiseHome';
 import TicketsView from './modules/Tickets/TicketsView';
+import SettingsHome from './modules/Awards/Settings/SettingsHome';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -81,6 +82,8 @@ const App: React.FC = () => {
             <Route path="ticketsView/:id" element={<TicketsView/>} />
             <Route path="user-log" element={<UserLogHome/>} />
             <Route path='prises' element={<PraiseHome/>} />
+            {/* <Route path='' elementement={<SettingsHome/>} /> */}
+            <Route path='settings' element={<SettingsHome/>}/>
             
             {/* Add more authenticated routes as needed */}
           </Route>
@@ -97,3 +100,6 @@ const App: React.FC = () => {
 };
 
 export default App;
+
+
+

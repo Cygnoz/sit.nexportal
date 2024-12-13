@@ -91,22 +91,22 @@ const PraiseForm = ({ }: Props) => {
         <p className="my-3">Select Background</p>
         <div className="flex mb-6 gap-2">
           <div className="bg-gradient-to-r from-[#F86C6C2B] to-[#F9DBA0A8] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-8">Theme 1</p>
+            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 1</p>
           </div>
           <div className="bg-gradient-to-r from-[#EDE7FB] to-[#CCB7FE] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-8">Theme 2</p>
+            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 2</p>
           </div>
           <div className="bg-gradient-to-r from-[#EDE7FB] to-[#DEFFDBA6] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-8">Theme 3</p>
+            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 3</p>
           </div>
           <div className="bg-gradient-to-r from-[#FFC9B182] to-[#FCCF7447] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-8">Theme 4</p>
+            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 4</p>
           </div>
           <div className="bg-gradient-to-r from-[#EDE7FB] to-[#D786DD4D] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-8">Theme 5</p>
+            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 5</p>
           </div>
           <div className="bg-gradient-to-r from-[#D52B1E45] to-[#FCCF741F] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-8">Theme 6</p>
+            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 6</p>
           </div>
         </div>
 
