@@ -18,7 +18,7 @@ const { verifyToken } = require('../controller/authController/middleware');
 const ActivityLogGeneration = require('../controller/authController/activityLogController');
 
 // User
-router.post('/user',userController.addUser)
+router.post('/user',verifyToken,checkPermission('Add User'),userController.addUser,ActivityLogGeneration('Add User'))
 
 router.get("/users",verifyToken,checkPermission('View User'), userController.getAllUsers);
 
