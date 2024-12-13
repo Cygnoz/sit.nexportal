@@ -44,16 +44,6 @@ const baseSchema = {
     .transform((value, originalValue) =>
       originalValue === "" ?null : value
     ),
-    adhaarNo: Yup.string()
-    
-    .matches(/^\d+$/, "Adhaar number must contain only digits")
-    .min(12, "adhaar number must be  12 characters")
-    .max(12, "PanNo must be 10 characters"), // Ensure exactly 10 characters
-    panNo: Yup.string()
-    .matches(/^[a-zA-Z0-9]+$/, "PanNo must be alphanumeric only")
-    .min(10, "PanNo must be 10 characters")
-    .max(10, "PanNo must be 10 characters"), // Ensure exactly 10 characters
-
 };
 
 const addValidationSchema = Yup.object().shape({
