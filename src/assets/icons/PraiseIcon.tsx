@@ -1,7 +1,6 @@
 
 type Props = {
     size?:number;
-    color?:string;
 }
 
 const PraiseIcon = ({size=14}: Props) => {
