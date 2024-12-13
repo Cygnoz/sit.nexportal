@@ -56,22 +56,22 @@ const LicensorHome = () => {
     { icon: <PackageMinus />, number: "147", title: "Licenser Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
-    // Data for the table
-    // const data: LicenserData[] = [
-    //     { licenserId: "Devid Billie",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Active" },
-    //     { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Expired" },
-    //     { licenserId: "Kathryn Murphy",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/3/2014", plan: "Quaterly",status:"Pending Renewal" },
-    //     { licenserId: "Darrell Steward",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
-    //     { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/3/2014", plan:"Quaterly",status:"Active" },
-    //     { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Pending Renewal" },
-    //     { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
-    //     { licenserId: "Kathryn Murphy",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
-    //     { licenserId: "Darrell Steward",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
-    //     { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Pending Renewal"},
-    //     { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
-    //   ];
+  
+    const data: LicenserData[] = [
+        { licenserId: "Devid Billie",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Active" },
+        { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Expired" },
+        { licenserId: "Kathryn Murphy",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/3/2014", plan: "Quaterly",status:"Pending Renewal" },
+        { licenserId: "Darrell Steward",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
+        { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/3/2014", plan:"Quaterly",status:"Active" },
+        { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Pending Renewal" },
+        { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
+        { licenserId: "Kathryn Murphy",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
+        { licenserId: "Darrell Steward",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
+        { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Pending Renewal"},
+        { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
+      ];
 
-    const data:LicenserData[]=[]
+
         // Define the columns with strict keys
         const columns: { key: keyof LicenserData; label: string }[] = [
           { key: "licenserId", label: "Licenser Id" },
