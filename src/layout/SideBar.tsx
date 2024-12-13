@@ -58,8 +58,8 @@ const Sidebar: React.FC = () => {
             </div>
           )
       )}
-       <Link  to={"/settings"}>
-        <div className="mt-3 mb-3 pl-6 flex gap-3">
+       <Link  to={"/settings"} className="">
+        <div className="mt-3 mb-3 pl-6 flex gap-3 mt-auto">
           <Settings />
           <h3 className="text-secondary text-sm font-medium">Settings</h3>
         </div>
