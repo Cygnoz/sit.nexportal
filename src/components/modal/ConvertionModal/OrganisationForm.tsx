@@ -5,6 +5,7 @@ import Button from "../../ui/Button";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
+import InputPasswordEye from "../../form/InputPasswordEye";
 // import Select from "../../form/Select";
 //import CustomPhoneInput from "../../../components/form/CustomPhone";
 //import InputPasswordEye from "../../../components/form/InputPasswordEye";
@@ -91,7 +92,7 @@ const OrganisationForm = ({onClose}: Props) => {
                             error={errors.phone?.message}
                             {...register("phone")}
                         />
-                         <Input
+                         <InputPasswordEye
                       required
                       placeholder="Enter Password"
                       label="New Password"
@@ -99,7 +100,7 @@ const OrganisationForm = ({onClose}: Props) => {
                       error={errors.password?.message}
                       {...register("password")}
                     />
-                    <Input
+                    <InputPasswordEye
                       required
                       placeholder="Re-enter Password"
                       label="Confirm Password"

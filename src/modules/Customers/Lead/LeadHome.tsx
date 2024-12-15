@@ -1,18 +1,20 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Boxes from "../../../assets/icons/Boxes";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import Package from "../../../assets/icons/Package";
 import PackageCheck from "../../../assets/icons/PackageCheck";
 import PackageMinus from "../../../assets/icons/PackageMinus";
+import ConvertModal from "../../../components/modal/ConvertionModal/CovertLicenser";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import LeadForm from './LeadForm'
-import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
-import { endPoints } from "../../../services/apiEndpoints";
 import { LeadData } from "../../../Interfaces/Lead";
+import { endPoints } from "../../../services/apiEndpoints";
+import ImportLeadModal from "./ImportLeadModal";
+import LeadForm from './LeadForm';
 
 type Props = {}
 
@@ -23,13 +25,23 @@ function LeadHome({}: Props) {
   const navigate=useNavigate()
 
    // State to manage modal visibility
-   const [isModalOpen, setIsModalOpen] = useState(false);
-   // Function to toggle modal visibility
-   const handleModalToggle = () => {
-     setIsModalOpen((prev) => !prev);
-     getLeads()
-   };
-
+   const [isModalOpen, setIsModalOpen] = useState({
+    import: false,
+    convert: false,
+    leadForm: false,
+  });
+  
+  // Function to toggle modal visibility
+  const handleModalToggle = (isImport = false, convert = false, leadForm = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      import: isImport, // Updated key with new parameter name
+      convert: convert,
+      leadForm: leadForm,
+    }));
+    getLeads();
+  };
+   
 
   const handleView=(id:any)=>{
     navigate(`/leadView/${id}`)
@@ -93,28 +105,40 @@ function LeadHome({}: Props) {
 //   { leadID: "BDA12354", leadName: "Lucas Wright", phoneNumber: "(703) 555-0211", emailAddress: "lucas.wright@mail.com", source: "Referral", status: "Closed"},
 // ];
 
+  const handleConvert=(id:any)=>{
+    handleModalToggle(false,true,false)
+    console.log(id);
+  }
+  
   // Define the columns with strict keys
   // Define the columns with strict keys for LeadData
-const columns: { key: any; label: string }[] = [
+const columns: { key: any; label: any }[] = [
   { key: "leadId", label: "Lead ID" },
   { key: "leadName", label: "Lead Name" },
   { key: "phone", label: "Phone Number" },
   { key: "email", label: "Email Address" },
-  { key: "leadSource", label: "Source" },
+  { key: "convert", label: handleConvert },
   { key: "leadStatus", label: "Status" },
 ];
+
+ 
 
   return (
     <>
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
+      <div className="flex gap-2">
+      <Button  variant="tertiary" className="border border-[#565148]"  size="sm" onClick={()=>handleModalToggle(true,false,false)}>
+        <p className=""><span className="text-xl font-bold ">+ </span>Import Lead</p>
+      </Button>
       <Button variant="primary"  size="sm" onClick={()=>{
-        handleModalToggle()
+       handleModalToggle(false,false,true)
         setEditId('')
       }}>
         <span className="text-xl font-bold">+</span>Create Lead
       </Button>
+      </div>
       </div>
       {/* HomeCards Section */}
       <div className="flex gap-3 py-2 justify-between">
@@ -166,9 +190,15 @@ const columns: { key: any; label: string }[] = [
       </div>
     </div>
     {/* Modal controlled by state */}
-    <Modal open={isModalOpen} onClose={handleModalToggle}>
-    <LeadForm editId={editId} onClose={handleModalToggle}/>
+    <Modal open={isModalOpen.leadForm} onClose={()=>{handleModalToggle()}}>
+    <LeadForm editId={editId} onClose={()=>handleModalToggle()}/>
     </Modal>
+    <Modal open={isModalOpen.import} className='w-[40%]' onClose={()=>handleModalToggle()}>
+    <ImportLeadModal  onClose={()=>handleModalToggle()}/>
+    </Modal>
+    <Modal open={isModalOpen.convert} align="center" onClose={()=>handleModalToggle()} className="w-[30%]">
+        <ConvertModal onClose={()=>handleModalToggle()} type="lead" />
+      </Modal>
     </>
   )
 }
