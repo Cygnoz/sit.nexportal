@@ -14,6 +14,7 @@ import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { Role } from "../../../types/rolePermissions";
 import { UserData } from "../../../Interfaces/User";
+import { useUser } from "../../../context/UserContext";
 
 type Props = {
   onClose: () => void;
@@ -22,7 +23,7 @@ type Props = {
 
 function UserForm({ onClose, editId }: Props) {
 
-
+ const {setUser,user}=useUser()
 
  // Base schema for shared fields
 const baseSchema = {
@@ -93,6 +94,16 @@ const editValidationSchema = Yup.object({
 
       if (editId) {
         ({ response, error } = await fun(`${endPoints.USER}/${editId}`, data));
+       if(user?.id===data._id){
+        const user:any={
+          userName:data.userName,
+          userImage:data.userImage,
+          id:data._id,
+          employeeId:data.employeeId,
+          role:data?.role
+        }
+        setUser(user)
+       }
       } else {
         ({ response, error } = await fun(endPoints.USER, data));
       }

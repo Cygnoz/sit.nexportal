@@ -91,9 +91,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const getBDAs = async () => {
     try {
       const { response, error } = await getAllBDA(endPoints.BDA);
-      if (response && !error) {
-        console.log(response);
-        
+      if (response && !error) {     
         const transformedBDA =
           response.data.bda?.map((bda: any) => ({
             ...bda,
@@ -117,11 +115,22 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   
 
   useEffect(() => {
-    fetchRegions();
-    fetchAreas();
-    getWC();
-    getCountries();
-    getBDAs();
+    const fetchData = () => {
+      fetchRegions();
+      fetchAreas();
+      getWC();
+      getCountries();
+      getBDAs();
+    };
+  
+    // Fetch data immediately on mount
+    fetchData();
+  
+    // Set an interval to fetch data every 5 seconds
+    const intervalId = setInterval(fetchData, 3000);
+  
+    // Cleanup interval on unmount
+    return () => clearInterval(intervalId);
   }, [user]);
 
   return (

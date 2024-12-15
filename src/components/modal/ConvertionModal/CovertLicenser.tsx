@@ -1,6 +1,7 @@
 // Path: components/ConvertModal.tsx
 import Button from "../../ui/Button";
-import bgpicturee from "../../../assets/image/Group 629978 (1).png";
+
+import bgpicturee from "../../../assets/image/Group.png";
 import Modal from "../Modal";
 import { useState } from "react";
 import OrganisationForm from "./OrganisationForm";
@@ -41,10 +42,6 @@ function ConvertModal({ onClose, type }: Props) {
                         <div className="flex justify-between p-2">
                             <div>
                                 <h3 className="text-[#303F58] font-bold text-lg">{type=='lead'?"Lead": "Trial"} Conversion</h3>
-                                <p className="text-[11px] text-[#8F99A9] mt-1">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                                    eiusmod tempor incididunt.
-                                </p>
                             </div>
                             <p onClick={onClose} className="text-3xl cursor-pointer">
                                 &times;
@@ -53,21 +50,20 @@ function ConvertModal({ onClose, type }: Props) {
 
                         <div>
                             <div className="my-2">
-                                <div className="justify-center">
+                                <div className="flex flex-col items-center gap-7">
                                     <img
-                                        className="h-44 w-56 ms-56"
+                                        className="h-44 w-32 "
                                         src={bgpicturee}
                                         alt="Background"
                                     />
-                                    <p className="font-semibold text-[#4B5C79] text-sm my-3">
-                                        Pausing this trial will restrict all user activities until
-                                        resumed. Are you sure you want to proceed?
+                                    <p className="font-semibold text-[#4B5C79] text-sm my-3 text-center">
+                                    Are you sure you want to convert this {type=="lead"?'lead':'trial'} into a {type=="lead"?'trial':'licencer'}? <br /> This action will move the {type=="lead"?'lead':'trial'} to the {type=="lead"?'trial':'licencer'} module.
                                     </p>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="flex justify-end gap-2 mt-3 pb-2 me-4">
+                        <div className="flex justify-end gap-2 mt-3 pb-2 ">
                             <Button
                                 variant="tertiary"
                                 className="h-8 text-sm border rounded-lg"
@@ -94,10 +90,10 @@ function ConvertModal({ onClose, type }: Props) {
             <Modal
                 open={isNextModalOpen}
                 align="center"
-                onClose={handleNextModalClose}
+                onClose={onClose}
                 className="w-[35%]"
             >
-                <OrganisationForm onClose={handleNextModalClose} />
+                <OrganisationForm onClose={onClose} />
             </Modal>
         </>
     );
