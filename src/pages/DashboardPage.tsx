@@ -3,8 +3,6 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  Legend,
-  ResponsiveContainer,
   Tooltip,
   XAxis, YAxis
 } from 'recharts';
@@ -19,13 +17,13 @@ import FileCheck from "../assets/icons/FileCheck";
 import RowsIcon from "../assets/icons/RowsIcon";
 import TreePain from "../assets/icons/TreePain";
 import Wallet from "../assets/icons/Wallet";
-import HomeCard from "../components/ui/HomeCards";
-import { useRegularApi } from "../context/ApiContext";
 import indLogo from '../assets/image/IndiaLogo.png';
 import SaudhLogo from "../assets/image/SaudiLogo.png";
 import UAELogo from "../assets/image/UAELogo.webp";
+import HomeCard from "../components/ui/HomeCards";
 import RatingStar from '../components/ui/RatingStar';
 import TicketsBar from '../components/ui/TicketsBar';
+import { useRegularApi } from "../context/ApiContext";
 
 const DashboardPage = () => {
   const { allAreas, allRegions } = useRegularApi();
@@ -265,6 +263,7 @@ const DashboardPage = () => {
           fill: ({ datum }) => datum.color,
         },
       }}
+      
     />
     <div className="space-y-4 ms-28">
       {roles.map((role) => (

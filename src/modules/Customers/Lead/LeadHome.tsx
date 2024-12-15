@@ -13,7 +13,7 @@ import Table from "../../../components/ui/Table";
 import useApi from "../../../Hooks/useApi";
 import { LeadData } from "../../../Interfaces/Lead";
 import { endPoints } from "../../../services/apiEndpoints";
-import ImportLeadModal from "./importLeadModal";
+import ImportLeadModal from "./ImportLeadModal";
 import LeadForm from './LeadForm';
 
 type Props = {}

@@ -23,10 +23,6 @@ function ConvertModal({ onClose, type }: Props) {
         setIsNextModalOpen(true);
     };
 
-    // Close the next modal
-    const handleNextModalClose = () => {
-        setIsNextModalOpen(false);
-    };
 
     return (
         <>
