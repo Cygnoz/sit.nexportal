@@ -6,22 +6,29 @@ const Bda = require('../database/model/bda')
 const User = require("../database/model/user");
 
 
-// Fetch existing data
-const dataExist = async ( regionId, areaId , bdaId ) => {  
-  const [regionExists, areaExists , bdaExists  ] = await Promise.all([
-    Region.findOne({ _id:regionId }, { _id: 1, regionName: 1 }),
-    Area.findOne({ _id:areaId}, { _id: 1, areaName: 1 }),
-    Bda.findOne({ _id:bdaId},{ _id: 1 , user : 1})
-  ]);    
+const dataExist = async (regionId, areaId, bdaId) => {
+  const [regionExists, areaExists, bdaExists] = await Promise.all([
+    Region.find({ _id: regionId }, { _id: 1, regionName: 1 }),
+    Area.find({ _id: areaId }, { _id: 1, areaName: 1 }),
+    Bda.find({ _id: bdaId }, { _id: 1, user: 1 }),
+  ]);
 
-  
-  
-return { 
-   regionExists,
-  areaExists,
-  bdaExists,
+  let bdaName = null;
+  if (bdaExists && bdaExists.length > 0) {
+    const bdaUser = await User.findOne({ _id: bdaExists[0].user }, { userName: 1 });
+    if (bdaUser) {
+      bdaName = bdaUser.userName;
+    }
+  }
+
+  return {
+    regionExists,
+    areaExists,
+    bdaExists,
+    bdaName,
+  };
 };
-};
+
 
 
 
@@ -69,39 +76,26 @@ exports.addLicenser = async (req, res , next ) => {
 };
 
 
-// Updated Get Lead Function
 exports.getLicenser = async (req, res) => {
   try {
     const { licenserId } = req.params;
 
-    // Fetch the lead by ID
     const licenser = await Leads.findById(licenserId);
     if (!licenser) {
-      return res.status(404).json({ message: "licenser not found" });
+      return res.status(404).json({ message: "Licenser not found" });
     }
 
-    
     const { regionId, areaId, bdaId } = licenser;
+    const { regionExists, areaExists, bdaExists, bdaName } = await dataExist(regionId, areaId, bdaId);
 
-    // Validate related entities using dataExist
-    const { regionExists, areaExists, bdaExists } = await dataExist(regionId, areaId, bdaId);
-
-
-     console.log("RegionExists:", regionId);
-  console.log("cAreaExists:", areaId);
-  console.log("BdaExists:", bdaId);
-
-    // Enrich the response with related data
     const enrichedLicenser = {
       ...licenser.toObject(),
-      validationErrors: {
-        region: !regionExists ? "Invalid regionId" : undefined,
-        area: !areaExists ? "Invalid areaId" : undefined,
-        bda: !bdaExists ? "Invalid bdaId" : undefined,
+      regionDetails: regionExists[0] || null,
+      areaDetails: areaExists[0] || null,
+      bdaDetails: {
+        bdaId: bdaExists[0]?._id || null,
+        bdaName: bdaName || null,
       },
-      regionDetails: regionExists, // Already an object
-      areaDetails: areaExists,    // Already an object
-      bdaDetails: bdaExists,      // Already an object
     };
 
     res.status(200).json(enrichedLicenser);

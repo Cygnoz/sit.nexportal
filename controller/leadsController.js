@@ -5,24 +5,27 @@ const Area = require('../database/model/area')
 const Bda = require('../database/model/bda')
 const User = require("../database/model/user");
 
+const dataExist = async (regionId, areaId, bdaId) => {
+  const [regionExists, areaExists, bdaExists] = await Promise.all([
+    Region.find({ _id: regionId }, { _id: 1, regionName: 1 }),
+    Area.find({ _id: areaId }, { _id: 1, areaName: 1 }),
+    Bda.find({ _id: bdaId }, { _id: 1, user: 1 }),
+  ]);
 
-// Fetch existing data
-const dataExist = async ( regionId, areaId , bdaId ) => {  
-  const [regionExists, areaExists , bdaExists  ] = await Promise.all([
-    Region.find({ _id:regionId }, { _id: 1, regionName: 1 }),
-    Area.find({ _id:areaId}, { _id: 1, areaName: 1 }),
-    Bda.find({ _id:bdaId},{ _id: 1 , user : 1})
-  ]);    
+  let bdaName = null;
+  if (bdaExists && bdaExists.length > 0) {
+    const bdaUser = await User.findOne({ _id: bdaExists[0].user }, { userName: 1 });
+    if (bdaUser) {
+      bdaName = bdaUser.userName;
+    }
+  }
 
-  // console.log("RegionExists:", regionExists);
-  // console.log("AreaExists:", areaExists);
-  // console.log("BdaExists:", bdaExists);
-  
-return { 
-   regionExists,
-  areaExists,
-  bdaExists,
-};
+  return {
+    regionExists,
+    areaExists,
+    bdaExists,
+    bdaName,
+  };
 };
 
 
@@ -37,7 +40,21 @@ exports.addLead = async (req, res , next ) => {
 
     const { email, regionId, areaId , bdaId } = cleanedData;
 
-    
+
+    // //Validate Account Id
+    // if (!mongoose.Types.ObjectId.isValid(regionId) || regionId.length !== 24) {
+    //   return res.status(400).json({ message: `Select a Region` });
+    // }    
+
+    // //Validate Account Id
+    // if (!mongoose.Types.ObjectId.isValid(areaId) || areaId.length !== 24) {
+    //   return res.status(400).json({ message: `Select a Area` });
+    // }    
+
+    // // //Validate Account Id
+    // // if (!mongoose.Types.ObjectId.isValid(bdaId) || bdaId.length !== 24) {
+    // //   return res.status(400).json({ message: `Select a BDA` });
+    // // }    
     // Check if a lead with the same email already exists
     const existingLead = await Leads.findOne({ email });
     if (existingLead) {
@@ -72,7 +89,8 @@ exports.addLead = async (req, res , next ) => {
   }
 };
 
-// Updated Get Lead Function without validation
+
+
 exports.getLead = async (req, res) => {
   try {
     const { leadId } = req.params;
@@ -86,15 +104,18 @@ exports.getLead = async (req, res) => {
     // Extract the related entity IDs from the lead
     const { regionId, areaId, bdaId } = lead;
 
-    // Fetch related entity details
-    const { regionExists, areaExists, bdaExists } = await dataExist(regionId, areaId, bdaId);
+    // Fetch related entity details using dataExist
+    const { regionExists, areaExists, bdaExists, bdaName } = await dataExist(regionId, areaId, bdaId);
 
     // Enrich the response with related data
     const enrichedLead = {
       ...lead.toObject(),
-      regionDetails: regionExists, // Already an object
-      areaDetails: areaExists,    // Already an object
-      bdaDetails: bdaExists,      // Already an object
+      regionDetails: regionExists[0] || null, // Assuming regionExists is an array
+      areaDetails: areaExists[0] || null,    // Assuming areaExists is an array
+      bdaDetails: {
+        bdaId: bdaExists[0]?._id || null,
+        bdaName: bdaName || null,
+      },
     };
 
     // Send the enriched lead data as the response
@@ -104,7 +125,6 @@ exports.getLead = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 
 // Get All Leads without validation
@@ -331,8 +351,8 @@ const ActivityLog = (req, status, operationId = null) => {
 
 
   // Create New Debit Note
-  function createNewLeads( data, regionId, areaId, bdaId, newLead, userId, userName ) {
-    const newLeads = new Leads({ ...data, regionId, areaId, bdaId, newLead, userId, userName , leadStatus: "New" // Explicitly set leadStatus to "New" for new leads
+  function createNewLeads( data, regionId, areaId, bdaId,  userId, userName ) {
+    const newLeads = new Leads({ ...data, regionId, areaId, bdaId, userId, userName , leadStatus: "New" // Explicitly set leadStatus to "New" for new leads
     });
     return newLeads.save();
   }
