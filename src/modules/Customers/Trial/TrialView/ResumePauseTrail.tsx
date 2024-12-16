@@ -1,6 +1,6 @@
 import Button from "../../../../components/ui/Button";
+import bgpicturee from "../../../../assets/image/Group 629978 (1).png"
 
-import bgpicturee from "../../../../assets/image/Group.png"
 //import { useState } from "react";
 
 

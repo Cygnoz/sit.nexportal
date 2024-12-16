@@ -6,4 +6,6 @@ export interface UserData {
     password?: string;
     confirmPassword?: string;
     role: string;
+    employeeId?:string
+    _id?:string
   }

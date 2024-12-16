@@ -163,7 +163,7 @@ const salutation = [
       value: String(bda?._id),
       label: bda?.bdaName,
     }));
-    setValue("bdaId",filteredBDA?.value)
+    
     // Update the state without using previous `data` state
     setData((prevData:any) => ({
       ...prevData,
