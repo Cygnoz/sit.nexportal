@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import BuildingIcon from "../../../../assets/icons/BuildingIcon";
 import CalenderDays from "../../../../assets/icons/CalenderDays"
 import EmailIcon from "../../../../assets/icons/EmailIcon";
@@ -6,6 +7,10 @@ import LocationIcon from "../../../../assets/icons/LocationIcon";
 import PhoneIcon from "../../../../assets/icons/PhoneIcon";
 
 import UserIcon from "../../../../assets/icons/UserIcon"
+import { endPoints } from "../../../../services/apiEndpoints";
+import { LicenserData } from "../../../../Interfaces/Licenser";
+import { useParams } from "react-router-dom";
+import useApi from "../../../../Hooks/useApi";
 
 
 type Props = {
@@ -13,6 +18,34 @@ type Props = {
   }
 
 const LicenserViewForm = ({onClose}: Props) => {
+  const {request: getaLicenser}=useApi('get',3001)
+  const { id } = useParams();
+  const [data, setData] = useState<LicenserData>()
+
+     const getOneLicenser = async () => {
+          try {
+            const { response, error } = await getaLicenser(`${endPoints.LICENSER}/${id}`);
+            if (response && !error) {
+              const Licenser = response.data; // Return the fetched data
+              console.log("Fetched Licenser data:", Licenser);
+              const{licensers,...filteredLicencers}=Licenser
+              setData(filteredLicencers);
+            } else {
+              // Handle the error case if needed (for example, log the error)
+              console.error('Error fetching Lead data:', error);
+            }
+          } catch (err) {
+            console.error('Error fetching Lead data:', err);
+          }
+        };
+    
+        useEffect(() => {
+          getOneLicenser()
+        }, [id]);
+
+        console.log(data);
+        
+        
   return (
     <>
     
@@ -44,7 +77,7 @@ const LicenserViewForm = ({onClose}: Props) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >First Name</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">Sudeep Kumar</p>
+                <p className="text-sm font-semibold ms-2">{data?.firstName ? data?.firstName : 'N/A'}</p>
 
               </div>
              
@@ -54,7 +87,7 @@ const LicenserViewForm = ({onClose}: Props) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Last Name</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">Sudeep Kumar</p>
+                <p className="text-sm font-semibold ms-2">{data?.lastName ? data?.lastName : 'N/A'}</p>
 
               </div>
              
@@ -70,7 +103,7 @@ const LicenserViewForm = ({onClose}: Props) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Address</h3>
               <div className="flex">
                 <LocationIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">2827 ethikoli rd.pattambi</p>
+                <p className="text-sm font-semibold ms-2">{data?.address ? data?.address : 'N/A'}</p>
 
               </div>
               
@@ -78,7 +111,7 @@ const LicenserViewForm = ({onClose}: Props) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Phone</h3>
               <div className="flex">
                 <PhoneIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">784541221</p>
+                <p className="text-sm font-semibold ms-2">{data?.phone ? data?.phone : 'N/A'}</p>
 
               </div>
               
@@ -86,7 +119,7 @@ const LicenserViewForm = ({onClose}: Props) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Email Address</h3>
               <div className="flex">
                 <EmailIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">abhi@gmail.com</p>
+                <p className="text-sm font-semibold ms-2">{data?.email ? data?.email : 'N/A'}</p>
 
               </div>
             </div>
@@ -105,7 +138,7 @@ const LicenserViewForm = ({onClose}: Props) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Company ID</h3>
               <div className="flex">
                 <BuildingIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">CGRT447473</p>
+                <p className="text-sm font-semibold ms-2">{data?.companyId ? data?.companyId : 'N/A'}</p>
 
               </div>
             
@@ -113,7 +146,7 @@ const LicenserViewForm = ({onClose}: Props) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Company Name</h3>
               <div className="flex">
                 <BuildingIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">CTYSTHWJ87</p>
+                <p className="text-sm font-semibold ms-2">{data?.companyName ? data?.companyName : 'N/A'}</p>
 
               </div>
               <hr />
@@ -127,10 +160,10 @@ const LicenserViewForm = ({onClose}: Props) => {
           <div className="col-span-7 my-1 ">
             <div className="p-4 mx-1 bg-[#F3EEE7] h-[342px]">
               <h1 className="text-sm font-semibold my-2">License Info</h1>
-              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">License Type</h3>
+              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Licenser Status</h3>
               <div className="flex">
                 <FileBadgeIcon size={20} color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">Type 1</p>
+                <p className="text-sm font-semibold ms-2">{data?.licensorStatus ? data?.licensorStatus : 'N/A'}</p>
 
               </div>
 
@@ -138,14 +171,18 @@ const LicenserViewForm = ({onClose}: Props) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Start Date</h3>
               <div className="flex">
               <CalenderDays color="#4B5C79" size={20}/>
-                <p className="text-sm font-semibold ms-2">21 Nov 2024</p>
+                <p className="text-sm font-semibold ms-2">{data?.startDate
+                  ? new Date(data.startDate).toLocaleDateString()
+                  : 'N/A'}</p>
 
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> End Date</h3>
               <div className="flex">
               <CalenderDays color="#4B5C79" size={20}/>
-                <p className="text-sm font-semibold ms-2">21 Nov 2024</p>
+                <p className="text-sm font-semibold ms-2">{data?.endDate
+                  ? new Date(data.endDate).toLocaleDateString()
+                  : 'N/A'}</p>
 
               </div>
             

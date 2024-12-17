@@ -5,15 +5,18 @@ type Props = {
     color?:string;
 }
 
-const ViewRoundIcon = ({ size, color }: Props) => {
+const ViewRoundIcon = ({ size=16, color='white' }: Props) => {
   return (
     <div>
-        <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-<rect x="0.5" y="0.5" width="31" height="31" rx="15.5" fill="#C4A25D" fill-opacity="0.3"/>
-<rect x="0.5" y="0.5" width="31" height="31" rx="15.5" stroke={color}/>
-<path d="M9.3335 15.9997C9.3335 15.9997 11.3335 11.333 16.0002 11.333C20.6668 11.333 22.6668 15.9997 22.6668 15.9997C22.6668 15.9997 20.6668 20.6663 16.0002 20.6663C11.3335 20.6663 9.3335 15.9997 9.3335 15.9997Z" stroke="#B6D6FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M16.0002 17.9997C17.1047 17.9997 18.0002 17.1042 18.0002 15.9997C18.0002 14.8951 17.1047 13.9997 16.0002 13.9997C14.8956 13.9997 14.0002 14.8951 14.0002 15.9997C14.0002 17.1042 14.8956 17.9997 16.0002 17.9997Z" stroke="#B6D6FF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1.3335 7.99967C1.3335 7.99967 3.3335 3.33301 8.00016 3.33301C12.6668 3.33301 14.6668 7.99967 14.6668 7.99967C14.6668 7.99967 12.6668 12.6663 8.00016 12.6663C3.3335 12.6663 1.3335 7.99967 1.3335 7.99967Z" stroke={color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8.00016 9.99967C9.10473 9.99967 10.0002 9.10424 10.0002 7.99967C10.0002 6.89511 9.10473 5.99967 8.00016 5.99967C6.89559 5.99967 6.00016 6.89511 6.00016 7.99967C6.00016 9.10424 6.89559 9.99967 8.00016 9.99967Z" stroke={color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
+
+
+
+
+
 
     </div>
   )

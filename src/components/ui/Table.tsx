@@ -16,9 +16,9 @@ import ArrowRight from "../../assets/icons/ArrowRight";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
-  { key: "rmName", imageKey: "rmImage" },
   { key: "user.userName", imageKey: "user.userImage" },
   { key: "leadName", imageKey: "image" },
+  { key: "firstName", imageKey: "image" },
 ];
 
 interface TableProps<T> {
@@ -327,7 +327,7 @@ const Table = <T extends object>({
                       >
                         {col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
-                        ) : ["userName", "user.userName", "leadName"].includes(
+                        ) : ["userName", "user.userName", "leadName","firstName"].includes(
                             col.key
                           ) ? (
                           renderImageAndLabel(row)

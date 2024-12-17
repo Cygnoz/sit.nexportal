@@ -106,21 +106,33 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
               <div className="flex  mt-20 ms-auto me-2 gap-2">
               <div className="flex flex-col items-center">
                 <div onClick={()=>handleModalToggle(true,false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
-                  <EditIcon size={32} color="#4B5C79" />
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <EditIcon size={18} color="#4B5C79" />
+                   </div>
+                    </div>
                 </div>
                 <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium" >Edit Profile</p>
               </div>
 
               <div className="flex flex-col  items-center">
                 <div onClick={()=>handleModalToggle(false,true)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
-                  <ViewRoundIcon size={32} color="#4B5C79" />
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <ViewRoundIcon size={18} color="#4B5C79" />
+                   </div>
+                    </div> 
                 </div>
                 <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium">View Details</p>
               </div>
 
               <div className="flex flex-col  items-center">
                 <div className="w-8 h-8 mb-1 rounded-full cursor-pointer">
-                  <DeActivateIcon size={32} color="#4B5C79" />
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <DeActivateIcon size={18} color="#4B5C79" />
+                   </div>
+                    </div>
                 </div>
                 <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium">DeActivate</p>
               </div>
