@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import useApi from "../Hooks/useApi";
 import { AreaData } from "../Interfaces/Area";
+import { BDAData } from "../Interfaces/BDA";
 import { RegionData } from "../Interfaces/Region";
 import { WCData } from "../Interfaces/WC";
 import { endPoints } from "../services/apiEndpoints";
-import {  useUser } from "./UserContext";
-import { BDAData } from "../Interfaces/BDA";
+import { useUser } from "./UserContext";
+import { TotalCounts } from "../Interfaces/Counts";
 
 type ApiContextType = {
   allRegions?: RegionData[];
@@ -13,6 +14,7 @@ type ApiContextType = {
   allWc?: WCData[];
   allCountries?: any;
   allBDA?: BDAData[];
+  totalCounts?:TotalCounts
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -23,12 +25,14 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { request: getAllArea } = useApi("get", 3003);
   const { request: getAllWc } = useApi("get", 3003);
   const { request: getAllBDA } = useApi("get", 3002);
+  const {request:getAllCounts}=useApi('get',3003)
   const { request: getAllCountries } = useApi("get", 3003);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);
   const [allWc, setAllWc] = useState<WCData[]>([]);
   const [allBDA, setAllBDA] = useState<BDAData[]>([]);
   const [allCountries, setAllCountries] = useState<[]>([]);
+  const [totalCounts,setTotalCounts]=useState<TotalCounts>()
 
   // Fetch all regions
   const fetchRegions = async () => {
@@ -111,7 +115,19 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       console.log(err);
     }
   };
-
+  
+  const getAllUsersCounts=async()=>{
+    try{
+      const {response,error}=await getAllCounts(endPoints.COUNTS)
+      if(response && !error){
+       setTotalCounts(response.data)
+      }else{
+        console.log("err",error);
+      }
+    }catch(err){
+      console.log(err);
+    }
+  }
   
 
   useEffect(() => {
@@ -121,6 +137,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       getWC();
       getCountries();
       getBDAs();
+      getAllUsersCounts()
     };
   
     // Fetch data immediately on mount
@@ -133,9 +150,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     return () => clearInterval(intervalId);
   }, [user]);
 
+  console.log(totalCounts);
+  
+
   return (
     <ApiContext.Provider
-      value={{ allRegions, allAreas, allWc, allCountries, allBDA }}
+      value={{ allRegions, allAreas, allWc, allCountries, allBDA,totalCounts }}
     >
       {children}
     </ApiContext.Provider>

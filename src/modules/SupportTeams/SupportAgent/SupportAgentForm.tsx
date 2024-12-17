@@ -297,7 +297,9 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
           </h1>
           <p className="text-ashGray text-sm">
             {`Use this form to ${
-              editId ? "edit an existing Support Agent" : "add a new Support Agent"
+              editId
+                ? "edit an existing Support Agent"
+                : "add a new Support Agent"
             } details. Please fill in the required information`}
           </p>
         </div>
@@ -629,46 +631,48 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
           )}
 
           {activeTab === "ID & Business Card" && (
-            <div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
-                  <p className="text-[#303F58] text-base font-bold">
-                    Business Card
-                  </p>
-                  <p className="text-xs font-normal text-[#8F99A9] mt-1">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt
-                  </p>
-                  <img src={bcardfront} className="my-3" alt="" />
-                  <img src={bcardback} className="mb-3" alt="" />
-                  <div className="flex gap-3 justify-end">
-                    <Button
-                      variant="tertiary"
-                      size="sm"
-                      className="text-xs text-[#565148] font-medium rounded-md"
-                    >
-                      <ViewIcon size="13" color="#565148" />
-                      View
-                    </Button>
-                  </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                <p className="text-[#303F58] text-base font-bold">
+                  Business Card
+                </p>
+                <p className="text-xs font-normal text-[#8F99A9] mt-1">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt
+                </p>
+                <img src={bcardfront} width={220} className="my-3" alt="" />
+                <img src={bcardback} width={220} className="mb-3" alt="" />
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="tertiary"
+                    size="sm"
+                    className="text-xs text-[#565148] font-medium rounded-md"
+                  >
+                    <ViewIcon size="13" color="#565148" />
+                    View
+                  </Button>
+                  {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
                 </div>
-                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
-                  <p className="text-[#303F58] text-base font-bold">ID Card</p>
-                  <p className="text-xs font-normal text-[#8F99A9] mt-1">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt
-                  </p>
-                  <img src={idcard} className="my-3" alt="" />
-                  <div className="flex gap-3 justify-end">
-                    <Button
-                      variant="tertiary"
-                      size="sm"
-                      className="text-xs text-[#565148] font-medium rounded-md"
-                    >
-                      <ViewIcon size="13" color="#565148" />
-                      View
-                    </Button>
-                  </div>
+              </div>
+              <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                <p className="text-[#303F58] text-base font-bold">ID Card</p>
+                <p className="text-xs font-normal text-[#8F99A9] mt-1">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt
+                </p>
+                <img src={idcard} className="my-3" alt="" />
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="tertiary"
+                    size="sm"
+                    className="text-xs text-[#565148] font-medium rounded-md"
+                  >
+                    <ViewIcon size="13" color="#565148" />
+                    View
+                  </Button>
+                  {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
                 </div>
               </div>
             </div>

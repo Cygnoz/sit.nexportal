@@ -15,10 +15,12 @@ import { LeadData } from "../../../Interfaces/Lead";
 import { endPoints } from "../../../services/apiEndpoints";
 import ImportLeadModal from "./ImportLeadModal";
 import LeadForm from './LeadForm';
+import { useRegularApi } from "../../../context/ApiContext";
 
 type Props = {}
 
 function LeadHome({}: Props) {
+  const {totalCounts}=useRegularApi()
   const {request:getAllLeads}=useApi('get',3001)
   const [allLead, setAllLead] = useState<LeadData[]>([]);
   const [editId, setEditId] = useState('');
@@ -49,7 +51,7 @@ function LeadHome({}: Props) {
 
   const handleEdit = (id: any) => {
     setEditId(id);
-    handleModalToggle()
+    handleModalToggle(false,false,true)
   };
 
 
@@ -78,10 +80,10 @@ function LeadHome({}: Props) {
   },[])
 
    const homeCardData = [
+    { icon: <Boxes />, number: totalCounts?.totalLead, title: "Total Leads",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
     { icon: <CalenderDays  />, number: "110", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
     { icon: <Package/>, number: "56", title: "Closed Leads",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
     { icon: <PackageCheck />, number: "100", title: "Converted Leads",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
-    { icon: <Boxes />, number: "526", title: "Total Leads",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
     { icon: <PackageMinus  />, number: "147", title: "Leads Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
@@ -190,7 +192,7 @@ const columns: { key: any; label: any }[] = [
       </div>
     </div>
     {/* Modal controlled by state */}
-    <Modal open={isModalOpen.leadForm} onClose={()=>{handleModalToggle()}}>
+    <Modal open={isModalOpen.leadForm} onClose={()=>handleModalToggle()}>
     <LeadForm editId={editId} onClose={()=>handleModalToggle()}/>
     </Modal>
     <Modal open={isModalOpen.import} className='w-[40%]' onClose={()=>handleModalToggle()}>

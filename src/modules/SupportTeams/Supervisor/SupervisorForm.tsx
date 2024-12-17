@@ -635,7 +635,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
         )}
 
 {activeTab === "ID & Business Card" && (
-            <div>
+            
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                   <p className="text-[#303F58] text-base font-bold">
@@ -656,6 +656,8 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
                       <ViewIcon size="13" color="#565148" />
                       View
                     </Button>
+                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
                   </div>
                 </div>
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">
@@ -674,10 +676,12 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
                       <ViewIcon size="13" color="#565148" />
                       View
                     </Button>
+                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
                   </div>
                 </div>
               </div>
-            </div>
+            
           )}
 
 
