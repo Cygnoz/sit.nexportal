@@ -10,20 +10,30 @@ const RMViewAriaManagers = ({}: Props) => {
   return (
     <div>
        <div className="rounded-xl">
-      <h1 className="font-bold text-sm sticky top-0 bg-white border-b border-gray-200 pb-2 p-2">
+      <div>
+      <h1 className="font-bold text-sm sticky top-0 bg-white pb-2 p-2">
         Area Managers
       </h1>
+      </div>
 
-      <div className="bg-white p-2 h-96 overflow-y-scroll hide-scrollbar ">
-        <div className="bg-white p-4 m-2">
+      <div className="bg-white  h-96 overflow-y-scroll hide-scrollbar ">
+        <div className="bg-white m-2">
           <div className="flex justify-between bg-[#F5F9FC] p-3 rounded-lg my-2 ">
             <div className="">
               <p className="text-[#4B5C79] text-xs font-medium py-1">
                 Eleanor Pena
               </p>
+              <div className="flex">
               <p className="text-[#72829D] text-xs font-medium">
-                jackson.@example.com 9856785654
+                jackson.@example.com 
               </p>
+              <div className="w-2 h-2 rounded-full bg-[#F9A51A] mt-1 ms-2"></div>
+              <p className="text-[#72829D] text-xs font-medium ms-2">
+              9856785654
+              </p>
+
+              </div>
+              
             </div>
             <div className="classname">
               <Button
@@ -40,9 +50,16 @@ const RMViewAriaManagers = ({}: Props) => {
               <p className="text-[#4B5C79] text-xs font-medium py-1">
                 Eleanor Pena
               </p>
+              <div className="flex">
               <p className="text-[#72829D] text-xs font-medium">
-                jackson.@example.com 9856785654
+                jackson.@example.com 
               </p>
+              <div className="w-2 h-2 rounded-full bg-[#F9A51A] mt-1 ms-2"></div>
+              <p className="text-[#72829D] text-xs font-medium ms-2">
+              9856785654
+              </p>
+
+              </div>
             </div>
             <div className="classname">
               <Button
@@ -59,9 +76,16 @@ const RMViewAriaManagers = ({}: Props) => {
               <p className="text-[#4B5C79] text-xs font-medium py-1">
                 Eleanor Pena
               </p>
+              <div className="flex">
               <p className="text-[#72829D] text-xs font-medium">
-                jackson.@example.com 9856785654
+                jackson.@example.com 
               </p>
+              <div className="w-2 h-2 rounded-full bg-[#F9A51A] mt-1 ms-2"></div>
+              <p className="text-[#72829D] text-xs font-medium ms-2">
+              9856785654
+              </p>
+
+              </div>
             </div>
             <div className="classname">
               <Button
@@ -78,9 +102,16 @@ const RMViewAriaManagers = ({}: Props) => {
               <p className="text-[#4B5C79] text-xs font-medium py-1">
                 Eleanor Pena
               </p>
+              <div className="flex">
               <p className="text-[#72829D] text-xs font-medium">
-                jackson.@example.com 9856785654
+                jackson.@example.com 
               </p>
+              <div className="w-2 h-2 rounded-full bg-[#F9A51A] mt-1 ms-2"></div>
+              <p className="text-[#72829D] text-xs font-medium ms-2">
+              9856785654
+              </p>
+
+              </div>
             </div>
             <div className="classname">
               <Button
@@ -97,9 +128,16 @@ const RMViewAriaManagers = ({}: Props) => {
               <p className="text-[#4B5C79] text-xs font-medium py-1">
                 Eleanor Pena
               </p>
+              <div className="flex">
               <p className="text-[#72829D] text-xs font-medium">
-                jackson.@example.com 9856785654
+                jackson.@example.com 
               </p>
+              <div className="w-2 h-2 rounded-full bg-[#F9A51A] mt-1 ms-2"></div>
+              <p className="text-[#72829D] text-xs font-medium ms-2">
+              9856785654
+              </p>
+
+              </div>
             </div>
             <div className="classname">
               <Button
@@ -116,9 +154,16 @@ const RMViewAriaManagers = ({}: Props) => {
               <p className="text-[#4B5C79] text-xs font-medium py-1">
                 Eleanor Pena
               </p>
+              <div className="flex">
               <p className="text-[#72829D] text-xs font-medium">
-                jackson.@example.com 9856785654
+                jackson.@example.com 
               </p>
+              <div className="w-2 h-2 rounded-full bg-[#F9A51A] mt-1 ms-2"></div>
+              <p className="text-[#72829D] text-xs font-medium ms-2">
+              9856785654
+              </p>
+
+              </div>
             </div>
             <div className="classname">
               <Button
@@ -135,9 +180,16 @@ const RMViewAriaManagers = ({}: Props) => {
               <p className="text-[#4B5C79] text-xs font-medium py-1">
                 Eleanor Pena
               </p>
+              <div className="flex">
               <p className="text-[#72829D] text-xs font-medium">
-                jackson.@example.com 9856785654
+                jackson.@example.com 
               </p>
+              <div className="w-2 h-2 rounded-full bg-[#F9A51A] mt-1 ms-2"></div>
+              <p className="text-[#72829D] text-xs font-medium ms-2">
+              9856785654
+              </p>
+
+              </div>
             </div>
             <div className="classname">
               <Button

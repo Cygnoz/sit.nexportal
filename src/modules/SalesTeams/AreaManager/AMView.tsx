@@ -274,29 +274,45 @@ const AMView = ({ }: Props) => {
             </div>
             <div className="flex -mt-9 gap-3 ms-28">
               <div className="flex flex-col items-center space-y-1">
-                <div onClick={() => handleModalToggle(true, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                  <EditIcon size={36} color="#C4A25D24" />
+                <div onClick={()=>handleModalToggle(true,false,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <EditIcon size={18} color="#C4A25D" />
+                   </div>
+                    </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
               </div>
 
               <div className="flex flex-col  items-center space-y-1">
-                <div onClick={() => handleModalToggle(false, true, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                  <ViewRoundIcon size={36} color="#D52B1E4D" />
+                <div onClick={()=>handleModalToggle(false,true,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <ViewRoundIcon size={18} color="#B6D6FF" />
+                   </div>
+                    </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
               </div>
 
               <div className="flex flex-col  items-center space-y-1">
-                <div onClick={() => handleModalToggle(false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                  <AwardIcon size={36} color="#D52B1E4D" />
+                <div onClick={()=>handleModalToggle(false,false,true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <AwardIcon size={18} color="#B6FFD7" />
+                   </div>
+                    </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
               </div>
 
               <div className="flex flex-col  items-center space-y-1">
                 <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                  <DeActivateIcon size={36} color="#D52B1E4D" />
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <DeActivateIcon size={18} color="#D52B1E4D" />
+                   </div>
+                    </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
               </div>

@@ -116,15 +116,23 @@ Props) => {
           </div>
           <div onClick={handleModalToggle} className="flex flex-col items-center  space-y-1 cursor-pointer">
             <div className="w-8 h-8 mb-2 rounded-full">
-              <EditIcon size={40} color="#C4A25D24" />
+            <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <EditIcon size={18} color="#C4A25D" />
+                   </div>
+                    </div>
             </div>
-            <p className="text-center ms-3">Edit</p>
+            <p className="text-center ms-2">Edit</p>
           </div>
           <div className="flex flex-col  items-center space-y-1 cursor-pointer">
                   <div className="w-8 h-8 mb-2 rounded-full">
-                    <DeActivateIcon size={40} color="#D52B1E4D" />
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <DeActivateIcon size={18} color="#D52B1E4D" />
+                   </div>
+                    </div>
                   </div>
-                  <p className="text-center ms-3">
+                  <p className="text-center ms-2">
                     DeActivate
                   </p>
                 </div>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Button from "../../../components/ui/Button";
 import Modal from "../../../components/modal/Modal";
 import HomeCard from "../../../components/ui/HomeCards";
@@ -15,19 +15,15 @@ import TrialIcon from "../../../assets/icons/TrialIcon";
 import LeadIcon from "../../../assets/icons/LeadIcon";
 import AddLicenser from "./LicenserForm";
 import { useNavigate } from "react-router-dom";
+import { endPoints } from "../../../services/apiEndpoints";
+import useApi from "../../../Hooks/useApi";
+import { LicenserData } from "../../../Interfaces/Licenser";
 
 
-
-interface LicenserData {
-    licenserId: string;
-    licenserName: string;
-    startDate: string;
-    endDate:string;
-    plan: string;
-    status:string;
-  }
-  
 const LicensorHome = () => {
+  const {request:getAllLicenser}=useApi('get',3001)
+   const [allLicenser, setAllLicenser] = useState<LicenserData[]>([]);
+   
     const navigate=useNavigate()
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,11 +37,41 @@ const LicensorHome = () => {
 
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
+    getLicensers();
       };
        const handleView=(id:any)=>{
         navigate(`/licenserView/${id}`)
       }
     
+      const getLicensers=async()=>{
+          try{
+            const {response,error}=await getAllLicenser(endPoints.LICENSER)
+            console.log("res",response);
+            
+            if(response && !error){
+              console.log(response.data.licensers);
+             const transformLicense= response.data.licensers?.map((license:any) => ({
+                ...license,
+                startDate: license.startDate
+                ? new Date(license.startDate).toLocaleDateString("en-GB")
+                : "N/A",
+                endDate: license.endDate
+                ? new Date(license.endDate).toLocaleDateString("en-GB")
+                : "N/A",
+               
+              })) || [];
+             setAllLicenser(transformLicense)
+            }
+          }catch(err){
+            console.log(err);
+          }
+        }
+        console.log(allLicenser);
+        
+        useEffect(()=>{
+          getLicensers()
+        },[])
+      
 
       // Data for HomeCards
   const homeCardData = [
@@ -56,35 +82,20 @@ const LicensorHome = () => {
     { icon: <PackageMinus />, number: "147", title: "Licenser Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
-  
-    const data: LicenserData[] = [
-        { licenserId: "Devid Billie",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Active" },
-        { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Expired" },
-        { licenserId: "Kathryn Murphy",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/3/2014", plan: "Quaterly",status:"Pending Renewal" },
-        { licenserId: "Darrell Steward",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
-        { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/3/2014", plan:"Quaterly",status:"Active" },
-        { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Pending Renewal" },
-        { licenserId: "Sudeep Kumar",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
-        { licenserId: "Kathryn Murphy",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
-        { licenserId: "Darrell Steward",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Expired" },
-        { licenserId: "Ronald Richards",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/12/2013", plan: "Yearly",status:"Pending Renewal"},
-        { licenserId: "Jane Cooper",  licenserName: "nathan.roberts@example.com", startDate: "11/12/2012", endDate: "11/1/2014", plan: "Monthly",status:"Active" },
-      ];
 
 
         // Define the columns with strict keys
-        const columns: { key: keyof LicenserData; label: string }[] = [
+        const columns: { key: any; label: string }[] = [
           { key: "licenserId", label: "Licenser Id" },
-          { key: "licenserName", label: "Email Address" },
+          { key: "firstName", label: "Licenser Name" },
           { key: "startDate", label: "Start Date" },
           { key: "endDate", label: "End Date" },
-          { key: "plan", label: "Plan" },
-          { key: "status", label: "Status" },
-
-        ];
+          { key: "licensorStatus", label: "Status" },
+         ];
       
 
   return (
+    <>
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -114,7 +125,7 @@ const LicensorHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<LicenserData> data={data} columns={columns} headerContents={{
+        <Table<LicenserData> data={allLicenser} columns={columns} headerContents={{
           title:'Licenser Details',
           search:{placeholder:'Search BDA by Name'},
           sort: [
@@ -152,11 +163,13 @@ const LicensorHome = () => {
           ]}  />
       </div>
 
-      {/* Modal Section */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
+   
+    </div>
+       {/* Modal Section */}
+       <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[70%]">
         <AddLicenser editId={editId} onClose={handleModalToggle} />
       </Modal>
-    </div>
+    </>
   )
 }
 
