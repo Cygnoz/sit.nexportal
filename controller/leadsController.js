@@ -40,20 +40,8 @@ exports.addLead = async (req, res , next ) => {
     const { email, regionId, areaId , bdaId } = cleanedData;
 
 
-    // //Validate Account Id
-    // if (!mongoose.Types.ObjectId.isValid(regionId) || regionId.length !== 24) {
-    //   return res.status(400).json({ message: `Select a Region` });
-    // }    
 
-    // //Validate Account Id
-    // if (!mongoose.Types.ObjectId.isValid(areaId) || areaId.length !== 24) {
-    //   return res.status(400).json({ message: `Select a Area` });
-    // }    
-
-    // // //Validate Account Id
-    // // if (!mongoose.Types.ObjectId.isValid(bdaId) || bdaId.length !== 24) {
-    // //   return res.status(400).json({ message: `Select a BDA` });
-    // // }    
+    
     // Check if a lead with the same email already exists
     const existingLead = await Leads.findOne({ email });
     if (existingLead) {
@@ -69,7 +57,7 @@ exports.addLead = async (req, res , next ) => {
 
     // const newLead = await createLead(cleanedData)
     
-    // const savedLeads = await createNewLeads(cleanedData, regionId, areaId, bdaId , newLead , userId, userName );
+    // const savedLeads = await createNewLeads(cleanedData, regionId, areaId, bdaId , userId, userName );
 
     const savedLeads = await createLead(cleanedData, regionId, areaId, bdaId, userId, userName);
 
@@ -130,7 +118,7 @@ exports.getLead = async (req, res) => {
 exports.getAllLeads = async (req, res) => {
   try {
     // Fetch all leads from the database
-    const leads = await Leads.find();
+    const leads = await Leads.find({ customerStatus: "lead" });
 
     // Check if leads exist
     if (!leads || leads.length === 0) {
@@ -161,7 +149,6 @@ exports.getAllLeads = async (req, res) => {
     res.status(500).json({ message: "Internal server error." });
   }
 };
-
 
 
 
@@ -238,6 +225,75 @@ const existingUserId = existingLead.user;
 //   }
 // };
 
+exports.convertLeadToTrial = async (req, res) => {
+  try {
+    const { leadId } = req.params; // Get the lead ID from request parameters
+
+    // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
+    const updatedLead = await Leads.findByIdAndUpdate(
+      leadId,
+      { 
+        customerStatus: "Trial"},
+        {new: true } // Return the updated document
+    );
+
+    // Check if the lead was found and updated
+    if (!updatedLead) {
+      return res.status(404).json({ message: "Lead not found or unable to convert." });
+    }
+
+    res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
+  } catch (error) {
+    console.error("Error converting lead to Trial:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+
+
+exports.getAllTrials = async (req, res) => {
+  try {
+    // Fetch all records with customerStatus as "Trial"
+    const trials = await Leads.find({ customerStatus: "Trial" });
+
+    // Check if trials exist
+    if (!trials || trials.length === 0) {
+      return res.status(404).json({ message: "No trials found." });
+    }
+
+    // Respond with the trials
+    res.status(200).json({ trials });
+  } catch (error) {
+    console.error("Error fetching trials:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+
+exports.convertTrialToLicenser = async (req, res) => {
+  try {
+    const { trialId } = req.params; // Assume the request contains the ID of the trial to convert.
+
+    // Find the trial by ID and update its customerStatus to "Licenser"
+    const updatedTrial = await Leads.findByIdAndUpdate(
+      trialId,
+      { customerStatus: "Licenser" },
+      { new: true } // Return the updated document
+    );
+
+    // Check if the trial was found and updated
+    if (!updatedTrial) {
+      return res.status(404).json({ message: "Trial not found or unable to convert." });
+    }
+
+    res.status(200).json({ message: "Trial converted to Licenser successfully.", trial: updatedTrial });
+  } catch (error) {
+    console.error("Error converting Trial to Licenser:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
 
 
 
@@ -249,29 +305,51 @@ async function createLead(cleanedData, regionId, areaId, bdaId, userId, userName
   let nextId = 1;
 
   // Try to get the last lead to determine the next ID
-  const lastLead = await Leads.findOne().sort({ leadId: -1 }); // Sort by leadId descending
+  const lastLead = await Leads.findOne().sort({ customerId: -1 }); // Sort by leadId descending
 
   if (lastLead) {
-    const lastId = parseInt(lastLead.leadId.split("-")[1]); // Extract numeric part
+    const lastId = parseInt(lastLead.customerId.split("-")[1]); // Extract numeric part
     nextId = lastId + 1; // Increment the last ID
+
   }
 
   // Format the new lead ID
-  const leadId = `LEADID-${nextId.toString().padStart(4, "0")}`;
+  const customerId = `CSTMID-${nextId.toString().padStart(4, "0")}`;
 
   // Create and save the new lead
   const savedLeads = await createNewLeads(
-    { ...rest, leadId }, // Pass lead data with the generated leadId
+    { ...rest, customerId }, // Pass lead data with the generated leadId
     regionId,
     areaId,
     bdaId,
     true, // Mark as a new lead
     userId,
-    userName
+    userName,
+    
   );
 
   return savedLeads; // Return the saved lead
 }
+
+
+// // Function to auto-generate the customerId
+// async function generateCustomerId() {
+//   let nextId = 1;
+
+//   // Try to get the last lead to determine the next customer ID
+//   const lastLead = await Leads.findOne().sort({ _id: -1 }); // Sort by customerId descending
+
+//   if (lastLead) {
+//     const lastId = parseInt(lastLead.customerId.slice(6));// Extract numeric part
+//     nextId = lastId + 1; // Increment the last ID
+//   }
+
+//   // Format the new customer ID
+//   const customerId = `CUSTID-${nextId.toString().padStart(4, "0")}`;
+
+//   return customerId;
+// }
+
 
 
 const ActivityLog = (req, status, operationId = null) => {
@@ -351,7 +429,8 @@ const ActivityLog = (req, status, operationId = null) => {
 
   // Create New Debit Note
   function createNewLeads( data, regionId, areaId, bdaId,  userId, userName ) {
-    const newLeads = new Leads({ ...data, regionId, areaId, bdaId, userId, userName , leadStatus: "New" // Explicitly set leadStatus to "New" for new leads
+    const newLeads = new Leads({ ...data, regionId, areaId, bdaId, userId, userName , leadStatus: "New", customerStatus: "lead" 
+
     });
     return newLeads.save();
   }

@@ -42,7 +42,6 @@ exports.addLicenser = async (req, res , next ) => {
     const { email, regionId, areaId , bdaId } = cleanedData;
 
 
-
     // Check if a lead with the same email already exists
     const existingLicenser = await Leads.findOne({ email });
     if (existingLicenser) {
@@ -56,8 +55,6 @@ exports.addLicenser = async (req, res , next ) => {
     if (!validateInputs( cleanedData, regionExists, areaExists, bdaExists ,res)) return;
   
     // const newLead = await createLead(cleanedData)
-
-
     
     const savedLicenser = await createLicenser(cleanedData, regionId, areaId, bdaId ,  userId, userName );
 
@@ -111,7 +108,7 @@ exports.getLicenser = async (req, res) => {
 exports.getAllLicesner = async (req, res) => {
   try {
     // Fetch all leads from the database
-    const licensers = await Leads.find();
+    const licensers = await Leads.find({customerStatus : "Licenser"});
 
     // Check if leads exist
     if (!licensers || licensers.length === 0) {
@@ -231,6 +228,54 @@ const existingUserId = existingLicenser.user;
 //   }
 // };
 
+
+exports.convertTrialToLicenser = async (req, res) => {
+  try {
+    const { trialId } = req.params; // Assume the request contains the ID of the trial to convert.
+
+    // Find the trial by ID and update its customerStatus to "Licenser"
+    const updatedTrial = await Leads.findByIdAndUpdate(
+      trialId,
+      { customerStatus: "Licenser" },
+      { new: true } // Return the updated document
+    );
+
+    // Check if the trial was found and updated
+    if (!updatedTrial) {
+      return res.status(404).json({ message: "Trial not found or unable to convert." });
+    }
+
+    res.status(200).json({ message: "Trial converted to Licenser successfully.", trial: updatedTrial });
+  } catch (error) {
+    console.error("Error converting Trial to Licenser:", error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+
+
+// exports.getAllLicensers = async (req, res) => {
+//   try {
+//     // Fetch all records with customerStatus as "Licenser"
+//     const licensers = await Leads.find({ customerStatus: "Licenser" });
+
+//     // Check if licensers exist
+//     if (!licensers || licensers.length === 0) {
+//       return res.status(404).json({ message: "No licensers found." });
+//     }
+
+//     // Respond with the licensers
+//     res.status(200).json({ licensers });
+//   } catch (error) {
+//     console.error("Error fetching licensers:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+
+
+
+
 async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName) {
     const { ...rest } = cleanedData;
   
@@ -342,7 +387,7 @@ const ActivityLog = (req, status, operationId = null) => {
 
   // Create New Debit Note
   function createNewLicenser(data, regionId, areaId, bdaId, newLicenser, userId, userName) {
-    const newLicensers = new Leads({ ...data, regionId, areaId, bdaId, newLicenser, userId, userName });
+    const newLicensers = new Leads({ ...data, regionId, areaId, bdaId, newLicenser, userId, userName, customerStatus:"Licenser" });
     return newLicensers.save();
   }
   

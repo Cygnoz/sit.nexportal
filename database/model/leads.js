@@ -8,8 +8,7 @@ const leadSchema = new Schema({
   regionId:{ type: String },
   areaId:{ type: String },
   bdaId:{ type: String },
-  leadId:{type:String},
-  licenserId:{type:String},
+  customerId:{type:String},
   image:{ type: String },
   salutation :{ type: String },
   firstName: { type: String },
@@ -20,10 +19,10 @@ const leadSchema = new Schema({
   website: { type: String },
   leadSource: { type: String },
 
+
   address: { type: String },
   city:{ type: String },
   state: { type: String },
-  country: {type : String },
 
   licenseType: { type: String },
   startDate: { type: String },
@@ -36,7 +35,8 @@ const leadSchema = new Schema({
   pinCode: { type: String },
 
   licensorStatus:{ type: String },
-  leadStatus:{ type: String }
+  leadStatus:{ type: String },
+  customerStatus:{ type: String }
 
 });
 
