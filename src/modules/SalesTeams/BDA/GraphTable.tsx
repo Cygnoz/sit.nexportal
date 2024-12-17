@@ -1,14 +1,13 @@
 import { useState } from "react";
-import Table from "../../../components/ui/Table";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
   CartesianGrid,
+  Line,
+  LineChart,
   Tooltip,
-  Legend,
+  XAxis,
+  YAxis
 } from "recharts";
+import Table from "../../../components/ui/Table";
 
 interface TrailTableData {
     trailId:string;

@@ -1,27 +1,25 @@
+import { useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  LabelList,
+  Legend,
+  Tooltip,
+  XAxis,
+  YAxis
+} from 'recharts';
+import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import EditIcon from "../../../assets/icons/EditIcon";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
+import person from "../../../assets/image/Ellipse 14 (3).png";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
-import Table from "../../../components/ui/Table";
-import person from "../../../assets/image/Ellipse 14 (3).png";
-import AreaIcon from "../../../assets/icons/AreaIcon";
 import SearchBar from "../../../components/ui/SearchBar";
-import { useState } from "react";
-import {
-  BarChart,
-  Bar,
-  Cell,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  LabelList,
-  ResponsiveContainer,
-} from 'recharts';
+import Table from "../../../components/ui/Table";
 // import SearchBar from "../../../components/ui/SearchBar";
 
 interface AreaData {
@@ -272,7 +270,7 @@ const RegionTeamView = ({}: Props) => {
   ];
 
   const renderCustomizedLabel = (props:any) => {
-    const { x, y, width, height, value } = props;
+    const { x, y, width, value } = props;
     const radius = 10;
   
     return (
