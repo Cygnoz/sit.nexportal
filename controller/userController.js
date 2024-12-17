@@ -364,6 +364,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // licenser
+      { action: "Add Licenser", note: "Add Licenser" },
+      { action: "View Licenser", note: "View Licenser" },
+      { action: "Edit Licenser", note: "Edit Licenser" },
+      { action: "Delete Licenser", note: "Delete Licenser" },
+      
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
       { action: "View Ticket", note: "View Ticket" },
@@ -374,67 +380,554 @@ const roles = [
   {
     roleName: 'Sales Admin',
     permissions: [
-      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
+      // User
+      { action: "Add User", note: "Add User" },
+      { action: "View User", note: "View User" },
+      { action: "Edit User", note: "Edit User" },
+      { action: "Delete User", note: "Delete User" },
+
+      // Activity log
+      { action: "View logs", note: "View logs" },
+
+      // Region
+      { action: "Add Region", note: "Add Region" },
+      { action: "View Region", note: "View Region" },
+      { action: "Edit Region", note: "Edit Region" },
+      { action: "Delete Region", note: "Delete Region" },
+
+      // Area
+      { action: "Add Area", note: "Add Area" },
+      { action: "View Area", note: "View Area" },
+      { action: "Edit Area", note: "Edit Area" },
+      { action: "Delete Area", note: "Delete Area" },
+
+      // Region Manager
+      { action: "Add Region Manager", note: "Add Region Manager" },
+      { action: "View Region Manager", note: "View Region Manager" },
+      { action: "Edit Region Manager", note: "Edit Region Manager" },
+      { action: "Delete Region Manager", note: "Delete Region Manager" },
+
+      // Area Manager
+      { action: "Add Area Manager", note: "Add Area Manager" },
+      { action: "View Area Manager", note: "View Area Manager" },
+      { action: "Edit Area Manager", note: "Edit Area Manager" },
+      { action: "Delete Area Manager", note: "Delete Area Manager" },
+
+      // BDA
+      { action: "Add BDA", note: "Add BDA" },
+      { action: "View BDA", note: "View BDA" },
+      { action: "Edit BDA", note: "Edit BDA" },
+      { action: "Delete BDA", note: "Delete BDA" },
+
+      // commission
+      { action: "Add Commission", note: "Add Commission" },
+      { action: "View Commission", note: "View Commission" },
+      { action: "Edit Commission", note: "Edit Commission" },
+      { action: "Delete Commission", note: "Delete Commission" },
+
+      // Supervisor
+      { action: "Add Supervisor", note: "Add Supervisor" },
+      { action: "View Supervisor", note: "View Supervisor" },
+      { action: "Edit Supervisor", note: "Edit Supervisor" },
+      { action: "Delete Supervisor", note: "Delete Supervisor" },
+      
+      // Support Agent
+      { action: "Add Support Agent", note: "Add Support Agent" },
+      { action: "View Support Agent", note: "View Support Agent" },
+      { action: "Edit Support Agent", note: "Edit Support Agent" },
+      { action: "Delete Support Agent", note: "Delete Support Agent" },
+
+      // Lead
+      { action: "Add Lead", note: "Add Lead" },
+      { action: "View Lead", note: "View Lead" },
+      { action: "Edit Lead", note: "Edit Lead" },
+      { action: "Delete Lead", note: "Delete Lead" },
+
+      // licenser
+      { action: "Add Licenser", note: "Add Licenser" },
+      { action: "View Licenser", note: "View Licenser" },
+      { action: "Edit Licenser", note: "Edit Licenser" },
+      { action: "Delete Licenser", note: "Delete Licenser" },
+      
+      // Tickets
+      { action: "Add Ticket", note: "Add Ticket" },
+      { action: "View Ticket", note: "View Ticket" },
+      { action: "Edit Ticket", note: "Edit Ticket" },
+      { action: "Delete Ticket", note: "Delete Ticket" },
     ],
   },
   {
     roleName: 'Support Admin',
     permissions: [
-      { action: "OrganizationView", note: "Viewed Organization Details" },
-      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
+      // User
+      { action: "Add User", note: "Add User" },
+      { action: "View User", note: "View User" },
+      { action: "Edit User", note: "Edit User" },
+      { action: "Delete User", note: "Delete User" },
+
+      // Activity log
+      { action: "View logs", note: "View logs" },
+
+      // Region
+      { action: "Add Region", note: "Add Region" },
+      { action: "View Region", note: "View Region" },
+      { action: "Edit Region", note: "Edit Region" },
+      { action: "Delete Region", note: "Delete Region" },
+
+      // Area
+      { action: "Add Area", note: "Add Area" },
+      { action: "View Area", note: "View Area" },
+      { action: "Edit Area", note: "Edit Area" },
+      { action: "Delete Area", note: "Delete Area" },
+
+      // Region Manager
+      { action: "Add Region Manager", note: "Add Region Manager" },
+      { action: "View Region Manager", note: "View Region Manager" },
+      { action: "Edit Region Manager", note: "Edit Region Manager" },
+      { action: "Delete Region Manager", note: "Delete Region Manager" },
+
+      // Area Manager
+      { action: "Add Area Manager", note: "Add Area Manager" },
+      { action: "View Area Manager", note: "View Area Manager" },
+      { action: "Edit Area Manager", note: "Edit Area Manager" },
+      { action: "Delete Area Manager", note: "Delete Area Manager" },
+
+      // BDA
+      { action: "Add BDA", note: "Add BDA" },
+      { action: "View BDA", note: "View BDA" },
+      { action: "Edit BDA", note: "Edit BDA" },
+      { action: "Delete BDA", note: "Delete BDA" },
+
+      // commission
+      { action: "Add Commission", note: "Add Commission" },
+      { action: "View Commission", note: "View Commission" },
+      { action: "Edit Commission", note: "Edit Commission" },
+      { action: "Delete Commission", note: "Delete Commission" },
+
+      // Supervisor
+      { action: "Add Supervisor", note: "Add Supervisor" },
+      { action: "View Supervisor", note: "View Supervisor" },
+      { action: "Edit Supervisor", note: "Edit Supervisor" },
+      { action: "Delete Supervisor", note: "Delete Supervisor" },
+      
+      // Support Agent
+      { action: "Add Support Agent", note: "Add Support Agent" },
+      { action: "View Support Agent", note: "View Support Agent" },
+      { action: "Edit Support Agent", note: "Edit Support Agent" },
+      { action: "Delete Support Agent", note: "Delete Support Agent" },
+
+      // Lead
+      { action: "Add Lead", note: "Add Lead" },
+      { action: "View Lead", note: "View Lead" },
+      { action: "Edit Lead", note: "Edit Lead" },
+      { action: "Delete Lead", note: "Delete Lead" },
+
+      // licenser
+      { action: "Add Licenser", note: "Add Licenser" },
+      { action: "View Licenser", note: "View Licenser" },
+      { action: "Edit Licenser", note: "Edit Licenser" },
+      { action: "Delete Licenser", note: "Delete Licenser" },
+      
+      // Tickets
+      { action: "Add Ticket", note: "Add Ticket" },
+      { action: "View Ticket", note: "View Ticket" },
+      { action: "Edit Ticket", note: "Edit Ticket" },
+      { action: "Delete Ticket", note: "Delete Ticket" },
     ],
   },
   {
     roleName: 'Region Manager',
     permissions: [
-      { action: "OrganizationView", note: "Viewed Organization Details" },
-      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
+      // User
+      { action: "Add User", note: "Add User" },
+      { action: "View User", note: "View User" },
+      { action: "Edit User", note: "Edit User" },
+      { action: "Delete User", note: "Delete User" },
+
+      // Activity log
+      { action: "View logs", note: "View logs" },
+
+      // Region
+      { action: "Add Region", note: "Add Region" },
+      { action: "View Region", note: "View Region" },
+      { action: "Edit Region", note: "Edit Region" },
+      { action: "Delete Region", note: "Delete Region" },
+
+      // Area
+      { action: "Add Area", note: "Add Area" },
+      { action: "View Area", note: "View Area" },
+      { action: "Edit Area", note: "Edit Area" },
+      { action: "Delete Area", note: "Delete Area" },
+
+      // Region Manager
+      { action: "Add Region Manager", note: "Add Region Manager" },
+      { action: "View Region Manager", note: "View Region Manager" },
+      { action: "Edit Region Manager", note: "Edit Region Manager" },
+      { action: "Delete Region Manager", note: "Delete Region Manager" },
+
+      // Area Manager
+      { action: "Add Area Manager", note: "Add Area Manager" },
+      { action: "View Area Manager", note: "View Area Manager" },
+      { action: "Edit Area Manager", note: "Edit Area Manager" },
+      { action: "Delete Area Manager", note: "Delete Area Manager" },
+
+      // BDA
+      { action: "Add BDA", note: "Add BDA" },
+      { action: "View BDA", note: "View BDA" },
+      { action: "Edit BDA", note: "Edit BDA" },
+      { action: "Delete BDA", note: "Delete BDA" },
+
+      // commission
+      { action: "Add Commission", note: "Add Commission" },
+      { action: "View Commission", note: "View Commission" },
+      { action: "Edit Commission", note: "Edit Commission" },
+      { action: "Delete Commission", note: "Delete Commission" },
+
+      // Supervisor
+      { action: "Add Supervisor", note: "Add Supervisor" },
+      { action: "View Supervisor", note: "View Supervisor" },
+      { action: "Edit Supervisor", note: "Edit Supervisor" },
+      { action: "Delete Supervisor", note: "Delete Supervisor" },
+      
+      // Support Agent
+      { action: "Add Support Agent", note: "Add Support Agent" },
+      { action: "View Support Agent", note: "View Support Agent" },
+      { action: "Edit Support Agent", note: "Edit Support Agent" },
+      { action: "Delete Support Agent", note: "Delete Support Agent" },
+
+      // Lead
+      { action: "Add Lead", note: "Add Lead" },
+      { action: "View Lead", note: "View Lead" },
+      { action: "Edit Lead", note: "Edit Lead" },
+      { action: "Delete Lead", note: "Delete Lead" },
+
+      // licenser
+      { action: "Add Licenser", note: "Add Licenser" },
+      { action: "View Licenser", note: "View Licenser" },
+      { action: "Edit Licenser", note: "Edit Licenser" },
+      { action: "Delete Licenser", note: "Delete Licenser" },
+      
+      // Tickets
+      { action: "Add Ticket", note: "Add Ticket" },
+      { action: "View Ticket", note: "View Ticket" },
+      { action: "Edit Ticket", note: "Edit Ticket" },
+      { action: "Delete Ticket", note: "Delete Ticket" },
     ],
   },
   {
     roleName: 'Area Manager',
     permissions: [
-      { action: "OrganizationView", note: "Viewed Organization Details" },
-      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
+      // User
+      { action: "Add User", note: "Add User" },
+      { action: "View User", note: "View User" },
+      { action: "Edit User", note: "Edit User" },
+      { action: "Delete User", note: "Delete User" },
+
+      // Activity log
+      { action: "View logs", note: "View logs" },
+
+      // Region
+      { action: "Add Region", note: "Add Region" },
+      { action: "View Region", note: "View Region" },
+      { action: "Edit Region", note: "Edit Region" },
+      { action: "Delete Region", note: "Delete Region" },
+
+      // Area
+      { action: "Add Area", note: "Add Area" },
+      { action: "View Area", note: "View Area" },
+      { action: "Edit Area", note: "Edit Area" },
+      { action: "Delete Area", note: "Delete Area" },
+
+      // Region Manager
+      { action: "Add Region Manager", note: "Add Region Manager" },
+      { action: "View Region Manager", note: "View Region Manager" },
+      { action: "Edit Region Manager", note: "Edit Region Manager" },
+      { action: "Delete Region Manager", note: "Delete Region Manager" },
+
+      // Area Manager
+      { action: "Add Area Manager", note: "Add Area Manager" },
+      { action: "View Area Manager", note: "View Area Manager" },
+      { action: "Edit Area Manager", note: "Edit Area Manager" },
+      { action: "Delete Area Manager", note: "Delete Area Manager" },
+
+      // BDA
+      { action: "Add BDA", note: "Add BDA" },
+      { action: "View BDA", note: "View BDA" },
+      { action: "Edit BDA", note: "Edit BDA" },
+      { action: "Delete BDA", note: "Delete BDA" },
+
+      // commission
+      { action: "Add Commission", note: "Add Commission" },
+      { action: "View Commission", note: "View Commission" },
+      { action: "Edit Commission", note: "Edit Commission" },
+      { action: "Delete Commission", note: "Delete Commission" },
+
+      // Supervisor
+      { action: "Add Supervisor", note: "Add Supervisor" },
+      { action: "View Supervisor", note: "View Supervisor" },
+      { action: "Edit Supervisor", note: "Edit Supervisor" },
+      { action: "Delete Supervisor", note: "Delete Supervisor" },
+      
+      // Support Agent
+      { action: "Add Support Agent", note: "Add Support Agent" },
+      { action: "View Support Agent", note: "View Support Agent" },
+      { action: "Edit Support Agent", note: "Edit Support Agent" },
+      { action: "Delete Support Agent", note: "Delete Support Agent" },
+
+      // Lead
+      { action: "Add Lead", note: "Add Lead" },
+      { action: "View Lead", note: "View Lead" },
+      { action: "Edit Lead", note: "Edit Lead" },
+      { action: "Delete Lead", note: "Delete Lead" },
+
+      // licenser
+      { action: "Add Licenser", note: "Add Licenser" },
+      { action: "View Licenser", note: "View Licenser" },
+      { action: "Edit Licenser", note: "Edit Licenser" },
+      { action: "Delete Licenser", note: "Delete Licenser" },
+      
+      // Tickets
+      { action: "Add Ticket", note: "Add Ticket" },
+      { action: "View Ticket", note: "View Ticket" },
+      { action: "Edit Ticket", note: "Edit Ticket" },
+      { action: "Delete Ticket", note: "Delete Ticket" },
     ],
   },
   {
     roleName: 'BDAs',
     permissions: [
-      { action: "OrganizationView", note: "Viewed Organization Details" },
-      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
+      // User
+      { action: "Add User", note: "Add User" },
+      { action: "View User", note: "View User" },
+      { action: "Edit User", note: "Edit User" },
+      { action: "Delete User", note: "Delete User" },
+
+      // Activity log
+      { action: "View logs", note: "View logs" },
+
+      // Region
+      { action: "Add Region", note: "Add Region" },
+      { action: "View Region", note: "View Region" },
+      { action: "Edit Region", note: "Edit Region" },
+      { action: "Delete Region", note: "Delete Region" },
+
+      // Area
+      { action: "Add Area", note: "Add Area" },
+      { action: "View Area", note: "View Area" },
+      { action: "Edit Area", note: "Edit Area" },
+      { action: "Delete Area", note: "Delete Area" },
+
+      // Region Manager
+      { action: "Add Region Manager", note: "Add Region Manager" },
+      { action: "View Region Manager", note: "View Region Manager" },
+      { action: "Edit Region Manager", note: "Edit Region Manager" },
+      { action: "Delete Region Manager", note: "Delete Region Manager" },
+
+      // Area Manager
+      { action: "Add Area Manager", note: "Add Area Manager" },
+      { action: "View Area Manager", note: "View Area Manager" },
+      { action: "Edit Area Manager", note: "Edit Area Manager" },
+      { action: "Delete Area Manager", note: "Delete Area Manager" },
+
+      // BDA
+      { action: "Add BDA", note: "Add BDA" },
+      { action: "View BDA", note: "View BDA" },
+      { action: "Edit BDA", note: "Edit BDA" },
+      { action: "Delete BDA", note: "Delete BDA" },
+
+      // commission
+      { action: "Add Commission", note: "Add Commission" },
+      { action: "View Commission", note: "View Commission" },
+      { action: "Edit Commission", note: "Edit Commission" },
+      { action: "Delete Commission", note: "Delete Commission" },
+
+      // Supervisor
+      { action: "Add Supervisor", note: "Add Supervisor" },
+      { action: "View Supervisor", note: "View Supervisor" },
+      { action: "Edit Supervisor", note: "Edit Supervisor" },
+      { action: "Delete Supervisor", note: "Delete Supervisor" },
+      
+      // Support Agent
+      { action: "Add Support Agent", note: "Add Support Agent" },
+      { action: "View Support Agent", note: "View Support Agent" },
+      { action: "Edit Support Agent", note: "Edit Support Agent" },
+      { action: "Delete Support Agent", note: "Delete Support Agent" },
+
+      // Lead
+      { action: "Add Lead", note: "Add Lead" },
+      { action: "View Lead", note: "View Lead" },
+      { action: "Edit Lead", note: "Edit Lead" },
+      { action: "Delete Lead", note: "Delete Lead" },
+
+      // licenser
+      { action: "Add Licenser", note: "Add Licenser" },
+      { action: "View Licenser", note: "View Licenser" },
+      { action: "Edit Licenser", note: "Edit Licenser" },
+      { action: "Delete Licenser", note: "Delete Licenser" },
+      
+      // Tickets
+      { action: "Add Ticket", note: "Add Ticket" },
+      { action: "View Ticket", note: "View Ticket" },
+      { action: "Edit Ticket", note: "Edit Ticket" },
+      { action: "Delete Ticket", note: "Delete Ticket" },
     ],
   },
   {
     roleName: 'Supervisor',
     permissions: [
-      { action: "OrganizationView", note: "Viewed Organization Details" },
-      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
+      // User
+      { action: "Add User", note: "Add User" },
+      { action: "View User", note: "View User" },
+      { action: "Edit User", note: "Edit User" },
+      { action: "Delete User", note: "Delete User" },
+
+      // Activity log
+      { action: "View logs", note: "View logs" },
+
+      // Region
+      { action: "Add Region", note: "Add Region" },
+      { action: "View Region", note: "View Region" },
+      { action: "Edit Region", note: "Edit Region" },
+      { action: "Delete Region", note: "Delete Region" },
+
+      // Area
+      { action: "Add Area", note: "Add Area" },
+      { action: "View Area", note: "View Area" },
+      { action: "Edit Area", note: "Edit Area" },
+      { action: "Delete Area", note: "Delete Area" },
+
+      // Region Manager
+      { action: "Add Region Manager", note: "Add Region Manager" },
+      { action: "View Region Manager", note: "View Region Manager" },
+      { action: "Edit Region Manager", note: "Edit Region Manager" },
+      { action: "Delete Region Manager", note: "Delete Region Manager" },
+
+      // Area Manager
+      { action: "Add Area Manager", note: "Add Area Manager" },
+      { action: "View Area Manager", note: "View Area Manager" },
+      { action: "Edit Area Manager", note: "Edit Area Manager" },
+      { action: "Delete Area Manager", note: "Delete Area Manager" },
+
+      // BDA
+      { action: "Add BDA", note: "Add BDA" },
+      { action: "View BDA", note: "View BDA" },
+      { action: "Edit BDA", note: "Edit BDA" },
+      { action: "Delete BDA", note: "Delete BDA" },
+
+      // commission
+      { action: "Add Commission", note: "Add Commission" },
+      { action: "View Commission", note: "View Commission" },
+      { action: "Edit Commission", note: "Edit Commission" },
+      { action: "Delete Commission", note: "Delete Commission" },
+
+      // Supervisor
+      { action: "Add Supervisor", note: "Add Supervisor" },
+      { action: "View Supervisor", note: "View Supervisor" },
+      { action: "Edit Supervisor", note: "Edit Supervisor" },
+      { action: "Delete Supervisor", note: "Delete Supervisor" },
+      
+      // Support Agent
+      { action: "Add Support Agent", note: "Add Support Agent" },
+      { action: "View Support Agent", note: "View Support Agent" },
+      { action: "Edit Support Agent", note: "Edit Support Agent" },
+      { action: "Delete Support Agent", note: "Delete Support Agent" },
+
+      // Lead
+      { action: "Add Lead", note: "Add Lead" },
+      { action: "View Lead", note: "View Lead" },
+      { action: "Edit Lead", note: "Edit Lead" },
+      { action: "Delete Lead", note: "Delete Lead" },
+
+      // licenser
+      { action: "Add Licenser", note: "Add Licenser" },
+      { action: "View Licenser", note: "View Licenser" },
+      { action: "Edit Licenser", note: "Edit Licenser" },
+      { action: "Delete Licenser", note: "Delete Licenser" },
+      
+      // Tickets
+      { action: "Add Ticket", note: "Add Ticket" },
+      { action: "View Ticket", note: "View Ticket" },
+      { action: "Edit Ticket", note: "Edit Ticket" },
+      { action: "Delete Ticket", note: "Delete Ticket" },
     ],
   },
   {
     roleName: 'Support Agent',
     permissions: [
-      { action: "OrganizationView", note: "Viewed Organization Details" },
-      { action: "OrganizationSetup", note: "Setup/Modified Organization Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
-      { action: "SettingView", note: "Viewed Setting details" },
-      { action: "CurrencyView", note: "Viewed Currency Details" },
+      // User
+      { action: "Add User", note: "Add User" },
+      { action: "View User", note: "View User" },
+      { action: "Edit User", note: "Edit User" },
+      { action: "Delete User", note: "Delete User" },
+
+      // Activity log
+      { action: "View logs", note: "View logs" },
+
+      // Region
+      { action: "Add Region", note: "Add Region" },
+      { action: "View Region", note: "View Region" },
+      { action: "Edit Region", note: "Edit Region" },
+      { action: "Delete Region", note: "Delete Region" },
+
+      // Area
+      { action: "Add Area", note: "Add Area" },
+      { action: "View Area", note: "View Area" },
+      { action: "Edit Area", note: "Edit Area" },
+      { action: "Delete Area", note: "Delete Area" },
+
+      // Region Manager
+      { action: "Add Region Manager", note: "Add Region Manager" },
+      { action: "View Region Manager", note: "View Region Manager" },
+      { action: "Edit Region Manager", note: "Edit Region Manager" },
+      { action: "Delete Region Manager", note: "Delete Region Manager" },
+
+      // Area Manager
+      { action: "Add Area Manager", note: "Add Area Manager" },
+      { action: "View Area Manager", note: "View Area Manager" },
+      { action: "Edit Area Manager", note: "Edit Area Manager" },
+      { action: "Delete Area Manager", note: "Delete Area Manager" },
+
+      // BDA
+      { action: "Add BDA", note: "Add BDA" },
+      { action: "View BDA", note: "View BDA" },
+      { action: "Edit BDA", note: "Edit BDA" },
+      { action: "Delete BDA", note: "Delete BDA" },
+
+      // commission
+      { action: "Add Commission", note: "Add Commission" },
+      { action: "View Commission", note: "View Commission" },
+      { action: "Edit Commission", note: "Edit Commission" },
+      { action: "Delete Commission", note: "Delete Commission" },
+
+      // Supervisor
+      { action: "Add Supervisor", note: "Add Supervisor" },
+      { action: "View Supervisor", note: "View Supervisor" },
+      { action: "Edit Supervisor", note: "Edit Supervisor" },
+      { action: "Delete Supervisor", note: "Delete Supervisor" },
+      
+      // Support Agent
+      { action: "Add Support Agent", note: "Add Support Agent" },
+      { action: "View Support Agent", note: "View Support Agent" },
+      { action: "Edit Support Agent", note: "Edit Support Agent" },
+      { action: "Delete Support Agent", note: "Delete Support Agent" },
+
+      // Lead
+      { action: "Add Lead", note: "Add Lead" },
+      { action: "View Lead", note: "View Lead" },
+      { action: "Edit Lead", note: "Edit Lead" },
+      { action: "Delete Lead", note: "Delete Lead" },
+
+      // licenser
+      { action: "Add Licenser", note: "Add Licenser" },
+      { action: "View Licenser", note: "View Licenser" },
+      { action: "Edit Licenser", note: "Edit Licenser" },
+      { action: "Delete Licenser", note: "Delete Licenser" },
+      
+      // Tickets
+      { action: "Add Ticket", note: "Add Ticket" },
+      { action: "View Ticket", note: "View Ticket" },
+      { action: "Edit Ticket", note: "Edit Ticket" },
+      { action: "Delete Ticket", note: "Delete Ticket" },
     ],
   }
 ];

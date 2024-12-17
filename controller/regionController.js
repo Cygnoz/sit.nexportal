@@ -1,40 +1,6 @@
 const Region = require('../database/model/region')
 
 
-// exports.addRegion = async (req, res, next) => {
-//     try {
-//       const { regionCode, regionName, country, description } = req.body;
-  
-//       // Validate the required fields
-//       if (!regionCode || !regionName || !country) {
-//         return res.status(400).json({ message: "All required fields must be provided" });
-//       }
-  
-//       // Check if the regionCode already exists
-//       const existingRegion = await Region.findOne({
-//         $or: [{ regionCode }, { regionName }],
-//       });
-//       if (existingRegion) {
-//         return res.status(400).json({ message: "Region code or name already exists" });
-//       }
-//       // Create a new region entry
-//       const newRegion = new Region({ regionCode, regionName, country, description });
-  
-//       await newRegion.save();
-//       res.status(201).json({ message: "Region added successfully", region: newRegion });
-  
-//       // Pass operation details to middleware
-//       ActivityLog(req, "successfully", newRegion._id );
-//       next();
-  
-//     } catch (error) {
-//       console.error("Error adding region:", error);
-//       res.status(500).json({ message: "Internal server error" });
-//       ActivityLog(req, "Failed");
-//       next();
-//     }
-//   };
-  
 
 exports.addRegion = async (req, res, next) => {
   try {

@@ -8,6 +8,7 @@ const areaController = require("../controller/areaController");
 const commissionController = require('../controller/commissionController');
 const supervisorController = require('../controller/supervisorController');
 const supportAgentController = require('../controller/supportAgentController');
+const dashboardController = require('../controller/dashboardController');
 
 
 const checkPermission = require('../controller/authController/permission');
@@ -78,6 +79,9 @@ router.get("/supportAgent/:id",verifyToken,checkPermission('View Support Agent')
 router.put("/supportAgent/:id",verifyToken,checkPermission('Edit Support Agent'), supportAgentController.editSupportAgent,ActivityLogGeneration('Edit Support Agent'));
 
 // router.delete("/user/:userId",verifyToken,checkPermission('Delete BDA'), supervisorController.deleteUser,ActivityLogGeneration('Delete BDA'));
+
+// dashboard
+router.get("/counts",verifyToken,dashboardController.getDocumentCounts );
 
 
 module.exports = router
