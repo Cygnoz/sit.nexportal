@@ -37,7 +37,7 @@ exports.addLead = async (req, res , next ) => {
     
     
     const cleanedData = cleanLeadData(req.body);
-
+    
     const { email, regionId, areaId , bdaId } = cleanedData;
 
 
@@ -253,7 +253,7 @@ async function createLead(cleanedData, regionId, areaId, bdaId, userId, userName
   const lastLead = await Leads.findOne().sort({ leadId: -1 }); // Sort by leadId descending
 
   if (lastLead) {
-    const lastId = parseInt(lastLead.leadId.split("-")[1]); // Extract numeric part
+    const lastId = parseInt(lastLead.leadId?.split("-")[1]); // Extract numeric part
     nextId = lastId + 1; // Increment the last ID
   }
 
