@@ -40,16 +40,48 @@ const CalenderModal = ({onClose}: Props) => {
             </div>
             </div>
             <div className="justify-between ml-auto">
-                <Button>Add Activity</Button>
+                <Button size='sm'>Add Activity</Button>
             </div>
         </div>
 
-     
 
-    <div className=" bg-gray-100 flex items-center justify-center p-3">
+        <div className="grid grid-cols-12">
+       
+       <div className="col-span-1 ">
+     <div className="bg-[#F3E6E6] py-1">
+     <div>
+        <p className="ms-4 mt-3 font-semibold text-base">GMT+7</p>
+      </div>
+      <div className="mt-3 ms-2">
+        <hr />
+      </div>
+     </div>
+     <div className="bg-[#FFFAFA]">
+       
+     <div className="mt-14">
+        <p className="ms-4 mt-5 font-medium text-sm">09AM</p>
+      </div>
+      <div className="mt-20">
+        <p className="ms-4 mt-5 font-medium text-sm">10AM</p>
+      </div>
+      <div className="mt-24">
+        <p className="ms-4 mt-5 font-medium text-sm">11AM</p>
+      </div>
+      <div className="mt-20">
+        <p className="ms-4 mt-5 font-medium text-sm">12PM</p>
+      </div>
+      <div className="mt-20">
+        <p className="ms-4 mt-5 font-medium text-sm">01PM</p>
+      </div>
+     </div>
+
+
+       </div>
+       <div className="col-span-11">
+       <div className=" bg-gray-100 flex items-center justify-center ">
       <div className="w-full max-w-5xl bg-white  rounded-lg">
         {/* Calendar Header */}
-        <div className="grid grid-cols-7 border-b border-gray-200">
+        <div className="grid grid-cols-7 border-b border-gray-200 bg-[#F3E6E6] py-1">
           <div className="text-center py-3 font-semibold text-gray-600">Mon 18</div>
           <div className="text-center py-3 font-semibold text-gray-600">Tue 19</div>
           <div className="text-center py-3 font-semibold text-gray-600">Wed 20</div>
@@ -192,6 +224,37 @@ const CalenderModal = ({onClose}: Props) => {
           <div className="h-28 border-b border-gray-200"></div>
         </div>
 
+        <div className="grid grid-cols-7">
+          {/* Day 1 */}
+          <div className="h-28 border-r border-b border-gray-200">
+        
+          </div>
+
+          {/* Day 2 */}
+          <div className="h-28 border-r border-b border-gray-200 relative">
+          
+          </div>
+
+          {/* Day 3 */}
+          <div className="h-28 border-r border-b border-gray-200"></div>
+
+          {/* Day 4 */}
+          <div className="h-28 border-r border-b border-gray-200 relative">
+            
+          </div>
+
+          {/* Day 5 */}
+          <div className="h-28 border-r border-b border-gray-200 relative">
+            
+          </div>
+
+          {/* Day 6 */}
+          <div className="h-28 border-r border-b border-gray-200"></div>
+
+          {/* Day 7 */}
+          <div className="h-28 border-b border-gray-200"></div>
+        </div>
+
 
 
 
@@ -199,6 +262,14 @@ const CalenderModal = ({onClose}: Props) => {
       </div>
     </div>
   
+        
+       </div>
+
+
+      </div>
+     
+
+ 
 
 
 

@@ -6,19 +6,10 @@ type Props = {
 
 const EditIcon = ({ size, color }: Props) => {
     return (
-        <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="32" rx="16" fill="#C4A25D" fill-opacity="0.14" />
-            <rect x="0.5" y="0.5" width="31" height="31" rx="15.5" stroke={color} stroke-opacity="0.3" />
-            <g clip-path="url(#clip0_8752_9265)">
-                <path d="M19.333 10.0001C19.5028 9.79946 19.7128 9.63614 19.9497 9.52055C20.1866 9.40497 20.4451 9.33966 20.7088 9.32878C20.9725 9.31789 21.2356 9.36169 21.4813 9.45736C21.727 9.55303 21.9499 9.69848 22.1359 9.88445C22.3218 10.0704 22.4668 10.2928 22.5614 10.5375C22.656 10.7821 22.6982 11.0437 22.6854 11.3054C22.6726 11.5672 22.605 11.8234 22.4869 12.0578C22.3689 12.2922 22.2029 12.4996 21.9997 12.6668L12.9997 21.6668L9.33301 22.6668L10.333 19.0001L19.333 10.0001Z" stroke="#C4A25D" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </g>
-            <defs>
-                <clipPath id="clip0_8752_9265">
-                    <rect width="16" height="16" fill="white" transform="translate(8 8)" />
-                </clipPath>
-            </defs>
+        <svg width={size} height={size} viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M11.3335 2.0001C11.5033 1.79946 11.7133 1.63614 11.9502 1.52055C12.187 1.40497 12.4456 1.33966 12.7093 1.32878C12.973 1.31789 13.236 1.36169 13.4818 1.45736C13.7275 1.55303 13.9504 1.69848 14.1364 1.88445C14.3223 2.07041 14.4672 2.29281 14.5619 2.53746C14.6565 2.78211 14.6987 3.04366 14.6859 3.30542C14.6731 3.56718 14.6055 3.82342 14.4874 4.05781C14.3694 4.2922 14.2034 4.49959 14.0002 4.66677L5.00016 13.6668L1.3335 14.6668L2.3335 11.0001L11.3335 2.0001Z" stroke={color} stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-
+        
     )
 }
 

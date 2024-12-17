@@ -45,4 +45,7 @@ export const endPoints = {
   // Lead
   LEADS: "/leads",
   LEAD: "/lead",
+
+  //Licenser
+  LICENSER: "/licenser",
 };

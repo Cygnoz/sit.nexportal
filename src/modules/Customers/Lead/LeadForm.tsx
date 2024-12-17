@@ -79,7 +79,7 @@ function LeadForm({ onClose ,editId}: Props) {
         console.log("Error:", error);
 
         if (response && !error) {
-          toast.success(response.data.message); // Show success toast
+          toast.success(response.data); // Show success toast
           onClose(); // Close the form/modal
         } else {
           toast.error(error.response.data.message); // Show error toast

@@ -15,8 +15,10 @@ import RecentActivityView from "./RecenetActivity";
 import SupportTicketTable from "./SupportTicketTable";
 import Modal from "../../../../components/modal/Modal";
 import LicenserViewForm from "./LicenserViewForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import LicenserForm from "../LicenserForm";
+import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
 
 type Props = {
 
@@ -36,9 +38,37 @@ function LicenserView({ }: Props) {
     }));
   }
 
+  const {request: getaLicenser}=useApi('get',3001)
+  const { id } = useParams();
+  const [licenseData, setLicenseData] = useState<any>()
+
+     const getOneLicenser = async () => {
+          try {
+            const { response, error } = await getaLicenser(`${endPoints.LICENSER}/${id}`);
+            if (response && !error) {
+              const Licenser = response.data; // Return the fetched data
+              console.log("Fetched Licenser data:", Licenser);
+              const{licensers,...filteredLicencers}=Licenser
+              setLicenseData(filteredLicencers);
+            } else {
+              // Handle the error case if needed (for example, log the error)
+              console.error('Error fetching Lead data:', error);
+            }
+          } catch (err) {
+            console.error('Error fetching Lead data:', err);
+          }
+        };
+    
+        useEffect(() => {
+          getOneLicenser()
+        }, [id]);
+
+        console.log(licenseData);
+        
+
   // Function to toggle modal visibility
 
-  const { id } = useParams();
+  
   const homeCardData = [
     {
       icon: <RupeeIcon size={50} />,
@@ -77,21 +107,22 @@ function LicenserView({ }: Props) {
     },
   ];
   const licenser: { key: any; label: string }[] = [
-    { key: "George Thomas", label: "Licenser Name" },
-    { key: "9090909090", label: "Phone" },
-    { key: "Gregory W", label: "ASM" },
-    { key: "Gregory W", label: "RM" },
-    { key: "John Doe", label: "BDA" },
-    { key: "Region 1", label: "Region" },
-    { key: "Area 1", label: "Area" },
-    { key: "george@gmail.com", label: "Email" },
+    { key: licenseData?.firstName, label: "Licenser Name" },
+    { key: licenseData?.phone, label: "Phone" },
+    { key: licenseData?.startDate, label: "Starting Date" },
+    { key: licenseData?.endDate, label: "Ending Date" },
+    { key: licenseData?.bdaDetails?.bdaName , label: "BDA" },
+    { key: licenseData?.regionDetails?.regionName, label: "Region" },
+    { key: licenseData?.areaDetails?.areaName, label: "Area" },
+    { key: licenseData?.email, label: "Email" },
   ];
   return (
+    <>
     <div className="text-[#4B5C79] space-y-2 mb-5">
       <div className="flex items-center text-[16px]  space-x-2 mb-4">
         <p className="font-bold text-[#820000]">Licenser</p>
         <ChevronRight color="#4B5C79" size={18} />
-        <p className="font-bold text-[#303F58]">Licenser {id}</p>
+        <p className="font-bold text-[#303F58]">{licenseData?.firstName}</p>
       </div>
       {/* HomeCards Section */}
       <div className="flex gap-3  py-2 justify-between">
@@ -141,7 +172,11 @@ function LicenserView({ }: Props) {
 
                 <div className="flex flex-col items-center space-y-2">
                   <div onClick={() => handleModalToggle(true, false)} className="w-6 h-6 mb-2 rounded-full border-white" >
-                    <EditIcon size={40} color="#C4A25D24" />
+                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <EditIcon size={18} color="#F0D5A0" />
+                   </div>
+                    </div>
                   </div>
                   <p className="text-center font-medium  text-white text-[10px] ms-3">Edit Profile</p>
 
@@ -150,7 +185,12 @@ function LicenserView({ }: Props) {
                 <div className="flex flex-col  items-center space-y-2 ">
                   <div onClick={() => handleModalToggle(false, true)}
                     className="w-6 h-6 mb-2 rounded-full">
-                    <ViewRoundIcon size={40} color="#D52B1E4D" />
+                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <ViewRoundIcon size={18} color="#B6D6FF" />
+                   </div>
+                    </div>
+                   
 
                   </div>
                   <p className="text-center font-medium  text-white text-[10px] ms-3">View Details</p>
@@ -160,7 +200,12 @@ function LicenserView({ }: Props) {
 
                 <div className="flex flex-col  items-center space-y-2">
                   <div className="w-6 h-6 mb-2 rounded-full">
-                    <DeActivateIcon size={40} color="#D52B1E4D" />
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <DeActivateIcon size={18} color="#D52B1E4D" />
+                   </div>
+                    </div>
+                    
                   </div>
                   <p className="text-center font-medium  text-white text-[10px] ms-3">DeActivate</p>
 
@@ -169,7 +214,7 @@ function LicenserView({ }: Props) {
               </div>
             </div>
             <div className="h-[65px] py-3 bg-white rounded-b-lg">
-              <div className="ms-32 space-x-11 flex">
+              <div className="ms-32 space-x-10 flex">
                 {licenser.map((data) => (
                   <div className="text-sm">
                     <p className="text-[#8F99A9] ">{data.label}</p>
@@ -183,14 +228,16 @@ function LicenserView({ }: Props) {
           <PaymentTable />
         </div>
       </div>
-      {/* Modal controlled by state */}
-      <Modal open={isModalOpen.viewLicenser} onClose={() => handleModalToggle()} className="w-[35%]">
-        <LicenserViewForm onClose={() => handleModalToggle()} />
-      </Modal>
-      <Modal open={isModalOpen.editLicenser} onClose={() => handleModalToggle()} className="w-[60%]">
-        <LicenserForm onClose={() => handleModalToggle()} />
-      </Modal>
+     
     </div>
+     {/* Modal controlled by state */}
+     <Modal open={isModalOpen.viewLicenser} onClose={() => handleModalToggle()} className="w-[35%]">
+     <LicenserViewForm onClose={() => handleModalToggle()} />
+   </Modal>
+   <Modal open={isModalOpen.editLicenser} onClose={() => handleModalToggle()} className="w-[60%]">
+     <LicenserForm editId={id} onClose={() => handleModalToggle()} />
+   </Modal>
+    </>
   );
 }
 
