@@ -163,6 +163,7 @@ exports.verifyOtp = [otpRateLimiter, async (req, res) => {
         activity: `${user.userName} logged in successfully .`, // Log the note associated with the permission
         timestamp: actionTime,
         action: "Login",
+        screen: "Login",
         status: "allowed"
       });
       await activity.save();
