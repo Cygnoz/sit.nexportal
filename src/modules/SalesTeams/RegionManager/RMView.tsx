@@ -268,7 +268,12 @@ const RMView = () => {
                   <div className="flex flex-col w-fit items-center space-y-1">
                     <div  onClick={()=>handleModalToggle(true,false,false)} 
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                      <EditIcon size={40} color="#C4A25D24" />
+                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <EditIcon size={18} color="#F0D5A0" />
+                   </div>
+                    </div>
+                     
                     </div>
                     <p className="text-center ms-3">Edit Profile</p>
                   </div>
@@ -279,7 +284,11 @@ const RMView = () => {
                      onClick={()=>handleModalToggle(false,true,false)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                   >
-                    <ViewRoundIcon size={40} color="#D52B1E4D" />
+                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <ViewRoundIcon size={18} color="#B6D6FF" />
+                   </div>
+                    </div>
                   </div>
                   <p className="text-center ms-3">View Details</p>
                 </div>
@@ -289,7 +298,12 @@ const RMView = () => {
                     onClick={()=>handleModalToggle(false,false,true)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                   >
-                    <AwardIcon size={40} color="#D52B1E4D" />
+                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <AwardIcon size={18} color="#B6FFD7" />
+                   </div>
+                    </div>
+                    
                   </div>
                   <p className="text-center ms-3">
                     Awards
@@ -298,7 +312,11 @@ const RMView = () => {
 
                 <div className="flex flex-col -ms-2 items-center space-y-1">
                   <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                    <DeActivateIcon size={40} color="#D52B1E4D" />
+                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <DeActivateIcon size={18} color="#D52B1E4D" />
+                   </div>
+                    </div>
                   </div>
                   <p className="text-center ms-3">DeActivate</p>
                 </div>

@@ -104,9 +104,9 @@ function LicenserForm({ onClose ,editId}: Props) {
 
 
   const leadSource = [
-    { label: "Active", value: "active" },
-    { label: "Pending renewal", value: "pending renewal" },
-    { label: "Expired", value: "expired" },
+    { label: "Active", value: "Active" },
+    { label: "Pending", value: "Pending" },
+    { label: "Expired", value: "Expired" },
   ];
 
   const salutation = [
@@ -178,7 +178,7 @@ function LicenserForm({ onClose ,editId}: Props) {
         value: String(bda?._id),
         label: bda?.bdaName,
       }));
-      setValue("bdaId",filteredBDA?.value)
+      // setValue("bdaId",filteredBDA?.value)
       // Update the state without using previous `data` state
       setData((prevData:any) => ({
         ...prevData,
@@ -232,7 +232,7 @@ function LicenserForm({ onClose ,editId}: Props) {
         if (response && !error) {
           const Licenser = response.data; // Return the fetched data
           console.log("Fetched Licenser data:", Licenser);
-          const{licencers,...filteredLicencers}=Licenser
+          const{licensers,...filteredLicencers}=Licenser
           setFormValues(filteredLicencers);
         } else {
           // Handle the error case if needed (for example, log the error)

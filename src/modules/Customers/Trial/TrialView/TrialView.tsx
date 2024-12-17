@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom"
 import CalenderRound from "../../../../assets/icons/CalenderRound"
 
 import ChevronRight from "../../../../assets/icons/ChevronRight"
-import DeleteIcon from "../../../../assets/icons/DeleteIcon"
 import EditIcon from "../../../../assets/icons/EditIcon"
 import EmailIcon from "../../../../assets/icons/EmailIcon"
 import EmailRoundIcon from "../../../../assets/icons/EmailRoundIcon"
@@ -24,6 +23,7 @@ import ConvertModal from "../../../../components/modal/ConvertionModal/CovertLic
 import ResumePauseTrail from "./ResumePauseTrail"
 import rightArrow from '../../../../assets/image/right-arrow.png'
 import CalenderModal from "./CalenderModal"
+import DeActivateIcon from "../../../../assets/icons/DeActivateIcon"
 
 
 type Props = {
@@ -191,19 +191,36 @@ const TrialView = ({  }: Props) => {
                  <div className="flex w-60 h-20 px-6 py-4 gap-5 rounded-xl bg-[#FFFFFF33] mx-4">
                   
                  <div>
-                 <EmailRoundIcon size={32}/>
+                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <EmailRoundIcon size={18} color="#F0D5A0" />
+                   </div>
+                    </div>
+                 
                  <p className="text-[#FFF9F9] text-[10px] font-medium ms-1 mt-1">Email</p>
                  </div>
                  <div onClick={edtiModalToggle}>
-                 <EditIcon size={32}/>
+                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <EditIcon size={18} color="#F0D5A0" />
+                   </div>
+                    </div>
                  <p className="text-[#FFF9F9] text-[10px] font-medium mt-1 ms-2">Edit</p>
                  </div>
                  <div onClick={handleModalToggle} >
-                 <ViewRoundIcon size={32} color=""/>
+                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <ViewRoundIcon size={18} color="#B6D6FF" />
+                   </div>
+                    </div>
                  <p className="text-[#FFF9F9] text-[10px] font-medium ms-1 mt-1">View</p>
                  </div>
                  <div>
-                 <DeleteIcon size={32} />
+                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <DeActivateIcon size={18} color="#D52B1E4D" />
+                   </div>
+                    </div>
                  <p className="text-[#FFF9F9] text-[10px] font-medium mt-1">Delete</p>
                  </div>
 

@@ -221,7 +221,7 @@ const SuperVisorView = ({
                                     </p>
                             }
                             <h2 className="font-medium text-sm  text-white mt-5 ms-3">{getData.svData?.user?.userName ? getData.svData?.user?.userName : 'N/A'}</h2>
-                            <p className="font-medium text-xs bg-[#D5DCB3] h-8 w-20 p-2 mt-4 rounded-2xl ml-56">SuperVisor</p>
+                            <p className="font-medium text-xs bg-[#D5DCB3] h-8 w-20 p-2 mt-4 rounded-2xl ml-40">SuperVisor</p>
                         </div>
                         <hr />
 
@@ -271,7 +271,11 @@ const SuperVisorView = ({
                                 <div className="flex flex-col items-center space-y-1">
                                     <div onClick={() => handleModalToggle(true, false, false)}
                                         className="w-8 h-8 mb-2 rounded-full border-white cursor-pointer">
-                                        <EditIcon size={40} color="#C4A25D24" />
+                                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <EditIcon size={18} color="#F0D5A0" />
+                   </div>
+                    </div>
                                     </div>
                                     <p className="text-center font-medium  text-white text-xs ms-3" >Edit Profile</p>
                                 </div>
@@ -279,7 +283,11 @@ const SuperVisorView = ({
                                 <div className="flex flex-col  items-center space-y-1">
                                     <div onClick={() => handleModalToggle(false, true, false)}
                                         className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                                        <ViewRoundIcon size={40} color="#D52B1E4D" />
+                                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <ViewRoundIcon size={18} color="#B6D6FF" />
+                   </div>
+                    </div> 
 
                                     </div>
                                     <p className="text-center font-medium  text-white text-xs ms-3">View Details</p>
@@ -289,7 +297,11 @@ const SuperVisorView = ({
                                     <div
                                         onClick={() => handleModalToggle(false, false, true)}
                                         className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                                        <AwardIcon size={40} color="#D52B1E4D" />
+                                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <AwardIcon size={18} color="#B6FFD7" />
+                   </div>
+                    </div>
                                     </div>
                                     <p className="text-center font-medium  text-white text-xs ms-3">
                                         Awards
@@ -300,7 +312,11 @@ const SuperVisorView = ({
 
                                 <div className="flex flex-col  items-center space-y-1">
                                     <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                                        <DeActivateIcon size={40} color="#D52B1E4D" />
+                                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <DeActivateIcon size={18} color="#D52B1E4D" />
+                   </div>
+                    </div>
                                     </div>
                                     <p className="text-center font-medium  text-white text-xs ms-3">DeActivate</p>
 
