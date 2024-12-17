@@ -159,19 +159,18 @@ const AMView = ({ }: Props) => {
 
 
   const ChartData = [
-    { name: 'Page A', uv: 4000, pv: 2400, amt: 2400, avatar: {profileImage} },
-    { name: 'Page B', uv: 3000, pv: 1398, amt: 2210, avatar: {profileImage}  },
-    { name: 'Page C', uv: 2000, pv: 9800, amt: 2290, avatar: {profileImage}  },
-    { name: 'Page D', uv: 2780, pv: 3908, amt: 2000, avatar: {profileImage}  },
-    { name: 'Page E', uv: 1890, pv: 4800, amt: 2181, avatar: {profileImage}  },
-    { name: 'Page F', uv: 2390, pv: 3800, amt: 2500, avatar: {profileImage}  },
-    { name: 'Page G', uv: 3490, pv: 4300, amt: 2100, avatar: {profileImage}  },
-    { name: 'Page H', uv: 4000, pv: 2400, amt: 2400, avatar: 'https://via.placeholder.com/18' },
+    { name: 'Page A', uv: 4000, pv: 2400, amt: 2400, avatar: profileImage },
+    { name: 'Page B', uv: 3000, pv: 1398, amt: 2210, avatar: profileImage },
+    { name: 'Page C', uv: 2000, pv: 9800, amt: 2290, avatar: profileImage },
+    { name: 'Page D', uv: 2780, pv: 3908, amt: 2000, avatar: profileImage },
+    { name: 'Page E', uv: 1890, pv: 4800, amt: 2181, avatar: profileImage },
+    { name: 'Page F', uv: 2390, pv: 3800, amt: 2500, avatar: profileImage },
+    { name: 'Page G', uv: 3490, pv: 4300, amt: 2100, avatar: profileImage },
+    { name: 'Page H', uv: 4000, pv: 2400, amt: 2400, avatar: '/images/avatar1.jpg' },
     { name: 'Page I', uv: 3000, pv: 1398, amt: 2210, avatar: 'https://via.placeholder.com/18' },
     { name: 'Page J', uv: 1800, pv: 9800, amt: 2290, avatar: 'https://via.placeholder.com/18' },
     { name: 'Page K', uv: 2280, pv: 3908, amt: 2000, avatar: 'https://via.placeholder.com/18' },
-  ];
-  
+  ];  
   // Normalize the data
   const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
   const normalizedData = ChartData.map((entry) => ({
@@ -182,19 +181,21 @@ const AMView = ({ }: Props) => {
   // Custom Bubble Component
   const CustomBubble = (props:any) => {
     const { x, y } = props;
+    console.log(x,y);
+    
     if (x == null || y == null) return null;
     return (
       <div
-        // style={{
-        //   position: 'absolute',
-        //   left: x - 4, // Center the bubble
-        //   top: y - 8, // Position above the bar
-        //   width: '8px',
-        //   height: '8px',
-        //   backgroundColor: '#30B777', // Bubble color
-        //   borderRadius: '50%',
-        // }}
-        className='w-2 h-2 rounded-full bg-[#30B777]'
+        style={{
+          position: 'absolute',
+          left: x - 4, // Center the bubble
+          top: y - 8, // Position above the bar
+          width: '8px',
+          height: '8px',
+          backgroundColor: '#30B777', // Bubble color
+          borderRadius: '50%',
+        }}
+        // className='w-2 h-2 rounded-full bg-[#30B777]'
       />
     );
   };
@@ -202,10 +203,14 @@ const AMView = ({ }: Props) => {
   // Custom Avatar Component
   const CustomAvatar = (props:any) => {
     const { x, y, payload } = props;
+    console.log(payload);
+    
+  
     if (x == null || y == null) return null;
+  
     return (
       <img
-        src={payload?.avatar}
+        src={payload?.avatar} // Correctly defined as a string now
         alt="Avatar"
         style={{
           position: 'absolute',
@@ -218,7 +223,7 @@ const AMView = ({ }: Props) => {
       />
     );
   };
-      
+        
   return (
     <div >
       <div className="flex items-center text-[16px] my-2 space-x-2">
@@ -249,22 +254,22 @@ const AMView = ({ }: Props) => {
           <h1 className="ms-7 text-[#FFFEFB] text-2xl font-normal">{getData.amData?.user?.userName ? getData.amData?.user?.userName : 'N/A'}</h1>
           <div className="flex mt-1">
             <div className="border-r ms-3">
-              <p className="my-1 mx-5 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
-              <p className="my-1 mx-5 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.phoneNo ? getData.amData?.user?.phoneNo : 'N/A'}</p>
+              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
+              <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.phoneNo ? getData.amData?.user?.phoneNo : 'N/A'}</p>
             </div>
             <div className="border-r">
-              <p className="my-1 mx-5 text-[#D4D4D4] text-xs font-medium">Email</p>
-              <p className="my-1 mx-5 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.email ? getData.amData?.user?.email : 'N/A'}</p>
+              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Email</p>
+              <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.email ? getData.amData?.user?.email : 'N/A'}</p>
             </div>
             <div className="">
-              <p className="my-1 mx-5 text-[#D4D4D4] text-xs font-medium">Area</p>
-              <p onClick={() => navigate(`/areaView/${getData.amData?.area?._id}`)} className="my-1 mx-5 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
+              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Area</p>
+              <p onClick={() => navigate(`/areaView/${getData.amData?.area?._id}`)} className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
             </div>
-            <div className="-mt-5 ms-12 me-8">
+            <div className="-mt-5 ms-32 me-6">
               <p className="text-[#D4D4D4] text-xs font-medium">Role</p>
               <p className="text-[#FFFFFF] text-sm font-medium">Area Manager</p>
             </div>
-            <div className="me-8 -mt-5">
+            <div className="me-6 -mt-5">
               <p className="text-[#D4D4D4] text-xs font-medium">Employee ID</p>
               <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.employeeId ? getData.amData?.user?.employeeId : 'N/A'}</p>
             </div>
@@ -272,7 +277,7 @@ const AMView = ({ }: Props) => {
               <p className="text-[#D4D4D4] text-xs font-medium">Joining Date</p>
               <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.dateOfJoining ? new Date(getData.amData?.dateOfJoining).toLocaleDateString() : 'N/A'}</p>
             </div>
-            <div className="flex -mt-9 gap-3 ms-28">
+            <div className="flex -mt-9 gap-4 ms-16">
               <div className="flex flex-col items-center space-y-1">
                 <div onClick={()=>handleModalToggle(true,false,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">

@@ -53,7 +53,7 @@ const AMHome = () => {
               dateOfJoining: am.dateOfJoining
               ? new Date(am.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-              loginEmail:am.user.email
+              loginEmail:am?.user?.email
           })) || [];
              console.log(transformedAreas);
              
