@@ -6,6 +6,7 @@ const AreaManager = require("../database/model/areaManager");
 const RegionManager = require("../database/model/regionManager");
 const Bda = require("../database/model/bda");
 const User = require('../database/model/user');
+const Leads = require("../database/model/leads")
 
 
 
@@ -21,7 +22,10 @@ exports.getDocumentCounts = async (req, res) => {
         totalAreaManagers,
         totalRegionManagers,
         totalBdas,
-        totalUsers
+        totalUsers,
+        totalTrial,
+        totalLead,
+        totalLicensor
       ] = await Promise.all([
         Area.countDocuments(),
         Region.countDocuments(),
@@ -30,7 +34,10 @@ exports.getDocumentCounts = async (req, res) => {
         AreaManager.countDocuments(),
         RegionManager.countDocuments(),
         Bda.countDocuments(),
-        User.countDocuments()
+        User.countDocuments(),
+        Leads.countDocuments({ customerStatus: "Trial" }),
+        Leads.countDocuments({ customerStatus: "Lead" }),
+        Leads.countDocuments({ customerStatus: "Licenser" })
       ]);
   
       // Send response
@@ -42,7 +49,10 @@ exports.getDocumentCounts = async (req, res) => {
         totalAreaManagers,
         totalRegionManagers,
         totalBdas,
-        totalUsers
+        totalUsers,
+        totalTrial,
+        totalLead,
+        totalLicensor
       });
     } catch (error) {
       console.error("Error fetching document counts:", error);

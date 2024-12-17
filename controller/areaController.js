@@ -78,7 +78,7 @@ exports.addArea = async (req, res, next) => {
     }
 
     // Create a new area entry
-    const newArea = new Area({ areaCode, areaName, region, description });
+    const newArea = new Area({ areaCode, areaName, region, description  });
 
     await newArea.save();
     res.status(201).json({ message: "Area added successfully"});
