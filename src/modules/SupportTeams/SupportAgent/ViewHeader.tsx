@@ -64,7 +64,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
           <div className="h-[150px] relative flex flex-col  bg-white rounded-lg">
           {
              getData.saData?.user?.userImage?
-             <img src={getData.saData?.user?.userImage} className="rounded-full absolute top-8 left-8 w-20 h-20"></img> 
+             <img src={getData.saData?.user?.userImage} className="rounded-full absolute top-8 left-8 w-20 h-20 border-[3px] border-white"></img> 
             :
                 <p className="w-20 h-20 absolute top-8  left-8 bg-black rounded-full flex justify-center items-center">
                 <UserIcon color="white" size={35} />

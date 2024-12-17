@@ -15,10 +15,12 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { AreaData } from "../../../Interfaces/Area";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 
 const AreaHome = () => {
+  const {totalCounts}=useRegularApi()
   const navigate=useNavigate()
   const [allAreas,setAllAreas]=useState<AreaData[]>([]);
   // State to manage modal visibility
@@ -71,28 +73,28 @@ const AreaHome = () => {
   const homeCardData = [
     { 
       icon: <AreaIcon size={24}/>, 
-      number: "167", 
+      number: totalCounts?.totalArea, 
       title: "Total Area", 
       iconFrameColor: "#30B777", 
       iconFrameBorderColor: "#B3F0D3CC" 
     },
     { 
       icon: <UserIcon size={24}/>, 
-      number: "86", 
+      number: totalCounts?.totalAreaManagers, 
       title: "Total Area Manager", 
       iconFrameColor: "#1A9CF9", 
       iconFrameBorderColor: "#BBD8EDCC" 
     },
     { 
       icon: <AreaManagerIcon size={24} />, 
-      number: "498", 
+      number: totalCounts?.totalBdas, 
       title: "Total BDA's", 
       iconFrameColor: "#D786DD", 
       iconFrameBorderColor: "#FADDFCCC" 
     },
     { 
       icon: <LeadsCardIcon size={40}/>, 
-      number: "2898", 
+      number: totalCounts?.totalLead, 
       title: "Total Leads", 
       iconFrameColor: "#DD9F86", 
       iconFrameBorderColor: "#F6DCD2" 
@@ -110,7 +112,7 @@ const AreaHome = () => {
     { key: "region.regionName", label: "Region" },
     { key: "description", label: "Discription" },
   ];
-  console.log(allAreas);
+
   
   return (
     <>

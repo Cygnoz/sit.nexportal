@@ -16,9 +16,11 @@ import { SVData } from "../../../Interfaces/SV";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import useApi from "../../../Hooks/useApi";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 const SupervisorHome = () => {
+  const {totalCounts}=useRegularApi()
   const { request: getAllSV } = useApi("get", 3003);
   const [allSV, setAllSV] = useState<SVData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,14 +45,14 @@ const SupervisorHome = () => {
   const homeCardData = [
     {
       icon: <AreaManagerIcon />,
-      number: "8",
+      number: totalCounts?.totalSupervisors,
       title: "Total Supervisors",
       iconFrameColor: "#F9A51A",
       iconFrameBorderColor: "#FFF2DDCC",
     },
     {
       icon: <UserIcon />,
-      number: "167",
+      number:totalCounts?.totalSupportAgents,
       title: "Total Support Agents",
       iconFrameColor: "#30B777",
       iconFrameBorderColor: "#B3F0D3CC",

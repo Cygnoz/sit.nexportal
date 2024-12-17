@@ -10,5 +10,6 @@ export interface UserLog {
     date:string;
     time:string
     action: string;
+    screen:string
     __v: number;
   }

@@ -62,6 +62,8 @@ function LeadForm({ onClose ,editId}: Props) {
   });
 
   const onSubmit: SubmitHandler<LeadData> = async (data, event) => {
+    console.log("eded",data);
+    
     event?.preventDefault(); // Prevent default form submission behavior
       try {
         const fun = editId ? ediLead : addLead; // Select the appropriate function based on editId
@@ -359,7 +361,6 @@ const salutation = [
           </div>
           <div className="col-span-4">
           <CustomPhoneInput
-              required
               label="Company Phone"
               name="companyPhone"
               error={errors.companyPhone?.message}

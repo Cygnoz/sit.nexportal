@@ -20,7 +20,7 @@ import { useRegularApi } from "../../../context/ApiContext";
 
 
 const RegionHome = () => {
-  const {allAreas,allRegions,allBDA}=useRegularApi()
+  const {totalCounts}=useRegularApi()
   const [allRegion,setAllRegion]=useState<RegionData[]>([]);
   const {request:getAllRegion}=useApi('get',3003)
   const navigate=useNavigate()
@@ -84,42 +84,42 @@ const RegionHome = () => {
     getAllRegions()
   },[])
 
-  console.log(allRegions);
+
   
  
   // Data for HomeCards
   const homeCardData = [
     { 
       icon: <RegionIcon size={24}/>, 
-      number: "8", 
+      number: totalCounts?.totalUsers, 
       title: "Total Users", 
       iconFrameColor: "#F9A51A", 
       iconFrameBorderColor: "#FFF2DDCC" 
     },
     { 
       icon: <AreaIcon size={24}/>, 
-      number: allAreas?.length, 
+      number: totalCounts?.totalArea, 
       title: "Total Area", 
       iconFrameColor: "#30B777", 
       iconFrameBorderColor: "#B3F0D3CC" 
     },
     { 
       icon: <UserIcon size={24}/>, 
-      number: "46", 
+      number: totalCounts?.totalRegionManagers, 
       title: "Total Region Manager", 
       iconFrameColor: "#51BFDA", 
       iconFrameBorderColor: "#C1E7F1CC" 
     },
     { 
       icon: <UserIcon size={24}/>, 
-      number: "88", 
+      number: totalCounts?.totalAreaManagers, 
       title: "Total Area Manager", 
       iconFrameColor: "#1A9CF9", 
       iconFrameBorderColor: "#BBD8EDCC" 
     },
     { 
       icon: <AreaManagerIcon size={24} />, 
-      number: allBDA?.length, 
+      number: totalCounts?.totalBdas, 
       title: "Total BDA's", 
       iconFrameColor: "#D786DD", 
       iconFrameBorderColor: "#FADDFCCC" 

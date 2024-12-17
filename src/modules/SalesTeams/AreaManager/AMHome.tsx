@@ -15,11 +15,13 @@ import { AMData } from "../../../Interfaces/AM";
 import { endPoints } from "../../../services/apiEndpoints";
 import AMForm from "./AMForm";
 import toast from "react-hot-toast";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 
   
 const AMHome = () => {
+  const {totalCounts}=useRegularApi()
   const {request:getAllAM}=useApi('get',3002)
   const [allAM,setAllAM]=useState<AMData[]>([]);
   const [editId, setEditId] = useState('');
@@ -72,10 +74,10 @@ const AMHome = () => {
       
       // Data for HomeCards
   const homeCardData = [
-    { icon: <UserIcon />, number: "189", title: "Total Area Manager",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-    { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
-    { icon: <LeadsCardIcon />, number: "46", title: "Total Leads",iconFrameColor:'#9C75D3',iconFrameBorderColor:'#DAC9F1' },
-    { icon: <Licensor />, number: "147", title: "Total Licensers",iconFrameColor:'#8695DD',iconFrameBorderColor:'#CAD1F1CC' },
+    { icon: <UserIcon />, number: totalCounts?.totalAreaManagers, title: "Total Area Manager",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
+    { icon: <AreaManagerIcon />, number: totalCounts?.totalBdas, title: "Total BDA's",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
+    { icon: <LeadsCardIcon />, number: totalCounts?.totalLead, title: "Total Leads",iconFrameColor:'#9C75D3',iconFrameBorderColor:'#DAC9F1' },
+    { icon: <Licensor />, number: totalCounts?.totalLicensor, title: "Total Licensers",iconFrameColor:'#8695DD',iconFrameBorderColor:'#CAD1F1CC' },
   ];
 
         // Define the columns with strict keys

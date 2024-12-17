@@ -39,19 +39,39 @@ const ViewSidebar = ({ leadData,getLead}: Props) => {
     }));
     getLead()
 }
-console.log(isModalOpen.editLead);
+
 
 
   const covertModalToggle = () => {
     setConvLicModalOpen((prev) => !prev);
   }
-
+ 
+  const getStatusClass = (status: string | undefined) => {
+      switch (status) {
+        case "New":
+          return "bg-blue-500 text-white py-1 px-2 w-fit rounded-full";
+        case "Contacted":
+          return "bg-cyan-800 text-white py-1 px-2 rounded-full";
+        case "In progress":
+          return "bg-yellow-100 text-black py-1 px-2 rounded-full";
+        case "Proposal":
+          return "bg-violet-300 text-black py-1 px-2 rounded-full";
+        case "Lost":
+          return "bg-red-500 text-white py-1 px-2 rounded-full";
+        case "Won":
+          return "bg-green-500 text-white  py-1 px-2 w-fit rounded-full";
+    default:
+          return "";
+      }
+    };
 
   return (
     <div>
       <div className="h-fit w-fit bg-cover rounded-xl p-6" style={{ backgroundImage: `url(${BackgroundImage})` }}>
-        <div className="bg-[#54B86DE0] py-1 px-2 w-fit rounded-2xl ms-48">
-          <p className="text-[#FFFFFF] text-xs font-normal">In progress</p>
+       
+        <div className={`${getStatusClass(leadData?.leadStatus)}  flex items-center gap-2  w-fit ms-auto `}>
+        <div className={`w-2 h-2 -mt-[2px] ${leadData?.leadStatus=='In progress' ||leadData?.leadStatus=='Proposal'?'bg-black':'bg-white'} rounded-full`}></div>
+         <p className="text-sm">{leadData?.leadStatus}</p>
         </div>
         <div className="flex gap-4">
           <div className="w-14 h-14 rounded-full overflow-hidden">
@@ -118,9 +138,9 @@ console.log(isModalOpen.editLead);
           <div className="px-2 ms-6"><CalenderRound size={32} /></div>
           <p className="mt-2 text-[#FFFFFF] text-xs font-medium">View Calender</p>
         </div>
-        <div className="rounded-lg w-60 bg-[#820000] h-12 py-3 px-3 mb-4 mx-4" onClick={covertModalToggle} >
+        {leadData?.leadStatus==='Won'&&<div className="rounded-lg w-60 bg-[#820000] h-12 py-3 px-3 mb-4 mx-4" onClick={covertModalToggle} >
           <p className="text-center text-[#FEFDF9] text-base font-medium">Converted to Trail</p>
-        </div>
+        </div>}
         <hr />
         <div className="p-4">
           <p className="text-[#FFFFFF] text-xs font-normal mb-2">Assigned BDA</p>

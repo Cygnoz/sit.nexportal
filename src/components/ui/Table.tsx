@@ -82,7 +82,13 @@ const Table = <T extends object>({
       case "New":
         return "bg-blue-500 text-white py-1 px-2 w-fit rounded-lg";
       case "Contacted":
-        return "bg-yellow-400 text-black py-1 px-2 rounded-lg";
+          return "bg-cyan-800 text-white py-1 px-2 rounded-lg";
+      case "In progress":
+        return "bg-yellow-100 text-black py-1 px-2 rounded-lg";
+      case "Proposal":
+        return "bg-violet-300 text-black py-1 px-2 rounded-lg";
+        case "Lost":
+        return "bg-red-500 text-white py-1 px-2 rounded-lg";
       case "Closed":
         return "bg-gray-400 text-white py-1 px-2 rounded-lg";
       case "Active":
@@ -104,7 +110,7 @@ const Table = <T extends object>({
       case "Low":
         return "bg-green-300 text-white py-1 px-2 rounded-lg";
         case "Won":
-          return "bg-green-300 text-white py-1 px-2 w-fit rounded-lg";
+          return "bg-green-500 text-white  py-1 px-2 w-fit rounded-lg";
       case "Resolved":
         return "bg-green-200 text-black py-1 px-2 rounded-lg";
       case "Paid":
@@ -125,14 +131,14 @@ const Table = <T extends object>({
     if (key == "India") {
       return (
         <>
-          <img src={IndiaLogo} alt="India" className="w-5 h-5 rounded-full" />
+          <img src={IndiaLogo} alt="India" className="w-5 h-5 rounded-full " />
           <p>India</p>
         </>
       );
     } else if (key == "United Arab Emirates") {
       return (
         <>
-          <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full" />
+          <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full " />
           <p>UAE</p>
         </>
       );
@@ -272,11 +278,11 @@ const Table = <T extends object>({
                 <th
                   key={String(col.key)}
                   className={`border p-4 text-sm  text-[#303F58] font-medium ${
-                    col.key=='convert' ? "w-48":
+                    col.key=='convert' ? "w-48 text-center":
                     col.key?.toLowerCase().includes("status")&&'text-center'
                   }`}
                 >
-                  {col.label}
+                  {col.key=='convert'?'Convert':col.label}
                 </th>
               ))}
               {!noAction && (

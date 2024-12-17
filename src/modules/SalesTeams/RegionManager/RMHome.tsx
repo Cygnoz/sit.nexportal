@@ -15,21 +15,17 @@ import useApi from "../../../Hooks/useApi";
 import { RMData } from "../../../Interfaces/RM";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 
 
-  // Data for HomeCards
-  const homeCardData = [
-    { icon: <UserIcon  />, number: "46", title: "Total Regional Manager" ,iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
-    { icon: <AreaIcon  />, number: "147", title: "Total Area Managed" ,iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC'},
-    { icon: <UserIcon  />, number: "256", title: "Total Area Managed" ,iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-    { icon: <MutiUserIcon  />, number: "498", title: "Total BDA's" ,iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC'},
-  ];
+ 
 
 
 
 const RMHome = () => {
+  const {totalCounts}=useRegularApi()
    const {request:getRM}=useApi('get',3002)
    const [allRms, setAllRms] = useState<RMData[]>([]);
   const navigate = useNavigate()
@@ -91,6 +87,14 @@ useEffect(() => {
       { key: "region.regionName", label: "Region" },
       { key: "dateOfJoining", label: "Date Of Joining" },
     ];
+
+     // Data for HomeCards
+  const homeCardData = [
+    { icon: <UserIcon  />, number: totalCounts?.totalRegionManagers, title: "Total Regional Manager" ,iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
+    { icon: <AreaIcon  />, number: totalCounts?.totalArea, title: "Total Area" ,iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC'},
+    { icon: <UserIcon  />, number: totalCounts?.totalAreaManagers, title: "Total Area Manager" ,iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
+    { icon: <MutiUserIcon  />, number: totalCounts?.totalBdas, title: "Total BDA's" ,iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC'},
+  ];
 
     
 
