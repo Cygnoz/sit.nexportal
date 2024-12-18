@@ -40,7 +40,7 @@ exports.addTicket = async (req, res , next) => {
 
     const cleanedData = cleanTicketData(req.body);
 
-    const { requestor, customerId ,assignedTo ,priority , supportAgentId  } = cleanedData;
+    const { requestor, customerId ,priority, supportAgentId  } = cleanedData;
 
     // Validate required fields
     if (!requestor || !assignedTo || !priority) {

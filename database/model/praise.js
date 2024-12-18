@@ -5,6 +5,7 @@ const { Schema } = mongoose;
 
 const praiseSchema = new Schema(
   {
+    userId:{type:String},
     achiever: { type: String },
     achievement: { type: String },
     theme: { type: String },
