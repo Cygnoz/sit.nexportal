@@ -1,124 +1,108 @@
-import LocationIcon from "../../../../assets/icons/LocationIcon"
-import Input from "../../../../components/form/Input"
-import Select from "../../../../components/form/Select"
-import Button from "../../../../components/ui/Button"
+import ReactQuill from "react-quill";
+import ExternalLinkIcon from "../../../../assets/icons/ExternalLinkIcon";
+import image from '../../../../assets/image/AvatarImg.png'
+import BoldIcon from "../../../../assets/icons/BoldIcon";
+import ItalicIcon from "../../../../assets/icons/ItalicIcon";
+import UnderlineIcon from "../../../../assets/icons/UnderlineIcon";
+import LinkIcon from "../../../../assets/icons/LinkIcon";
+import EmojiIcon from "../../../../assets/icons/EmojiIcon";
+import { useState } from "react";
+import 'react-quill/dist/quill.snow.css';
+import 'quill-emoji/dist/quill-emoji.css';
+import { Quill } from 'react-quill';
+import 'quill-emoji';
+import ReactDOMServer from 'react-dom/server';
+import Button from "../../../../components/ui/Button";
+
 
 type Props = {
-    onClose: () => void;
+  onClose: () => void;
 }
 
-const MailsForm = ({onClose}: Props) => {
+const MailsForm = ({ onClose }: Props) => {
+
+  const Emoji = Quill.import('formats/emoji');
+  Quill.register('modules/emoji', Emoji);
+  const icons = Quill.import('ui/icons');
+
+
+  const boldIconHTML = ReactDOMServer.renderToStaticMarkup(<BoldIcon size={12} color='#4B5C79' />);
+  const ItalicIconHTML = ReactDOMServer.renderToStaticMarkup(<ItalicIcon color='#4B5C79' />);
+  const UnderlineIconHTML = ReactDOMServer.renderToStaticMarkup(<UnderlineIcon color='#4B5C79' />);
+  const LinkIconHTML = ReactDOMServer.renderToStaticMarkup(<LinkIcon color='#4B5C79' />);
+  const EmojiIconHTML = ReactDOMServer.renderToStaticMarkup(<EmojiIcon color='#4B5C79' />);
+
+  icons['bold'] = boldIconHTML;
+  icons['italic'] = ItalicIconHTML;
+  icons['underline'] = UnderlineIconHTML;
+  icons['link'] = LinkIconHTML;
+  icons['emoji'] = EmojiIconHTML;
+
+  const [value, setValue] = useState('');
+
+  const modules = {
+    toolbar: [
+      ['bold', 'italic', 'underline'],
+      ['link',],
+      [{ 'emoji': true }],
+    ],
+    'emoji-toolbar': true,
+    'emoji-textarea': false,
+    'emoji-shortname': true,
+  };
+
+
   return (
     <div>
-                <div className="h-fit w-fit rounded-lg">
-        <div className="flex justify-between">
-        <div className="space-y-2 p-4">
-            <h3 className="text-[#303F58] font-bold text-lg">Create Mails</h3>
-            <p className="text-[11px] text-[#8F99A9] mt-1">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-            </p>
-        </div>
-        <p onClick={onClose} className="text-3xl p-4 cursor-pointer">&times;</p>
-    </div>
-
-                   
-<form>
-      <div >
-        <div className="space-y-4 px-4">
-        <Input
-            label=" Meeting Title"
-            placeholder=""
-        />
-        <Input
-            label="Add Notes"
-            placeholder=""
-        />
-
-        <div className="grid grid-cols-12 gap-4">
-            <div className="col-span-3">
-            <Select
-                label="Meeting Type"
-                placeholder="Select Type"
-                options={[
-                { value: "name", label: "Kkkk" },
-                { value: "name", label: "Taattuu" },
-                { value: "name", label: "pipi" },
-                ]}
-            />
-            </div>
-            <div className="col-span-3">
-            <Input
-                  type="date"
-                  label="Due Date"
-                />
-            </div>
-            <div className="col-span-3 flex">
-            <Input
-                label="Time"
-                placeholder="7:28"
-            />
-            <p className="mt-9 ms-4">to</p>
-
-            </div>
-            {/* <div className="col-span-1">
-                <p className="text-center mt-9">to</p>
-            </div> */}
-            <div className="col-span-3 mt-7">
-            <Input
-                label=""
-                placeholder="7:28 "
-            />
-            </div>
-        </div>
-
-
-            <div className="grid grid-cols-3 gap-4">
-            <Select
-                label="Meeting Location"
-                placeholder="Select Place"
-                options={[
-                { value: "name", label: "Kkkk" },
-                { value: "name", label: "Taattuu" },
-                { value: "name", label: "pipi" },
-                ]}
-            />
-            <div className="flex">
-            <Input
-                label="Location"
-                placeholder="Enter Location"
-            />
-            <div className="mt-10 -ms-7">
-            <LocationIcon size={14}/>
-            </div>
-            </div>
-            <Input
-                label="Landmark"
-                placeholder="Enter Landmark"
-            />
-        </div>
-
-    </div>
-</div>
-          <div className=" flex justify-end gap-2 px-4 my-4">
-            <Button
-              variant="tertiary"
-              className="h-8 text-sm border rounded-lg"
-              size="lg"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              className="h-8 text-sm border rounded-lg"
-              size="lg"
-              type="submit"
-            >
-              Save
-            </Button>
+      <div className="rounded-2xl">
+        <div className="flex w-full justify-between bg-[#71736B] rounded-t-lg">
+          <div className="space-y-2 p-4">
+            <h3 className="text-[#FFFEFB] font-bold text-sm">Create Mails</h3>
           </div>
-        </form>
-
+          <div className="flex gap-2 p-4">
+            <div className="mt-1 cursor-pointer">
+              <ExternalLinkIcon size={20} />
+            </div>
+            <div>
+              <p onClick={onClose} className="text-2xl text-[#FFFEFB] cursor-pointer">&times;</p>
+            </div>
+          </div>
         </div>
+        <div className="flex gap-4 p-4">
+          <p className="mt-3 text-[#303F58] text-xs font-semibold ms-2">To</p>
+          <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2">
+            <div className="rounded-full w-6 h-6 overflow-hidden ms-1 mt-[1%]">
+              <img src={image} alt="" />
+            </div>
+            <p className="text-[#303F58] text-xs font-semibold mt-1">Anjela John (anjela@gmail.com)</p>
+
+          </div>
+        </div>
+        <p className="text-end px-6 -mt-11">Cc <span className="ms-2">Bcc</span></p>
+
+
+        <p className="text-[#303F58] text-sm font-semibold p-4 ms-2 mt-2">Your Subject Title</p>
+
+        <hr className="my-2" />
+
+ 
+        <div className='w-full h-[300px] px-6 mt-6'>
+          <ReactQuill
+            value={value}
+            onChange={setValue}
+            placeholder="Write here your message..."
+            className="quill-editor h-[250px] bg-[#FAFAFA]"
+            theme="snow"
+            modules={modules}
+          />
+        </div>
+
+        <div className='m-5 justify-end ms-[680px]'>
+          <Button className="w-16 h-9" variant='primary' size='sm'>Done</Button>
+        </div>
+
+
+      </div>
     </div>
   )
 }
