@@ -159,7 +159,7 @@ const AMView = ({ }: Props) => {
 
 
   const ChartData = [
-    { name: 'Page A', uv: 4000, pv: 2400, amt: 2400, avatar: profileImage },
+    { name: 'Page A', uv: 3900, pv: 2400, amt: 2400, avatar: profileImage },
     { name: 'Page B', uv: 3000, pv: 1398, amt: 2210, avatar: profileImage },
     { name: 'Page C', uv: 2000, pv: 9800, amt: 2290, avatar: profileImage },
     { name: 'Page D', uv: 2780, pv: 3908, amt: 2000, avatar: profileImage },
@@ -223,7 +223,37 @@ const AMView = ({ }: Props) => {
       />
     );
   };
-        
+  const CustomBarWithCurve = (props: any) => {
+    const { x, y, width, height, fill } = props;
+  
+    if (!x || !y || !width || !height) return null;
+  
+    const radius = width / 2; // Half width for a smooth curve
+    const gap = 2; // Gap between the bar and the circle
+  
+    return (
+      <>
+        {/* Main Rectangle Bar */}
+        <rect
+          x={x}
+          y={y + gap} // Add the gap here
+          width={width}
+          height={height - radius - gap} // Adjust height to leave room for the circle
+          fill={fill}
+          rx={radius} // Rounded corners for the bar
+          ry={radius}
+        />
+        {/* Top Circle with Gap */}
+        <circle
+          cx={x + radius} // Center horizontally
+          cy={y - radius + gap} // Position the circle above the bar with the gap
+          r={radius} // Radius matches half the bar width
+          fill="#30B777"
+        />
+      </>
+    );
+  };
+            
   return (
     <div >
       <div className="flex items-center text-[16px] my-2 space-x-2">
@@ -378,41 +408,40 @@ const AMView = ({ }: Props) => {
       <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
 
       <div className="relative">
-        <BarChart
-          className='h-fit'
-          barGap={54}
-          barCategoryGap="40%"
-          width={774}
-          height={350}
-          data={normalizedData}
-        >
-          {/* Cartesian Grid */}
-          <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
+      <BarChart
+  className="h-fit"
+  barGap={54}
+  barCategoryGap="40%"
+  width={774}
+  height={350}
+  data={normalizedData}
+>
+  {/* Cartesian Grid */}
+  <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
 
-          {/* Y-Axis */}
-          <YAxis
-            tickFormatter={(tick) => `${tick}%`}
-            domain={[0, 100]}
-            ticks={[0, 20, 40, 60, 80, 100]}
-            axisLine={false}
-            tickLine={false}
-          />
+  {/* Y-Axis */}
+  <YAxis
+    tickFormatter={(tick) => `${tick}%`}
+    domain={[0, 100]}
+    ticks={[0, 20, 40, 60, 80, 100]}
+    axisLine={false}
+    tickLine={false}
+  />
 
-          {/* Bar Configuration */}
-          <Bar dataKey="uv" fill="#B9E3CF" barSize={8}>
-            {/* Add bubbles at the top */}
-            <LabelList
-              dataKey="uv"
-              content={(props) => <CustomBubble {...props} />}
-            />
+  {/* Bar with custom curved shape */}
+  <Bar
+  dataKey="uv"
+  fill="#B9E3CF"
+  barSize={8}
+  shape={<CustomBarWithCurve />}
+>
+  {/* Add bubbles at the top */}
+  <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
 
-            {/* Add avatars at the bottom */}
-            <LabelList
-              dataKey="uv"
-              content={(props) => <CustomAvatar {...props} />}
-            />
-          </Bar>
-        </BarChart>
+  {/* Add avatars at the bottom */}
+  <LabelList dataKey="uv" content={(props) => <CustomAvatar {...props} />} />
+</Bar>
+</BarChart>
       </div>
     </div>
 
