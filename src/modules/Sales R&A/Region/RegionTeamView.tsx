@@ -4,17 +4,15 @@ import {
   BarChart,
   CartesianGrid,
   LabelList,
-  Legend,
-  Tooltip,
-  XAxis,
   YAxis
-} from 'recharts';
+} from "recharts";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import EditIcon from "../../../assets/icons/EditIcon";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
+import profileImage from "../../../assets/image/AvatarImg.png";
 import person from "../../../assets/image/Ellipse 14 (3).png";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
@@ -224,62 +222,73 @@ const RegionTeamView = ({}: Props) => {
     { key: "dateOfJoining", label: "Date Of Joining" },
   ];
 
-  const areaData = [
-    {
-      name: 'Page A',
-      uv: 4000,
-      pv: 2400,
-      amt: 2400,
-    },
-    {
-      name: 'Page B',
-      uv: 3000,
-      pv: 1398,
-      amt: 2210,
-    },
-    {
-      name: 'Page C',
-      uv: 2000,
-      pv: 8,
-      amt: 2290,
-    },
-    {
-      name: 'Page D',
-      uv: 2780,
-      pv: 3908,
-      amt: 2000,
-    },
-    {
-      name: 'Page E',
-      uv: 18,
-      pv: 4800,
-      amt: 2181,
-    },
-    {
-      name: 'Page F',
-      uv: 2390,
-      pv: 3800,
-      amt: 2500,
-    },
-    {
-      name: 'Page G',
-      uv: 3490,
-      pv: 4300,
-      amt: 2100,
-    },
+
+  // Chart Data
+  const ChartData = [
+    { name: "Page A", uv: 3900, avatar: profileImage },
+    { name: "Page B", uv: 3000, avatar: profileImage },
+    { name: "Page C", uv: 2000, avatar: profileImage },
+    { name: "Page D", uv: 2780, avatar: profileImage },
+    { name: "Page E", uv: 1890, avatar: profileImage },
+    { name: "Page F", uv: 2390, avatar: profileImage },
+    { name: "Page G", uv: 3490, avatar: profileImage },
+    { name: "Page H", uv: 4000, avatar: profileImage }
   ];
 
-  const renderCustomizedLabel = (props:any) => {
-    const { x, y, width, value } = props;
-    const radius = 10;
-  
+  // Normalize the data
+  const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
+  const normalizedData = ChartData.map((entry) => ({
+    ...entry,
+    uv: (entry?.uv / maxValue) * 100,
+  }));
+
+  // Custom Bubble Component
+  const CustomBubble = (props: any) => {
+    const { x, y } = props;
+
+    if (x == null || y == null) return null;
     return (
-      <g>
-        <circle cx={x + width / 2} cy={y - radius} r={radius} fill="#8884d8" />
-        <text x={x + width / 2} y={y - radius} fill="#fff" textAnchor="middle" dominantBaseline="middle">
-          {value.split(' ')[1]}
-        </text>
-      </g>
+      <div
+        style={{
+          position: "absolute",
+          left: `${x - 4}px`,
+          top: `${y - 8}px`,
+          width: "8px",
+          height: "8px",
+          backgroundColor: "#30B777",
+          borderRadius: "50%",
+        }}
+      />
+    );
+  };
+
+  // Custom Bar Shape with Curved Top
+  const CustomBarWithCurve = (props: any) => {
+    const { x, y, width, height, fill } = props;
+
+    if (!x || !y || !width || !height) return null;
+
+    const radius = width / 2;
+    const gap = 2;
+
+    return (
+      <>
+        <rect
+          x={x}
+          y={y + gap}
+          width={width}
+          height={height - radius - gap}
+          fill={fill}
+          rx={radius}
+          ry={radius}
+        />
+        <circle
+          cx={x + radius}
+          cy={y - radius + gap}
+          r={radius}
+          fill="#30B777"
+        />
+      </>
     );
   };
 
@@ -294,7 +303,7 @@ const RegionTeamView = ({}: Props) => {
               iconFrameBorderColor={card.iconFrameBorderColor}
               key={index}
               icon={card.icon}
-               bgColor="#F5F9FC"
+              bgColor="#F5F9FC"
               titleColor="#8392A9"
               number={card.number}
               title={card.title}
@@ -395,40 +404,129 @@ const RegionTeamView = ({}: Props) => {
           />
         </div>
       </div>
-      <div className="grid-cols-2 grid">
-      <div>
-      <div className="bg-white rounded-lg w-full ">
-            <div className="p-4 space-y-2">
-              <h1 className="text-lg font-bold">Revenue By Area</h1>
-              <h2 className="text-md">Area 0234</h2>
-              <h2 className="text-md font-medium text-2xl">₹ 76,789,87</h2>
+      <div className="grid-cols-2 grid gap-3 my-2">
+        <div>
+        <div className="w-full h-fit p-4 bg-white rounded-lg">
+            <p className="text-[#303F58] text-lg font-bold p-3">
+              Top performing Area Managers
+            </p>
+            <p className="text-[#4B5C79] text-xs font-normal p-3">
+              Based on lead Conversion Performance Metric
+            </p>
+
+            <div className="relative">
+              <BarChart
+                className="h-fit"
+                barGap={54}
+                barCategoryGap="40%"
+                width={550}
+                height={300}
+                data={normalizedData}
+              >
+                {/* Cartesian Grid */}
+                <CartesianGrid
+                  horizontal={true}
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke="#e0e0e0"
+                />
+
+                {/* Y-Axis */}
+                <YAxis
+                  tickFormatter={(tick) => `${tick}%`}
+                  domain={[0, 100]}
+                  ticks={[0, 20, 40, 60, 80, 100]}
+                  axisLine={false}
+                  tickLine={false}
+                />
+
+                {/* Bar with custom curved shape */}
+                <Bar
+                  dataKey="uv"
+                  fill="#B9E3CF"
+                  barSize={8}
+                  shape={<CustomBarWithCurve />}
+                >
+                  {/* Add bubbles at the top */}
+                  <LabelList
+                    dataKey="uv"
+                    content={(props) => <CustomBubble {...props} />}
+                  />
+                </Bar>
+              </BarChart>
+              <div className="flex ms-[85px] gap-[40px] -mt-2">
+                {ChartData.map((chart) => (
+                  <img
+                    className="w-5 h-5 rounded-full"
+                    src={chart.avatar}
+                    alt=""
+                  />
+                ))}
+              </div>
             </div>
-            <div className="ms-1">
-        <BarChart
-          width={500}
-          height={300}
-          data={areaData}
-          margin={{
-            top: 5,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
-        >
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip />
-          <Legend />
-          <Bar dataKey="pv" fill="#8884d8" minPointSize={5}>
-            <LabelList dataKey="name" content={renderCustomizedLabel} />
-          </Bar>
-          <Bar dataKey="uv" fill="#82ca9d" minPointSize={10} />
-        </BarChart>
           </div>
+        </div>
+        <div>
+        <div className="w-full h-fit p-4 bg-white rounded-lg">
+            <p className="text-[#303F58] text-lg font-bold p-3">
+              Top performing BDA's
+            </p>
+            <p className="text-[#4B5C79] text-xs font-normal p-3">
+              Based on lead Conversion Performance Metric
+            </p>
+
+            <div className="relative">
+              <BarChart
+                className="h-fit"
+                barGap={54}
+                barCategoryGap="40%"
+                width={550}
+                height={300}
+                data={normalizedData}
+              >
+                {/* Cartesian Grid */}
+                <CartesianGrid
+                  horizontal={true}
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke="#e0e0e0"
+                />
+
+                {/* Y-Axis */}
+                <YAxis
+                  tickFormatter={(tick) => `${tick}%`}
+                  domain={[0, 100]}
+                  ticks={[0, 20, 40, 60, 80, 100]}
+                  axisLine={false}
+                  tickLine={false}
+                />
+
+                {/* Bar with custom curved shape */}
+                <Bar
+                  dataKey="uv"
+                  fill="#B9E3CF"
+                  barSize={8}
+                  shape={<CustomBarWithCurve />}
+                >
+                  {/* Add bubbles at the top */}
+                  <LabelList
+                    dataKey="uv"
+                    content={(props) => <CustomBubble {...props} />}
+                  />
+                </Bar>
+              </BarChart>
+              <div className="flex ms-[85px] gap-[40px] -mt-2">
+                {ChartData.map((chart) => (
+                  <img
+                    className="w-5 h-5 rounded-full"
+                    src={chart.avatar}
+                    alt=""
+                  />
+                ))}
+              </div>
+            </div>
           </div>
-      </div>
-      <div></div>
+        </div>
       </div>
     </div>
   );

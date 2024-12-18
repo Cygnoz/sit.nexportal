@@ -15,7 +15,11 @@ import ConvertModal from "../../../components/modal/ConvertionModal/CovertLicens
 import LeadForm from "./LeadForm"
 import LeadViewInfo from "./ViewModals/LeadViewInfo"
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon"
-
+import {
+  VictoryLabel,
+  VictoryPie,
+  VictoryTheme
+} from "victory";
 type Props = {
   leadData:any
   getLead:()=>void
@@ -40,7 +44,18 @@ const ViewSidebar = ({ leadData,getLead}: Props) => {
     getLead()
 }
 
+const roles = [
+  { name: 'Chats', count: 50, color: '#1B6C75' },
+  { name: 'Meetings', count: 30, color: '#30B777' },
+  { name: 'Calls', count: 80, color: '#6ABAF3' },
+  { name: 'Email', count: 65, color: '#00B5B5' }
+];
 
+const pieData = roles.map((role) => ({
+  x: role.name,
+  y: role.count,
+  color: role.color
+}));
 
   const covertModalToggle = () => {
     setConvLicModalOpen((prev) => !prev);
@@ -66,14 +81,14 @@ const ViewSidebar = ({ leadData,getLead}: Props) => {
     };
 
   return (
-    <div>
-      <div className="h-fit w-fit bg-cover rounded-xl p-6" style={{ backgroundImage: `url(${BackgroundImage})` }}>
+    <div className="space-y-4 mb-2">
+      <div className="h-fit w-full bg-cover rounded-xl p-6" style={{ backgroundImage: `url(${BackgroundImage})` }}>
        
         <div className={`${getStatusClass(leadData?.leadStatus)}  flex items-center gap-2  w-fit ms-auto `}>
         <div className={`w-2 h-2 -mt-[2px] ${leadData?.leadStatus=='In progress' ||leadData?.leadStatus=='Proposal'?'bg-black':'bg-white'} rounded-full`}></div>
          <p className="text-sm">{leadData?.leadStatus}</p>
         </div>
-        <div className="flex gap-4">
+        <div className="flex gap-4 w-full ">
           <div className="w-14 h-14 rounded-full overflow-hidden">
             {leadData?.image?<img
               src={leadData?.image} // Replace with the actual image URL
@@ -91,28 +106,28 @@ const ViewSidebar = ({ leadData,getLead}: Props) => {
           </div>
         </div>
 
-        <div className="flex gap-4 my-4 ms-4">
+        <div className="flex gap-4 my-4  ">
           <EmailIcon color="#FFFFFF" size={16} />
           <p className="text-[#FFFFFF] text-xs font-normal">{leadData?.email}</p>
         </div>
-        <div className="flex gap-4 mb-2 ms-4">
+        <div className="flex gap-4 mb-2 ">
           <PhoneRingIcon color="#FFFFFF" size={16} />
           <p className="text-[#FFFFFF] text-xs font-normal">{leadData?.phone}</p>
         </div>
-        <div className="flex gap-4 mb-2 ms-4">
+        <div className="flex gap-4 mb-2">
           <DeltaTech size={16} />
           <p className="text-[#FFFFFF] text-xs font-normal">{leadData?.companyName?leadData.companyName:'N/A'}</p>
         </div>
-        <div className="flex gap-4 ms-4 my-4">
+        <div className="flex gap-4  my-4">
           <p className="text-[#FFFFFF] text-xs font-normal">Region</p>
           <p className="text-[#FFFFFF] text-xs font-bold">{leadData?.regionDetails.regionName?leadData?.regionDetails.regionName:'N/A'}</p>
         </div>
-        <div className="flex gap-4 mb-4 ms-4">
+        <div className="flex gap-4 mb-4 ">
           <p className="text-[#FFFFFF] text-xs font-normal">Area</p>
           <p className="text-[#FFFFFF] text-xs font-bold ms-3">{leadData?.areaDetails.areaName?leadData?.areaDetails.areaName:'N/A'}</p>
         </div>
 
-        <div className="flex w-60 h-20 px-6 py-4 gap-5 rounded-xl bg-[#FFFFFF33] mx-4">
+        <div className="flex w-80  justify-center  h-20 px-6 py-4 gap-5 rounded-xl bg-[#FFFFFF33] ">
 
           <div>
           <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -151,11 +166,11 @@ const ViewSidebar = ({ leadData,getLead}: Props) => {
           </div>
 
         </div>
-        <div className="flex gap-2 rounded-xl bg-[#FFFFFF33] w-60 py-3 px-2 h-14 my-4 mx-4">
-          <div className="px-2 ms-6"><CalenderRound size={32} /></div>
+        <div className="flex gap-2 rounded-xl bg-[#FFFFFF33] w-80 justify-center cursor-pointer  py-3 px-2 h-14 my-4">
+          <div className="px-2 "><CalenderRound size={32} /></div>
           <p className="mt-2 text-[#FFFFFF] text-xs font-medium">View Calender</p>
         </div>
-        {leadData?.leadStatus==='Won'&&<div className="rounded-lg w-60 bg-[#820000] h-12 py-3 px-3 mb-4 mx-4" onClick={covertModalToggle} >
+        {leadData?.leadStatus==='Won'&&<div className="rounded-lg w-80 bg-[#820000] h-12 py-3 px-3 mb-4" onClick={covertModalToggle} >
           <p className="text-center text-[#FEFDF9] text-base font-medium">Converted to Trail</p>
         </div>}
         <hr />
@@ -171,7 +186,56 @@ const ViewSidebar = ({ leadData,getLead}: Props) => {
 
       </div>
       {/* Graph */}
-      <div>Graph</div>
+      <div>
+      <div className="bg-white h-fit pb-7  rounded-lg w-full -p-3">
+            <h1 className="text-[#303F58] text-lg font-bold p-3">Top Break Down By Region</h1>
+            <div className="-mt-3">
+            
+              <VictoryPie
+      innerRadius={40}
+      padAngle={4}
+      width={300}
+      data={pieData}
+      categories={{
+        y: roles.map(role => role.name),
+      }}
+      theme={VictoryTheme.clean}
+      labels={({ datum }) => `${((datum.y / roles.reduce((acc, role) => acc + role.count, 0)) * 100).toFixed(1)}%`}
+      labelComponent={<VictoryLabel style={{ fill: '#303F58', fontSize: 15 ,marginLeft:-50}}/>}
+      style={{
+        data: {
+          fill: ({ datum }) => datum.color,
+        },
+      }}
+      
+    />
+    <div className='flex justify-center'>
+    <div className="space-y-4">
+     
+        {/* // <div key={role.name} className="flex items-center justify-between w-72 space-x-3">
+        //   <div className="flex items-center gap-2">
+        //     <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
+        //     <span className="text-gray-800 font-medium text-xs">{role.name}</span>
+        //   </div>
+        //   <span className="ml-auto text-gray-600 text-xs">{role.count}</span>
+        // </div> */}
+
+        <div className="grid grid-cols-2 w-72 gap-3">
+        {roles.map((role) => (
+          <div className="flex items-center gap-2">
+            <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
+            <span className="text-gray-800 font-medium text-xs">{role.name}</span>
+          
+         <span className="ml-auto text-gray-600 text-xs">{role.count}</span>
+         </div>
+        ))}
+        </div>
+      
+    </div>
+    </div>
+            </div>
+          </div>
+      </div>
 
       {/* Modal controlled by state */}
       

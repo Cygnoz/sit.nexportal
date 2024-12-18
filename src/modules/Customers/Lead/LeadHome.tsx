@@ -59,13 +59,15 @@ function LeadHome({}: Props) {
     try{
       const {response,error}=await getAllLeads(endPoints.LEADS)
       console.log("res",response);
+      console.log("err",error);
       
       if(response && !error){
         console.log(response.data.leads);
        const transformLead= response.data.leads?.map((lead:any) => ({
           ...lead,
           leadName:`${lead.firstName} ${lead.lastName?lead.lastName:''}`,
-          leadImage:lead.image
+          leadImage:lead.image,
+          leadId:lead?.customerId
         })) || [];
         setAllLead(transformLead)
       }

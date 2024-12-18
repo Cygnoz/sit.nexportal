@@ -22,8 +22,6 @@ interface ExtentTrialData {
 
 const validationSchema = Yup.object({
     duration: Yup.string().required("duration is required"),
-  
-
 });
 
 function ExtentTrail({ onClose }: Props) {
@@ -80,7 +78,7 @@ function ExtentTrail({ onClose }: Props) {
 
 
                                 <Input
-                                    label="Organization Name"
+                                    label="New End Date"
                                     type="date"
                                     placeholder="Enter Name"
                                     error={errors.date?.message}
@@ -109,7 +107,7 @@ function ExtentTrail({ onClose }: Props) {
                             size="lg"
                             type="submit"
                         >
-                            Submit
+                            update
                         </Button>
                     </div>
                 </form>

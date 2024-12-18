@@ -241,7 +241,6 @@ const Table = <T extends object>({
     </tr>
   );
 
-  console.log("ss", data);
 
   useEffect(() => {
     const timeout = setTimeout(() => {

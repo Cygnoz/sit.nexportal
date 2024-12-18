@@ -201,7 +201,7 @@ function RegionView({}: Props) {
 
                 <div className="flex flex-col  items-center space-y-1">
                   <div className="w-8 h-8 mb-2 rounded-full">
-                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="rounded-full cursor-pointer  bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <DeActivateIcon size={18} color="#D52B1E4D" />
                    </div>
@@ -304,7 +304,7 @@ function RegionView({}: Props) {
           </div>
 
           <div className="absolute z-10">
-            {activeTab === "Aria" && <RegionAriaView />}
+            {activeTab === "Aria" && <RegionAriaView regionData={data.regionData} />}
             {activeTab === "Team" && <RegionTeamView />}
             {activeTab === "Performance Analytics" && <RegionPerformanceView />}
           </div>
