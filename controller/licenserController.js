@@ -276,39 +276,41 @@ exports.convertTrialToLicenser = async (req, res) => {
 
 
 
+  
+
 async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName) {
-    const { ...rest } = cleanedData;
-  
-    // Generate the next licenser ID
-    let nextId = 1;
-  
-    // Fetch the last licenser based on the numeric part of licenserId
-    const lastLicenser = await Leads.findOne({ licenserId: { $exists: true } })
-      .sort({ $natural: -1 }); // Sort by insertion order or creation time
-  
-    if (lastLicenser && lastLicenser.licenserId) {
-      // Extract numeric part and calculate next ID
-      const lastId = parseInt(lastLicenser.licenserId.split("-")[1], 10) || 0;
-      nextId = lastId + 1;
-    }
-  
-    // Format the new licenser ID
-    const licenserId = `LICENSER-${nextId.toString().padStart(4, "0")}`;
-  
-    // Save the new licenser
-    const savedLicenser = await createNewLicenser(
-      { ...rest, licenserId },
-      regionId,
-      areaId,
-      bdaId,
-      true,
-      userId,
-      userName
-    );
-  
-    return savedLicenser;
+  const { ...rest } = cleanedData;
+
+  // Generate the next licenser ID
+  let nextId = 1;
+
+  // Fetch the last licenser based on the numeric part of customerId
+  const lastLicenser = await Leads.findOne().sort({ customerId: -1 }); // Sort by customerId in descending order
+
+  if (lastLicenser) {
+    const lastId = parseInt(lastLicenser.customerId.split("-")[1]); // Extract numeric part
+    nextId = lastId + 1; // Increment the last ID
   }
-  
+
+  // Format the new licenser ID
+  const customerId = `CSTMID-${nextId.toString().padStart(4, "0")}`;
+
+  // Save the new licenser
+  const savedLicenser = await createNewLicenser(
+    { ...rest, customerId },
+    regionId,
+    areaId,
+    bdaId,
+    true,
+    userId,
+    userName
+  );
+
+  return savedLicenser;
+}
+
+
+
 
 const ActivityLog = (req, status, operationId = null) => {
   const { id, userName } = req.user;
