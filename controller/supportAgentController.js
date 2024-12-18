@@ -213,7 +213,7 @@ const logOperation = (req, status, operationId = null) => {
       return res.status(201).json({
         message: "Support Agent added successfully",
         userId: newUser._id,
-        Supervisor: newSupportAgent._id,
+        SupportAgent: newSupportAgent._id,
       });
     } catch (error) {
       
