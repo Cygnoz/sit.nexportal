@@ -36,7 +36,6 @@ router.put('/trials/:trialId',leadController.convertTrialToLicenser)
 
 
 
-
 //add licenser
 router.post('/licenser',verifyToken,checkPermission('Add Licenser'),licenserController.addLicenser,ActivityLogGeneration('Add Licenser'))
 
