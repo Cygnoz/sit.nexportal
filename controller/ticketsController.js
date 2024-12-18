@@ -83,23 +83,26 @@ exports.getTicket = async (req, res) => {
 
     const { customerId, supportAgentId } = ticket;
 
-    // Fetch customer from Leads with status "trial" or "licenser"
-    const customerExists = await Leads.findOne({
-      _id: customerId,
-      customerStatus: { $in: ["Trial", "Licenser"] },
-    });
+    // Fetch customer from Leads with status "Trial" or "Licenser"
+    const customerExists = await Leads.findOne(
+      {
+        _id: customerId,
+        customerStatus: { $in: ["Trial", "Licenser"] },
+      },
+      { _id: 1, firstName: 1 } // Only fetch _id and firstName
+    );
 
     if (!customerExists) {
       return res.status(404).json({ message: "Customer not found or not in trial/licenser status" });
     }
 
-    // Check support agent existence using existing dataExist function
+    // Check support agent existence using the dataExist function
     const { supportAgentExists, supportAgentName } = await dataExist(customerId, supportAgentId);
 
-    // Construct enriched ticket response with customer and support agent details
+    // Construct enriched ticket response
     const enrichedTicket = {
       ...ticket.toObject(),
-      customerDetails: customerExists, // Add customer details to response
+      customerDetails: customerExists, // Only _id and firstName
       supportAgentDetails: supportAgentExists
         ? {
             id: supportAgentExists._id,
@@ -118,21 +121,48 @@ exports.getTicket = async (req, res) => {
 
 
 
-
 exports.getAllTickets = async (req, res) => {
   try {
+    // Fetch all tickets
     const tickets = await Ticket.find();
 
     if (tickets.length === 0) {
       return res.status(404).json({ message: "No tickets found" });
     }
 
-    res.status(200).json({ message: "Tickets retrieved successfully", tickets });
+    // Enrich each ticket with limited customer and support agent details
+    const enrichedTickets = await Promise.all(
+      tickets.map(async (ticket) => {
+        const { customerId, supportAgentId } = ticket;
+
+        // Fetch customer from Leads with status "Trial" or "Licenser"
+        const customerExists = await Leads.findOne(
+          { _id: customerId, customerStatus: { $in: ["Trial", "Licenser"] } },
+          { _id: 1, firstName: 1 } // Fetch only _id and firstName
+        );
+
+        const { supportAgentExists, supportAgentName } = await dataExist(customerId, supportAgentId);
+
+        return {
+          ...ticket.toObject(),
+          customerDetails: customerExists || { message: "Customer not found or not in trial/licenser status" },
+          supportAgentDetails: supportAgentExists
+            ? {
+                id: supportAgentExists._id,
+                name: supportAgentName || "Support agent name not found",
+              }
+            : { message: "Support agent not found" },
+        };
+      })
+    );
+
+    res.status(200).json({ message: "Tickets retrieved successfully", tickets: enrichedTickets });
   } catch (error) {
     console.error("Error fetching all tickets:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 exports.getCustomers = async (req, res) => {
@@ -219,6 +249,7 @@ const ActivityLog = (req, status, operationId = null) => {
 
 
 
+
     //Clean Data 
     function cleanTicketData(data) {
       const cleanData = (value) => (value === null || value === undefined || value === "" || value === 0 ? undefined : value);
@@ -248,3 +279,10 @@ const ActivityLog = (req, status, operationId = null) => {
       return true;
     }
   
+    const formatTime = (date) => {
+      if (!date) return null;
+      const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // 12-hour format
+      return new Intl.DateTimeFormat('en-US', options).format(date);
+    };
+    
+
