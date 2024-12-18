@@ -50,4 +50,7 @@ export const endPoints = {
   COUNTS:'/counts',
   //Licenser
   LICENSER: "/licenser",
+
+  TICKETS:"/ticket",
+  GET_TICKETS:"./tickets"
 };
