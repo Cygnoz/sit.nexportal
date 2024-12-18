@@ -4,6 +4,8 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import SuperVisorCards from "../../../components/ui/SuperVisorCards";
 import Table from "../../../components/ui/Table";
+import person1 from "../../../assets/image/Ellipse 14.png";
+import person2 from "../../../assets/image/Ellipse 43.png";
 
 
 
@@ -19,21 +21,27 @@ interface SupervisorData {
  const SuperVisorCardData = [
     {
         
-        number: "167",
-        title: "Total Agent Supervised",
-        subTitle: "look loo"
+        number: "3454",
+        title: "Total Tickets",
+        subTitle: "Lorem ipsum dolor sit amet consectetur.",
+        images: [
+          <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
+          <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
+          <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
+          <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
+      ],
     },
     {
       
-        number: "86%",
-        title: " Tasks completed by the team",
-        subTitle: "look loo"
+        number: "1678",
+        title: "Open Tickets",
+        subTitle: "In Percentage"
     },
     {
         
-        number: "4.5/4",
-        title: "Customer Feedback",
-        subTitle: "look loo"
+        number: "889",
+        title: "Tickets Resolved",
+        subTitle: "customer satisfaction rating for tickets resolved by the team"
     },
 
 ];
@@ -131,6 +139,7 @@ const SuperVisorTicketsOverview = ({
                                 number={card.number}
                                 title={card.title}
                                 subTitle={card.subTitle}
+                                images={card.images}
                             />
                         ))}
                     </div>

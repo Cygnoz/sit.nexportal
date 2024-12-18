@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import AreaIcon from "../../../assets/icons/AreaIcon"
+// import AreaIcon from "../../../assets/icons/AreaIcon"
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon"
 import CalenderDays from "../../../assets/icons/CalenderDays"
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon"
@@ -25,6 +25,9 @@ import AwardIcon from "../../../assets/icons/AwardIcon"
 import SVViewAward from "./SVViewAward"
 import SupervisorForm from "./SupervisorForm"
 import RatingStar from "../../../components/ui/RatingStar"
+import person1 from "../../../assets/image/Ellipse 14.png";
+import person2 from "../../../assets/image/Ellipse 43.png";
+
 
 interface SupervisorData {
     memberID: string;
@@ -95,45 +98,47 @@ const SuperVisorView = ({
     // Data for HomeCards
     const SuperVisorCardData = [
         {
-            icon: <AreaIcon size={24} />,
             number: "167",
             title: "Total Agent Supervised",
-            subTitle: "look loo"
+            subTitle: "look loo",
+            images: [
+                <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
+                <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
+                <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
+                <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
+            ],
         },
         {
-            icon: <UserIcon size={24} />,
             number: "86%",
-            title: " Tasks completed by the team",
-            subTitle: "look loo"
+            title: "Tasks completed by the team",
+            subTitle: "look loo",
         },
         {
-            icon: <AreaManagerIcon size={24} />,
             number: "4.5/4",
             title: "Customer Feedback",
-            subTitle: "look loo"
+            subTitle: "look loo",
+            rating:<RatingStar size={16} count={3}/>
         },
-
     ];
-
 
 
     // Data for the table
     const data: any[] = [
 
-        { memberID: "001", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar count={5}/> },
-        { memberID: "002", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar count={5}/> },
-        { memberID: "003", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "004", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "005", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "006", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "007", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "008", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "009", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "010", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "011", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "012", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "013", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
-        { memberID: "014", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> }
+        { memberID: "001", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={5} /> },
+        { memberID: "002", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={4} /> },
+        { memberID: "003", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={2} /> },
+        { memberID: "004", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={3} /> },
+        { memberID: "005", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={5} /> },
+        { memberID: "006", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={4} /> },
+        { memberID: "007", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={3} /> },
+        { memberID: "008", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={1} /> },
+        { memberID: "009", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={3} /> },
+        { memberID: "010", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={2} /> },
+        { memberID: "011", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={4} /> },
+        { memberID: "012", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={5} /> },
+        { memberID: "013", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={4} /> },
+        { memberID: "014", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar size={16} count={3} /> }
     ];
     // Define the columns with strict keys
     const columns: { key: keyof SupervisorData; label: string }[] = [
@@ -172,9 +177,12 @@ const SuperVisorView = ({
                                     number={card.number}
                                     title={card.title}
                                     subTitle={card.subTitle}
+                                    rating={card.rating}
+                                    images={card.images} // Pass the array of images
                                 />
                             ))}
                         </div>
+
 
                         {/* Table Section */}
                         <div>
@@ -273,10 +281,10 @@ const SuperVisorView = ({
                                     <div onClick={() => handleModalToggle(true, false, false)}
                                         className="w-8 h-8 mb-2 rounded-full border-white cursor-pointer">
                                         <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <EditIcon size={18} color="#F0D5A0" />
-                   </div>
-                    </div>
+                                            <div className="ms-2 mt-2">
+                                                <EditIcon size={18} color="#F0D5A0" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <p className="text-center font-medium  text-white text-xs ms-3" >Edit Profile</p>
                                 </div>
@@ -285,10 +293,10 @@ const SuperVisorView = ({
                                     <div onClick={() => handleModalToggle(false, true, false)}
                                         className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                                         <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <ViewRoundIcon size={18} color="#B6D6FF" />
-                   </div>
-                    </div> 
+                                            <div className="ms-2 mt-2">
+                                                <ViewRoundIcon size={18} color="#B6D6FF" />
+                                            </div>
+                                        </div>
 
                                     </div>
                                     <p className="text-center font-medium  text-white text-xs ms-3">View Details</p>
@@ -299,10 +307,10 @@ const SuperVisorView = ({
                                         onClick={() => handleModalToggle(false, false, true)}
                                         className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                                         <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <AwardIcon size={18} color="#B6FFD7" />
-                   </div>
-                    </div>
+                                            <div className="ms-2 mt-2">
+                                                <AwardIcon size={18} color="#B6FFD7" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <p className="text-center font-medium  text-white text-xs ms-3">
                                         Awards
@@ -313,19 +321,19 @@ const SuperVisorView = ({
 
                                 <div className="flex flex-col  items-center space-y-1">
                                     <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <DeActivateIcon size={18} color="#D52B1E4D" />
-                   </div>
-                    </div>
+                                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                                            <div className="ms-2 mt-2">
+                                                <DeActivateIcon size={18} color="#D52B1E4D" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <p className="text-center font-medium  text-white text-xs ms-3">DeActivate</p>
 
                                 </div>
 
                             </div>
-                       </div>
-                  </div>
+                        </div>
+                    </div>
 
 
                 </div>

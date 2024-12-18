@@ -1,161 +1,3 @@
-// // import ReactQuill from "react-quill";
-// // import ReactQuill from "react-quill";
-// import LocationIcon from "../../../../assets/icons/LocationIcon";
-// import Input from "../../../../components/form/Input";
-// import Select from "../../../../components/form/Select";
-// import Button from "../../../../components/ui/Button";
-
-// type Props = {
-//     onClose: () => void;
-// }
-
-// const NotesForm = ({onClose}: Props) => {
-
-//   // const modules = {
-//   //   toolbar: [
-//   //     ['bold', 'italic', 'underline'],
-//   //     ['link', 'image'],
-//   //     [{ 'emoji': true }],
-//   //   ],
-//   //   'emoji-toolbar': true,
-//   //   'emoji-textarea': false,
-//   //   'emoji-shortname': true,
-//   // };
-
-
-//   return (
-//     <div>
-//         <div className="h-fit w-fit rounded-lg">
-//         <div className="flex justify-between">
-//         <div className="space-y-2 p-4">
-//             <h3 className="text-[#303F58] font-bold text-lg">Create Notes</h3>
-//             <p className="text-[11px] text-[#8F99A9] mt-1">
-//             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-//             </p>
-//         </div>
-//         <p onClick={onClose} className="text-3xl p-4 cursor-pointer">&times;</p>
-//         </div>
-          
-                   
-// <form>
-//       <div >
-//         <div className="space-y-4 px-4">
-//         <Input
-//             label=" Meeting Title"
-//             placeholder=""
-//         />
-//         <Input
-//             label="Add Notes"
-//             placeholder=""
-//         />
-
-//         <div className="grid grid-cols-12 gap-4">
-//             <div className="col-span-3">
-//             <Select
-//                 label="Meeting Type"
-//                 placeholder="Select Type"
-//                 options={[
-//                 { value: "name", label: "Kkkk" },
-//                 { value: "name", label: "Taattuu" },
-//                 { value: "name", label: "pipi" },
-//                 ]}
-//             />
-//             </div>
-//             <div className="col-span-3">
-//             <Input
-//                   type="date"
-//                   label="Due Date"
-//                 />
-//             </div>
-//             <div className="col-span-3 flex">
-//             <Input
-//                 label="Time"
-//                 placeholder="7:28"
-//             />
-//             <p className="mt-9 ms-4">to</p>
-
-//             </div>
-//             {/* <div className="col-span-1">
-//                 <p className="text-center mt-9">to</p>
-//             </div> */}
-//             <div className="col-span-3 mt-7">
-//             <Input
-//                 label=""
-//                 placeholder="7:28 "
-//             />
-//             </div>
-//         </div>
-
-
-//             <div className="grid grid-cols-3 gap-4">
-//             <Select
-//                 label="Meeting Location"
-//                 placeholder="Select Place"
-//                 options={[
-//                 { value: "name", label: "Kkkk" },
-//                 { value: "name", label: "Taattuu" },
-//                 { value: "name", label: "pipi" },
-//                 ]}
-//             />
-//             <div className="flex">
-//             <Input
-//                 label="Location"
-//                 placeholder="Enter Location"
-//             />
-//             <div className="mt-10 -ms-7">
-//             <LocationIcon size={14}/>
-//             </div>
-//             </div>
-//             <Input
-//                 label="Landmark"
-//                 placeholder="Enter Landmark"
-//             />
-//         </div>
-
-//     </div>
-// </div>
-
-// <div>
-  
-// </div>
-//           <div className=" flex justify-end gap-2 px-4 my-4">
-//             <Button
-//               variant="tertiary"
-//               className="h-8 text-sm border rounded-lg"
-//               size="lg"
-//             >
-//               Cancel
-//             </Button>
-//             <Button
-//               variant="primary"
-//               className="h-8 text-sm border rounded-lg"
-//               size="lg"
-//               type="submit"
-//             >
-//               Save
-//             </Button>
-//           </div>
-          
-//         </form>
-//         {/* <div className='flex items-start w-[20%] h-[50px]'>
-       
-//         <ReactQuill
-//           // value={value}
-//           // onChange={setValue}
-//           placeholder="Write text here..."
-//           className="quill-editor ml-4 w-[90%] h-[80%]"
-//           theme="snow"
-//           // modules={modules}
-//           />
-//           </div> */}
-
-
-//         </div>
-//     </div>
-//   )
-// }
-
-// export default NotesForm
 
 import React, { useState } from 'react';
 import ReactQuill from 'react-quill';
@@ -169,16 +11,6 @@ import ReactDOMServer from 'react-dom/server';
 // import "./Quill.css";
 import Button from '../../../../components/ui/Button';
 import PencilLine from '../../../../assets/icons/PencilLine';
-// import Trash from '../../../../assets/icons/Trash';
-// import Button from '../../../../Components/Button';
-// import ItalicIcon from '../../../../assets/icons/ItalicIcon';
-// import UnderlineIcon from '../../../../assets/icons/UnderlineIcon';
-// import LinkIcon from '../../../../assets/icons/LinkIcon';
-// import ImageIcon from '../../../../assets/icons/ImageIcon';
-// import EmojiIcon from '../../../../assets/icons/EmojiIcon';
-// import BoldIcon from '../../../../assets/icons/BoldIcon';
-
-
 
 const Emoji = Quill.import('formats/emoji');
 Quill.register('modules/emoji', Emoji);
@@ -217,14 +49,12 @@ const Comment: React.FC<Props> = () => {
       [{ 'emoji': true }],
     ],
     'emoji-toolbar': true,
-    'emoji-textarea': false,
+    'emoji-textarea': true,
     'emoji-shortname': true,
   };
 
-  // const imgSrc = "https://s3-alpha-sig.figma.com/img/1d07/dd79/425caa4701d548ea67930c965b34768d?Expires=1723420800&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=BDNG1uH8kJDCORYIU6gY2OiXnwJ45TKOIHXSp5rpFlxBxG-ezjO7zF9CJHJ0u7nvfXp81pS0uiL9NFk3ZXnnnrWXBCl8lYcI34QSkmPZ9LeX1IYnaCDbkT1pbgsshNh78rQV8YKUVyR2DGe89caWnTzWaiK46tQR1DFEbg4BrK9GbDG3Zk9gYPMg8hzd5vHdkprIcs6tMdO0E~g66m1qJnzYtasiiq93tpppjbHECvc3nIIN7OOgL0hNimgwX6oVQlLmvwGXf113NtG4haH~loXVngkLCjfEceHqEjEMhUIBD4zKLLHucYEBPLeMBbrrREit~SC5tQ1oAIiVRMjwuA__";
-
   return (
-    <div className="mt-6 flex p-4">
+    <div className="mt-6 p-4">
       <div className="w-full h-[80%] align-middle">
         <div className='flex items-start w-[100%] h-[250px]'>
         {/* <img
@@ -246,51 +76,70 @@ const Comment: React.FC<Props> = () => {
           <Button className='ml-12 text-sm font-medium bg-[#FCFFED] mt-5' variant='secondary' size='sm'>Add Comments</Button>
           </div>
       </div>
-      {/* <div className="w-[50%] ml-6">
-        <p className="text-textColor font-bold text-base">
-          All Comments
-          <span className="bg-cardBg w-8 h-6 ml-4 pt-1 pr-2.5 pb-1 pl-2.5 rounded font-semibold text-sm">3</span>
-        </p>
-        <div className="rounded-lg p-5 border border-[#DCDEE2] mt-4 mb-4 w-[85%]">
-          <div className="flex items-center text-dropdownText justify-between">
-            <div className='flex items-center gap-3'>
-              <img src={imgSrc} alt="Comment Avatar" className="w-10 h-10 rounded-full" />
-              <p className='text-sm font-medium'>Micheal Gough</p>
-            </div>
-            <div className='text-sm font-medium flex items-center gap-3'>
-              <span className='border-r border-dropdownText pr-3'>12/07/2024</span>
-              <span >10:05 AM</span>
-            </div>
-            <div className='flex items-center gap-3'>
-              <PencilLine color='#4B5C79' size={16} />
-              <Trash color='#4B5C79' />
-            </div>
-          </div>
-          <div className='mt-4 text-xs text-dropdownText'>
-            Lorem ipsum dolor sit amet consectetur. Ornare eu ac felis ut gravida. em ipsum dolor sit amet consectetur. Ornare eu ac felis ut gravida
-          </div>
-        </div>
-        <div className="rounded-lg p-5 border border-[#DCDEE2]  w-[85%]">
-          <div className="flex items-center text-dropdownText justify-between">
-            <div className='flex items-center gap-3'>
-              <img src={imgSrc} alt="Comment Avatar" className="w-10 h-10 rounded-full" />
-              <p className='text-sm font-medium'>Micheal Gough</p>
-            </div>
-            <div className='text-sm font-medium flex items-center gap-3'>
-              <span className='border-r border-dropdownText pr-3'>12/07/2024</span>
-              <span >10:05 AM</span>
-            </div>
-            <div className='flex items-center gap-3'>
-              <PencilLine color='#4B5C79' size={16} />
-              <Trash color='#4B5C79' />
-            </div>
-          </div>
-          <div className='mt-4 text-xs text-dropdownText'>
-            Lorem ipsum dolor sit amet consectetur. Ornare eu ac felis ut gravida. em ipsum dolor sit amet consectetur. Ornare eu ac felis ut gravida
-          </div>
-        </div>
 
-      </div> */}
+      <div className="relative w-full max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-4">
+      {/* Header */}
+      <div className="flex justify-between items-start">
+        <h2 className="text-lg font-semibold">Add Note</h2>
+        <button className="text-gray-500 hover:text-black">&times;</button>
+      </div>
+
+      {/* Related To */}
+      <div className="flex items-center mt-4">
+        <span className="text-gray-600 mr-2">Related to:</span>
+        <div className="flex items-center">
+          <img
+            src="https://via.placeholder.com/32" // Replace with user image
+            alt="Anjela John"
+            className="h-8 w-8 rounded-full"
+          />
+          <span className="ml-2 font-semibold text-black">Anjela John</span>
+        </div>
+      </div>
+
+      {/* Note Input */}
+      <div className="mt-4">
+        <textarea
+          placeholder="Start typing. @mention people to notify them"
+          className="w-full h-32 border border-gray-300 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+        />
+      </div>
+
+      {/* Toolbar */}
+      <div className="flex justify-between items-center mt-3 text-gray-600">
+        {/* <div className="flex gap-4">
+          <button className="hover:text-blue-500">
+            <i className="fas fa-list-ul"></i> {/* List Icon */}
+          {/* </button> */}
+          {/* <button className="hover:text-blue-500 font-bold">B</button>
+          <button className="hover:text-blue-500 italic">I</button>
+          <button className="hover:text-blue-500 underline">U</button>
+          <button className="hover:text-blue-500 line-through">S</button>
+          <button className="hover:text-blue-500">
+            <i className="fas fa-link"></i> {/* Link Icon */}
+          {/* </button>
+          <button className="hover:text-blue-500">
+            <span role="img" aria-label="emoji">
+              🙂
+            </span>
+          </button>
+        </div> */} 
+
+<ReactQuill
+          value={value}
+          onChange={setValue}
+          placeholder="Write text here..."
+          className="quill-editor ml-4 w-[100%] h-[80%] me-4"
+          theme="snow"
+          modules={modules}
+          />
+        
+        <button className="bg-red-600 text-white px-4 py-1 rounded-lg hover:bg-red-700">
+          Done
+        </button>
+      </div>
+    </div>
+
     </div>
   );
 };
