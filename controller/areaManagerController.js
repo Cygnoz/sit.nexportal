@@ -7,6 +7,7 @@ const AreaManager = require("../database/model/areaManager");
 const bcrypt = require("bcrypt");
 const crypto = require('crypto');
 const { ObjectId } = require('mongoose').Types;
+const nodemailer = require('nodemailer');
 
 const key = Buffer.from(process.env.ENCRYPTION_KEY, 'utf8'); 
 const iv = Buffer.from(process.env.ENCRYPTION_IV, 'utf8'); 
@@ -167,6 +168,17 @@ const logOperation = (req, status, operationId = null) => {
       if (duplicateCheck) {
         return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
       }
+
+      // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
+    
+
+      // if (!emailSent) {
+      //   return res
+      //     .status(500)
+      //     .json({ success: false, message: 'Failed to send login credentials email' });
+      // }
+      
+
   
       // Create user
       const newUser = await createUser(data);
@@ -177,7 +189,10 @@ const logOperation = (req, status, operationId = null) => {
   
       // Create region manager
       const newAreaManager = await createAreaManager(data, newUser._id);
-  
+      
+      
+
+
       logOperation(req, "Successfully", newAreaManager._id);
       next()
       return res.status(201).json({
@@ -185,6 +200,9 @@ const logOperation = (req, status, operationId = null) => {
         userId: newUser._id,
         areaManagerId: newAreaManager._id,
       });
+
+      
+
     } catch (error) {
 
       logOperation(req, "Failed");
@@ -303,5 +321,53 @@ const logOperation = (req, status, operationId = null) => {
       }
     };
     
+
+// Nodemailer transporter setup using environment variables
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
+
+
+// Function to send login credentials
+const sendCredentialsEmail = async (email, password, userName) => {
+  const mailOptions = {
+    from: `"BillBizz" <${process.env.EMAIL}>`,
+    to: email,
+    subject: 'Your NexPortal Login Credentials',
+    text: `Dear ${userName},
+
+Welcome to NexPortal – Sales & Support System.
+
+Your account has been successfully created, Below are your login credentials:
+  
+Email: ${email}  
+Password: ${password}  
+
+Please note: These credentials are confidential. Do not share them with anyone.
+
+To get started, log in to your account at:  
+https://dev.nexportal.billbizz.cloud/  
+
+If you have any questions or need assistance, please contact our support team.
+
+Best regards,  
+The CygnoNex Team  
+NexPortal  
+Support: notify@cygnonex.com`,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Login credentials email sent successfully');
+    return true;
+  } catch (error) {
+    console.error('Error sending login credentials email:', error);
+    return false;
+  }
+};
     
 

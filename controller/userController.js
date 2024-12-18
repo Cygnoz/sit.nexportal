@@ -1,6 +1,8 @@
 const User = require("../database/model/user"); 
 const ActivityLog = require('../database/model/activityLog'); 
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+
 
 exports.addUser = async (req, res,next) => {
   try {
@@ -33,6 +35,22 @@ exports.addUser = async (req, res,next) => {
     }    
     const employeeId = `EMPID-${nextId.toString().padStart(4, '0')}`;
   
+    // const emailSent = await sendCredentialsEmail(email, password,userName);
+    
+
+    // if (!emailSent) {
+    //   return res
+    //     .status(500)
+    //     .json({ success: false, message: 'Failed to send login credentials email' });
+    // }
+
+    const emailSent = await sendCredentialsEmail(email, password, userName, true);
+if (!emailSent) {
+  return res
+    .status(500)
+    .json({ success: false, message: 'Failed to send login credentials email' });
+}
+
 
     // Create a new user entry
     const newUser = new User({
@@ -46,14 +64,22 @@ exports.addUser = async (req, res,next) => {
     });
 
     await newUser.save();
+   
+
+    
+
 
     res.status(201).json({ message: "User added successfully" });
     
+    
+
     if (newUser) {
       logOperation(req, "successfully", newUser._id);
       next();
     }
 
+    // Send the login credentials email
+    
     
   } catch (error) {
     console.error("Error adding user:", error);
@@ -105,10 +131,71 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+// exports.updateUser = async (req, res, next) => {
+//   try {
+//     const { userId } = req.params;
+//     const { userImage, userName, email, phoneNo, role, password } = req.body;
+
+//     // Validate input fields
+//     if (!userName || !email || !phoneNo || !role) {
+//       return res.status(400).json({ message: "All fields are required" });
+//     }
+
+//     // Check if any fields conflict with existing users (excluding the current user)
+//     const existingUser = await User.findOne({
+//       $or: [{ userName }, { email }, { phoneNo }],
+//       _id: { $ne: userId },
+//     });
+
+//     if (existingUser) {
+//       let message = "Conflict: ";
+//       if (existingUser.userName === userName) message += "userName already exists. ";
+//       if (existingUser.email === email) message += "userEmail already exists. ";
+//       if (existingUser.phoneNo === phoneNo) message += "phone No already exists. ";
+//       return res.status(400).json({ message: message.trim() });
+//     }
+
+//     // Update the user
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       {userImage, userName, email, phoneNo, role, password },
+//       { new: true }
+//     );
+
+//     if (!updatedUser) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     // If password is updated, send email
+// if (password) {
+//   const emailSent = await sendCredentialsEmail(email, password, userName, false);
+//   if (!emailSent) {
+//     return res
+//       .status(500)
+//       .json({ success: false, message: 'Failed to send updated password email' });
+//   }
+// }
+
+//     res.status(200).json({ message: "User updated successfully" });
+
+//     // Pass operation details to middleware
+//     if (updatedUser) {
+//       logOperation(req, "successfully", updatedUser._id);
+//       next();
+//     }
+
+//   } catch (error) {
+//     console.error("Error updating user:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//     logOperation(req, "Failed");
+//     next();
+//   }
+// };
+
 exports.updateUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const { userImage, userName, email, phoneNo, role } = req.body;
+    const { userImage, userName, email, phoneNo, role, password } = req.body;
 
     // Validate input fields
     if (!userName || !email || !phoneNo || !role) {
@@ -129,12 +216,23 @@ exports.updateUser = async (req, res, next) => {
       return res.status(400).json({ message: message.trim() });
     }
 
+    // Prepare updated fields
+    const updateFields = { userImage, userName, email, phoneNo, role };
+
+    // Hash password if provided
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateFields.password = hashedPassword;
+
+      // Send email with updated credentials
+      const emailSent = await sendCredentialsEmail(email, password, userName, false);
+      if (!emailSent) {
+        return res.status(500).json({ success: false, message: 'Failed to send updated password email' });
+      }
+    }
+
     // Update the user
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {userImage, userName, email, phoneNo, role },
-      { new: true }
-    );
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { new: true });
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -142,7 +240,7 @@ exports.updateUser = async (req, res, next) => {
 
     res.status(200).json({ message: "User updated successfully" });
 
-    // Pass operation details to middleware
+    // Log operation
     if (updatedUser) {
       logOperation(req, "successfully", updatedUser._id);
       next();
@@ -155,6 +253,7 @@ exports.updateUser = async (req, res, next) => {
     next();
   }
 };
+
 
 exports.deleteUser = async (req, res, next) => {
   try {
@@ -211,3 +310,117 @@ const logOperation = (req, status, operationId = null) => {
 
   req.user = log;
 };
+
+// Nodemailer transporter setup using environment variables
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
+  },
+});
+
+
+// Function to send login credentials
+// const sendCredentialsEmail = async (email, password, userName) => {
+//   const mailOptions = {
+//     from: `"BillBizz" <${process.env.EMAIL}>`,
+//     to: email,
+//     subject: 'Your NexPortal Login Credentials',
+//     text: `Dear ${userName},
+
+// Welcome to NexPortal – Sales & Support System.
+
+// Your account has been successfully created, Below are your login credentials:
+  
+// Email: ${email}  
+// Password: ${password}  
+
+// Please note: These credentials are confidential. Do not share them with anyone.
+
+// To get started, log in to your account at:  
+// https://dev.nexportal.billbizz.cloud/  
+
+// If you have any questions or need assistance, please contact our support team.
+
+// Best regards,  
+// The CygnoNex Team  
+// NexPortal  
+// Support: notify@cygnonex.com`,
+//   };
+
+//   try {
+//     await transporter.sendMail(mailOptions);
+//     console.log('Login credentials email sent successfully');
+//     return true;
+//   } catch (error) {
+//     console.error('Error sending login credentials email:', error);
+//     return false;
+//   }
+// };
+
+
+const sendCredentialsEmail = async (email, password, userName, isNew = true) => {
+  const subject = isNew
+    ? 'Your NexPortal Login Credentials'
+    : 'Your NexPortal Password Has Been Updated';
+
+  const text = isNew
+    ? `Dear ${userName},
+
+Welcome to NexPortal – Sales & Support System.
+
+Your account has been successfully created. Below are your login credentials:
+  
+Email: ${email}  
+Password: ${password}  
+
+Please note: These credentials are confidential. Do not share them with anyone.
+
+To get started, log in to your account at:  
+https://dev.nexportal.billbizz.cloud/  
+
+If you have any questions or need assistance, please contact our support team.
+
+Best regards,  
+The CygnoNex Team  
+NexPortal  
+Support: notify@cygnonex.com`
+    : `Dear ${userName},
+
+Your NexPortal password has been successfully updated.
+
+Here are your updated login credentials:
+
+Email: ${email}  
+Password: ${password}  
+
+Please note: These credentials are confidential. Do not share them with anyone.
+
+Log in to your account at:  
+https://dev.nexportal.billbizz.cloud/  
+
+If you did not request this change, please contact our support team immediately.
+
+Best regards,  
+The CygnoNex Team  
+NexPortal  
+Support: notify@cygnonex.com`;
+
+  const mailOptions = {
+    from: `"BillBizz" <${process.env.EMAIL}>`,
+    to: email,
+    subject,
+    text,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Credentials email sent successfully');
+    return true;
+  } catch (error) {
+    console.error('Error sending credentials email:', error);
+    return false;
+  }
+};
+
