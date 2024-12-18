@@ -72,7 +72,7 @@ function LicenserForm({ onClose ,editId}: Props) {
   const onSubmit: SubmitHandler<LicenserData> = async (data:any, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("Form Data", data);
-    // const {licensers,...filteredData}=data
+    
   
     try {
       const fun = editId ? editLicenser : addLicenser; // Select the appropriate function based on editId
