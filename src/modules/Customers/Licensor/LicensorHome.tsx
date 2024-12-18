@@ -60,6 +60,7 @@ const LicensorHome = () => {
                 endDate: license.endDate
                 ? new Date(license.endDate).toLocaleDateString("en-GB")
                 : "N/A",
+                licenserId:license.customerId
                
               })) || [];
              setAllLicenser(transformLicense)

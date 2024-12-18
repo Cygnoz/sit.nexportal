@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "../../components/modal/Modal";
 import Button from "../../components/ui/Button";
 import Table from "../../components/ui/Table";
@@ -7,69 +7,64 @@ import Package from "../../assets/icons/Package";
 import SortBy from "../../components/ui/SortBy";
 import CreateTickets from "./TicketsForm";
 import { useNavigate } from "react-router-dom";
+import useApi from "../../Hooks/useApi";
+import { TicketsData } from "../../Interfaces/Tickets";
+import { endPoints } from "../../services/apiEndpoints";
 
 
 type Props = {}
 
 function TicketsHome({}: Props) {
+  const {request:getAllTickets}=useApi('get',3004)
+  const [allTickets, setAllTickets] = useState<TicketsData[]>([]);
   const navigate=useNavigate()
-  interface LeadData {
-    status: string;
-    subject: string;
-    requestor: string;
-    priority: string;
-    requested: string;
-   
-    
-  }
+ 
 
    // State to manage modal visibility
    const [isModalOpen, setIsModalOpen] = useState(false);
    // Function to toggle modal visibility
    const handleModalToggle = () => {
      setIsModalOpen((prev) => !prev);
+getTickets();
    };
-
-
-
  
   const handleView=(id:any)=>{
     navigate(`/ticketsView/${id}`)
   }
 
-
-  
-
- // Data for the table
-const leadData: LeadData[] = [
-  { subject: "Sample Subject", requestor: "Anjela John", priority: "Normal", requested: "danten@mail.ru", status: "New"},
-  { subject: "Sample Subject", requestor: "Kristin Watson", priority: "High", requested: "warn@mail.ru",  status: "Contacted"},
-  { subject: "Sample Subject", requestor: "Jacob Jones", priority: "Normal", requested: "irnabela@gmail.com",  status: "Closed"},
-  { subject: "Sample Subject", requestor: "Wade Warren", priority: "Normal", requested: "tinest@mail.ru", status: "Closed"},
-  { subject: "Sample Subject", requestor: "Jacob Jones", priority: "High", requested: "irnabela@gmail.com",  status: "Closed" },
-  { subject: "Sample Subject", requestor: "Devon Lane", priority: "High", requested: "qmaho@mail.ru", status: "New" },
-  { subject: "Sample Subject", requestor: "Kathryn Murphy", priority: "Normal", requested: "danten@mail.ru", status: "New" },
-  { subject: "Sample Subject", requestor: "Mason Edwards", priority: "Normal", requested: "masonedwards@mail.com",  status: "Contacted" },
-  { subject: "Sample Subject", requestor: "Lily Anderson", priority: "High", requested: "lily.anderson@mail.com",  status: "New" },
-  { subject: "Sample Subject", requestor: "Oliver Hall", priority: "High", requested: "oliverhall@mail.com",  status: "New" },
-  { subject: "Sample Subject", requestor: "Sophia Lee", priority: "Normal", requested: "sophia.lee@mail.com",  status: "Closed" },
-  { subject: "Sample Subject", requestor: "Ethan Clark", priority: "High", requested: "ethan.clark@mail.com", status: "Contacted"},
-  { subject: "Sample Subject", requestor: "Isabella Carter", priority: "Normal", requested: "isabella.carter@mail.com",  status: "New" },
-  { subject: "Sample Subject", requestor: "Henry Thomas", priority: "High", requested: "henry.thomas@mail.com",  status: "Closed" },
-  { subject: "Sample Subject", requestor: "Ava Jackson", priority: "Normal", requested: "ava.jackson@mail.com",  status: "Contacted"},
-  { subject: "Sample Subject", requestor: "Lucas Wright", priority: "High", requested: "lucas.wright@mail.com",  status: "Closed"},
-];
+       const getTickets=async()=>{
+            try{
+              const {response,error}=await getAllTickets(endPoints.GET_TICKETS)
+              console.log("res",response);
+              
+              if(response && !error){
+                console.log(response.data.tickets);
+               const transformTicket= response.data.tickets?.map((tickets:any) => ({
+                  ...tickets,
+                  name:`${tickets?.customerDetails?.firstName}${tickets?.customerDetails?.lastName?tickets?.customerDetails?.lastName:""}`
+                })) || [];
+               setAllTickets(transformTicket)
+              }
+            }catch(err){
+              console.log(err);
+            }
+          }
+          console.log(allTickets);
+          
+          useEffect(()=>{
+            getTickets()
+          },[])
+        
 
   // Define the columns with strict keys
   // Define the columns with strict keys for LeadData
-const columns: { key: keyof LeadData; label: string }[] = [
-    { key: "status", label: "Status" },
+const columns: {  key: any; label: string }[] = [
+   
   { key: "subject", label: "Subject" },
-  { key: "requestor", label: "Requestor" },
+  { key: "name" , label: "Requestor" },
   { key: "priority", label: "Priority" },
+  { key: "description", label: "Description" },
   { key: "requested", label: "Requested" },
- 
- 
 ];
 
 const sort= 
@@ -127,8 +122,8 @@ const sort=
        <h1 className="text-xl font-bold">Unsolved Tickets</h1>
        <SortBy sort={sort}/>
        </div>
-      <Table<LeadData>
-  data={leadData}
+      <Table<TicketsData>
+  data={allTickets}
   columns={columns}
   headerContents={{
     title: "Ticket Details",

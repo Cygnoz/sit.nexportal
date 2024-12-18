@@ -9,7 +9,8 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-
+import { BarChart, Bar, LabelList } from 'recharts';
+import profileImage from '../../../assets/image/AvatarImg.png'
 interface BDAData {
   employeeId: string;
   bdaName: string;
@@ -135,6 +136,8 @@ const RMViewBDAandGraph = ({}: Props) => {
       leadsClosed: "78",
     },
   ];
+
+
 
   const CustomLegend = () => {
     return (
@@ -306,19 +309,7 @@ const RMViewBDAandGraph = ({}: Props) => {
       amt: 2500,
     },
   ];
-  //const roles = [
-  //   { name: 'Regional Managers', count: 50, color: '#1B6C75' }, // Updated color
-  //   { name: 'Area Managers', count: 30, color: '#30B777' }, // Updated color
-  //   { name: 'BDA', count: 80, color: '#6ABAF3' }, // Updated color
-  //   { name: 'Supervisors', count: 78, color: '#7CD5AB' }, // Updated color
-  //   { name: 'Support Agent', count: 65, color: '#00B5B5' } // Updated color
-  // ];
-
-  // const pieData = roles.map((role) => ({
-  //   x: role.name,
-  //   y: role.count,
-  //   color: role.color
-  // }));
+ 
   // Define the columns with strict keys
   const columns: { key: keyof BDAData; label: string }[] = [
     { key: "employeeId", label: "Employee ID" },
@@ -330,6 +321,82 @@ const RMViewBDAandGraph = ({}: Props) => {
     { key: "leadsClosed", label: "Leads Closed" },
   ];
 
+  
+  // Chart Data
+  const ChartData = [
+    { name: "Page A", uv: 3900, avatar: profileImage },
+    { name: "Page B", uv: 3000, avatar: profileImage },
+    { name: "Page C", uv: 2000, avatar: profileImage },
+    { name: "Page D", uv: 2780, avatar: profileImage },
+    { name: "Page E", uv: 1890, avatar: profileImage },
+    { name: "Page F", uv: 2390, avatar: profileImage },
+    { name: "Page G", uv: 3490, avatar: profileImage },
+    { name: "Page H", uv: 4000, avatar: profileImage },
+    { name: "Page G", uv: 3490, avatar: profileImage },
+    { name: "Page H", uv: 4000, avatar: profileImage },
+  ];
+  
+  // Normalize the data
+  const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
+  const normalizedData = ChartData.map((entry) => ({
+    ...entry,
+    uv: (entry?.uv / maxValue) * 100,
+  }));
+  
+
+  
+  
+  
+  
+  // Custom Bubble Component
+  const CustomBubble = (props:any) => {
+    const { x, y } = props;
+  
+    if (x == null || y == null) return null;
+    return (
+      <div
+        style={{
+          position: "absolute",
+          left: `${x - 4}px`,
+          top: `${y - 8}px`,
+          width: "8px",
+          height: "8px",
+          backgroundColor: "#30B777",
+          borderRadius: "50%",
+        }}
+      />
+    );
+  };
+  
+  // Custom Bar Shape with Curved Top
+  const CustomBarWithCurve = (props:any) => {
+    const { x, y, width, height, fill } = props;
+  
+    if (!x || !y || !width || !height) return null;
+  
+    const radius = width / 2;
+    const gap = 2;
+  
+    return (
+      <>
+        <rect
+          x={x}
+          y={y + gap}
+          width={width}
+          height={height - radius - gap}
+          fill={fill}
+          rx={radius}
+          ry={radius}
+        />
+        <circle
+          cx={x + radius}
+          cy={y - radius + gap}
+          r={radius}
+          fill="#30B777"
+        />
+      </>
+    );
+  };
   return (
     <div>
       {/* Table Section */}
@@ -429,8 +496,56 @@ const RMViewBDAandGraph = ({}: Props) => {
             </div>
           </div>
         </div>
-        <div className="col-span-5 py-32">
-          <p>Sales Revenue By Team Member</p>
+        <div className="col-span-5">
+        <div className='w-full h-fit p-4 bg-white rounded-lg'>
+      <p className="text-[#303F58] text-lg font-bold p-3">Top performing Area Managers</p>
+      <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
+
+      <div className="relative">
+      <BarChart
+  className="h-fit"
+  barGap={54}
+  barCategoryGap="40%"
+  width={560}
+  height={350}
+  data={normalizedData}
+>
+  {/* Cartesian Grid */}
+  <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
+
+  {/* Y-Axis */}
+  <YAxis
+    tickFormatter={(tick) => `${tick}%`}
+    domain={[0, 100]}
+    ticks={[0, 20, 40, 60, 80, 100]}
+    axisLine={false}
+    tickLine={false}
+  />
+
+  {/* Bar with custom curved shape */}
+  <Bar
+  dataKey="uv"
+  fill="#B9E3CF"
+  barSize={8}
+  shape={<CustomBarWithCurve />}
+>
+  {/* Add bubbles at the top */}
+  <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
+
+</Bar>
+
+</BarChart>
+<div className='flex ms-20 gap-[29px] -mt-2'>
+{ChartData.map((chart)=>(
+  <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
+)) 
+}
+ </div>
+ 
+
+      </div>
+    </div>
+
         </div>
       </div>
     </div>

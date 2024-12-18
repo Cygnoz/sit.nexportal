@@ -32,6 +32,7 @@ const validationSchema = Yup.object({
 });
 
 function TicketsForm({ onClose }: Props) {
+  const {request:addTickets}=useApi('post',3004)
   const {request:getAllLicenser}=useApi('get',3001)
   const [allLicenser, setAllLicenser] = useState<any[]>([]);
   const { request: getAllSA } = useApi("get", 3003);
@@ -47,13 +48,43 @@ function TicketsForm({ onClose }: Props) {
     resolver: yupResolver(validationSchema),
   });
 
-  const onSubmit: SubmitHandler<TicketsData> = (data) => {
-    console.log("Form Data:", data);
-  };
+  // const onSubmit: SubmitHandler<TicketsData> = (data) => {
+  //   console.log("Form Data:", data);
+  // };
 
   const handleInputChange = (field: keyof TicketsData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
+
+  const Priority = [
+    { label: "Low", value: "Low" },
+    { label: "Medium", value: "Medium" },
+    { label: "High", value: "High" },
+  ];
+
+  const onSubmit: SubmitHandler<TicketsData> = async (data: any, event) => {
+    event?.preventDefault(); // Prevent default form submission behavior
+    console.log("Form Data", data);
+  
+    try {
+      // Call addLicenser function for adding a new licenser
+      const { response, error } = await addTickets(endPoints.TICKETS, data);
+  
+      console.log("Response:", response);
+      console.log("Error:", error);
+  
+      if (response && !error) {
+        toast.success(response.data.message); // Show success toast
+        onClose(); // Close the form/modal
+      } else {
+        toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
+      }
+    } catch (err) {
+      console.error("Error submitting tickets data:", err);
+      toast.error("An unexpected error occurred."); // Handle unexpected errors
+    }
+  };
+  
 
    const getLicensers=async()=>{
             try{
@@ -114,7 +145,7 @@ function TicketsForm({ onClose }: Props) {
       <div className="p-2 space-y-1 text-[#4B5C79] py-2 w-[100%]">
         <div className="flex justify-between p-2">
           <div>
-            <h3 className="text-[#303F58] font-bold text-lg">Add Commission Profile</h3>
+            <h3 className="text-[#303F58] font-bold text-lg">Add Tickets</h3>
             <p className="text-[11px] text-[#8F99A9] mt-1">
               Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
               eiusmod tempor incididunt.
@@ -170,11 +201,7 @@ function TicketsForm({ onClose }: Props) {
                     label="Priority"
                     placeholder="High"
                     error={errors.priority?.message}
-                    options={[
-                      { value: "name", label: "normal" },
-                      { value: "name", label: "High" },
-                      { value: "name", label: "normal" },
-                    ]}
+                    options={Priority}
                     {...register("priority")}
                   />
                   
