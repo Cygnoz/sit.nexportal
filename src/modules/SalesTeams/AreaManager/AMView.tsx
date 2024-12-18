@@ -158,72 +158,109 @@ const AMView = ({ }: Props) => {
   }));
 
 
+
+  // Chart Data
   const ChartData = [
-    { name: 'Page A', uv: 4000, pv: 2400, amt: 2400, avatar: profileImage },
-    { name: 'Page B', uv: 3000, pv: 1398, amt: 2210, avatar: profileImage },
-    { name: 'Page C', uv: 2000, pv: 9800, amt: 2290, avatar: profileImage },
-    { name: 'Page D', uv: 2780, pv: 3908, amt: 2000, avatar: profileImage },
-    { name: 'Page E', uv: 1890, pv: 4800, amt: 2181, avatar: profileImage },
-    { name: 'Page F', uv: 2390, pv: 3800, amt: 2500, avatar: profileImage },
-    { name: 'Page G', uv: 3490, pv: 4300, amt: 2100, avatar: profileImage },
-    { name: 'Page H', uv: 4000, pv: 2400, amt: 2400, avatar: '/images/avatar1.jpg' },
-    { name: 'Page I', uv: 3000, pv: 1398, amt: 2210, avatar: 'https://via.placeholder.com/18' },
-    { name: 'Page J', uv: 1800, pv: 9800, amt: 2290, avatar: 'https://via.placeholder.com/18' },
-    { name: 'Page K', uv: 2280, pv: 3908, amt: 2000, avatar: 'https://via.placeholder.com/18' },
-  ];  
+    { name: "Page A", uv: 3900, avatar: profileImage },
+    { name: "Page B", uv: 3000, avatar: profileImage },
+    { name: "Page C", uv: 2000, avatar: profileImage },
+    { name: "Page D", uv: 2780, avatar: profileImage },
+    { name: "Page E", uv: 1890, avatar: profileImage },
+    { name: "Page F", uv: 2390, avatar: profileImage },
+    { name: "Page G", uv: 3490, avatar: profileImage },
+    { name: "Page H", uv: 4000, avatar: profileImage },
+    { name: "Page G", uv: 3490, avatar: profileImage },
+    { name: "Page H", uv: 4000, avatar: profileImage },
+  ];
+  
   // Normalize the data
   const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
   const normalizedData = ChartData.map((entry) => ({
     ...entry,
-    uv: (entry?.uv / maxValue) * 100, // Convert `uv` values to percentages
+    uv: (entry?.uv / maxValue) * 100,
   }));
   
+  // // Custom Avatar Component
+  const CustomAvatar = ({ x, y, index }) => {
+    const currentData = normalizedData[index];
+    console.log("CustomAvatar Props:", { x, y, index, avatar: currentData?.avatar });
+  
+    if (!currentData?.avatar || x == null || y == null) {
+      console.error("Avatar is missing or invalid coordinates.");
+      return null;
+    }
+  
+    return (
+      <img
+    src={currentData.avatar}
+    alt="Avatar"
+    style={{
+      position: "absolute",
+      left: `${x - 9}px`,
+      top: `${y + 5}px`,
+      width: "18px",
+      height: "18px",
+      borderRadius: "50%",
+      zIndex: 9999, // High z-index to rule out overlapping issues
+      background: "red", // Temporary debug background
+    }}
+  />
+    );
+  };
+  
+  
+  
+  
   // Custom Bubble Component
-  const CustomBubble = (props:any) => {
+  const CustomBubble = (props) => {
     const { x, y } = props;
-    console.log(x,y);
-    
+  
     if (x == null || y == null) return null;
     return (
       <div
         style={{
-          position: 'absolute',
-          left: x - 4, // Center the bubble
-          top: y - 8, // Position above the bar
-          width: '8px',
-          height: '8px',
-          backgroundColor: '#30B777', // Bubble color
-          borderRadius: '50%',
+          position: "absolute",
+          left: `${x - 4}px`,
+          top: `${y - 8}px`,
+          width: "8px",
+          height: "8px",
+          backgroundColor: "#30B777",
+          borderRadius: "50%",
         }}
-        // className='w-2 h-2 rounded-full bg-[#30B777]'
       />
     );
   };
   
-  // Custom Avatar Component
-  const CustomAvatar = (props:any) => {
-    const { x, y, payload } = props;
-    console.log(payload);
-    
+  // Custom Bar Shape with Curved Top
+  const CustomBarWithCurve = (props) => {
+    const { x, y, width, height, fill } = props;
   
-    if (x == null || y == null) return null;
+    if (!x || !y || !width || !height) return null;
+  
+    const radius = width / 2;
+    const gap = 2;
   
     return (
-      <img
-        src={payload?.avatar} // Correctly defined as a string now
-        alt="Avatar"
-        style={{
-          position: 'absolute',
-          left: x - 9, // Center the avatar
-          top: y + 5, // Position below the bar
-          width: '18px',
-          height: '18px',
-          borderRadius: '50%',
-        }}
-      />
+      <>
+        <rect
+          x={x}
+          y={y + gap}
+          width={width}
+          height={height - radius - gap}
+          fill={fill}
+          rx={radius}
+          ry={radius}
+        />
+        <circle
+          cx={x + radius}
+          cy={y - radius + gap}
+          r={radius}
+          fill="#30B777"
+        />
+      </>
     );
   };
-        
+            
   return (
     <div >
       <div className="flex items-center text-[16px] my-2 space-x-2">
@@ -333,11 +370,11 @@ const AMView = ({ }: Props) => {
       <AMViewCardandTable />
       {/* Charts */}
       <div className="grid grid-cols-12 py-12 gap-4">
-        <div className="col-span-4">
-          <div className="bg-white h-[450px] rounded-lg w-full p-3">
+        <div className="col-span-4 h-full">
+          <div className="bg-white rounded-lg w-full h-full  p-3">
             <h1 className="text-[#303F58] text-lg font-bold p-3">Lead status distribution</h1>
             <div className="-mt-3 relative">
-              <div className='absolute top-32 left-[150px] z-20 text-center -mt-4'>
+              <div className='absolute top-[35%] left-[39%] z-20 text-center -mt-4'>
                 <p className='text-xl font-semibold ms-4'>3456</p>
                 <p className='text-xs ms-4'>Total Leads</p>
               </div>
@@ -358,9 +395,10 @@ const AMView = ({ }: Props) => {
                 }}
 
               />
-              <div className="space-y-2 ms-16">
+              <div className='flex justify-center'>
+              <div className="space-y-3">
                 {roles.map((role) => (
-                  <div key={role.name} className="flex items-center gap-20 w-72 justify-between">
+                  <div key={role.name} className="flex items-center gap-20 w-64 justify-between">
                     <div className="flex items-center gap-2">
                       <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
                       <span className="text-gray-800 font-medium text-xs">{role.name}</span>
@@ -368,6 +406,7 @@ const AMView = ({ }: Props) => {
                     <span className=" text-gray-600 text-xs">{role.count}</span>
                   </div>
                 ))}
+              </div> 
               </div>
             </div>
           </div>
@@ -378,41 +417,47 @@ const AMView = ({ }: Props) => {
       <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
 
       <div className="relative">
-        <BarChart
-          className='h-fit'
-          barGap={54}
-          barCategoryGap="40%"
-          width={774}
-          height={350}
-          data={normalizedData}
-        >
-          {/* Cartesian Grid */}
-          <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
+      <BarChart
+  className="h-fit"
+  barGap={54}
+  barCategoryGap="40%"
+  width={940}
+  height={350}
+  data={normalizedData}
+>
+  {/* Cartesian Grid */}
+  <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
 
-          {/* Y-Axis */}
-          <YAxis
-            tickFormatter={(tick) => `${tick}%`}
-            domain={[0, 100]}
-            ticks={[0, 20, 40, 60, 80, 100]}
-            axisLine={false}
-            tickLine={false}
-          />
+  {/* Y-Axis */}
+  <YAxis
+    tickFormatter={(tick) => `${tick}%`}
+    domain={[0, 100]}
+    ticks={[0, 20, 40, 60, 80, 100]}
+    axisLine={false}
+    tickLine={false}
+  />
 
-          {/* Bar Configuration */}
-          <Bar dataKey="uv" fill="#B9E3CF" barSize={8}>
-            {/* Add bubbles at the top */}
-            <LabelList
-              dataKey="uv"
-              content={(props) => <CustomBubble {...props} />}
-            />
+  {/* Bar with custom curved shape */}
+  <Bar
+  dataKey="uv"
+  fill="#B9E3CF"
+  barSize={8}
+  shape={<CustomBarWithCurve />}
+>
+  {/* Add bubbles at the top */}
+  <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
 
-            {/* Add avatars at the bottom */}
-            <LabelList
-              dataKey="uv"
-              content={(props) => <CustomAvatar {...props} />}
-            />
-          </Bar>
-        </BarChart>
+</Bar>
+
+</BarChart>
+<div className='flex ms-24 gap-[67px] -mt-2'>
+{ChartData.map((chart)=>(
+  <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
+)) 
+}
+ </div>
+ 
+
       </div>
     </div>
 

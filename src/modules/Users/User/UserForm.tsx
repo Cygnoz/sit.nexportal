@@ -249,10 +249,10 @@ const editValidationSchema = Yup.object({
                   setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                 }}
               />
-              {user?.role==='Super Admin' && (
+          
                 <>
                   <InputPasswordEye
-                    label="Password"
+                    label={editId?"New Password":"Password"}
                     required
                     placeholder="Enter your password"
                     error={errors.password?.message}
@@ -266,7 +266,7 @@ const editValidationSchema = Yup.object({
                     {...register("confirmPassword")}
                   />
                 </>
-              )}
+              
               <Select
                 required
                 label="Role"
