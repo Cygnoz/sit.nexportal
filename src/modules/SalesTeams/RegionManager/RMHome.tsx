@@ -60,7 +60,7 @@ const handleEdit=(id:any)=>{
               dateOfJoining: region.dateOfJoining
               ? new Date(region.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail:region.user.email
+            loginEmail:region?.user?.email
           })) || [];
           setAllRms(transformedRMss);
       } else {
