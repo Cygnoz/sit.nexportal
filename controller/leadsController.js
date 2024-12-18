@@ -119,7 +119,7 @@ exports.getLead = async (req, res) => {
 exports.getAllLeads = async (req, res) => {
   try {
     // Fetch all leads from the database
-    const leads = await Leads.find({ customerStatus: "lead" });
+    const leads = await Leads.find({ customerStatus: "Lead" });
 
     // Check if leads exist
     if (!leads || leads.length === 0) {
