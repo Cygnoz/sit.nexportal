@@ -158,96 +158,77 @@ const AMView = ({ }: Props) => {
   }));
 
 
+
+  // Chart Data
   const ChartData = [
-    { name: 'Page A', uv: 3900, pv: 2400, amt: 2400, avatar: profileImage },
-    { name: 'Page B', uv: 3000, pv: 1398, amt: 2210, avatar: profileImage },
-    { name: 'Page C', uv: 2000, pv: 9800, amt: 2290, avatar: profileImage },
-    { name: 'Page D', uv: 2780, pv: 3908, amt: 2000, avatar: profileImage },
-    { name: 'Page E', uv: 1890, pv: 4800, amt: 2181, avatar: profileImage },
-    { name: 'Page F', uv: 2390, pv: 3800, amt: 2500, avatar: profileImage },
-    { name: 'Page G', uv: 3490, pv: 4300, amt: 2100, avatar: profileImage },
-    { name: 'Page H', uv: 4000, pv: 2400, amt: 2400, avatar: '/images/avatar1.jpg' },
-    { name: 'Page I', uv: 3000, pv: 1398, amt: 2210, avatar: 'https://via.placeholder.com/18' },
-    { name: 'Page J', uv: 1800, pv: 9800, amt: 2290, avatar: 'https://via.placeholder.com/18' },
-    { name: 'Page K', uv: 2280, pv: 3908, amt: 2000, avatar: 'https://via.placeholder.com/18' },
-  ];  
+    { name: "Page A", uv: 3900, avatar: profileImage },
+    { name: "Page B", uv: 3000, avatar: profileImage },
+    { name: "Page C", uv: 2000, avatar: profileImage },
+    { name: "Page D", uv: 2780, avatar: profileImage },
+    { name: "Page E", uv: 1890, avatar: profileImage },
+    { name: "Page F", uv: 2390, avatar: profileImage },
+    { name: "Page G", uv: 3490, avatar: profileImage },
+    { name: "Page H", uv: 4000, avatar: profileImage },
+    { name: "Page G", uv: 3490, avatar: profileImage },
+    { name: "Page H", uv: 4000, avatar: profileImage },
+  ];
+  
   // Normalize the data
   const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
   const normalizedData = ChartData.map((entry) => ({
     ...entry,
-    uv: (entry?.uv / maxValue) * 100, // Convert `uv` values to percentages
+    uv: (entry?.uv / maxValue) * 100,
   }));
+  
+
+  
+  
+  
   
   // Custom Bubble Component
   const CustomBubble = (props:any) => {
     const { x, y } = props;
-    console.log(x,y);
-    
+  
     if (x == null || y == null) return null;
     return (
       <div
         style={{
-          position: 'absolute',
-          left: x - 4, // Center the bubble
-          top: y - 8, // Position above the bar
-          width: '8px',
-          height: '8px',
-          backgroundColor: '#30B777', // Bubble color
-          borderRadius: '50%',
-        }}
-        // className='w-2 h-2 rounded-full bg-[#30B777]'
-      />
-    );
-  };
-  
-  // Custom Avatar Component
-  const CustomAvatar = (props:any) => {
-    const { x, y, payload } = props;
-    console.log(payload);
-    
-  
-    if (x == null || y == null) return null;
-  
-    return (
-      <img
-        src={payload?.avatar} // Correctly defined as a string now
-        alt="Avatar"
-        style={{
-          position: 'absolute',
-          left: x - 9, // Center the avatar
-          top: y + 5, // Position below the bar
-          width: '18px',
-          height: '18px',
-          borderRadius: '50%',
+          position: "absolute",
+          left: `${x - 4}px`,
+          top: `${y - 8}px`,
+          width: "8px",
+          height: "8px",
+          backgroundColor: "#30B777",
+          borderRadius: "50%",
         }}
       />
     );
   };
-  const CustomBarWithCurve = (props: any) => {
+  
+  // Custom Bar Shape with Curved Top
+  const CustomBarWithCurve = (props:any) => {
     const { x, y, width, height, fill } = props;
   
     if (!x || !y || !width || !height) return null;
   
-    const radius = width / 2; // Half width for a smooth curve
-    const gap = 2; // Gap between the bar and the circle
+    const radius = width / 2;
+    const gap = 2;
   
     return (
       <>
-        {/* Main Rectangle Bar */}
         <rect
           x={x}
-          y={y + gap} // Add the gap here
+          y={y + gap}
           width={width}
-          height={height - radius - gap} // Adjust height to leave room for the circle
+          height={height - radius - gap}
           fill={fill}
-          rx={radius} // Rounded corners for the bar
+          rx={radius}
           ry={radius}
         />
-        {/* Top Circle with Gap */}
         <circle
-          cx={x + radius} // Center horizontally
-          cy={y - radius + gap} // Position the circle above the bar with the gap
-          r={radius} // Radius matches half the bar width
+          cx={x + radius}
+          cy={y - radius + gap}
+          r={radius}
           fill="#30B777"
         />
       </>
@@ -363,11 +344,11 @@ const AMView = ({ }: Props) => {
       <AMViewCardandTable />
       {/* Charts */}
       <div className="grid grid-cols-12 py-12 gap-4">
-        <div className="col-span-4">
-          <div className="bg-white h-[450px] rounded-lg w-full p-3">
+        <div className="col-span-4 h-full">
+          <div className="bg-white rounded-lg w-full h-full  p-3">
             <h1 className="text-[#303F58] text-lg font-bold p-3">Lead status distribution</h1>
             <div className="-mt-3 relative">
-              <div className='absolute top-32 left-[150px] z-20 text-center -mt-4'>
+              <div className='absolute top-[35%] left-[39%] z-20 text-center -mt-4'>
                 <p className='text-xl font-semibold ms-4'>3456</p>
                 <p className='text-xs ms-4'>Total Leads</p>
               </div>
@@ -388,9 +369,10 @@ const AMView = ({ }: Props) => {
                 }}
 
               />
-              <div className="space-y-2 ms-16">
+              <div className='flex justify-center'>
+              <div className="space-y-3">
                 {roles.map((role) => (
-                  <div key={role.name} className="flex items-center gap-20 w-72 justify-between">
+                  <div key={role.name} className="flex items-center gap-20 w-64 justify-between">
                     <div className="flex items-center gap-2">
                       <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
                       <span className="text-gray-800 font-medium text-xs">{role.name}</span>
@@ -398,6 +380,7 @@ const AMView = ({ }: Props) => {
                     <span className=" text-gray-600 text-xs">{role.count}</span>
                   </div>
                 ))}
+              </div> 
               </div>
             </div>
           </div>
@@ -412,7 +395,7 @@ const AMView = ({ }: Props) => {
   className="h-fit"
   barGap={54}
   barCategoryGap="40%"
-  width={774}
+  width={940}
   height={350}
   data={normalizedData}
 >
@@ -438,10 +421,17 @@ const AMView = ({ }: Props) => {
   {/* Add bubbles at the top */}
   <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
 
-  {/* Add avatars at the bottom */}
-  <LabelList dataKey="uv" content={(props) => <CustomAvatar {...props} />} />
 </Bar>
+
 </BarChart>
+<div className='flex ms-24 gap-[67px] -mt-2'>
+{ChartData.map((chart)=>(
+  <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
+)) 
+}
+ </div>
+ 
+
       </div>
     </div>
 

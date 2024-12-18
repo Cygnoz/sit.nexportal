@@ -106,10 +106,10 @@ function RegionView({}: Props) {
             //   ? new Date(region.dateOfJoining).toLocaleDateString("en-GB")
             //   : "N/A",
             // loginEmail:region.user.email
-            userName: region.user.userName,
-            email: region.user.email,
-            phoneNo: region.user.phoneNo,
-            userImage: region.user.userImage,
+            userName: region.user?.userName,
+            email: region.user?.email,
+            phoneNo: region.user?.phoneNo,
+            userImage: region.user?.userImage,
           })) || [];
         setData((prevData) => ({
           ...prevData,
