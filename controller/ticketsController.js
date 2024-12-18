@@ -40,7 +40,7 @@ exports.addTicket = async (req, res , next) => {
 
     const cleanedData = cleanTicketData(req.body);
 
-    const { requestor, customerId ,priority, supportAgentId  } = cleanedData;
+    const { customerId ,priority, supportAgentId  } = cleanedData;
 
     // Validate required fields
     if (!requestor || !assignedTo || !priority) {
@@ -54,7 +54,9 @@ exports.addTicket = async (req, res , next) => {
     // Create a new ticket dynamically using req.body
     const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , userId, userName );
     
+
     res.status(201).json({ message: "Ticket added successfully", savedTickets });
+
 
     // Pass operation details to middleware
     ActivityLog(req, "successfully", savedTickets._id);
@@ -131,6 +133,7 @@ exports.getAllTickets = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 exports.getCustomers = async (req, res) => {
   try {
