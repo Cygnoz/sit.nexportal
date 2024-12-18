@@ -84,6 +84,7 @@ const sort=
       }
     
   return (
+    <>
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Tickets</h1>
@@ -144,11 +145,13 @@ const sort=
 
         </div>
      </div>
-      {/* Modal controlled by state */}
-      <Modal className="w-[35%]" open={isModalOpen} onClose={handleModalToggle}>
-      <CreateTickets  onClose={handleModalToggle}/>
-      </Modal>
+      
     </div>
+    {/* Modal controlled by state */}
+    <Modal className="w-[35%]" open={isModalOpen} onClose={handleModalToggle}>
+    <CreateTickets  onClose={handleModalToggle}/>
+    </Modal>
+    </>
   )
 }
 
