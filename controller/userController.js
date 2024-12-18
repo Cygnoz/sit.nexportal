@@ -35,21 +35,14 @@ exports.addUser = async (req, res,next) => {
     }    
     const employeeId = `EMPID-${nextId.toString().padStart(4, '0')}`;
   
-    // const emailSent = await sendCredentialsEmail(email, password,userName);
     
 
-    // if (!emailSent) {
-    //   return res
-    //     .status(500)
-    //     .json({ success: false, message: 'Failed to send login credentials email' });
-    // }
-
-    const emailSent = await sendCredentialsEmail(email, password, userName, true);
-if (!emailSent) {
-  return res
-    .status(500)
-    .json({ success: false, message: 'Failed to send login credentials email' });
-}
+//     const emailSent = await sendCredentialsEmail(email, password, userName, true);
+// if (!emailSent) {
+//   return res
+//     .status(500)
+//     .json({ success: false, message: 'Failed to send login credentials email' });
+// }
 
 
     // Create a new user entry
@@ -216,23 +209,24 @@ exports.updateUser = async (req, res, next) => {
       return res.status(400).json({ message: message.trim() });
     }
 
+    
     // Prepare updated fields
-    const updateFields = { userImage, userName, email, phoneNo, role };
+    // const updateFields = { userImage, userName, email, phoneNo, role };
 
     // Hash password if provided
-    if (password) {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      updateFields.password = hashedPassword;
+    // if (password) {
+    //   const hashedPassword = await bcrypt.hash(password, 10);
+    //   updateFields.password = hashedPassword;
 
-      // Send email with updated credentials
-      const emailSent = await sendCredentialsEmail(email, password, userName, false);
-      if (!emailSent) {
-        return res.status(500).json({ success: false, message: 'Failed to send updated password email' });
-      }
-    }
+    //   // Send email with updated credentials
+    //   const emailSent = await sendCredentialsEmail(email, password, userName, false);
+    //   if (!emailSent) {
+    //     return res.status(500).json({ success: false, message: 'Failed to send updated password email' });
+    //   }
+    // }
 
     // Update the user
-    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { new: true });
+    const updatedUser = await User.findByIdAndUpdate(userId, {userImage, userName, email, phoneNo, role }, { new: true });
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -408,7 +402,7 @@ NexPortal
 Support: notify@cygnonex.com`;
 
   const mailOptions = {
-    from: `"BillBizz" <${process.env.EMAIL}>`,
+    from: `"NexPortal" <${process.env.EMAIL}>`,
     to: email,
     subject,
     text,
