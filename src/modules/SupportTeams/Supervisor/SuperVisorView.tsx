@@ -24,6 +24,7 @@ import { endPoints } from "../../../services/apiEndpoints"
 import AwardIcon from "../../../assets/icons/AwardIcon"
 import SVViewAward from "./SVViewAward"
 import SupervisorForm from "./SupervisorForm"
+import RatingStar from "../../../components/ui/RatingStar"
 
 interface SupervisorData {
     memberID: string;
@@ -117,22 +118,22 @@ const SuperVisorView = ({
 
 
     // Data for the table
-    const data: SupervisorData[] = [
+    const data: any[] = [
 
-        { memberID: "001", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "3" },
-        { memberID: "002", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "003", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "004", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "005", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "****" },
-        { memberID: "006", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "007", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "****" },
-        { memberID: "008", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "***" },
-        { memberID: "009", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "010", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "011", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "012", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "013", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" },
-        { memberID: "014", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: "*****" }
+        { memberID: "001", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar count={5}/> },
+        { memberID: "002", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating: <RatingStar count={5}/> },
+        { memberID: "003", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "004", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "005", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "006", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "007", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "008", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "009", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "010", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "011", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "012", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "013", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> },
+        { memberID: "014", supervisorName: "subi", ticketsResolved: "33", time: "3hrs", rating:  <RatingStar count={5}/> }
     ];
     // Define the columns with strict keys
     const columns: { key: keyof SupervisorData; label: string }[] = [

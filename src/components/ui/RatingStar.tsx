@@ -14,7 +14,7 @@ const RatingStar: React.FC<Props> = ({ count = 0 }) => {
       {
         Array.from({ length: totalStars }, (_, index) => {
           if (index < count) {
-            return <StarFilled key={index} />;
+            return <StarFilled size={16} key={index} />;
           } else {
             return <StarNotFilled key={index} />;
           }

@@ -7,7 +7,13 @@ import RupeeIcon from "../../../assets/icons/RupeeIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-
+import {
+  Bar,
+  BarChart,
+  Cell,
+  Tooltip,
+  XAxis, YAxis
+} from 'recharts';
 
 type Props = {}
 
@@ -107,7 +113,40 @@ const TeamOverview = ({}: Props) => {
     { key: "totalLeads", label: "Total leads" },
     { key: "leadsclosed", label: "Leads Closed" },
   ];
+  
 
+  const AreaRevData = [
+    { name: 'John ', pv: 74479, color: '#4caf50' }, // Green
+    { name: 'Emily', pv: 56335, color: '#2196f3' }, // Blue
+    { name: 'Michael ', pv: 43887, color: '#ff9800' }, // Orange
+    { name: 'Sophia ', pv: 19027, color: '#f44336' }, // Red
+    { name: 'David ', pv: 8142, color: '#9c27b0' }, // Purple
+    { name: 'Olivia', pv: 4918, color: '#3f51b5' }, // Blue
+  ];
+  const CustomizedAxisTick = ({ x, y, payload }: any) => {
+    // Find the corresponding logo for the country
+
+    
+    return (
+      <g transform={`translate(${x},${y})`}>
+        <text
+          y={2}
+          fontSize={14}
+          dy={3}
+          textAnchor="end"
+          fill="#666"
+        >
+          {payload.value}
+        </text>
+      </g>
+    );
+  };
+
+  const CustomLabel = ({ x, y, width, value }:any) => (
+    <text x={x + width + 10} y={y + 13} fontSize={10} textAnchor="start" fill="#000">
+      {value}
+    </text>
+  );
 
   return (
     <div>
@@ -150,13 +189,47 @@ const TeamOverview = ({}: Props) => {
          />
       </div>
       {/* Graph Section*/}
-      <div className="grid grid-cols-12 gap-3">
+      <div className="grid grid-cols-12 gap-3 mt-3">
        
-       <div className="col-span-8 py-32 ">
-        <p>Sales Revenue By Team Member</p>
-
-       </div>
-       <div className="col-span-4 py-32">
+               <div className="col-span-7 mb-4">
+               <div className="bg-white rounded-lg w-full ">
+                   <div className="p-4 space-y-2">
+                     <h1 className="text-lg font-bold">Sales Revenue By Team Member</h1>
+                     <h2 className="text-md">Area 0234</h2>
+                     <h2 className="text-md font-medium text-2xl">₹ 76,789,87</h2>
+                   </div>
+                   <div>
+                 <BarChart
+                                 width={800}
+                                 height={400}
+                                 data={AreaRevData}
+                                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                                 layout="vertical"
+                               >
+                                 <YAxis
+                                   type="category"
+                                   dataKey="name"
+                                   tick={<CustomizedAxisTick />}
+                                   tickLine={false}
+                                   axisLine={{ stroke: '#000' }} // Y axis line
+                                 />
+                                 <XAxis
+                                   type="number"
+                                   tick={{ fontSize: 10 }}
+                                   axisLine={{ stroke: 'transparent' }} // Remove X axis line
+                                   tickLine={false} // Remove ticks on the X axis
+                                 />
+                                 <Tooltip />
+                                 <Bar dataKey="pv" radius={[5, 5, 5, 5]} barSize={20} label={<CustomLabel />}>
+                                   {AreaRevData.map((entry, index) => (
+                                     <Cell key={`cell-${index}`} fill={entry?.color} />
+                                   ))}
+                                 </Bar>
+                               </BarChart>
+                               </div>
+                               </div>
+               </div>
+       <div className="col-span-5 py-32">
         <p>Sales Revenue By Team Member</p>
 
        </div>

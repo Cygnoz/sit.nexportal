@@ -1,7 +1,14 @@
 import { useState } from "react";
 import Table from "../../../components/ui/Table";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, } from 'recharts';
-
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 interface BDAData {
   employeeId: string;
@@ -12,12 +19,10 @@ interface BDAData {
 
   totalLeads: string;
   leadsClosed: string;
-
 }
-type Props = {}
+type Props = {};
 
-const RMViewBDAandGraph = ({ }: Props) => {
-
+const RMViewBDAandGraph = ({}: Props) => {
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
       // navigate(`/leadView/${viewId}`)
@@ -25,39 +30,124 @@ const RMViewBDAandGraph = ({ }: Props) => {
     }
     console.log(editId);
     console.log(deleteId);
-
-  }
+  };
 
   const [selectedMonth, setSelectedMonth] = useState("January"); // State for dropdown selection
   // Data for the table
   const data: BDAData[] = [
-    { employeeId: "BDA111", bdaName: "Subii", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "90", leadsClosed: "78" },
-    { employeeId: "BDA111", bdaName: "Subii", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "90", leadsClosed: "78" },
-    { employeeId: "BDA222", bdaName: "Subii", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "90", leadsClosed: "18" },
-    { employeeId: "BDA111", bdaName: "Subii", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "95", leadsClosed: "78" },
-    { employeeId: "BDA222", bdaName: "Unni", phoneNo: "000999888", emailAdrees: "unnii@gmail.com", dateOfJoining: "5/30/14", totalLeads: "90", leadsClosed: "88" },
-    { employeeId: "BDA111", bdaName: "Subii", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "950", leadsClosed: "78" },
-    { employeeId: "BDA333", bdaName: "kuttu", phoneNo: "000999888", emailAdrees: "kuttu@gmail.com", dateOfJoining: "5/30/14", totalLeads: "590", leadsClosed: "78" },
-    { employeeId: "BDA111", bdaName: "Subii", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "90", leadsClosed: "78" },
-    { employeeId: "BDA111", bdaName: "Subii", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "90", leadsClosed: "58" },
-    { employeeId: "BDA111", bdaName: "kuttu", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "90", leadsClosed: "78" },
-    { employeeId: "BDA111", bdaName: "Subii", phoneNo: "000999888", emailAdrees: "subi@gmail.com", dateOfJoining: "5/30/14", totalLeads: "90", leadsClosed: "78" }
-
-
-
-
+    {
+      employeeId: "BDA111",
+      bdaName: "Subii",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "90",
+      leadsClosed: "78",
+    },
+    {
+      employeeId: "BDA111",
+      bdaName: "Subii",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "90",
+      leadsClosed: "78",
+    },
+    {
+      employeeId: "BDA222",
+      bdaName: "Subii",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "90",
+      leadsClosed: "18",
+    },
+    {
+      employeeId: "BDA111",
+      bdaName: "Subii",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "95",
+      leadsClosed: "78",
+    },
+    {
+      employeeId: "BDA222",
+      bdaName: "Unni",
+      phoneNo: "000999888",
+      emailAdrees: "unnii@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "90",
+      leadsClosed: "88",
+    },
+    {
+      employeeId: "BDA111",
+      bdaName: "Subii",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "950",
+      leadsClosed: "78",
+    },
+    {
+      employeeId: "BDA333",
+      bdaName: "kuttu",
+      phoneNo: "000999888",
+      emailAdrees: "kuttu@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "590",
+      leadsClosed: "78",
+    },
+    {
+      employeeId: "BDA111",
+      bdaName: "Subii",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "90",
+      leadsClosed: "78",
+    },
+    {
+      employeeId: "BDA111",
+      bdaName: "Subii",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "90",
+      leadsClosed: "58",
+    },
+    {
+      employeeId: "BDA111",
+      bdaName: "kuttu",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "90",
+      leadsClosed: "78",
+    },
+    {
+      employeeId: "BDA111",
+      bdaName: "Subii",
+      phoneNo: "000999888",
+      emailAdrees: "subi@gmail.com",
+      dateOfJoining: "5/30/14",
+      totalLeads: "90",
+      leadsClosed: "78",
+    },
   ];
 
   const CustomLegend = () => {
     return (
-      <div className="justify-between mt-6" style={{ display: 'flex', gap: '10px' }}>
-      <span style={{ color: '#e2b0ff' }}>Area1</span>
-      <span style={{ color: '#8884d8' }}>Area2</span>
-      <span style={{ color: '#82ca9d' }}>Area3</span>
-      <span style={{ color: '#d86a57' }}>Area4</span>
-      <span style={{ color: '#6ab6ff' }}>Area5</span>
-    </div>
-    
+      <div
+        className="justify-between mt-6"
+        style={{ display: "flex", gap: "10px" }}
+      >
+        <span style={{ color: "#e2b0ff" }}>Area1</span>
+        <span style={{ color: "#8884d8" }}>Area2</span>
+        <span style={{ color: "#82ca9d" }}>Area3</span>
+        <span style={{ color: "#d86a57" }}>Area4</span>
+        <span style={{ color: "#6ab6ff" }}>Area5</span>
+      </div>
     );
   };
 
@@ -162,7 +252,7 @@ const RMViewBDAandGraph = ({ }: Props) => {
 
   const datas = [
     {
-      name: 'Jan 05',
+      name: "Jan 05",
       Area1: 5673,
       Area2: 5993,
       Area3: 9466,
@@ -171,7 +261,7 @@ const RMViewBDAandGraph = ({ }: Props) => {
       amt: 9000,
     },
     {
-      name: 'Jan 10',
+      name: "Jan 10",
       Area1: 4563,
       Area2: 9467,
       Area3: 6628,
@@ -180,7 +270,7 @@ const RMViewBDAandGraph = ({ }: Props) => {
       amt: 9777,
     },
     {
-      name: 'Jan 15',
+      name: "Jan 15",
       Area1: 1298,
       Area2: 3773,
       Area3: 3783,
@@ -189,7 +279,7 @@ const RMViewBDAandGraph = ({ }: Props) => {
       amt: 8000,
     },
     {
-      name: 'Jan 20',
+      name: "Jan 20",
       Area1: 1890,
       Area2: 4098,
       Area3: 9753,
@@ -198,7 +288,7 @@ const RMViewBDAandGraph = ({ }: Props) => {
       amt: 6000,
     },
     {
-      name: 'Jan 25',
+      name: "Jan 25",
       Area1: 1890,
       Area2: 2800,
       Area3: 1890,
@@ -207,7 +297,7 @@ const RMViewBDAandGraph = ({ }: Props) => {
       amt: 2181,
     },
     {
-      name: 'Jan 30',
+      name: "Jan 30",
       Area1: 1890,
       Area2: 1800,
       Area3: 1800,
@@ -215,7 +305,6 @@ const RMViewBDAandGraph = ({ }: Props) => {
       Area5: 4300,
       amt: 2500,
     },
-
   ];
   //const roles = [
   //   { name: 'Regional Managers', count: 50, color: '#1B6C75' }, // Updated color
@@ -224,7 +313,7 @@ const RMViewBDAandGraph = ({ }: Props) => {
   //   { name: 'Supervisors', count: 78, color: '#7CD5AB' }, // Updated color
   //   { name: 'Support Agent', count: 65, color: '#00B5B5' } // Updated color
   // ];
-  
+
   // const pieData = roles.map((role) => ({
   //   x: role.name,
   //   y: role.count,
@@ -245,37 +334,36 @@ const RMViewBDAandGraph = ({ }: Props) => {
     <div>
       {/* Table Section */}
       <div>
-        <Table<BDAData> data={data} columns={columns} headerContents={{
-          title: 'BDA,S',
-          search: { placeholder: 'Search Invoice by client name, invoice number, or date' },
-
-        }}
-          actionList={[
-
-            { label: 'view', function: handleEditDeleteView },
-          ]} />
+        <Table<BDAData>
+          data={data}
+          columns={columns}
+          headerContents={{
+            title: "BDA,S",
+            search: {
+              placeholder:
+                "Search Invoice by client name, invoice number, or date",
+            },
+          }}
+          actionList={[{ label: "view", function: handleEditDeleteView }]}
+        />
       </div>
 
-
       {/* Graph Section*/}
-
 
       <div className="grid grid-cols-12 gap-3 mt-4">
         {/* Table Section */}
         <div className="col-span-7">
           <div className="py-3 bg-white p-2">
-
             <div className="py-1 ms-2 flex justify-between">
-              <h2 className='font-bold'>Lead Conversion Rate per Region</h2>
+              <h2 className="font-bold">Lead Conversion Rate per Region</h2>
               <div className="">
-                <label htmlFor="month-select" ></label>
+                <label htmlFor="month-select"></label>
                 <select
-                className="bg-[#FEFDFA] rounded-lg"
-              
+                  className="bg-[#FEFDFA] rounded-lg"
                   id="month-select"
                   value={selectedMonth}
                   onChange={(e) => setSelectedMonth(e.target.value)}
-                  style={{ padding: "5px",  border: "1px solid #ccc" }}
+                  style={{ padding: "5px", border: "1px solid #ccc" }}
                 >
                   {Object.keys(datass).map((month) => (
                     <option key={month} value={month}>
@@ -286,46 +374,67 @@ const RMViewBDAandGraph = ({ }: Props) => {
               </div>
             </div>
             <div className="mt-5">
-            <LineChart
-      width={800}
-      height={400}
-      data={datas}
-      margin={{
-        top: 5,
-        right: 30,
-        left: 20,
-        bottom: 5,
-      }}
-    >
-      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-      <XAxis dataKey="name" axisLine={false} tickLine={false} />
-      <YAxis axisLine={false} tickLine={false} />
-      <Tooltip />
-      <Legend content={<CustomLegend />} />
-      <Line type="monotone" dataKey="Area1" stroke="#e2b0ff" strokeWidth={3} dot={false} />
-      <Line type="monotone" dataKey="Area2" stroke="#8884d8" strokeWidth={3} dot={false} />
-      <Line type="monotone" dataKey="Area3" stroke="#82ca9d" strokeWidth={3} dot={false} />
-      <Line type="monotone" dataKey="Area4" stroke="#d86a57" strokeWidth={3} dot={false} />
-      <Line type="monotone" dataKey="Area5" stroke="#6ab6ff" strokeWidth={3} dot={false} />
-    </LineChart>
-
-
+              <LineChart
+                width={800}
+                height={400}
+                data={datas}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip />
+                <Legend content={<CustomLegend />} />
+                <Line
+                  type="monotone"
+                  dataKey="Area1"
+                  stroke="#e2b0ff"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area2"
+                  stroke="#8884d8"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area3"
+                  stroke="#82ca9d"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area4"
+                  stroke="#d86a57"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area5"
+                  stroke="#6ab6ff"
+                  strokeWidth={3}
+                  dot={false}
+                />
+              </LineChart>
             </div>
-
-
           </div>
-        
         </div>
         <div className="col-span-5 py-32">
           <p>Sales Revenue By Team Member</p>
-
         </div>
-
-
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default RMViewBDAandGraph
+export default RMViewBDAandGraph;

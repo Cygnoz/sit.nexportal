@@ -46,6 +46,8 @@ export const endPoints = {
   LEADS: "/leads",
   LEAD: "/lead",
 
+  // All Counts
+  COUNTS:'/counts',
   //Licenser
   LICENSER: "/licenser",
 };

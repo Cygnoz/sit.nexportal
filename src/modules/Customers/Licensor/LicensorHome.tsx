@@ -15,12 +15,14 @@ import TrialIcon from "../../../assets/icons/TrialIcon";
 import LeadIcon from "../../../assets/icons/LeadIcon";
 import AddLicenser from "./LicenserForm";
 import { useNavigate } from "react-router-dom";
+import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import { LicenserData } from "../../../Interfaces/Licenser";
 
 
 const LicensorHome = () => {
+  const {totalCounts}=useRegularApi()
   const {request:getAllLicenser}=useApi('get',3001)
    const [allLicenser, setAllLicenser] = useState<LicenserData[]>([]);
    
@@ -75,7 +77,7 @@ const LicensorHome = () => {
 
       // Data for HomeCards
   const homeCardData = [
-    { icon: <Boxes />, number: "526", title: "Total Licenser",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
+    { icon: <Boxes />, number: totalCounts?.totalLicensor, title: "Total Licenser",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
     { icon: <CalenderDays />, number: "110", title: "Licenser Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
     { icon: <Package />, number: "56", title: "Closed Licenser",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
     { icon: <PackageCheck />, number: "100", title: "Converted Licenser",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },

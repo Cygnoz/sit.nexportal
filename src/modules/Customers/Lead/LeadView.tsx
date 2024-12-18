@@ -153,7 +153,7 @@ function LeadView({}: Props) {
 
     </div>
       {activeTab==="Overview"&&(
-        <ViewOverflow/>
+        <ViewOverflow getOneLead={getOneLead} leadData={leadData}/>
       )}
 
     {activeTab==="Activities"&&(

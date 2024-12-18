@@ -19,6 +19,14 @@ import BDAForm from "../BDAForm";
 import GraphTable from "../GraphTable";
 import BDAViewAward from "./BDAViewAward";
 import BDAViewForm from "./BDAViewForm";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Tooltip,
+  XAxis, YAxis
+} from 'recharts';
 
 interface BDAViewData {
   leadId:string;
@@ -147,6 +155,17 @@ const BDAView = ({}: Props) => {
   useEffect(() => {
     getOneBDA()
   }, [id]);
+
+  const leadConversionData = [
+    { name: 'Area 1', uv: 35, },
+    { name: 'Area 2', uv: 20, },
+    { name: 'Area 3', uv: 10, },
+    { name: 'Area 4', uv: 30, },
+    { name: 'Area 5', uv: 30, },
+  ];
+
+  const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
+
   return (
     <>
     <div>
@@ -155,9 +174,9 @@ const BDAView = ({}: Props) => {
         <ChevronRight color="#4B5C79" size={18}/>
         <p className="font-bold text-[#303F58] ">{data.bdaData?.user?.userName}</p>
       </div>
-      <div className="grid grid-cols-12">
+      <div className="grid grid-cols-12 gap-3">
         <div className="col-span-2">
-        <div className="mt-4">
+        <div className="">
             {viewCardData.map((card, index) => (
               <div className="mb-3">
               <ViewCard
@@ -173,8 +192,35 @@ const BDAView = ({}: Props) => {
           </div>
 
         </div>
-        <div className="col-span-6">
-        </div>
+          <div className="col-span-6">
+          <div className="p-3 bg-white w-full space-y-2 rounded-lg">
+                       <h2 className='font-bold'>Lead By Status</h2>
+                       <h2>Converted Leads</h2>
+                       <h1 className='text-2xl font-medium'>567</h1>
+               
+                       <div className='-ms-7 mt-2'>
+                       <BarChart width={700} height={360} data={leadConversionData}>
+                       <CartesianGrid   strokeDasharray="3 3" vertical={false}/>
+                   
+                   {/* Hide axis lines but keep labels visible */}
+                   <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                   <YAxis axisLine={false} tickLine={false} />
+                   
+                   {/* Remove the legend for 'uv' */}
+                   <Tooltip />
+                   
+                   <Bar barSize={90} dataKey="uv" radius={10} >
+                     {
+                       leadConversionData.map((data, index) => (
+                         <Cell key={`cell-${data.name}`} fill={colors[index]} />
+                       ))
+                     }
+                   </Bar>
+                 </BarChart>
+                       </div>
+                   
+                       </div>
+          </div>
         <div className="col-span-4 rounded-xl bg-cover"  style={{backgroundImage:`url(${backGroundView})`}}>
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
@@ -276,7 +322,7 @@ const BDAView = ({}: Props) => {
       </div>
         
      {/* Table Section */}
-      <div className="ms-4 mt-4">
+      <div className=" mt-4">
         <Table<BDAViewData> data={bdaData} columns={columns} headerContents={{
           title: "Leads Details",
           search: { placeholder: 'Search BDA by Name' },

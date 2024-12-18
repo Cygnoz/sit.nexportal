@@ -24,6 +24,9 @@ const SettingsHome = ({ }: Props) => {
     const tabs = ["Layout", "Design", "Content"]
     const [activeTab, setActiveTab] = useState<string>("Layout");
 
+    const [isToggled, setIsToggled] = useState(false);
+
+
     return (
         <div>
             <div className="grid grid-cols-12">
@@ -162,21 +165,21 @@ const SettingsHome = ({ }: Props) => {
                                             </div>
                                             <div className="bg-[#184D81] w-44 h-24 rounded-lg">
                                                 <div className="ms-20 p-1 mt-[17px]">
-                                                    <Polygon size={80}/>
+                                                    <Polygon size={80} />
                                                 </div>
                                             </div>
                                             <div className="bg-[#184D81] w-44 h-24 rounded-lg">
                                                 <div className="bg-[#57B1F2] w-16 h-3 my-1 rotate-45 ms-28 mt-[58px]"></div>
-                                                <div className="bg-[#57B1F2] w-16 h-3 my-1 -rotate-45 ms-28 -mt-4"></div>   
+                                                <div className="bg-[#57B1F2] w-16 h-3 my-1 -rotate-45 ms-28 -mt-4"></div>
                                                 <div className="bg-[#57B1F2] w-16 h-3 my-1 rotate-90 ms-28 -mt-4"></div>
                                             </div>
-                                            <div className="bg-[#184D81] w-44 h-24 rounded-lg"> 
+                                            <div className="bg-[#184D81] w-44 h-24 rounded-lg">
                                                 <div className="ms-[104px] mt-1">
-                                                    <ArrowPolygon size={60}/>
+                                                    <ArrowPolygon size={60} />
                                                     <div className="-mt-7">
-                                                    <Polygon8 size={60}/>
+                                                        <Polygon8 size={60} />
                                                     </div>
-                                                    
+
                                                 </div>
                                             </div>
                                             <div className="bg-[#184D81] w-44 h-24 rounded-lg">
@@ -237,12 +240,52 @@ const SettingsHome = ({ }: Props) => {
                                 {activeTab === "Content" && (
                                     <div>
                                         <div className="mt-4">
-                                            <p className="my-2 text-[#303F58] text-base font-bold">Edit Details</p>
+                                            <p className="my-2 text-[#303F58] text-base font-bold px-2">Edit Details</p>
 
-                                            <div className="flex gap-56 ms-2">
+                                            <div className="flex gap-44 ms-2 mt-6 px-1">
+                                                <div className="flex gap-2">
                                                 <p>Profile Photo</p>
-                                                <p className="">Company Logo</p>
-                                            </div>
+                                                <label className="relative inline-flex items-center cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        value=""
+                                                        className="sr-only peer"
+                                                        onChange={() => setIsToggled(!isToggled)}
+                                                    />
+                                                    <div
+                                                        className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
+                                                                     peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 
+                                                                     peer-checked:bg-gray-700 peer-checked:after:translate-x-full 
+                                                                     peer-checked:after:border-white after:content-[''] after:absolute 
+                                                                    after:top-1 after:left-1 after:bg-white after:border-gray-300 
+                                                                     after:border after:rounded-full after:h-4 after:w-4 after:transition-all`}
+                                                    ></div>
+                                                </label>
+
+                                                </div>
+                                                <div className="flex gap-2">
+                                                <p>Company Logo</p>
+                                                <label className="relative inline-flex items-center cursor-pointer">
+                                                    <input
+                                                        type="checkbox"
+                                                        value=""
+                                                        className="sr-only peer"
+                                                        onChange={() => setIsToggled(!isToggled)}
+                                                    />
+                                                    <div
+                                                        className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
+                                                                     peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 
+                                                                     peer-checked:bg-gray-700 peer-checked:after:translate-x-full 
+                                                                     peer-checked:after:border-white after:content-[''] after:absolute 
+                                                                    after:top-1 after:left-1 after:bg-white after:border-gray-300 
+                                                                     after:border after:rounded-full after:h-4 after:w-4 after:transition-all`}
+                                                    ></div>
+                                                </label>
+
+                                                </div>
+                                           </div>
+
+
                                             <div className="flex gap-56 p-4">
                                                 <div className="w-24 h-20 rounded-lg">
                                                     <img className="w-20 ms-2 rounded-lg" src={profileImage} alt="" />
@@ -252,7 +295,7 @@ const SettingsHome = ({ }: Props) => {
                                                     <img className="w-20 mt-7 ms-2" src={cygnozImage} alt="" />
                                                     <p className="text-[#4B5C79] text-[11px] font-medium mt-9 w-fit">(500x625px, 4:5)</p>
                                                 </div>
-                                                
+
                                             </div>
                                         </div>
 
@@ -268,28 +311,28 @@ const SettingsHome = ({ }: Props) => {
                                             <Input
                                                 label="Employee ID"
                                                 placeholder="Enter Employee Id"
-                                            />   
+                                            />
                                             <Input
                                                 label="Region Name"
                                                 placeholder="Enter Region"
-                                            />   
+                                            />
                                             <Input
                                                 label="Phone Number"
                                                 placeholder="Enter Phone"
-                                            />   
+                                            />
                                             <Input
                                                 label="Email"
                                                 placeholder="Enter Email"
-                                            />   
+                                            />
                                             <Input
                                                 label="Company Name"
                                                 placeholder="Enter Company Name"
-                                            />   
+                                            />
                                             <Input
-                                            label="Company Address"
-                                            placeholder="Enter address"
-                                        />                                           
-                                            </div>
+                                                label="Company Address"
+                                                placeholder="Enter address"
+                                            />
+                                        </div>
                                     </div>
                                 )}
 

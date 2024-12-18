@@ -7,6 +7,8 @@ import comfetti from '../../../assets/image/confetti.png'
 import firstMedal from '../../../assets/image/firstWon.png'
 import cupRise from '../../../assets/image/hands holding gold trophy cup.png'
 import PraiseIcon from "../../../assets/icons/PraiseIcon"
+import rewardWithRibbon from '../../../assets/image/rewardWitRibbon.png'
+import partyPopper from '../../../assets/image/partyPopper.png'
 
 type Props = {}
 
@@ -70,7 +72,7 @@ const PraiseHome = ({ }: Props) => {
             <p className="my-3 text-[#303F58] text-base font-semibold">Send Praise to Team</p>
             <p className="mb-4 text-[#303F58] text-sm font-normal">Celebrate the outstanding contributions of your team and colleagues, <br /> fostering a positive and collaborative work environment.</p>
             <div className="mt-5">
-              <Button className="rounded-lg w-48 h-10">
+              <Button  onClick={handleModalToggle} className="rounded-lg w-48 h-10">
                 <p className="ms-9">Send Praise</p>
               </Button>
             </div>
@@ -100,6 +102,11 @@ const PraiseHome = ({ }: Props) => {
               <p className="text-center">Achiever</p>
               </div>
             </div>
+            <div>
+              <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />
+              <img className="w-[490] h-[180px] -mt-36 -rotate-90" src={comfetti} alt="" />
+
+            </div>
             <div className="p-10">
               <p  className="text-[#000000] text-sm font-normal my-1">Congratulations</p>
               <p  className="text-[#000000] text-sm font-semibold mb-1">Dona Sebastain</p>
@@ -115,15 +122,19 @@ const PraiseHome = ({ }: Props) => {
           <div className="bg-gradient-to-r from-[#E3E6D5] to-[#F7E7CE] rounded-lg justify-between w-[630px] h-52">
             {/* <PraiseIcon/> */}
             <div className="flex justify-between">
-            <div className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 ms-4 mt-4 flex gap-2">
+            <div className="bg-[#F3F3F3] rounded-2xl w-48 h-12 p-3 ms-4 mt-4 flex gap-2">
               <div className="bg-[#EDE7FB] rounded-full w-8 h-8 -mt-1">
               <div className="p-[6px] ms-[2px]">
               <PraiseIcon size={20}/>
               </div>
               </div>
               <div>
-              <p className="text-center">Achiever</p>
+              <p className="text-center">Congratulations</p>
               </div>
+            </div>
+            <div className="">
+              <img className="w-14 h-14 mt-20 ms-12" src={partyPopper} alt="" />
+              <img className="w-[490] h-[180px] -mt-36 -rotate-90" src={comfetti} alt="" />
             </div>
             <div className="p-10">
               <p  className="text-[#000000] text-sm font-normal my-1">Congratulations</p>
@@ -148,6 +159,11 @@ const PraiseHome = ({ }: Props) => {
               <p className="text-center">Achiever</p>
               </div>
             </div>
+            <div>
+              <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />
+              <img className="w-[490] h-[180px] -mt-36 -rotate-90" src={comfetti} alt="" />
+
+            </div>
             <div className="p-10">
               <p  className="text-[#000000] text-sm font-normal my-1">Congratulations</p>
               <p  className="text-[#000000] text-sm font-semibold mb-1">Dona Sebastain</p>
@@ -163,15 +179,20 @@ const PraiseHome = ({ }: Props) => {
           <div className="bg-gradient-to-r from-[#FFE3B8] to-[#D5DCB3] rounded-lg justify-between w-[630px] h-52">
             {/* <PraiseIcon/> */}
             <div className="flex justify-between">
-            <div className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 ms-4 mt-4 flex gap-2">
+            <div className="bg-[#F3F3F3] rounded-2xl w-48 h-12 p-3 ms-4 mt-4 flex gap-2">
               <div className="bg-[#EDE7FB] rounded-full w-8 h-8 -mt-1">
               <div className="p-[6px] ms-[2px]">
               <PraiseIcon size={20}/>
               </div>
               </div>
               <div>
-              <p className="text-center">Achiever</p>
+              <p className="text-center">Congratulations</p>
               </div>
+            </div>
+
+            <div className="">
+              <img className="w-14 h-14 mt-20 ms-12" src={partyPopper} alt="" />
+              <img className="w-[490] h-[180px] -mt-36 -rotate-90" src={comfetti} alt="" />
             </div>
             <div className="p-10">
               <p  className="text-[#000000] text-sm font-normal my-1">Congratulations</p>
