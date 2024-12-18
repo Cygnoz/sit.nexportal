@@ -111,14 +111,14 @@ function LeadView({}: Props) {
         ))}
       </div>
       <div className="flex justify-between mt-5">
-        <div className="flex gap-8 text-base font-bold border-b border-gray-200">
+        <div className="flex gap-20 px-2 text-base bg-[#FFFFFF] rounded-xl font-bold border-b border-gray-200">
         {tabs.map((tab) => (
         <div
           key={tab}
           onClick={() => setActiveTab(tab)}
           className={`cursor-pointer py-3 px-[16px] ${
             activeTab === tab
-              ? "text-deepStateBlue border-b-2 border-deepStateBlue"
+              ? "text-[#303F58] border-b-2 border-deepStateBlue"
               : "text-gray-400"
           }`}
         >

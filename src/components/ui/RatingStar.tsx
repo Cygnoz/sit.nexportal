@@ -4,9 +4,10 @@ import StarNotFilled from '../../assets/icons/StarNotfilled';
 
 type Props = {
   count: 1 | 2 | 3 | 4 | 5 |any;
+  size?:number;
 };
 
-const RatingStar: React.FC<Props> = ({ count = 0 }) => {
+const RatingStar: React.FC<Props> = ({ count = 0, size=24 }) => {
   const totalStars = 5;
 
   return (
@@ -14,9 +15,9 @@ const RatingStar: React.FC<Props> = ({ count = 0 }) => {
       {
         Array.from({ length: totalStars }, (_, index) => {
           if (index < count) {
-            return <StarFilled size={16} key={index} />;
+            return <StarFilled size={size} key={index} />;
           } else {
-            return <StarNotFilled key={index} />;
+            return <StarNotFilled size={size} key={index} />;
           }
         })
       }
