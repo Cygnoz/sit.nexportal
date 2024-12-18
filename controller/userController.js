@@ -63,17 +63,17 @@ exports.login = [loginRateLimiter, async (req, res) => {
     //   }
 
     // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    // const otp ='111111';
+    // const otp = Math.floor(100000 + Math.random() * 900000).toString();
+       const otp ='111111';
 
     // Store OTP in cache with the email as the key
     otpCache.set(email, otp);
 
     // Send OTP email
-    const emailSent = await sendOtpEmail(user.email, otp);
-    if (!emailSent) {
-      return res.status(500).json({ success: false, message: 'Failed to send OTP, please try again' });
-    }
+    // const emailSent = await sendOtpEmail(user.email, otp);
+    // if (!emailSent) {
+    //   return res.status(500).json({ success: false, message: 'Failed to send OTP, please try again' });
+    // }
 
     res.status(200).json({
       success: true,
@@ -268,9 +268,9 @@ const transporter = nodemailer.createTransport({
 // Function to send OTP email asynchronously
 const sendOtpEmail = async (email, otp) => {
   const mailOptions = {
-    from: `"BillBizz" <${process.env.EMAIL}>`,
+    from: `"NexPortal" <${process.env.EMAIL}>`,
     to: email,
-    subject: 'BillBizz Software OTP',
+    subject: 'NexPortal Software OTP',
     text: `Hey there,
 
 Your One-Time Password (OTP) is: ${otp}
