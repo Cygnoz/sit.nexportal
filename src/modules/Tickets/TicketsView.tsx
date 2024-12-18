@@ -4,16 +4,43 @@ import PhoneIcon from "../../assets/icons/PhoneIcon"
 import person from "../../assets/image/Ellipse 14 (2).png"
 import Input from "../../components/form/Input"
 import pic from "../../assets/image/IndiaLogo.png"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useParams } from "react-router-dom"
+import useApi from "../../Hooks/useApi"
+import { endPoints } from "../../services/apiEndpoints"
 type Props = {}
 
 const TicketsView = ({ }: Props) => {
 
-  // const tabs = [
-  //   "Personal Information",
-  //   "Company Information",
-  // ];
-  // const [activeTab, setActiveTab] = useState<string>(tabs[0]);
+  const {request: getaTicket}=useApi('get',3004)
+  const { id } = useParams();
+  const [ticketData, setTicketData] = useState<any>()
+
+     const getOneTicket = async () => {
+          try {
+            const { response, error } = await getaTicket(`${endPoints.TICKETS}/${id}`);
+            if (response && !error) {
+          
+              
+              const Tickets = response.data; // Return the fetched data
+              console.log(response.data);
+              console.log("Fetched Tickets data:", Tickets);
+             
+              setTicketData(Tickets);
+            } else {
+              // Handle the error case if needed (for example, log the error)
+              console.error('Error fetching Tickets data:', error);
+            }
+          } catch (err) {
+            console.error('Error fetching Tickets data:', err);
+          }
+        };
+    
+        useEffect(() => {
+          getOneTicket()
+        }, [id]);
+
+        console.log(ticketData);
 
   const [messages, setMessages] = useState([
     {
@@ -63,25 +90,22 @@ const TicketsView = ({ }: Props) => {
             <h1 className="font-normal text-[#303F58] text-sm">Requester</h1>
             <div className="rounded-full flex my-3">
               <img className="w-6 h-6 mt-1" src={person} alt="" />
-              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">Sudeep Kumar</h2>
+              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.customerDetails?.firstName}</h2>
             </div>
             <hr />
             <h1 className="font-normal text-[#303F58] text-sm mt-3">Assignee</h1>
             <div className="rounded-full flex my-3">
               <img className="w-6 h-6 mt-1" src={person} alt="" />
-              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">Sara John </h2>
+              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.supportAgentDetails?.name}</h2>
             </div>
-            <hr />
-            <div className="mt-3 my-2">
-              <h1 className="mt-2 font-normal text-sm">Type</h1>
-              <h1 className="mt-2 font-normal text-sm">Problem</h1>
-            </div>
+            
+           
             <hr />
             <div className="mt-3 my-2">
               <h1 className="mt-2 font-normal text-sm">Priority</h1>
               <div className="flex">
                 <div className="w-4 h-4 rounded-full mt-3 bg-[#F25C5C]"></div>
-                <h1 className="mt-2 ml-2 font-normal text-sm">High</h1>
+                <h1 className="mt-3 ml-2 font-normal text-sm">{ticketData?.priority}</h1>
               </div>
 
             </div>
@@ -155,7 +179,7 @@ const TicketsView = ({ }: Props) => {
 
             <div className="rounded-full flex my-3">
               <img className="w-9 h-9 " src={person} alt="" />
-              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">Sudeep Kumar</h2>
+              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.customerDetails?.firstName}</h2>
             </div>
             <hr />
             <div className="mt-3 my-2">

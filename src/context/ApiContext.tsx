@@ -150,7 +150,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     return () => clearInterval(intervalId);
   }, [user]);
 
-  console.log(totalCounts);
+ // console.log(totalCounts);
   
 
   return (
