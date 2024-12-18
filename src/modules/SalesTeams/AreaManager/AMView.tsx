@@ -180,39 +180,13 @@ const AMView = ({ }: Props) => {
     uv: (entry?.uv / maxValue) * 100,
   }));
   
-  // // Custom Avatar Component
-  const CustomAvatar = ({ x, y, index }) => {
-    const currentData = normalizedData[index];
-    console.log("CustomAvatar Props:", { x, y, index, avatar: currentData?.avatar });
-  
-    if (!currentData?.avatar || x == null || y == null) {
-      console.error("Avatar is missing or invalid coordinates.");
-      return null;
-    }
-  
-    return (
-      <img
-    src={currentData.avatar}
-    alt="Avatar"
-    style={{
-      position: "absolute",
-      left: `${x - 9}px`,
-      top: `${y + 5}px`,
-      width: "18px",
-      height: "18px",
-      borderRadius: "50%",
-      zIndex: 9999, // High z-index to rule out overlapping issues
-      background: "red", // Temporary debug background
-    }}
-  />
-    );
-  };
+
   
   
   
   
   // Custom Bubble Component
-  const CustomBubble = (props) => {
+  const CustomBubble = (props:any) => {
     const { x, y } = props;
   
     if (x == null || y == null) return null;
@@ -232,7 +206,7 @@ const AMView = ({ }: Props) => {
   };
   
   // Custom Bar Shape with Curved Top
-  const CustomBarWithCurve = (props) => {
+  const CustomBarWithCurve = (props:any) => {
     const { x, y, width, height, fill } = props;
   
     if (!x || !y || !width || !height) return null;
