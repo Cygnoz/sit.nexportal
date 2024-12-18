@@ -89,7 +89,7 @@ exports.getTicket = async (req, res) => {
         _id: customerId,
         customerStatus: { $in: ["Trial", "Licenser"] },
       },
-      { _id: 1, firstName: 1 , lastName: 1} // Only fetch _id and firstName
+      { _id: 1, firstName: 1 , lastName: 1 , email:1 , phone:1 } 
     );
 
     if (!customerExists) {
@@ -138,7 +138,7 @@ exports.getAllTickets = async (req, res) => {
         // Fetch customer from Leads with status "Trial" or "Licenser"
         const customerExists = await Leads.findOne(
           { _id: customerId, customerStatus: { $in: ["Trial", "Licenser"] } },
-          { _id: 1, firstName: 1 , lastName: 1} // Fetch only _id and firstName
+          { _id: 1, firstName: 1 , lastName: 1 , email:1 , phone:1 } // Only fetch _id and firstName
         );
 
         const { supportAgentExists, supportAgentName } = await dataExist(customerId, supportAgentId);

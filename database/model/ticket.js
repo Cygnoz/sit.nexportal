@@ -13,7 +13,8 @@ const ticketSchema = new Schema(
     assignedTo: { type: String }, // Person or team assigned to resolve the ticket
     priority: { type: String }, // Priority level
     type: { type: String }, // Ticket type
-    status :{ type: String }
+    status :{ type: String },
+    notes:{type : String}
   }
 );
 
