@@ -43,7 +43,7 @@ exports.addTicket = async (req, res , next) => {
     const { customerId ,priority, supportAgentId  } = cleanedData;
 
     // Validate required fields
-    if (!requestor || !assignedTo || !priority) {
+    if (!customerId || !priority || !supportAgentId) {
       return res.status(400).json({ message: "Requestor, assignedTo, and priority are required" });
     }
 
