@@ -1,0 +1,247 @@
+const Ticket = require("../database/model/ticket");
+const Leads = require("../database/model/leads")
+const SupportAgent = require("../database/model/supportAgent")
+const User = require("../database/model/user")
+const { Types } = require("mongoose");
+
+
+
+const dataExist = async (customerId, supportAgentId) => {
+  const [customerExists, supportAgentExists] = await Promise.all([
+    Leads.find({ _id: customerId }, { _id: 1, firstName: 1 }),
+
+    SupportAgent.findOne({ _id: new Types.ObjectId(supportAgentId) }, { _id: 1, user: 1 }), // Fetch one record
+  ]);
+
+  let supportAgentName = null;
+  if (supportAgentExists && supportAgentExists.user) {
+    const supportAgentUser = await User.findOne(
+      { _id: supportAgentExists.user },
+      { userName: 1 }
+    );
+    if (supportAgentUser) {
+      supportAgentName = supportAgentUser.userName;
+    }
+  }
+
+  return {
+    customerExists,// Return the first customer record or null
+    supportAgentExists: supportAgentExists || null, // Return the agent or null
+    supportAgentName,
+  };
+};
+
+
+
+exports.addTicket = async (req, res , next) => {
+  try {
+
+    const { id: userId, userName } = req.user;
+
+    const cleanedData = cleanTicketData(req.body);
+
+    const { requestor, customerId ,assignedTo ,priority , supportAgentId  } = cleanedData;
+
+    // Validate required fields
+    if (!requestor || !assignedTo || !priority) {
+      return res.status(400).json({ message: "Requestor, assignedTo, and priority are required" });
+    }
+
+    const { customerExists , supportAgentExists  } = await dataExist( customerId , supportAgentId);
+
+    if (!validateCustomerAndSupportAgent( customerExists, supportAgentExists, res )) return;
+
+    // Create a new ticket dynamically using req.body
+    const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , userId, userName );
+    
+    res.status(201).json({ message: "Ticket added successfully", savedTickets });
+
+    // Pass operation details to middleware
+    ActivityLog(req, "successfully", savedTickets._id);
+    next();
+
+  } catch (error) {
+    console.error("Error adding ticket:", error);
+    res.status(500).json({ message: "Internal server error" });
+    ActivityLog(req, "Failed");
+    next();
+  }
+};
+
+
+exports.getTicket = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
+
+    // Fetch the ticket by ticketId
+    const ticket = await Ticket.findById(ticketId);
+    if (!ticket) {
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    const { customerId, supportAgentId } = ticket;
+
+    // Fetch customer from Leads with status "trial" or "licenser"
+    const customerExists = await Leads.findOne({
+      _id: customerId,
+      customerStatus: { $in: ["Trial", "Licenser"] },
+    });
+
+    if (!customerExists) {
+      return res.status(404).json({ message: "Customer not found or not in trial/licenser status" });
+    }
+
+    // Check support agent existence using existing dataExist function
+    const { supportAgentExists, supportAgentName } = await dataExist(customerId, supportAgentId);
+
+    // Construct enriched ticket response with customer and support agent details
+    const enrichedTicket = {
+      ...ticket.toObject(),
+      customerDetails: customerExists, // Add customer details to response
+      supportAgentDetails: supportAgentExists
+        ? {
+            id: supportAgentExists._id,
+            name: supportAgentName || "Support agent name not found",
+          }
+        : { message: "Support agent not found" },
+    };
+
+    res.status(200).json(enrichedTicket);
+  } catch (error) {
+    console.error("Error fetching ticket:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+
+
+exports.getAllTickets = async (req, res) => {
+  try {
+    const tickets = await Ticket.find();
+
+    if (tickets.length === 0) {
+      return res.status(404).json({ message: "No tickets found" });
+    }
+
+    res.status(200).json({ message: "Tickets retrieved successfully", tickets });
+  } catch (error) {
+    console.error("Error fetching all tickets:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getCustomers = async (req, res) => {
+  try {
+    // Fetch customers with customerStatus "Trial" or "Licenser"
+    const customers = await Leads.find({
+      customerStatus: { $in: ["Trial", "Licenser"] },
+    });
+
+    if (!customers || customers.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No customers found with Trial or Licenser status" });
+    }
+
+    // Respond with the list of customers
+    res.status(200).json({
+      success: true,
+      data: customers,
+    });
+  } catch (error) {
+    console.error("Error fetching customers:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+// exports.updateTicket = async (req, res) => {
+//   try {
+//     const { ticketId } = req.params;
+
+//     // Extract fields dynamically from req.body
+//     const updateFields = { ...req.body };
+
+//     // Update the ticket
+//     const updatedTicket = await Ticket.findByIdAndUpdate(
+//       ticketId,
+//       updateFields, // Dynamically apply fields from req.body
+//       { new: true } // Return the updated document
+//     );
+
+//     if (!updatedTicket) {
+//       return res.status(404).json({ message: "Ticket not found" });
+//     }
+
+//     res.status(200).json({ message: "Ticket updated successfully", ticket: updatedTicket });
+//   } catch (error) {
+//     console.error("Error updating ticket:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+
+
+// exports.deleteTicket = async (req, res) => {
+//   try {
+//     const { ticketId } = req.params;
+
+//     // Delete the ticket
+//     const deletedTicket = await Ticket.findByIdAndDelete(ticketId);
+
+//     if (!deletedTicket) {
+//       return res.status(404).json({ message: "Ticket not found" });
+//     }
+
+//     res.status(200).json({ message: "Ticket deleted successfully" });
+//   } catch (error) {
+//     console.error("Error deleting ticket:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+const ActivityLog = (req, status, operationId = null) => {
+    const { id, userName } = req.user;
+    const log = { id, userName, status };
+  
+    if (operationId) {
+      log.operationId = operationId;
+    }
+  
+    req.user = log;
+  };
+
+
+
+    //Clean Data 
+    function cleanTicketData(data) {
+      const cleanData = (value) => (value === null || value === undefined || value === "" || value === 0 ? undefined : value);
+      return Object.keys(data).reduce((acc, key) => {
+        acc[key] = cleanData(data[key]);
+        return acc;
+      }, {});
+    }
+    
+
+  // Create New Debit Note
+  function createNewTicket(data, customerId, supportAgentId, newTicket, userId, userName) {
+    const newTickets = new Ticket({ ...data, customerId , supportAgentId , newTicket, userId, userName });
+    return newTickets.save();
+  }
+  
+    // Validate Organization Tax Currency
+    function validateCustomerAndSupportAgent( customerExists, supportAgentExists ,res ) {
+      if (!customerExists) {
+        res.status(404).json({ message: "Customer not found" });
+        return false;
+      }
+      if (!supportAgentExists) {
+        res.status(404).json({ message: "Support Agent not found." });
+        return false;
+      }
+      return true;
+    }
+  

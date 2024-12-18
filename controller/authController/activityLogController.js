@@ -2,27 +2,34 @@
 const User = require('../../database/model/user');
 const ActivityLog = require('../../database/model/activityLog');
 const moment = require("moment-timezone");
+const Role = require('../../database/model/role'); 
 
-const ActivityLogGeneration = (...role) => {
+const ActivityLogGeneration = (permissionAction) => {
     return async (req, res, next) => {
       try {
         const user = await User.findById(req.user.id);
-        // if (!user) {
-        //   return res.status(401).json({ message: 'User not found' });
-        // }
-        const Status = req.user.status
-        const permissionAction = role[role.length - 1];
-        const Screen = permissionAction.split(' ')[1]
-        const Action = permissionAction.split(' ')[0]
-        
-        
-  
-         const generatedDateTime = generateTimeAndDateForDB(
-          "Asia/Kolkata",
-          "DD/MM/YY",
-          "/"
-        );
-        const actionTime = generatedDateTime.dateTime;
+        if (!user) {
+          return res.status(401).json({ message: 'User not found' });
+        }
+
+        const role = await Role.findOne({ roleName: user.role });
+      if (!role) {
+        return res.status(401).json({ message: 'Role not found' });
+      }
+      
+       const generatedDateTime = generateTimeAndDateForDB(
+        "Asia/Kolkata",
+        "DD/MM/YY",
+        "/"
+      );
+      const actionTime = generatedDateTime.dateTime;
+      const Status = req.user.status
+      // const permission = role.permissions.find(p => p.action === permissionAction);
+      const Action = permissionAction.split(' ')[0];
+      const Screen = permissionAction.split(' ')[1]
+
+
+
 
         const activity = new ActivityLog({
             userId: req.user.id, // Assuming your User model has a username field
