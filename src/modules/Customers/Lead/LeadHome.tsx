@@ -59,6 +59,8 @@ function LeadHome({}: Props) {
     try{
       const {response,error}=await getAllLeads(endPoints.LEADS)
       console.log("res",response);
+      console.log(error);
+      
       
       if(response && !error){
         console.log(response.data.leads);
