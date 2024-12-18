@@ -26,18 +26,18 @@ import TicketsBar from '../components/ui/TicketsBar';
 import { useRegularApi } from "../context/ApiContext";
 
 const DashboardPage = () => {
-  const { allAreas, allRegions } = useRegularApi();
+  const {totalCounts}=useRegularApi()
   const homeCardData = [
     { 
       icon: <RowsIcon size={24} />, 
-      number: allRegions?.length, 
+      number: totalCounts?.totalRegion, 
       title: "Total Regions", 
       iconFrameColor: "#FCB23E", 
       iconFrameBorderColor: "#FDE3BBCC" 
     },
     { 
       icon: <AreaIcon size={24} />, 
-      number: allAreas?.length, 
+      number:totalCounts?.totalArea, 
       title: "Total Area", 
       iconFrameColor: "#51BFDA", 
       iconFrameBorderColor: "#C1E7F1CC" 
@@ -244,7 +244,7 @@ const DashboardPage = () => {
           <div className="bg-white h-[530px] rounded-lg w-full -p-3">
             <h1 className="text-[#303F58] text-lg font-bold p-3">Top Break Down By Region</h1>
             <div className="-mt-3 relative">
-            <div className='absolute top-32 left-[195px] z-50 text-center'>
+            <div className='absolute top-[27%] left-[41%] z-50 text-center'>
                 <p className='text-2xl font-bold'>1520</p>
                 <p className='text-md'>Total Team</p>
               </div>
@@ -265,7 +265,8 @@ const DashboardPage = () => {
       }}
       
     />
-    <div className="space-y-4 ms-28">
+    <div className='flex justify-center'>
+    <div className="space-y-4">
       {roles.map((role) => (
         <div key={role.name} className="flex items-center justify-between w-72 space-x-3">
           <div className="flex items-center gap-2">
@@ -275,6 +276,7 @@ const DashboardPage = () => {
           <span className="ml-auto text-gray-600 text-xs">{role.count}</span>
         </div>
       ))}
+    </div>
     </div>
             </div>
           </div>

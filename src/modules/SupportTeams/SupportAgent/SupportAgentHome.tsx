@@ -16,12 +16,13 @@ import toast from "react-hot-toast";
 import { endPoints } from "../../../services/apiEndpoints";
 import { SAData } from "../../../Interfaces/SA";
 import useApi from "../../../Hooks/useApi";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 
   
-const SupervisorHome = () => {
-
+const SupportAgentHome = () => {
+  const {totalCounts}=useRegularApi()
   const { request: getAllSA } = useApi("get", 3003);
   const [allSA, setAllSA] = useState<SAData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,15 +46,8 @@ const SupervisorHome = () => {
   // Data for HomeCards
   const homeCardData = [
     {
-      icon: <AreaManagerIcon />,
-      number: "8",
-      title: "Total Supervisors",
-      iconFrameColor: "#F9A51A",
-      iconFrameBorderColor: "#FFF2DDCC",
-    },
-    {
       icon: <UserIcon />,
-      number: "167",
+      number: totalCounts?.totalSupportAgents,
       title: "Total Support Agents",
       iconFrameColor: "#30B777",
       iconFrameBorderColor: "#B3F0D3CC",
@@ -179,4 +173,4 @@ const SupervisorHome = () => {
   )
 }
 
-export default SupervisorHome;
+export default SupportAgentHome;

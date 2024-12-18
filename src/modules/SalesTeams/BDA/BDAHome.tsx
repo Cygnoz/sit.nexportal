@@ -16,8 +16,10 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { BDAData } from "../../../Interfaces/BDA";
+import { useRegularApi } from "../../../context/ApiContext";
 
 const BDAHome = () => {
+  const {totalCounts}=useRegularApi()
   const { request: getAllBDA } = useApi("get", 3002);
   const [allBDA, setAllBDA] = useState<BDAData[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,28 +43,28 @@ const BDAHome = () => {
   const homeCardData = [
     {
       icon: <AreaManagerIcon />,
-      number: "101",
+      number: totalCounts?.totalBdas,
       title: "Total BDA'S",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
     },
     {
       icon: <LeadsCardIcon />,
-      number: "676",
+      number: totalCounts?.totalLead,
       title: "Total Leads (Handled by BDA'S)",
       iconFrameColor: "#9C75D3",
       iconFrameBorderColor: "#DAC9F1",
     },
     {
       icon: <TrialIcon width={26} height={26} />,
-      number: "398",
+      number:totalCounts?.totalTrial,
       title: "Total Trails (Handled by BDA'S)",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
     },
     {
       icon: <Licensor />,
-      number: "200",
+      number: totalCounts?.totalLicensor,
       title: "Total Licensers(Handled by BDA'S)",
       iconFrameColor: "#8695DD",
       iconFrameBorderColor: "#CAD1F1CC",

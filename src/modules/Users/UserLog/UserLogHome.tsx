@@ -1,18 +1,25 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import NextIcon from '../../../assets/icons/NextIcon'
 import PreviousIcon from '../../../assets/icons/PreviousIcon'
-import SearchIcon from '../../../assets/icons/SearchIcon'
 import Input from '../../../components/form/Input'
 import Select from '../../../components/form/Select'
 import useApi from '../../../Hooks/useApi'
-import { endPoints } from '../../../services/apiEndpoints'
 import { UserLog } from '../../../Interfaces/UserLog'
-
+import { endPoints } from '../../../services/apiEndpoints'
+import No_Data_found from "../../../assets/image/NO_DATA.png";
 type Props = {}
 
 function UserLogLogHome({}: Props) {
+  const [sortMethods,setSortMethods]=useState({
+    startingDate:'',
+    endingDate:'',
+    user:'',
+    screen:'',
+    action:''
+  })
   const {request:getActivityLog}=useApi('get',3002)
-  const [allUserLogLog,setAllUserLogLog]=useState<UserLog[]>([])
+  const [allUserLog,setAllUserLog]=useState<UserLog[]>([])
+  const [noDataFound, setNoDataFound] = useState(false);
   const getAllActivityLog = async () => {
     try {
       const { response, error } = await getActivityLog(endPoints.GET_ACTIVITY_LOGS);
@@ -34,14 +41,14 @@ function UserLogLogHome({}: Props) {
           };
         });
   
-        setAllUserLogLog(formattedLogs.reverse()); // Set the formatted logs in state
+        setAllUserLog(formattedLogs.reverse()); // Set the formatted logs in state
       }
     } catch (err) {
       console.error('Error fetching activity logs:', err);
     }
   };
 
-  console.log(allUserLogLog);
+  
   function getNestedValue(obj: any, path: string): any {
     return path.split('.').reduce((acc, part) => acc?.[part], obj);
   }
@@ -50,10 +57,45 @@ function UserLogLogHome({}: Props) {
     getAllActivityLog()
   },[])
 
-      
+  const handleSorting = (name: string, value: any) => {
+    setCurrentPage(1)
+    setSortMethods((prev) => ({ ...prev, [name]: value }));
+  };
+  
+  const filteredLogs = useMemo(() => {
+   
+    return allUserLog.filter((log) => {
+      // Convert the log date (DD/MM/YY) to a Date object
+      const logDateParts:any = log.date.split("/"); // Split the date into [DD, MM, YY]
+      const filteresDate:any=`20${logDateParts[2]}`
+      const logDate:any = new Date(filteresDate, logDateParts[1] - 1, logDateParts[0]); // Convert to YYYY-MM-DD format
+  
+      // Convert starting and ending dates to Date objects for comparison
+      const startingDate = sortMethods.startingDate
+        ? new Date(sortMethods.startingDate) // Assuming sortMethods.startingDate is in 'YYYY-MM-DD' format
+        : null;
+      const endingDate = sortMethods.endingDate
+        ? new Date(sortMethods.endingDate) // Assuming sortMethods.endingDate is in 'YYYY-MM-DD' format
+        : null;
+  
+        
+      // Check if the log date is within the range of starting and ending dates
+      const isStartDateValid = startingDate ? startingDate <= logDate : true;
+      const isEndDateValid = endingDate ? endingDate >= logDate : true;
+  
+      const isUserValid = sortMethods.user ? log.userId?.role === sortMethods.user : true;
+      const isScreenValid = sortMethods.screen ? log.screen === sortMethods.screen : true;
+      const isActionValid = sortMethods.action ? log.action === sortMethods.action : true;
+  
+      return isStartDateValid && isEndDateValid && isUserValid && isScreenValid && isActionValid;
+    });
+  }, [allUserLog, sortMethods]);
+  
+
+  
 
       const columns: { key: keyof UserLog | string; label: string }[] = [
-        { key: "userId.role", label: "Screen" },
+        { key: "screen", label: "Screen" },
         { key: "action", label: "Action" },
         { key: "date", label: "Date" },
         { key: "time", label: "Time" },
@@ -75,21 +117,91 @@ function UserLogLogHome({}: Props) {
      // Paginate the filtered data
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return allUserLogLog.slice(start, start + rowsPerPage);
-  }, [allUserLogLog, currentPage, rowsPerPage]);
+    return filteredLogs.slice(start, start + rowsPerPage);
+  }, [filteredLogs, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(allUserLogLog.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredLogs.length / rowsPerPage);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
     setCurrentPage(1);
   };
 
-  const leadSource = [
-    { label: "Hi", value: "hi" },
-    { label: "Bi", value: "bi" },
-    { label: "Ci", value: "ci" },
+
+
+
+  const actionList = [
+    { label: 'Add', value: "Add" },
+    { label: "Edit", value: "Edit" },
+    { label: "Login", value: "Login" },
+    { label: "View", value: "View" },
   ];
+
+  const screenList = [
+    { label: 'Lead', value: 'Lead' },
+    { label: 'Support', value: 'Support' },
+    { label: 'Licenser', value: 'Licenser' },
+    { label: 'Area', value: 'Area' },
+    { label: 'Login', value: 'Login' },
+    { label: 'Logout', value: 'Logout' },
+    { label: 'User', value: 'User' },
+    { label: 'Region', value: 'Region' },
+    { label: 'Area Manager', value: 'Area Manager' },
+    { label: 'Commission', value: 'Commission' },
+    { label: 'Supervisor', value: 'Supervisor' },
+    { label: 'Support Agent', value: 'Support Agent' },
+    { label: 'Region Manager', value: 'Region Manager' },
+    { label: 'BDA', value: 'BDA' },
+  ];
+  
+
+  const usersList = [
+    { label: 'Super Admin', value: 'Super Admin' },
+    { label: 'Sales Admin', value: 'Sales Admin' },
+    { label: 'Support Admin', value: 'Support Admin' },
+    { label: 'Region Manager', value: 'Region Manager' },
+    { label: 'Area Manager', value: 'Area Manager' },
+    { label: 'BDA', value: 'BDA' },
+    { label: 'Supervisor', value: 'Supervisor' },
+    { label: 'Support Agent', value: 'Support Agent' }
+  ];
+
+  const renderSkeletonLoader = () => (
+    <tr>
+      <td colSpan={columns.length + 2}>
+        <div className="flex flex-col gap-2 mt-2">
+          {Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="flex gap-2 animate-pulse">
+              {columns.map((_, colIndex) => (
+                <div
+                  key={colIndex}
+                  className="h-6 w-full bg-gray-200 rounded-lg skeleton"
+                ></div>
+              ))}
+            </div>
+          ))}
+        </div>
+      </td>
+    </tr>
+  );
+ 
+   useEffect(() => {
+    if(filteredLogs.length>0){
+      setNoDataFound(false)
+    }
+       const timeout = setTimeout(() => {
+         if (filteredLogs?.length === 0) {
+           setNoDataFound(true);
+         } else {
+           setNoDataFound(false);
+         }
+       }, 1000);
+       return () => clearTimeout(timeout);
+      
+     }, [filteredLogs]);
+  
+    
+    
 
   return (
     <div className="text-[#303F58] space-y-4">
@@ -97,29 +209,63 @@ function UserLogLogHome({}: Props) {
     <p className='text-xs'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque natus iusto maiores ducimus optio</p>
     <div className="w-full bg-white rounded-lg p-4">
        <div  className='flex  items-center gap-2'>
-       <div className='grid grid-cols-5 w-full gap-2 mb-4'>
-        <Input
-              placeholder="Select from date"
-              type='date'
-            />
-      <Input
-              placeholder="Select to Date"
-              type='date'
-            />
-        <Select  
-              placeholder="Select UserLog"
-              options={leadSource}/>
-              <Select  
-              placeholder="Select Screen"
-              options={leadSource}/>
-              <Select  
-              placeholder="Action"
-              options={leadSource}/>
-        </div>
+       
+
+<div className='grid grid-cols-5 items-center w-full gap-2 mb-4'>
+  <div>
+    <div className='mb-1 text-xs flex justify-between'>
+    <p className='  text-blue-400'>Starting Date</p>
+    {sortMethods?.startingDate.length>0&&<button onClick={()=>setSortMethods((prev)=>({...prev,startingDate:''}))} className='px-2 rounded-md bg-red-600  text-white'>Clear</button>}
+    </div>
+    <Input
+      placeholder="Select from date"
+      type='date'
+      value={sortMethods.startingDate}
+      onChange={(e) => handleSorting('startingDate', e.target.value)}
+    />
+  </div>
+  
+  <div>
+  <div className='mb-1 text-xs flex justify-between'>
+    <p className='  text-blue-400'>Ending Date</p>
+    {sortMethods?.endingDate.length>0&&<button onClick={()=>setSortMethods((prev)=>({...prev,endingDate:''}))} className='px-2 rounded-md bg-red-600  text-white'>Clear</button>}
+    </div>
+    <Input
+      placeholder="Select end date"
+      type='date'
+      value={sortMethods.endingDate}
+      onChange={(e) => handleSorting('endingDate', e.target.value)}
+    />
+  </div>
+
+  <div className='mt-5'>
+    <Select
+      onChange={(e) => handleSorting('user', e.target.value)}
+      placeholder="Select User"
+      options={usersList}
+    />
+  </div>
+
+  <div className='mt-5'>
+    <Select
+      onChange={(e) => handleSorting('screen', e.target.value)}
+      placeholder="Select Screen"
+      options={screenList}
+    />
+  </div>
+
+  <div className='mt-5'>
+    <Select
+      onChange={(e) => handleSorting('action', e.target.value)}
+      placeholder="Select Action"
+      options={actionList}
+    />
+  </div>
+</div>
         
-        <div className='p-[10px] rounded-lg flex justify-center items-center border  -mt-4'>
+        {/* <div className='p-[10px] rounded-lg flex justify-center items-center border  -mt-4'>
            <p><SearchIcon className="size-4 text-gray-200"/></p>
-        </div>
+        </div> */}
        </div>
     
       <table className="w-full border-collapse border text-left">
@@ -139,7 +285,22 @@ function UserLogLogHome({}: Props) {
           </tr>
         </thead>
         <tbody>
-  {paginatedData.length > 0 ? (
+  {noDataFound ? (
+              <tr>
+                <td
+                  colSpan={columns.length + 2}
+                  className="text-center py-4 text-gray-500"
+                >
+                  <div className="flex justify-center flex-col items-center">
+                    <img width={70} src={No_Data_found} alt="No Data Found" />
+                    <p className="font-bold text-red-700">No Records Found!</p>
+                  </div>
+                </td>
+              </tr>
+            ) : filteredLogs?.length === 0 ? (
+              renderSkeletonLoader()
+            )
+  :paginatedData.length > 0 ? (
     paginatedData.map((row, rowIndex) => (
       <tr key={rowIndex} className="hover:bg-gray-50">
         {/* Update SI No based on currentPage and rowsPerPage */}
