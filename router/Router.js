@@ -27,6 +27,15 @@ router.put('/lead/:id',verifyToken,checkPermission('Edit Lead'),leadController.e
 // router.delete('/delete-lead/:leadId',verifyToken,checkPermission('Delete User'),leadController.deleteLead,ActivityLogGeneration('Delete Lead'))
 
 
+//Trial
+router.put('/trial/:leadId',leadController.convertLeadToTrial)
+
+router.get('/trial',leadController.getAllTrials)
+
+router.put('/trials/:trialId',leadController.convertTrialToLicenser)
+
+
+
 
 //add licenser
 router.post('/licenser',verifyToken,checkPermission('Add Licenser'),licenserController.addLicenser,ActivityLogGeneration('Add Licenser'))
