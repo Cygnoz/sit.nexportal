@@ -22,6 +22,13 @@ function TicketsHome({}: Props) {
 
    // State to manage modal visibility
    const [isModalOpen, setIsModalOpen] = useState(false);
+   const [editId,setEditId] = useState('');
+
+
+    const handleEdit=(id:any)=>{
+      handleModalToggle()
+      setEditId(id)
+    }
    // Function to toggle modal visibility
    const handleModalToggle = () => {
      setIsModalOpen((prev) => !prev);
@@ -64,6 +71,7 @@ const columns: {  key: any; label: string }[] = [
   { key: "name" , label: "Requestor" },
   { key: "priority", label: "Priority" },
   { key: "description", label: "Description" },
+  { key: "status", label: "Status" },
   { key: "requested", label: "Requested" },
 ];
 
@@ -83,7 +91,11 @@ const sort=
     <div className="text-[#303F58] space-y-4">
       <div className="flex justify-between items-center">
       <h1 className="text-[#303F58] text-xl font-bold">Tickets</h1>
-      <Button variant="primary"  size="sm" onClick={handleModalToggle}>
+      <Button variant="primary"  size="sm"  onClick={()=>{
+        handleModalToggle()
+        setEditId('')
+
+      }}>
         <span className="text-xl font-bold">+</span>Create Tickets
       </Button>
       </div>
@@ -132,6 +144,7 @@ const sort=
   }}
   actionList={[
     { label: 'view', function: handleView },
+    { label: 'edit', function: handleEdit},
   ]}
 />
 
@@ -144,7 +157,7 @@ const sort=
     </div>
     {/* Modal controlled by state */}
     <Modal className="w-[35%]" open={isModalOpen} onClose={handleModalToggle}>
-    <CreateTickets  onClose={handleModalToggle}/>
+    <CreateTickets editId={editId} onClose={handleModalToggle}/>
     </Modal>
     </>
   )
