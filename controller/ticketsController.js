@@ -109,18 +109,10 @@ exports.getTicket = async (req, res) => {
     // Check support agent existence using the dataExist function
     const { supportAgentExists, supportAgentName } = await dataExist(customerId, supportAgentId);
 
-    // Convert UTC createdAt and updatedAt to IST (Indian Standard Time) and only return the time
-    const formattedTicket = {
-      ...ticket.toObject(),
-      createdAt: moment(ticket.createdAt).tz('Asia/Kolkata').format('HH:mm:ss'), // Convert to IST and format as time only
-      updatedAt: moment(ticket.updatedAt).tz('Asia/Kolkata').format('HH:mm:ss'), // Convert to IST and format as time only
-    };
-
 
     // Construct enriched ticket response
     const enrichedTicket = {
       ...ticket.toObject(),
-      formattedTicket,
       customerDetails: customerExists, // Only _id and firstName
       supportAgentDetails: supportAgentExists
         ? {
@@ -301,7 +293,7 @@ const ActivityLog = (req, status, operationId = null) => {
     
   // Create New Debit Note
   function createNewTicket(data, customerId, supportAgentId, newTicket, userId, userName) {
-    const newTickets = new Ticket({ ...data, customerId , supportAgentId , newTicket, userId, userName });
+    const newTickets = new Ticket({ ...data, customerId , supportAgentId , newTicket, userId, userName ,  status:"Open"});
     return newTickets.save();
   }
   
