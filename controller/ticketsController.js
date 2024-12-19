@@ -3,6 +3,8 @@ const Leads = require("../database/model/leads")
 const SupportAgent = require("../database/model/supportAgent")
 const User = require("../database/model/user")
 const { Types } = require("mongoose");
+const moment = require('moment-timezone');
+
 
 
 
@@ -51,11 +53,19 @@ exports.addTicket = async (req, res , next) => {
 
     if (!validateCustomerAndSupportAgent( customerExists, supportAgentExists, res )) return;
 
+
     // Create a new ticket dynamically using req.body
     const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , userId, userName );
     
 
-    res.status(201).json({ message: "Ticket added successfully", savedTickets });
+
+    // Format the `createdAt` and `updatedAt` fields to show only time in IST
+    const formattedTicket = {
+      ...savedTickets.toObject(),
+      createdAt: moment(savedTickets.createdAt).tz('Asia/Kolkata').format('HH:mm:ss'),
+      updatedAt: moment(savedTickets.updatedAt).tz('Asia/Kolkata').format('HH:mm:ss'),
+    };
+    res.status(201).json({ message: "Ticket added successfully", savedTickets :formattedTicket  });
 
 
     // Pass operation details to middleware
@@ -89,7 +99,7 @@ exports.getTicket = async (req, res) => {
         _id: customerId,
         customerStatus: { $in: ["Trial", "Licenser"] },
       },
-      { _id: 1, firstName: 1 , lastName: 1 , email:1 , phone:1 } 
+      { _id: 1, firstName: 1 , lastName: 1 , email:1 , phone:1 } // Only fetch _id and firstName
     );
 
     if (!customerExists) {
@@ -99,9 +109,18 @@ exports.getTicket = async (req, res) => {
     // Check support agent existence using the dataExist function
     const { supportAgentExists, supportAgentName } = await dataExist(customerId, supportAgentId);
 
+    // Convert UTC createdAt and updatedAt to IST (Indian Standard Time) and only return the time
+    const formattedTicket = {
+      ...ticket.toObject(),
+      createdAt: moment(ticket.createdAt).tz('Asia/Kolkata').format('HH:mm:ss'), // Convert to IST and format as time only
+      updatedAt: moment(ticket.updatedAt).tz('Asia/Kolkata').format('HH:mm:ss'), // Convert to IST and format as time only
+    };
+
+
     // Construct enriched ticket response
     const enrichedTicket = {
       ...ticket.toObject(),
+      formattedTicket,
       customerDetails: customerExists, // Only _id and firstName
       supportAgentDetails: supportAgentExists
         ? {
@@ -111,12 +130,17 @@ exports.getTicket = async (req, res) => {
         : { message: "Support agent not found" },
     };
 
+
+
+
     res.status(200).json(enrichedTicket);
   } catch (error) {
     console.error("Error fetching ticket:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 
 
 
@@ -189,30 +213,44 @@ exports.getCustomers = async (req, res) => {
   }
 };
 
-// exports.updateTicket = async (req, res) => {
-//   try {
-//     const { ticketId } = req.params;
 
-//     // Extract fields dynamically from req.body
-//     const updateFields = { ...req.body };
+exports.updateTicket = async (req, res) => {
+  try {
+    const { ticketId } = req.params;
 
-//     // Update the ticket
-//     const updatedTicket = await Ticket.findByIdAndUpdate(
-//       ticketId,
-//       updateFields, // Dynamically apply fields from req.body
-//       { new: true } // Return the updated document
-//     );
+    // Extract fields dynamically from req.body
+    const updateFields = { ...req.body };
 
-//     if (!updatedTicket) {
-//       return res.status(404).json({ message: "Ticket not found" });
-//     }
+    // Update the ticket
+    const updatedTicket = await Ticket.findByIdAndUpdate(
+      ticketId,
+      updateFields, // Dynamically apply fields from req.body
+      { new: true } // Return the updated document
+    );
 
-//     res.status(200).json({ message: "Ticket updated successfully", ticket: updatedTicket });
-//   } catch (error) {
-//     console.error("Error updating ticket:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
+    if (!updatedTicket) {
+      // Return early if the ticket isn't found
+      ActivityLog(req, "Failed: Ticket not found");
+      return res.status(404).json({ message: "Ticket not found" });
+    }
+
+    // Pass operation details to middleware
+    ActivityLog(req, "Successfully updated", updatedTicket._id);
+
+    // Send success response
+    return res.status(200).json({ message: "Ticket updated successfully", ticket: updatedTicket });
+  } catch (error) {
+    console.error("Error updating ticket:", error);
+
+    // Log the error activity
+    ActivityLog(req, "Failed to update");
+
+    // Send error response
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
 
 
 
@@ -260,6 +298,7 @@ const ActivityLog = (req, status, operationId = null) => {
     }
     
 
+    
   // Create New Debit Note
   function createNewTicket(data, customerId, supportAgentId, newTicket, userId, userName) {
     const newTickets = new Ticket({ ...data, customerId , supportAgentId , newTicket, userId, userName });
