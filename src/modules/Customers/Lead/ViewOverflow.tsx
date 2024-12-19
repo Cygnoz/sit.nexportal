@@ -4,6 +4,7 @@ import Button from "../../../components/ui/Button";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+import { BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis, Bar } from "recharts";
 
 type Props = {
   leadData?: any;
@@ -67,9 +68,27 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
     setLead(leadData);
   }, [leadData]);
 
+  const leadConversionData = [
+    { name: 'Area 1', uv: 40, },
+    { name: 'Area 2', uv: 20, },
+    { name: 'Area 3', uv: 60, },
+    { name: 'Area 4', uv: 50, },
+    { name: 'Area 5', uv: 30, },
+    { name: 'Area 6', uv: 80, },
+    { name: 'Area 7', uv: 70, },
+    { name: 'Area 8', uv: 90, },
+    { name: 'Area 9', uv: 100, },
+    { name: 'Area 10', uv: 55, },
+  ];
+  const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
+
+
   const renderStep = (step: number, label: string, activeStatuses: string[]) => {
     const isActive = activeStatuses.includes(lead?.leadStatus);
     const { bgColor, textColor } = isActive ? getStatusClass(lead?.leadStatus) : getStatusClass("");
+
+  
+  
 
     return (
       <>
@@ -130,6 +149,33 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
           {renderStep(5,lead?.leadStatus=='Lost'?'Lost':'Won' ,[lead?.leadStatus=='Lost'?'Lost':'Won'])}
         </div>
         </div>
+
+                  <div className="p-3 bg-white w-full space-y-2 rounded-lg">
+                  <h2 className='font-bold'>Lead Engagememt Over Time</h2>
+                  <h3 className='text-xs'>India</h3>
+          
+                  <div className='-ms-7 mt-2'>
+                  <BarChart width={950} height={280} data={lead}>
+                  <CartesianGrid   strokeDasharray="3 3" vertical={false}/>
+              
+              {/* Hide axis lines but keep labels visible */}
+              <XAxis dataKey="name" axisLine={false} tickLine={false} />
+              <YAxis axisLine={false} tickLine={false} />
+              
+              {/* Remove the legend for 'uv' */}
+              <Tooltip />
+              
+              <Bar barSize={55} dataKey="uv" radius={10} >
+                {
+                  leadConversionData.map((data, index) => (
+                    <Cell key={`cell-${data.name}`} fill={colors[index]} />
+                  ))
+                }
+              </Bar>
+            </BarChart>
+                  </div>
+              
+                  </div>
       </div>
     </div>
   );
