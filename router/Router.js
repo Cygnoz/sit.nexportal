@@ -19,7 +19,7 @@ router.get('/ticket/:ticketId',verifyToken,checkPermission('View Ticket'),Ticket
 
 router.get('/getCustomers',TicketController.getCustomers)
 
-// router.put('/ticket/:ticketId',verifyToken,checkPermission('Edit Ticket'),TicketController.updateTicket)
+router.put('/ticket/:ticketId',verifyToken,checkPermission('Edit Ticket'),TicketController.updateTicket)
 
 // router.delete('/delete-ticket/:ticketId',verifyToken,checkPermission('Delete Ticket'),TicketController.deleteTicket)
 

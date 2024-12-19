@@ -11,7 +11,6 @@ const moment = require('moment-timezone');
 const dataExist = async (customerId, supportAgentId) => {
   const [customerExists, supportAgentExists] = await Promise.all([
     Leads.find({ _id: customerId }, { _id: 1, firstName: 1 }),
-
     SupportAgent.findOne({ _id: new Types.ObjectId(supportAgentId) }, { _id: 1, user: 1 }), // Fetch one record
   ]);
 
@@ -113,6 +112,8 @@ exports.getTicket = async (req, res) => {
     // Construct enriched ticket response
     const enrichedTicket = {
       ...ticket.toObject(),
+      createdAt: formatTime(ticket.createdAt),
+      updatedAt: formatTime(ticket.updatedAt),
       customerDetails: customerExists, // Only _id and firstName
       supportAgentDetails: supportAgentExists
         ? {
@@ -161,6 +162,8 @@ exports.getAllTickets = async (req, res) => {
 
         return {
           ...ticket.toObject(),
+          createdAt: formatTime(ticket.createdAt),
+          updatedAt: formatTime(ticket.updatedAt),
           customerDetails: customerExists || { message: "Customer not found or not in trial/licenser status" },
           supportAgentDetails: supportAgentExists
             ? {
@@ -293,7 +296,7 @@ const ActivityLog = (req, status, operationId = null) => {
     
   // Create New Debit Note
   function createNewTicket(data, customerId, supportAgentId, newTicket, userId, userName) {
-    const newTickets = new Ticket({ ...data, customerId , supportAgentId , newTicket, userId, userName ,  status:"Open"});
+    const newTickets = new Ticket({ ...data, customerId , supportAgentId , newTicket, userId, userName , status:"Open" });
     return newTickets.save();
   }
   

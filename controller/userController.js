@@ -376,6 +376,13 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+      // Praise
+      { action: "Add Praise", note: "Add Praise" },
+      { action: "View Praise", note: "View Praise" },
+      { action: "Edit Praise", note: "Edit Praise" },
+      { action: "Edit Praise", note: "Edit Praise" },
+
     ],
   },
   {
