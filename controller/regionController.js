@@ -18,7 +18,7 @@ exports.addRegion = async (req, res, next) => {
     nextId = lastId + 1; // Increment the last numeric part
   }    
   const regionCode = `REG-${nextId.toString().padStart(4, '0')}`;
-
+const status = "Active"
   
 
     // Check if the regionCode already exists
@@ -29,7 +29,7 @@ exports.addRegion = async (req, res, next) => {
       return res.status(400).json({ message: "Region name already exists" });
     }
     // Create a new region entry
-    const newRegion = new Region({ regionCode, regionName, country, description });
+    const newRegion = new Region({ regionCode, regionName, country, description , status});
 
     await newRegion.save();
     res.status(201).json({ message: "Region added successfully", region: newRegion });

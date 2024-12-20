@@ -9,6 +9,7 @@ const regionSchema = new Schema(
     regionName: { type: String, required: true },
     country: { type: String, required: true },
     description: { type: String }, // Optional field
+    status: { type: String }
   },
   { timestamps: true } // Enables createdAt and updatedAt fields
 );

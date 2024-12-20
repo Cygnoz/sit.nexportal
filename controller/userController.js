@@ -63,17 +63,17 @@ exports.login = [loginRateLimiter, async (req, res) => {
     //   }
 
     // Generate OTP
-    // const otp = Math.floor(100000 + Math.random() * 900000).toString();
-       const otp ='111111';
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      //  const otp ='111111';
 
     // Store OTP in cache with the email as the key
     otpCache.set(email, otp);
 
     // Send OTP email
-    // const emailSent = await sendOtpEmail(user.email, otp);
-    // if (!emailSent) {
-    //   return res.status(500).json({ success: false, message: 'Failed to send OTP, please try again' });
-    // }
+    const emailSent = await sendOtpEmail(user.email, otp);
+    if (!emailSent) {
+      return res.status(500).json({ success: false, message: 'Failed to send OTP, please try again' });
+    }
 
     res.status(200).json({
       success: true,
@@ -221,48 +221,30 @@ function generateTimeAndDateForDB(
 
 
 // Nodemailer transporter setup using environment variables
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: process.env.EMAIL,
+//     pass: process.env.PASSWORD,
+//   },
+// });
+
+
+
+
+// Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT, 10) || 587,
+  secure: false, // Use true for 465
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASSWORD,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false, // Skip TLS certificate validation (optional)
   },
 });
-
-// Function to send OTP email
-// const sendOtpEmail = async (email, otp) => {
-//   const mailOptions = {
-//     from: `"BillBizz" <${process.env.EMAIL}>`,
-//     to: email,
-//     subject: 'BillBizz Software OTP',
-//     text: `Hey there,
-
-// Your One-Time Password (OTP) is: ${otp}
-
-// This code is valid for 2 minutes. Please use it promptly to ensure secure access.
-
-// Thanks for using our service!
-
-// Cheers,
-
-// BillBizz`,
-//   };
-
-//   return transporter.sendMail(mailOptions, (error, info) => {
-//     if (error) {
-//       console.error('Error occurred:', error);
-//       return false;
-//     } else {
-//       console.log('Email sent:', info.response);
-//       return true;
-//     }
-//   });
-// };
-
-
-
-
-
 
 
 // Function to send OTP email asynchronously
@@ -376,6 +358,13 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+       // Praise
+       { action: "Add Praise", note: "Add Praise" },
+       { action: "View Praise", note: "View Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+ 
     ],
   },
   {
