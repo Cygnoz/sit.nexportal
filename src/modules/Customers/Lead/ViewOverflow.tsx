@@ -4,7 +4,8 @@ import Button from "../../../components/ui/Button";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
-import { BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis, Bar } from "recharts";
+// import { BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis, Bar } from "recharts";
+import { BarChart, Bar, Cell, CartesianGrid, XAxis, YAxis, } from 'recharts';
 
 type Props = {
   leadData?: any;
@@ -37,7 +38,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
   };
 
   const handleClickOutside = (event: any) => {
-    const current:any=dropdownRef.current
+    const current: any = dropdownRef.current
     if (current && !current.contains(event.target)) {
       setIsOpen(false);
       setLead((prev: any) => ({ ...prev, leadStatus: leadData?.leadStatus }));
@@ -68,34 +69,49 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
     setLead(leadData);
   }, [leadData]);
 
-  const leadConversionData = [
-    { name: 'Area 1', uv: 40, },
-    { name: 'Area 2', uv: 20, },
-    { name: 'Area 3', uv: 60, },
-    { name: 'Area 4', uv: 50, },
-    { name: 'Area 5', uv: 30, },
-    { name: 'Area 6', uv: 80, },
-    { name: 'Area 7', uv: 70, },
-    { name: 'Area 8', uv: 90, },
-    { name: 'Area 9', uv: 100, },
-    { name: 'Area 10', uv: 55, },
+  const data = [
+    { name: 'Calls', uv: 4000, pv: 2400, amt: 2400 },
+    { name: 'Mails', uv: 3000, pv: 1398, amt: 2210 },
+    { name: 'Meetings', uv: 2000, pv: 9800, amt: 2290 },
+    { name: 'Chats', uv: 2780, pv: 3908, amt: 2000 },
+    { name: 'Documents', uv: 1890, pv: 4800, amt: 2181 },
   ];
-  const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
+  
+  const colors = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1'];
+  
+  const normalizedData = data.map(item => ({
+    ...item,
+    uv: item.uv / 160, // Normalize uv values
+  }));
+  
+  // const leadConversionData = [
+  //   { name: 'Area 1', uv: 40, },
+  //   { name: 'Area 2', uv: 20, },
+  //   { name: 'Area 3', uv: 60, },
+  //   { name: 'Area 4', uv: 50, },
+  //   { name: 'Area 5', uv: 30, },
+  //   { name: 'Area 6', uv: 80, },
+  //   { name: 'Area 7', uv: 70, },
+  //   { name: 'Area 8', uv: 90, },
+  //   { name: 'Area 9', uv: 100, },
+  //   { name: 'Area 10', uv: 55, },
+  // ];
+  // const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336',];
 
 
   const renderStep = (step: number, label: string, activeStatuses: string[]) => {
     const isActive = activeStatuses.includes(lead?.leadStatus);
     const { bgColor, textColor } = isActive ? getStatusClass(lead?.leadStatus) : getStatusClass("");
 
-  
-  
+
+
 
     return (
       <>
-        <div className={`w-8 h-10 border-x ${bgColor} ${label==='New'&&'rounded-s-3xl'}`}>
+        <div className={`w-8 h-10 border-x ${bgColor} ${label === 'New' && 'rounded-s-3xl'}`}>
           <p className={`text-center text-sm font-bold mt-[9px] ${textColor}`}>{step}</p>
         </div>
-        <div className={`w-40 h-10 ${bgColor} ${label==='Won'?'rounded-e-3xl': label==='Lost' &&'rounded-e-3xl'}  border}`}>
+        <div className={`w-40 h-10 ${bgColor} ${label === 'Won' ? 'rounded-e-3xl' : label === 'Lost' && 'rounded-e-3xl'}  border}`}>
           <p className={`text-center text-sm font-bold mt-2 ${textColor}`}>{label}</p>
         </div>
       </>
@@ -122,9 +138,8 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
                   {statuses.map((status) => (
                     <div
                       key={status}
-                      className={`px-4 py-2 text-sm flex items-center justify-between font-medium cursor-pointer ${
-                        lead?.leadStatus === status ? "bg-[#FEFBF8]" : ""
-                      }`}
+                      className={`px-4 py-2 text-sm flex items-center justify-between font-medium cursor-pointer ${lead?.leadStatus === status ? "bg-[#FEFBF8]" : ""
+                        }`}
                       onClick={() => selectStatus(status)}
                     >
                       <p>{status}</p>
@@ -141,41 +156,36 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
         </div>
 
         <div className="flex justify-center items-center mt-2">
-        <div className="flex h-10 items-center">
-          {renderStep(1, "New", ["New", "Contacted", "In progress", "Proposal", "Won", "Lost"])}
-          {renderStep(2, "Contacted", ["Contacted", "In progress", "Proposal", "Won", "Lost"])}
-          {renderStep(3, "In Progress", ["In progress", "Proposal", "Won", "Lost"])}
-          {renderStep(4, "Proposal", ["Proposal", "Won", "Lost"])}
-          {renderStep(5,lead?.leadStatus=='Lost'?'Lost':'Won' ,[lead?.leadStatus=='Lost'?'Lost':'Won'])}
-        </div>
+          <div className="flex h-10 items-center">
+            {renderStep(1, "New", ["New", "Contacted", "In progress", "Proposal", "Won", "Lost"])}
+            {renderStep(2, "Contacted", ["Contacted", "In progress", "Proposal", "Won", "Lost"])}
+            {renderStep(3, "In Progress", ["In progress", "Proposal", "Won", "Lost"])}
+            {renderStep(4, "Proposal", ["Proposal", "Won", "Lost"])}
+            {renderStep(5, lead?.leadStatus == 'Lost' ? 'Lost' : 'Won', [lead?.leadStatus == 'Lost' ? 'Lost' : 'Won'])}
+          </div>
         </div>
 
-                  <div className="p-3 bg-white w-full space-y-2 rounded-lg">
-                  <h2 className='font-bold'>Lead Engagememt Over Time</h2>
-                  <h3 className='text-xs'>India</h3>
-          
-                  <div className='-ms-7 mt-2'>
-                  <BarChart width={950} height={280} data={lead}>
-                  <CartesianGrid   strokeDasharray="3 3" vertical={false}/>
-              
-              {/* Hide axis lines but keep labels visible */}
-              <XAxis dataKey="name" axisLine={false} tickLine={false} />
-              <YAxis axisLine={false} tickLine={false} />
-              
-              {/* Remove the legend for 'uv' */}
-              <Tooltip />
-              
-              <Bar barSize={55} dataKey="uv" radius={10} >
-                {
-                  leadConversionData.map((data, index) => (
-                    <Cell key={`cell-${data.name}`} fill={colors[index]} />
-                  ))
-                }
-              </Bar>
-            </BarChart>
-                  </div>
-              
-                  </div>
+    <div className="p-3 bg-white w-full space-y-2 rounded-lg mt-4">
+    <h2 className="font-bold p-2">Lead Engagement Over Time</h2>
+    <BarChart width={950} height={280} data={normalizedData}>
+      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+      <XAxis dataKey="name" axisLine={false} tickLine={false} />
+      <YAxis 
+        axisLine={false} 
+        tickLine={false} 
+        ticks={[0, 5, 10, 15, 20, 25]} 
+        domain={[0, 25]} 
+      />
+      <Bar dataKey="uv" radius={[10, 10, 0, 0]}>
+        {normalizedData.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+        ))}
+      </Bar>
+    </BarChart>
+  </div>
+
+
+
       </div>
     </div>
   );

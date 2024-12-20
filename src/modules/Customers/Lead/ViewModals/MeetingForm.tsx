@@ -1,4 +1,3 @@
-import LocationIcon from "../../../../assets/icons/LocationIcon";
 import Input from "../../../../components/form/Input";
 import Select from "../../../../components/form/Select";
 import Button from "../../../../components/ui/Button";
@@ -84,15 +83,10 @@ const MeetingForm = ({onClose }: Props) => {
                 { value: "name", label: "pipi" },
                 ]}
             />
-            <div className="flex">
             <Input
                 label="Location"
                 placeholder="Enter Location"
             />
-            <div className="mt-10 -ms-7">
-            <LocationIcon size={14}/>
-            </div>
-            </div>
             <Input
                 label="Landmark"
                 placeholder="Enter Landmark"
