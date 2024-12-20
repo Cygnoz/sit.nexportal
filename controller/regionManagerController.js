@@ -359,7 +359,7 @@ const transporter = nodemailer.createTransport({
 // Function to send login credentials
 const sendCredentialsEmail = async (email, password, userName) => {
   const mailOptions = {
-    from: `"BillBizz" <${process.env.EMAIL}>`,
+    from: `"NexPortal" <${process.env.EMAIL}>`,
     to: email,
     subject: 'Your NexPortal Login Credentials',
     text: `Dear ${userName},

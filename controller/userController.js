@@ -37,12 +37,12 @@ exports.addUser = async (req, res,next) => {
   
     
 
-//     const emailSent = await sendCredentialsEmail(email, password, userName, true);
-// if (!emailSent) {
-//   return res
-//     .status(500)
-//     .json({ success: false, message: 'Failed to send login credentials email' });
-// }
+    const emailSent = await sendCredentialsEmail(email, password, userName, true);
+if (!emailSent) {
+  return res
+    .status(500)
+    .json({ success: false, message: 'Failed to send login credentials email' });
+}
 
 
     // Create a new user entry
@@ -211,22 +211,22 @@ exports.updateUser = async (req, res, next) => {
 
     
     // Prepare updated fields
-    // const updateFields = { userImage, userName, email, phoneNo, role };
+    const updateFields = { userImage, userName, email, phoneNo, role, password };
 
     // Hash password if provided
-    // if (password) {
-    //   const hashedPassword = await bcrypt.hash(password, 10);
-    //   updateFields.password = hashedPassword;
+    if (password) {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateFields.password = hashedPassword;
 
-    //   // Send email with updated credentials
-    //   const emailSent = await sendCredentialsEmail(email, password, userName, false);
-    //   if (!emailSent) {
-    //     return res.status(500).json({ success: false, message: 'Failed to send updated password email' });
-    //   }
-    // }
+      // Send email with updated credentials
+      const emailSent = await sendCredentialsEmail(email, password, userName, false);
+      if (!emailSent) {
+        return res.status(500).json({ success: false, message: 'Failed to send updated password email' });
+      }
+    }
 
     // Update the user
-    const updatedUser = await User.findByIdAndUpdate(userId, {userImage, userName, email, phoneNo, role }, { new: true });
+    const updatedUser = await User.findByIdAndUpdate(userId, updateFields, { new: true });
 
     if (!updatedUser) {
       return res.status(404).json({ message: "User not found" });
@@ -306,52 +306,30 @@ const logOperation = (req, status, operationId = null) => {
 };
 
 // Nodemailer transporter setup using environment variables
+// const transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: process.env.EMAIL,
+//     pass: process.env.PASSWORD,
+//   },
+// });
+
+// Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT, 10) || 587,
+  secure: false, // Use true for 465
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASSWORD,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false, // Skip TLS certificate validation (optional)
   },
 });
 
 
-// Function to send login credentials
-// const sendCredentialsEmail = async (email, password, userName) => {
-//   const mailOptions = {
-//     from: `"BillBizz" <${process.env.EMAIL}>`,
-//     to: email,
-//     subject: 'Your NexPortal Login Credentials',
-//     text: `Dear ${userName},
 
-// Welcome to NexPortal – Sales & Support System.
-
-// Your account has been successfully created, Below are your login credentials:
-  
-// Email: ${email}  
-// Password: ${password}  
-
-// Please note: These credentials are confidential. Do not share them with anyone.
-
-// To get started, log in to your account at:  
-// https://dev.nexportal.billbizz.cloud/  
-
-// If you have any questions or need assistance, please contact our support team.
-
-// Best regards,  
-// The CygnoNex Team  
-// NexPortal  
-// Support: notify@cygnonex.com`,
-//   };
-
-//   try {
-//     await transporter.sendMail(mailOptions);
-//     console.log('Login credentials email sent successfully');
-//     return true;
-//   } catch (error) {
-//     console.error('Error sending login credentials email:', error);
-//     return false;
-//   }
-// };
 
 
 const sendCredentialsEmail = async (email, password, userName, isNew = true) => {
@@ -407,6 +385,7 @@ Support: notify@cygnonex.com`;
     subject,
     text,
   };
+
 
   try {
     await transporter.sendMail(mailOptions);
