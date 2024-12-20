@@ -66,8 +66,8 @@ function LeadHome({}: Props) {
         console.log(response.data.leads);
        const transformLead= response.data.leads?.map((lead:any) => ({
           ...lead,
-          leadName:`${lead.firstName} ${lead.lastName?lead.lastName:''}`,
-          leadImage:lead.image
+          leadName:`${lead?.firstName} ${lead.lastName?lead.lastName:''}`,
+          leadImage:lead?.image
         })) || [];
         setAllLead(transformLead)
       }

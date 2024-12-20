@@ -98,7 +98,7 @@ const SupportAgentHome = () => {
             dateOfJoining: SA.dateOfJoining
               ? new Date(SA.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail:SA.user.email
+            loginEmail:SA.user?.email
           })) || [];
         setAllSA(transformedSA);
         console.log(transformedSA);
