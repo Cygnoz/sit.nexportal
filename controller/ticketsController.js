@@ -54,17 +54,16 @@ exports.addTicket = async (req, res , next) => {
 
 
     // Create a new ticket dynamically using req.body
-    const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , userId, userName );
+    const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , userId );
     
-
+  
 
     // Format the `createdAt` and `updatedAt` fields to show only time in IST
     const formattedTicket = {
       ...savedTickets.toObject(),
       createdAt: moment(savedTickets.createdAt).tz('Asia/Kolkata').format('HH:mm:ss'),
-      updatedAt: moment(savedTickets.updatedAt).tz('Asia/Kolkata').format('HH:mm:ss'),
     };
-    res.status(201).json({ message: "Ticket added successfully", savedTickets :formattedTicket  });
+    res.status(201).json({ message: "Ticket added successfully", savedTickets:formattedTicket });
 
 
     // Pass operation details to middleware
@@ -113,7 +112,6 @@ exports.getTicket = async (req, res) => {
     const enrichedTicket = {
       ...ticket.toObject(),
       createdAt: formatTime(ticket.createdAt),
-      updatedAt: formatTime(ticket.updatedAt),
       customerDetails: customerExists, // Only _id and firstName
       supportAgentDetails: supportAgentExists
         ? {
@@ -162,8 +160,7 @@ exports.getAllTickets = async (req, res) => {
 
         return {
           ...ticket.toObject(),
-          createdAt: formatTime(ticket.createdAt),
-          updatedAt: formatTime(ticket.updatedAt),
+          createdAt: moment(ticket.createdAt).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss"), // IST format
           customerDetails: customerExists || { message: "Customer not found or not in trial/licenser status" },
           supportAgentDetails: supportAgentExists
             ? {
@@ -174,8 +171,6 @@ exports.getAllTickets = async (req, res) => {
         };
       })
     );
-
-    
 
     res.status(200).json({ message: "Tickets retrieved successfully", tickets: enrichedTickets });
   } catch (error) {
@@ -287,7 +282,7 @@ const ActivityLog = (req, status, operationId = null) => {
 
     //Clean Data 
     function cleanTicketData(data) {
-      const cleanData = (value) => (value === null || value === undefined || value === "" || value === 0 ? undefined : value);
+      const cleanData = (value) => (value === null || value === undefined || value === 0 ? undefined : value);
       return Object.keys(data).reduce((acc, key) => {
         acc[key] = cleanData(data[key]);
         return acc;
@@ -297,7 +292,7 @@ const ActivityLog = (req, status, operationId = null) => {
 
     
   // Create New Debit Note
-  function createNewTicket(data, customerId, supportAgentId, newTicket, userId, userName) {
+  function createNewTicket(data, customerId, supportAgentId, newTicket, userId, userName ) {
     const newTickets = new Ticket({ ...data, customerId , supportAgentId , newTicket, userId, userName , status:"Open" });
     return newTickets.save();
   }
@@ -321,7 +316,4 @@ const ActivityLog = (req, status, operationId = null) => {
       return new Intl.DateTimeFormat('en-US', options).format(date);
     };
 
-
-
-    
 
