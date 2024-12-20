@@ -195,7 +195,7 @@ const TicketsView = ({ }: Props) => {
                 <EmailIcon size={16} />
                 <h1 className=" font-normal text-sm ms-2">Email</h1>
               </div>
-              <h1 className="mt-3 font-normal text-sm">Sudeep@gmail.com</h1>
+              <h1 className="mt-3 font-normal text-sm">{ticketData?.customerDetails?.email}</h1>
             </div>
             <hr />
             <div className="mt-3 my-2">
@@ -203,7 +203,7 @@ const TicketsView = ({ }: Props) => {
                 <PhoneIcon size={16} />
                 <h1 className=" font-normal text-sm ms-2">Phone</h1>
               </div>
-              <h1 className="mt-3 font-normal text-sm">28355327873</h1>
+              <h1 className="mt-3 font-normal text-sm">{ticketData?.customerDetails?.phone}</h1>
             </div>
             <hr />
             <h1 className="mt-3 font-normal text-sm ">Notes</h1>

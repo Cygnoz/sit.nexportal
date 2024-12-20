@@ -6,7 +6,7 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import Select from "../../components/form/Select";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { endPoints } from "../../services/apiEndpoints";
 import useApi from "../../Hooks/useApi";
 import toast from "react-hot-toast";
@@ -16,6 +16,7 @@ import { TicketsData } from "../../Interfaces/Tickets";
 
 type Props = {
   onClose: () => void;
+  editId?:string
 };
 
 
@@ -31,19 +32,23 @@ const validationSchema = Yup.object({
 
 });
 
-function TicketsForm({ onClose }: Props) {
+function TicketsForm({ onClose ,editId}: Props) {
   const {request:addTickets}=useApi('post',3004)
-  const {request:getAllLicenser}=useApi('get',3001)
-  const [allLicenser, setAllLicenser] = useState<any[]>([]);
+  const {request:editTickets}=useApi('put',3004)
+  const {request:getAllRequestor}=useApi('get',3004)
+  const {request:getTicket}=useApi('get',3004)
+  const [allrequestor, setAllRequestor] = useState<any[]>([]);
   const { request: getAllSA } = useApi("get", 3003);
   const [allSA, setAllSA] = useState<any[]>([]);
  // const [data, setData] = useState('')
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
     clearErrors,
-
+    setValue,
   } = useForm<TicketsData>({
     resolver: yupResolver(validationSchema),
   });
@@ -55,6 +60,10 @@ function TicketsForm({ onClose }: Props) {
   const handleInputChange = (field: keyof TicketsData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
+   // Reset the file input value
+   if (fileInputRef?.current) {
+    fileInputRef.current.value = ""; // Clear the input field
+  }
 
   const Priority = [
     { label: "Low", value: "Low" },
@@ -62,51 +71,86 @@ function TicketsForm({ onClose }: Props) {
     { label: "High", value: "High" },
   ];
 
+  const Status = [
+    { label: "Open", value: "Open" },
+    { label: "In progress", value: "In progress" },
+    { label: "Resolved", value: "Resolved" },
+  ];
+
+
+
   const onSubmit: SubmitHandler<TicketsData> = async (data: any, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("Form Data", data);
   
-    try {
-      // Call addLicenser function for adding a new licenser
-      const { response, error } = await addTickets(endPoints.TICKETS, data);
+  //   try {
+  //     // Call addLicenser function for adding a new licenser
+  //     const { response, error } = await addTickets(endPoints.TICKETS, data);
   
-      console.log("Response:", response);
-      console.log("Error:", error);
+  //     console.log("Response:", response);
+  //     console.log("Error:", error);
   
-      if (response && !error) {
-        toast.success(response.data.message); // Show success toast
-        onClose(); // Close the form/modal
-      } else {
-        toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
-      }
-    } catch (err) {
-      console.error("Error submitting tickets data:", err);
-      toast.error("An unexpected error occurred."); // Handle unexpected errors
+  //     if (response && !error) {
+  //       toast.success(response.data.message); // Show success toast
+  //       onClose(); // Close the form/modal
+  //     } else {
+  //       toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
+  //     }
+  //   } catch (err) {
+  //     console.error("Error submitting tickets data:", err);
+  //     toast.error("An unexpected error occurred."); // Handle unexpected errors
+  //   }
+  // };
+
+  try {
+    const fun = editId ? editTickets : addTickets; // Select the appropriate function based on editId
+    let response, error;
+    if (editId) {
+      // Call updateLead if editId exists (editing a lead)
+      ({ response, error } = await fun(`${endPoints.TICKETS}/${editId}`, data));
+    } else {
+      // Call addLead if editId does not exist (adding a new lead)
+      ({ response, error } = await fun(endPoints.TICKETS, data));
     }
-  };
+    console.log("Response:", response);
+    console.log("Error:", error);
+
+    if (response && !error) {
+     // console.log(response.data);
+      
+       toast.success(response.data.message); // Show success toast
+      onClose(); // Close the form/modal
+    } else {
+      toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
+    }
+  } catch (err) {
+    console.error("Error submitting tickets data:", err);
+    toast.error("An unexpected error occurred."); // Handle unexpected errors
+  }
+};
   
 
-   const getLicensers=async()=>{
+   const getRequestors=async()=>{
             try{
-              const {response,error}=await getAllLicenser(endPoints.LICENSER)
+              const {response,error}=await getAllRequestor(endPoints.REQUESTOR)
               console.log("res",response);
               
               if(response && !error){
-                console.log(response.data?.licensers);
-               const transformLicense= response.data.licensers?.map((license:any) => ({
-                label: license?.firstName,
-                value: String(license?._id),
+                console.log(response?.data);
+               const transformRequest= response?.data?.data?.map((request:any) => ({
+                label: request?.firstName,
+                value: String(request?._id),
                 })) || [];
-               setAllLicenser(transformLicense)
+               setAllRequestor(transformRequest)
               }
             }catch(err){
               console.log(err);
             }
           }
-          console.log(allLicenser);
+          console.log(allrequestor);
           
           useEffect(()=>{
-            getLicensers()
+            getRequestors()
           },[])
 
           const getSAs = async () => {
@@ -138,19 +182,56 @@ function TicketsForm({ onClose }: Props) {
             getSAs();
           }, []);
 
+          const setFormValues = (data: TicketsData) => {
+              console.log(data);
+              
+                Object.keys(data).forEach((key) => {
+                  setValue(key as keyof TicketsData, data[key as keyof TicketsData]);
+                });
+                // console.log(watch("firstName"));
+                
+                // console.log(watch("areaId"));
+                // console.log(watch("regionId"));
+              };
+
+
+              const getOneTickets = async () => {
+                try {
+                  const { response, error } = await getTicket(`${endPoints.TICKETS}/${editId}`);
+                  if (response && !error) {
+                    const Ticket = response.data; // Return the fetched data
+                    console.log("Fetched Tickets data:", Ticket);
+                   console.log(Ticket);
+                   
+                    setFormValues(Ticket);
+                  } else {
+                    // Handle the error case if needed (for example, log the error)
+                    console.error('Error fetching Lead data:', error);
+                  }
+                } catch (err) {
+                  console.error('Error fetching Lead data:', err);
+                }
+              };
+          
+              useEffect(() => {
+                getOneTickets()
+              }, [editId]);
+
 
 
   return (
     <div>
       <div className="p-2 space-y-1 text-[#4B5C79] py-2 w-[100%]">
         <div className="flex justify-between p-2">
-          <div>
-            <h3 className="text-[#303F58] font-bold text-lg">Add Tickets</h3>
-            <p className="text-[11px] text-[#8F99A9] mt-1">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt.
-            </p>
-          </div>
+        <div>
+
+<h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Tickets</h3>
+<p className="text-[11px] text-[#8F99A9] mt-1">
+  {editId
+    ? "Edit the details of the Tickets."
+    : "Fill in the details to create a new Ticket."}
+</p>
+</div>
           <p onClick={onClose} className="text-3xl cursor-pointer">
             &times;
           </p>
@@ -165,7 +246,7 @@ function TicketsForm({ onClose }: Props) {
                   label="Requestor"
                   placeholder="Search Name"
                   error={errors.customerId?.message}
-                  options={allLicenser}
+                  options={allrequestor}
                   {...register("customerId")}
                  // onChange={() => handleInputChange("customerId")}
                 />
@@ -194,16 +275,43 @@ function TicketsForm({ onClose }: Props) {
                   {...register("supportAgentId")}
                 />
 
-               
+                
+               <div className={` ${editId?"grid grid-cols-2 gap-2":"w-full"} `}>
+               {editId ? (
+    // Show both inputs when editing
+    <>
+      <Select
+        required
+        label="Priority"
+        placeholder="Choose Priority"
+        error={errors.priority?.message}
+        options={Priority}
+        {...register("priority")}
+      />
+      <Select
+        label="Status"
+        placeholder="Choose Status"
+        error={errors.status?.message} // Ensure the correct error field is used
+        options={Status}
+        {...register("status")}
+      />
+    </>
+  ) : (
+    
+    // Show only the Priority input when adding
+    <Select
+      required
+      label="Priority"
+      placeholder="Choose Priority"
+      error={errors.priority?.message}
+      options={Priority}
+      {...register("priority")}
+    />
+  )}
 
-                  <Select
-                  required
-                    label="Priority"
-                    placeholder="High"
-                    error={errors.priority?.message}
-                    options={Priority}
-                    {...register("priority")}
-                  />
+               </div>
+
+                 
                   
 
 

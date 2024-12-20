@@ -80,41 +80,41 @@ const Table = <T extends object>({
   const getStatusClass = (status: string | undefined) => {
     switch (status) {
       case "New":
-        return "bg-blue-500 text-white py-1 px-2 w-fit rounded-lg";
+        return "bg-blue-500 text-center text-white py-1 px-2 w-fit rounded-lg";
       case "Contacted":
-          return "bg-cyan-800 text-white py-1 px-2 rounded-lg";
+          return "bg-cyan-800 text-center text-white py-1 px-2 rounded-lg";
       case "In progress":
-        return "bg-yellow-100 text-black py-1 px-2 rounded-lg";
+        return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
       case "Proposal":
-        return "bg-violet-300 text-black py-1 px-2 rounded-lg";
+        return "bg-violet-300 text-center text-black py-1 px-2 rounded-lg";
         case "Lost":
-        return "bg-red-500 text-white py-1 px-2 rounded-lg";
+        return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
       case "Closed":
-        return "bg-gray-400 text-white py-1 px-2 rounded-lg";
+        return "bg-gray-400 text-center text-white py-1 px-2 rounded-lg";
       case "Active":
-        return "bg-green-500 text-white py-1 px-2 w-fit rounded-lg";
+        return "bg-green-500 text-center text-white py-1 px-2 w-fit rounded-lg";
       case "Converted":
-        return "bg-purple-500 text-white py-1 px-2 rounded-lg";
+        return "bg-purple-500 text-center text-white py-1 px-2 rounded-lg";
       case "Expired":
-        return "bg-red-500 text-white py-1 px-2 rounded-lg";
+        return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
       case "Pending Renewal":
-        return "bg-orange-400 text-white py-1 px-2 rounded-lg";
+        return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
       case "Open":
-        return "bg-green-400 text-white py-1 px-2 rounded-lg";
+        return "bg-green-400 text-center text-white py-1 px-2 rounded-lg";
       case "Pending":
-        return "bg-yellow-400 text-black py-1 px-2 rounded-lg";
+        return "bg-yellow-400 text-center text-black py-1 px-2 rounded-lg";
       case "High":
-        return "bg-red-500 text-white py-1 px-2 w-fit rounded-lg";
+        return "bg-red-500 text-center text-white py-1 px-2 w-fit rounded-lg";
       case "Medium":
-        return "bg-orange-300 text-white py-1 px-2 rounded-lg";
+        return "bg-orange-300 text-center text-white py-1 px-2 rounded-lg";
       case "Low":
-        return "bg-green-300 text-white py-1 px-2 rounded-lg";
+        return "bg-green-300 text-center text-white py-1 px-2 rounded-lg";
         case "Won":
-          return "bg-green-500 text-white  py-1 px-2 w-fit rounded-lg";
+          return "bg-green-500 text-center text-white  py-1 px-2 w-fit rounded-lg";
       case "Resolved":
-        return "bg-green-200 text-black py-1 px-2 rounded-lg";
+        return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
       case "Paid":
-        return "bg-purple-200 text-black py-1 px-2 rounded-lg";
+        return "bg-purple-200 text-center text-black py-1 px-2 rounded-lg";
       default:
         return "";
     }
@@ -278,7 +278,7 @@ const Table = <T extends object>({
                   key={String(col.key)}
                   className={`border p-4 text-sm  text-[#303F58] font-medium ${
                     col.key=='convert' ? "w-48 text-center":
-                    col.key?.toLowerCase().includes("status")&&'text-center'
+                    col.key?.toLowerCase().includes("status")&&'text-center min-w-[120px]'
                   }`}
                 >
                   {col.key=='convert'?'Convert':col.label}
