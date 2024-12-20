@@ -73,8 +73,8 @@ function TicketsForm({ onClose ,editId}: Props) {
 
   const Status = [
     { label: "Open", value: "Open" },
-    { label: "InProgress", value: "InProgress" },
-    { label: "Solved", value: "Solved" },
+    { label: "In progress", value: "In progress" },
+    { label: "Resolved", value: "Resolved" },
   ];
 
 
@@ -136,8 +136,8 @@ function TicketsForm({ onClose ,editId}: Props) {
               console.log("res",response);
               
               if(response && !error){
-                console.log(response.data);
-               const transformRequest= response.data?.map((request:any) => ({
+                console.log(response?.data);
+               const transformRequest= response?.data?.data?.map((request:any) => ({
                 label: request?.firstName,
                 value: String(request?._id),
                 })) || [];
