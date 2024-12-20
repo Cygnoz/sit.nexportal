@@ -528,7 +528,7 @@ const ActivityLog = (req, status, operationId = null) => {
 
   // Create New Debit Note
   function createNewLeads( data, regionId, areaId, bdaId,  userId, userName ) {
-    const newLeads = new Leads({ ...data, regionId, areaId, bdaId, userId, userName , leadStatus: "New", customerStatus: "lead" 
+    const newLeads = new Leads({ ...data, regionId, areaId, bdaId, userId, userName , leadStatus: "New", customerStatus: "Lead" 
 
     });
     return newLeads.save();
