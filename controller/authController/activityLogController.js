@@ -25,9 +25,10 @@ const ActivityLogGeneration = (permissionAction) => {
       const actionTime = generatedDateTime.dateTime;
       const Status = req.user.status
       // const permission = role.permissions.find(p => p.action === permissionAction);
-      const Action = permissionAction.split(' ')[0];
-      const Screen = permissionAction.split(' ')[1]
-
+      // const Action = permissionAction.split(' ')[0];
+      // const Screen = permissionAction.split(' ')[1]
+      const [Action, ...rest] = permissionAction.split(' '); 
+      const Screen = rest.join(' ');
 
 
 
