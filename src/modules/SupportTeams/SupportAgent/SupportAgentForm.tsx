@@ -32,7 +32,6 @@ const baseSchema = {
   phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  email: Yup.string().required("Email required").email("Invalid email"),
   workEmail: Yup.string().email("Invalid work email"),
   personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
@@ -42,6 +41,7 @@ const baseSchema = {
 
 const addValidationSchema = Yup.object().shape({
   ...baseSchema,
+  email: Yup.string().required("Email required").email("Invalid email"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
@@ -132,11 +132,11 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
 
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
-    } else if (tab === "Company Information") {
+    } else if (!editId&&tab === "Company Information") {
       fieldsToValidate = [
         "email",
-        !editId && "password",
-        !editId && "confirmPassword",
+         "password",
+         "confirmPassword",
       ];
     }
 
@@ -472,6 +472,8 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
 
           {activeTab === "Company Information" && (
             <div>
+               {!editId && (
+                  <>
               <p className="my-4 text-[#303F58] text-sm font-semibold">
                 {editId ? "Edit" : "Set"} Login Credential
               </p>
@@ -484,8 +486,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                   error={errors.email?.message}
                   {...register("email")}
                 />
-                {!editId && (
-                  <>
+               
                     <Input
                       required
                       placeholder="Enter Password"
@@ -500,9 +501,10 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                       error={errors.confirmPassword?.message}
                       {...register("confirmPassword")}
                     />
+                    </div>
                   </>
                 )}
-              </div>
+              
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <Input

@@ -93,7 +93,7 @@ const SupportAgentHome = () => {
         console.log(response);
         
         const transformedSA =
-          response.data.supportAgent?.map((SA:any) => ({
+          response.data?.supportAgent?.map((SA:any) => ({
             ...SA,
             dateOfJoining: SA.dateOfJoining
               ? new Date(SA.dateOfJoining).toLocaleDateString("en-GB")

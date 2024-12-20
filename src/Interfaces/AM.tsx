@@ -25,7 +25,7 @@ interface Address {
     adhaarNo?: string;
     panNo?: string;
     dateOfJoining?: string;
-    email: string;
+    email?: string;
     password?: string;
     confirmPassword?:string;
     workEmail?: string;

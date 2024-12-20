@@ -11,7 +11,6 @@ import AreaView from './modules/Sales R&A/Area/AreaView';
 import RegionHome from './modules/Sales R&A/Region/RegionHome';
 import RegionView from './modules/Sales R&A/Region/RegionView';
 import AMHome from './modules/SalesTeams/AreaManager/AMHome';
-
 import BDAHome from './modules/SalesTeams/BDA/BDAHome';
 import BDAView from './modules/SalesTeams/BDA/view/BDAView';
 import RMHome from './modules/SalesTeams/RegionManager/RMHome';

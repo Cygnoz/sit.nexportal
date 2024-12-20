@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import ChevronRight from "../../../assets/icons/ChevronRight"
 import HomeCard from "../../../components/ui/HomeCards";
 import RegionIcon from "../../../assets/icons/RegionIcon";
@@ -79,14 +79,14 @@ function LeadView({}: Props) {
       getOneLead()
     }, [id]);
 
-    console.log(leadData);
+   const navigate=useNavigate()
     
   
     
   return (
     <div >
       <div className="flex items-center text-[16px] space-x-2">
-       <p className="font-bold text-[#820000] ">Lead</p>
+       <p onClick={()=>navigate('/lead')} className="font-bold cursor-pointer text-[#820000] ">Lead</p>
         <ChevronRight color="#4B5C79" size={18}/>
         <p className="font-bold text-[#303F58] ">{leadData?.firstName}{leadData?.lastName&&leadData?.lastName}</p>
       </div>
