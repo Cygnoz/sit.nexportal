@@ -57,12 +57,12 @@ exports.addTicket = async (req, res , next) => {
     const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , userId );
     
   
-
-    // Format the `createdAt` and `updatedAt` fields to show only time in IST
     const formattedTicket = {
       ...savedTickets.toObject(),
-      createdAt: moment(savedTickets.createdAt).tz('Asia/Kolkata').format('HH:mm:ss'),
-    };
+      createdAt: formatISTTime(savedTickets.createdAt),
+    };    
+    
+    
     res.status(201).json({ message: "Ticket added successfully", savedTickets:formattedTicket });
 
 
@@ -111,7 +111,7 @@ exports.getTicket = async (req, res) => {
     // Construct enriched ticket response
     const enrichedTicket = {
       ...ticket.toObject(),
-      createdAt: formatTime(ticket.createdAt),
+      createdAt: formatISTTime(ticket.createdAt),
       customerDetails: customerExists, // Only _id and firstName
       supportAgentDetails: supportAgentExists
         ? {
@@ -160,7 +160,7 @@ exports.getAllTickets = async (req, res) => {
 
         return {
           ...ticket.toObject(),
-          createdAt: moment(ticket.createdAt).tz("Asia/Kolkata").format("YYYY-MM-DD HH:mm:ss"), // IST format
+          createdAt: formatISTTime(ticket.createdAt),
           customerDetails: customerExists || { message: "Customer not found or not in trial/licenser status" },
           supportAgentDetails: supportAgentExists
             ? {
@@ -310,10 +310,9 @@ const ActivityLog = (req, status, operationId = null) => {
       return true;
     }
   
-    const formatTime = (date) => {
-      if (!date) return null;
-      const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true }; // 12-hour format
-      return new Intl.DateTimeFormat('en-US', options).format(date);
+    const formatISTTime = (date) => {
+      if (!date) return null; // Handle null or undefined dates
+      return moment(date).tz("Asia/Kolkata").format(" HH:mm:ss"); // IST format
     };
-
+    
 
