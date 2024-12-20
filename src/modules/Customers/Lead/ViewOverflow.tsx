@@ -41,10 +41,9 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
     const current: any = dropdownRef.current
     if (current && !current.contains(event.target)) {
       setIsOpen(false);
-      setLead((prev: any) => ({ ...prev, leadStatus: leadData?.leadStatus }));
     }
   };
-
+  
   const handleSave = async () => {
     try {
       const { response, error } = await editLead(`${endPoints.LEAD}/${leadData._id}`, lead);

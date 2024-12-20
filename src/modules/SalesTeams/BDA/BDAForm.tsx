@@ -32,9 +32,6 @@ const baseSchema = {
   phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  email: Yup.string()
-    .required("Email required")
-    .email("Invalid email"),
   workEmail: Yup.string().email("Invalid work email"),
   personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
@@ -46,6 +43,9 @@ const baseSchema = {
 
 const addValidationSchema = Yup.object().shape({
   ...baseSchema,
+  email: Yup.string()
+    .required("Email required")
+    .email("Invalid email"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
@@ -131,8 +131,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
 
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
-    } else if (tab === "Company Information") {
-      fieldsToValidate = ["email", !editId&&"password", !editId&&"confirmPassword"];
+    } else if (!editId&&tab === "Company Information") {
+      fieldsToValidate = ["email", "password", "confirmPassword"];
     }
 
     const isValid = fieldsToValidate.length
@@ -475,6 +475,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
 
           {activeTab === "Company Information" && (
             <div>
+            {!editId&&<>
               <p className="my-4 text-[#303F58] text-sm font-semibold">
                 {editId?'Edit':'Set'} Login Credential
               </p>
@@ -487,7 +488,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   error={errors.email?.message}
                   {...register("email")}
                 />
-               {!editId&& 
+            
                <>
                <Input
                   required
@@ -504,8 +505,9 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   {...register("confirmPassword")}
                 />
                </>
-               }
+               
               </div>
+              </>}
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <Input
