@@ -93,12 +93,12 @@ const SupportAgentHome = () => {
         console.log(response);
         
         const transformedSA =
-          response.data.supportAgent?.map((SA:any) => ({
+          response.data?.supportAgent?.map((SA:any) => ({
             ...SA,
             dateOfJoining: SA.dateOfJoining
               ? new Date(SA.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail:SA.user.email
+            loginEmail:SA.user?.email
           })) || [];
         setAllSA(transformedSA);
         console.log(transformedSA);

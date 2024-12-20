@@ -27,9 +27,13 @@ interface LicensersData {
   totalRevenue: string | number;
   status: string;
 }
-type Props = {};
+type Props = {
+  regionData?:any
+};
 
-const RegionAriaView = ({}: Props) => {
+const RegionAriaView = ({regionData}: Props) => {
+  console.log(regionData);
+  
  
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {

@@ -183,7 +183,7 @@ const RMView = () => {
     <>
     <div>
       <div className="flex items-center text-[16px] my-2 space-x-2">
-        <p className="font-bold text-[#820000] ">RM</p>
+        <p onClick={()=>navigate('/region-manager')}  className="font-bold cursor-pointer text-[#820000] ">RM</p>
         <ChevronRight color="#4B5C79" size={18} />
         <p className="font-bold text-[#303F58] ">{getData.rmData?.user?.userName?getData.rmData?.user?.userName:'N/A'}</p>
       </div>

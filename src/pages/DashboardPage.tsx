@@ -185,7 +185,7 @@ const DashboardPage = () => {
   
 
   return (
-    <div className="text-[#303F58]">
+    <div className="text-[#303F58] mb-3">
       <h1 className="text-[#303F58] text-xl font-bold">Dashboard</h1>
       {/* HomeCards Section */}
       <div className="flex gap-3 py-2 justify-between mt-2">
