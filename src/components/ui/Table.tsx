@@ -29,7 +29,7 @@ interface TableProps<T> {
     search?: { placeholder: string };
     sort?: {
       sortHead: string;
-      sortList: { label: string; icon: React.ReactNode }[];
+      sortList: { label: string; icon: React.ReactNode;action?:()=>void }[];
     }[];
   };
   actionList?: {
@@ -180,7 +180,7 @@ const Table = <T extends object>({
       {headerContents.sort && (
         <div className="flex gap-2">
           {headerContents.sort.map((sort, index) => (
-            <SortBy key={index} sort={sort} />
+            <SortBy  key={index} sort={sort} />
           ))}
         </div>
       )}

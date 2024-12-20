@@ -18,7 +18,7 @@ import Background from "../../../assets/image/1.png";
 import PhoneIcon from "../../../assets/icons/PhoneIcon";
 import CalenderMultiple from "../../../assets/icons/CalenderMultiple";
 import ChevronRight from "../../../assets/icons/ChevronRight";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import AwardIcon from "../../../assets/icons/AwardIcon";
@@ -84,7 +84,9 @@ const SuperVisorView = ({}: Props) => {
   useEffect(() => {
     getASV();
   }, [id]);
-  console.log(getData);
+  
+
+  const navigate=useNavigate()
 
   // Data for HomeCards
   const SuperVisorCardData = [
@@ -222,7 +224,7 @@ const SuperVisorView = ({}: Props) => {
     <>
       <div>
         <div className="flex items-center text-[16px] my-2 space-x-2">
-          <p className="font-bold text-[#820000] ">SuperVisor</p>
+          <p onClick={()=>navigate('/supervisor')}  className="font-bold cursor-pointer  text-[#820000] ">SuperVisor</p>
           <ChevronRight color="#4B5C79" size={18} />
           <p className="font-bold text-[#303F58] ">
             {" "}

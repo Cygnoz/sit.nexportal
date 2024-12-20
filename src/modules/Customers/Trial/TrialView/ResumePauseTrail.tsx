@@ -5,15 +5,20 @@ import bgpicturee from "../../../../assets/image/Group 629978 (1).png";
 
 type Props = {
   onClose: () => void;
-  
+  trialStatus?:any
+  setTrialStatus?:any
+  handleScrollTop:()=>void
 };
 
-const ResumePauseTrail = ({ onClose }: Props) => {
+const ResumePauseTrail = ({ onClose,trialStatus,setTrialStatus,handleScrollTop}: Props) => {
   // const [isPaused, setIsPaused] = useState(false);
 
   // const handlePauseToggle = () => {
   //   setIsPaused((prev) => !prev);
   // };
+
+ 
+
   return (
     <div className="p-2 bg-white rounded shadow-md space-y-2">
       <div className="p-2 space-y-1 text-[#4B5C79] py-2 w-[100%]">
@@ -34,14 +39,14 @@ const ResumePauseTrail = ({ onClose }: Props) => {
 
         <div>
           <div className=" my-2">
-            <div className="justify-center">
-              <img className="h-44 w-52  ms-52" src={bgpicturee} alt="" />
-
+            <div className="flex justify-center">
+              <img className="h-44 w-64 " src={bgpicturee} alt="" />
+            </div>
               <p className="font-semibold text-[#4B5C79] text-sm my-3">
                 Pausing this trial will restrict all user activities until
                 resumed. Are you sure you want to proceed?
               </p>
-            </div>
+            
           </div>
         </div>
         <div className=" flex justify-end gap-2 mt-3 pb-2 me-3">
@@ -58,8 +63,13 @@ const ResumePauseTrail = ({ onClose }: Props) => {
             className="h-8 text-sm border rounded-lg"
             size="lg"
             type="submit"
+            onClick={()=>{
+              setTrialStatus((prev:any)=>!prev)
+              onClose()
+              handleScrollTop()
+            }}
           >
-            Pause
+            {trialStatus?'Resume':'Pause'}
           </Button>
         </div>
       </div>

@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CalenderClock from "../../../../assets/icons/CalenderClock";
 import ChevronRight from "../../../../assets/icons/ChevronRight";
 import DeActivateIcon from "../../../../assets/icons/DeActivateIcon";
@@ -116,11 +116,12 @@ function LicenserView({ }: Props) {
     { key: licenseData?.areaDetails?.areaName, label: "Area" },
     { key: licenseData?.email, label: "Email" },
   ];
+  const navigate=useNavigate()
   return (
     <>
     <div className="text-[#4B5C79] space-y-2 mb-5">
       <div className="flex items-center text-[16px]  space-x-2 mb-4">
-        <p className="font-bold text-[#820000]">Licenser</p>
+        <p onClick={()=>navigate('/licenser')} className="font-bold cursor-pointer text-[#820000]">Licenser</p>
         <ChevronRight color="#4B5C79" size={18} />
         <p className="font-bold text-[#303F58]">{licenseData?.firstName}</p>
       </div>

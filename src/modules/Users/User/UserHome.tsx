@@ -42,7 +42,10 @@ const UserHome = () => {
       console.log(error)
       if(response && !error){
         // toast.success(response.data.message)
-        setAllUsers(response.data.AllUsers)
+        setAllUsers(response.data.AllUsers.map((user:UserData)=>({
+          ...user,
+          type:(user.role=='Super Admin' ||user.role=='Sales Admin'||user.role=='Support Admin')?user.role:'User'
+        })))
       }else{
         console.log(error)
       }
@@ -64,6 +67,7 @@ const UserHome = () => {
       { key: "email", label: "Email Address" },
       { key: "phoneNo", label: "Phone No" },
       { key: "role", label: "Role" },
+      { key: "type", label: "Type" },
     ];
 
 

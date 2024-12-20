@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import CalenderRound from "../../../../assets/icons/CalenderRound";
 
@@ -14,7 +14,7 @@ import BuildingIcon from "../../../../assets/icons/BuildingIcon";
 import CalenderDays from "../../../../assets/icons/CalenderDays";
 import Modal from "../../../../components/modal/Modal";
 import TrialViewForm from "./TrialViewForm";
-import { useState } from "react";
+import { useRef, useState } from "react";
 // import ArrowRight from "../../../../assets/icons/ArrowRight"
 import TrialEditForm from "./TrialEditForm";
 import Button from "../../../../components/ui/Button";
@@ -25,7 +25,10 @@ import rightArrow from "../../../../assets/image/right-arrow.png";
 import CalenderModal from "./CalenderModal";
 import DeActivateIcon from "../../../../assets/icons/DeActivateIcon";
 import { Bar, BarChart, Cell, Tooltip, XAxis, YAxis } from "recharts";
-
+import bgpicturee from "../../../../assets/image/resumeModalImg.png";
+import CalenderPlus from "../../../../assets/icons/CalenderPlus";
+import Pause from "../../../../assets/icons/Pause";
+import ArrowBigDash from "../../../../assets/icons/ArrowBigDash";
 type Props = {};
 
 const TrialView = ({}: Props) => {
@@ -36,7 +39,18 @@ const TrialView = ({}: Props) => {
   const [conLicModalOpen, setConvLicModalOpen] = useState(false);
   const [pausModalOpen, setPausModalOpen] = useState(false);
   const [calenderModalOpen, setCalenderModalOpen] = useState(false);
-  // const [pauseTrail,setPauseTrial]=useState(false)
+  const [trialStatus,setTrialStatus]=useState(false)
+  const mainContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleScrollToTop = () => {
+    if (mainContainerRef.current) {
+      mainContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   // Function to toggle modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
@@ -61,6 +75,8 @@ const TrialView = ({}: Props) => {
   const calenderModalToggle = () => {
     setCalenderModalOpen((prev) => !prev);
   };
+
+ 
 
   const { id } = useParams();
 
@@ -97,16 +113,23 @@ const TrialView = ({}: Props) => {
     </text>
   );
 
+  const navigate=useNavigate()
+
   return (
-    <div className="mb-2">
+    <div ref={mainContainerRef} style={{
+      height: '100vh',
+      overflowY: 'scroll',
+      position: 'relative',
+    }}  className="mb-2 hide-scrollbar">
       <div className="flex items-center text-[16px] space-x-2">
-        <p className="font-bold text-[#820000] ">Trail</p>
+        <p onClick={()=>navigate('/trial')} className="font-bold cursor-pointer text-[#820000] ">Trail</p>
         <ChevronRight color="#4B5C79" size={18} />
         <p className="font-bold text-[#303F58] "> {id}</p>
       </div>
 
-      <div className="bg-[#F3E6E6] rounded-lg mt-2">
-        <div className="p-2 flex justify-between">
+     {trialStatus&& <div className="bg-[#F3E6E6] relative rounded-lg mt-2 ">
+      <img className="h-24 w-48 top-4  right-7  absolute" src={bgpicturee} alt="" />
+        <div className="p-3 flex justify-between">
           <div className="p-2">
             <h1 className="bg-[#B08E20] p-1 rounded-lg text-white text-xs font-semibold">
               Trail On Hold
@@ -114,6 +137,7 @@ const TrialView = ({}: Props) => {
           </div>
           <div className="justify-end">
             <button
+            onClick={pauseModalToggle}
               type="button"
               className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900 me-auto"
             >
@@ -126,16 +150,12 @@ const TrialView = ({}: Props) => {
             This trial is currently paused. No activities are allowed until
             resumed
           </h1>
-          <Button className="ml-96">Resume Trail</Button>
-          <div className="w-12 h-12 rounded-full overflow-hidden ml-64">
-            <img
-              src={profileImage} // Replace with the actual image URL
-              alt="Profile"
-              className="w-full h-full object-cover"
-            />
-          </div>
+          <Button onClick={pauseModalToggle} className="ml-96 h-10 -mt-2">Resume Trail</Button>
+
+        
+     
         </div>
-      </div>
+      </div>}
 
       <div className="grid grid-cols-12 mt-5 gap-4">
         <div className="col-span-3 w-full ">
@@ -309,7 +329,7 @@ const TrialView = ({}: Props) => {
                   className="w-36 h-10 flex justify-center"
                   variant="tertiary"
                 >
-                  <CalenderDays size={16} color="#4B5C79" />
+                  <CalenderPlus size={16} color="#4B5C79" />
                   <p className="text-#565148 font-medium text-xs">
                     Extent Trial
                   </p>
@@ -320,9 +340,11 @@ const TrialView = ({}: Props) => {
                   className="w-36 h-10 flex justify-center"
                   variant="secondary"
                 >
-                  <CalenderDays size={16} color="#4B5C79" />
+                  {trialStatus?
+                  <ArrowBigDash size={16}/>
+                  :<Pause size={16}/>}
                   <p className="text-#585953 font-medium text-xs">
-                    Pause Trial
+                    {trialStatus?'Resume':'Pause'} Trial
                   </p>
                 </Button>
               </div>
@@ -571,7 +593,7 @@ const TrialView = ({}: Props) => {
         onClose={pauseModalToggle}
         className="w-[35%]"
       >
-        <ResumePauseTrail onClose={pauseModalToggle} />
+        <ResumePauseTrail handleScrollTop={handleScrollToTop}  trialStatus={trialStatus} setTrialStatus={setTrialStatus}  onClose={pauseModalToggle} />
       </Modal>
 
       {/* Modal controlled by state */}

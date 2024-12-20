@@ -36,9 +36,6 @@ const baseSchema = {
   phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-  email: Yup.string()
-    .required("Email required")
-    .email("Invalid email"),
   workEmail: Yup.string().email("Invalid work email"),
   personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
@@ -50,6 +47,9 @@ const baseSchema = {
 
 const addValidationSchema = Yup.object().shape({
   ...baseSchema,
+  email: Yup.string()
+    .required("Email required")
+    .email("Invalid email"),
   password: Yup.string()
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
@@ -136,8 +136,8 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
-    } else if (tab === "Company Information") {
-      fieldsToValidate = ["email", editId && "password", !editId && "confirmPassword"];
+    } else if (!editId&& tab === "Company Information") {
+      fieldsToValidate = ["email", "password",  "confirmPassword"];
     }
 
     const isValid = fieldsToValidate.length
@@ -461,6 +461,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
           {activeTab === "Company Information" && (
             <>
+             {!editId&&<>
               <h1 className="text-xs font-semibold">Set Login Credentials</h1>
               <div className="grid grid-cols-3 gap-4 my-4">
                 <Input
@@ -470,8 +471,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   error={errors.email?.message}
                   {...register("email")}
                 />
-                {!editId &&
-                  <>
                     <Input
                       required
                       placeholder="Enter Password"
@@ -486,9 +485,8 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                       error={errors.confirmPassword?.message}
                       {...register("confirmPassword")}
                     />
-                  </>
-                }
               </div>
+             </>}
 
               <div>
                 <hr />

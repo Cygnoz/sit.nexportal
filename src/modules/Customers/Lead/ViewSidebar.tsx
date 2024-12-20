@@ -127,7 +127,7 @@ const pieData = roles.map((role) => ({
           <p className="text-[#FFFFFF] text-xs font-bold ms-3">{leadData?.areaDetails.areaName?leadData?.areaDetails.areaName:'N/A'}</p>
         </div>
 
-        <div className="flex w-80  justify-center  h-20 px-6 py-4 gap-5 rounded-xl bg-[#FFFFFF33] ">
+        <div className="flex w-80  justify-between  h-20 px-6 py-4 gap-5 rounded-xl bg-[#FFFFFF33] ">
 
           <div>
           <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">

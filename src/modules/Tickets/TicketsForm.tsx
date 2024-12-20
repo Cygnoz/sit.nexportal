@@ -119,7 +119,7 @@ function TicketsForm({ onClose }: Props) {
                 
                 const transformedSA =
                   response.data.supportAgent?.map((SA:any) => ({
-                    label: SA?.user.userName,
+                    label: SA?.user?.userName,
                 value: String(SA?._id),
                   })) || [];
                 setAllSA(transformedSA);

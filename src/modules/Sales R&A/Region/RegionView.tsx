@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import ChevronDown from "../../../assets/icons/ChevronDown";
 import ChevronRight from "../../../assets/icons/ChevronRight";
@@ -27,7 +27,7 @@ type Props = {};
 function RegionView({}: Props) {
   const { request: getRM } = useApi("get", 3002);
   const [dropDown, setDropDown] = useState([]);
-
+  const navigate=useNavigate()
   // Function to toggle dropdown state
   const handleDropdownToggle = (index: number) => {
     setDropDown((prev) => {
@@ -137,7 +137,7 @@ function RegionView({}: Props) {
         {/* Sidebar */}
         <div className="w-1/6 fixed h-full pe-2">
           <div className="flex items-center text-[16px] space-x-2 mb-4">
-            <p className="font-bold text-[#820000]">Region</p>
+            <p onClick={()=>navigate('/regions')} className="font-bold cursor-pointer text-[#820000]">Region</p>
             <ChevronRight color="#4B5C79" size={18} />
             <p className="font-bold text-[#303F58]">
               {data.regionData?.regionName}

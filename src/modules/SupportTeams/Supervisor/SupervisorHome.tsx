@@ -105,7 +105,7 @@ const SupervisorHome = () => {
             dateOfJoining: SV.dateOfJoining
               ? new Date(SV.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail:SV.user.email
+            loginEmail:SV.user?.email
           })) || [];
         setAllSV(transformedSV);
         console.log(transformedSV);

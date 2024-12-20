@@ -25,7 +25,7 @@ export interface RMData {
     adhaarNo?: string;
     panNo?: string;
     dateOfJoining?: string; // Use a string for ISO date format
-    email: string;
+    email?: string;
     password?: string;
     confirmPassword?:string;
     workEmail?: string;
