@@ -52,18 +52,32 @@ exports.addTicket = async (req, res , next) => {
 
     if (!validateCustomerAndSupportAgent( customerExists, supportAgentExists, res )) return;
 
-
-    // Create a new ticket dynamically using req.body
-    const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , userId );
+    const openingDate = generateOpeningDate();
+    console.log("Opening Date:", openingDate.dateTime); // "2024-12-19 14:30:45 (IST)"
+    
     
   
-    const formattedTicket = {
-      ...savedTickets.toObject(),
-      createdAt: formatISTTime(savedTickets.createdAt),
-    };    
+
+    // Create a new ticket dynamically using req.body
+    const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , openingDate , userId , userName );
     
-    
-    res.status(201).json({ message: "Ticket added successfully", savedTickets:formattedTicket });
+  console.log("Saving ticket with data:", {
+  ...cleanedData,
+  customerId,
+  supportAgentId,
+  openingDate,
+  userId,
+  userName,
+});
+
+
+    // // Format the `createdAt` and `updatedAt` fields to show only time in IST
+    // const formattedTicket = {
+    //   ...savedTickets.toObject(),
+    //   createdAt: moment(savedTickets.createdAt).tz('Asia/Kolkata').format('HH:mm:ss'),
+    // };
+
+    res.status(201).json({ message: "Ticket added successfully", savedTickets });
 
 
     // Pass operation details to middleware
@@ -111,7 +125,6 @@ exports.getTicket = async (req, res) => {
     // Construct enriched ticket response
     const enrichedTicket = {
       ...ticket.toObject(),
-      createdAt: formatISTTime(ticket.createdAt),
       customerDetails: customerExists, // Only _id and firstName
       supportAgentDetails: supportAgentExists
         ? {
@@ -160,7 +173,6 @@ exports.getAllTickets = async (req, res) => {
 
         return {
           ...ticket.toObject(),
-          createdAt: formatISTTime(ticket.createdAt),
           customerDetails: customerExists || { message: "Customer not found or not in trial/licenser status" },
           supportAgentDetails: supportAgentExists
             ? {
@@ -290,14 +302,64 @@ const ActivityLog = (req, status, operationId = null) => {
     }
     
 
-    
-  // Create New Debit Note
-  function createNewTicket(data, customerId, supportAgentId, newTicket, userId, userName ) {
-    const newTickets = new Ticket({ ...data, customerId , supportAgentId , newTicket, userId, userName , status:"Open" });
-    return newTickets.save();
+
+  // Function to generate the current date and time in a specified time zone
+function generateOpeningDate(
+  timeZone = "Asia/Kolkata",
+  dateFormat = "YYYY-MM-DD",
+  dateSplit = "-",
+  timeFormat = "HH:mm:ss",
+  timeSplit = ":"
+) {
+  // Get the current date-time in the specified time zone
+  const localDate = moment.tz(new Date(), timeZone);
+
+  // Format date
+  let formattedDate = localDate.format(dateFormat);
+
+  // Replace default separators in the date if a custom split character is provided
+  if (dateSplit) {
+    formattedDate = formattedDate.replace(/[-/]/g, dateSplit);
   }
+
+  // Format time
+  const formattedTime = localDate.format(timeFormat).replace(/:/g, timeSplit);
+
+  // Get time zone abbreviation
+  const timeZoneName = localDate.format("z");
+
+  // Combine date, time, and time zone
+  const dateTime = `${formattedDate} ${formattedTime} (${timeZoneName})`;
+
+  return {
+    date: formattedDate,
+    time: `${formattedTime} (${timeZoneName})`,
+    dateTime,
+  };
+}
+
+// Usage example
+const openingDate = generateOpeningDate();
+console.log(openingDate.dateTime); // e.g., "2024-12-19 14:30:45 (IST)"
+
+const createNewTicket = async (data, customerId, supportAgentId, userId, userName) => {
+  const { dateTime } = generateOpeningDate(); // Auto-generate dateTime
+
+  const newTicket = new Ticket({
+    ...data,
+    customerId,
+    supportAgentId,
+    openingDate: dateTime, // Set auto-generated openingDate here
+    userId,
+    userName,
+    status: "Open",
+  });
+
+  return newTicket.save();
+};
+
   
-    // Validate Organization Tax Currency
+    // Validate data existing
     function validateCustomerAndSupportAgent( customerExists, supportAgentExists ,res ) {
       if (!customerExists) {
         res.status(404).json({ message: "Customer not found" });
@@ -310,9 +372,3 @@ const ActivityLog = (req, status, operationId = null) => {
       return true;
     }
   
-    const formatISTTime = (date) => {
-      if (!date) return null; // Handle null or undefined dates
-      return moment(date).tz("Asia/Kolkata").format(" HH:mm:ss"); // IST format
-    };
-    
-
