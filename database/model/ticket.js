@@ -14,7 +14,8 @@ const ticketSchema = new Schema(
     priority: { type: String }, // Priority level
     type: { type: String }, // Ticket type
     status :{ type: String },
-    notes:{type : String}
+    notes:{type : String},
+    openingDate:{type:String}
   }
 );
 
