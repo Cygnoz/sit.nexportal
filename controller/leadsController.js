@@ -4,6 +4,10 @@ const Area = require('../database/model/area')
 // const mongoose = require('mongoose');
 const Bda = require('../database/model/bda')
 const User = require("../database/model/user");
+const axios = require('axios');
+const nodemailer = require('nodemailer');
+
+
 
 const dataExist = async (regionId, areaId, bdaId) => {
   const [regionExists, areaExists, bdaExists] = await Promise.all([
@@ -225,16 +229,74 @@ const existingUserId = existingLead.user;
 //   }
 // };
 
+// exports.convertLeadToTrial = async (req, res) => {
+//   try {
+//     const { leadId } = req.params; // Get the lead ID from request parameters
+
+//     // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
+//     const updatedLead = await Leads.findByIdAndUpdate(
+//       leadId,
+//       { customerStatus: "Trial" },
+//       {new: true } // Return the updated document
+//     );
+
+//     // Check if the lead was found and updated
+//     if (!updatedLead) {
+//       return res.status(404).json({ message: "Lead not found or unable to convert." });
+//     }
+
+//     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
+//   } catch (error) {
+//     console.error("Error converting lead to Trial:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+
 exports.convertLeadToTrial = async (req, res) => {
   try {
+
     const { leadId } = req.params; // Get the lead ID from request parameters
+    const { organizationName, contactName, contactNum, email, password ,startDate,endDate} = req.body;
+
+
+    // Validate request body
+    if (!organizationName || !contactName || !contactNum || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    // Configure the request with timeout
+    const axiosConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 5000, // 5 seconds timeout
+    };
+
+    // Body for the POST request
+    const requestBody = {
+      organizationName,
+      contactName,
+      contactNum,
+      email,
+      password,
+    };
+
+    // Send POST request to external API
+    const response = await axios.post(
+      'https://dev.billbizz.cloud:5004/create-client',
+      requestBody,
+      axiosConfig
+    );
+
 
     // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
     const updatedLead = await Leads.findByIdAndUpdate(
       leadId,
-      { 
-        customerStatus: "Trial"},
-        {new: true } // Return the updated document
+      { customerStatus: "Trial",
+        startDate,
+        endDate
+       },
+      {new: true } // Return the updated document
     );
 
     // Check if the lead was found and updated
@@ -242,10 +304,35 @@ exports.convertLeadToTrial = async (req, res) => {
       return res.status(404).json({ message: "Lead not found or unable to convert." });
     }
 
+    const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = true );
+    if (!emailSent) {
+      return res
+        .status(500)
+        .json({ success: false, message: 'Failed to send login credentials email' });
+    }
+
     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
+    
+    // Successful response
+    
+
   } catch (error) {
-    console.error("Error converting lead to Trial:", error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error during client creation:", error.message || error);
+
+    // Handle specific error cases
+    if (error.response) {
+      // API responded with an error
+      return res.status(error.response.status).json({
+        message: `Client creation failed with status code: ${error.response.status}`,
+        error: error.response.data,
+      });
+    } else if (error.request) {
+      // Request was made but no response was received
+      return res.status(504).json({ message: "No response from client creation service" });
+    } else {
+      // Other unexpected errors
+      return res.status(500).json({ message: "Internal server error" });
+    }
   }
 };
 
@@ -264,6 +351,7 @@ exports.getAllTrials = async (req, res) => {
 
     // Respond with the trials
     res.status(200).json({ trials });
+    
   } catch (error) {
     console.error("Error fetching trials:", error);
     res.status(500).json({ message: "Internal server error." });
@@ -275,13 +363,24 @@ exports.getAllTrials = async (req, res) => {
 exports.convertTrialToLicenser = async (req, res) => {
   try {
     const { trialId } = req.params; // Assume the request contains the ID of the trial to convert.
+    const { organizationName, contactName, contactNum, email, password ,startDate,endDate} = req.body;
 
     // Find the trial by ID and update its customerStatus to "Licenser"
     const updatedTrial = await Leads.findByIdAndUpdate(
       trialId,
-      { customerStatus: "Licenser" },
+      { customerStatus: "Licenser",
+        startDate,
+        endDate
+       },
       { new: true } // Return the updated document
     );
+
+    const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = false );
+    if (!emailSent) {
+      return res
+        .status(500)
+        .json({ success: false, message: 'Failed to send login credentials email' });
+    }
 
     // Check if the trial was found and updated
     if (!updatedTrial) {
@@ -500,3 +599,105 @@ const validSalutations = ["Mr.", "Mrs.", "Ms.", "Miss.", "Dr."];
 const validLeadStatus = ["New", "Contacted", "Inprogress", "Lost", "Won"];
 
 
+
+
+
+// Create a reusable transporter object using AWS SES
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT, 10) || 587,
+  secure: false, // Use true for 465
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false, // Skip TLS certificate validation (optional)
+  },
+});
+
+
+// Function to send OTP email asynchronously
+// const sendClientCredentialsEmail = async (email, organizationName, contactName, password, startDate, endDate) => {
+//   const mailOptions = {
+//     from: `"BillBizz Team" <${process.env.EMAIL}>`,
+//     to: email,
+//     subject: 'Welcome to BillBizz ERP Solution - Trial Account',
+//     text: `Dear ${contactName},
+
+// Welcome to BillBizz! We are thrilled to have ${organizationName} onboard as a trial user.
+
+// Here are your trial account details to get started:
+
+// - Login Email: ${email}
+// - Password: ${password}
+// - Trial Period: ${startDate} to ${endDate}
+// - Web Portal Link: https://dev.billbizz.cloud/login
+
+// Please log in using the credentials above to explore the features of BillBizz ERP Solution. If you have any questions during your trial, feel free to reach out to our support team.
+
+// Thank you for choosing BillBizz. We hope you enjoy your trial experience.
+
+// Best regards,  
+// The BillBizz Team`,
+//   };
+
+//   try {
+//     await transporter.sendMail(mailOptions);
+//     console.log('Client credentials email sent successfully');
+//     return true;
+//   } catch (error) {
+//     console.error('Error sending client credentials email:', error);
+//     return false;
+//   }
+// };
+
+
+const sendClientCredentialsEmail = async (email, organizationName, contactName, password, startDate, endDate, isTrial) => {
+  const subject = isTrial
+    ? 'Welcome to BillBizz ERP Solution - Trial Account'
+    : 'Welcome to BillBizz ERP Solution - Licensed Account';
+
+  const accountType = isTrial ? 'trial' : 'licensed';
+  const periodType = isTrial ? 'Trial Period' : 'License Validity';
+
+  const text = `Dear ${contactName},
+
+Welcome to BillBizz! We are thrilled to have ${organizationName} onboard as a ${accountType} user.
+
+Here are your ${accountType} account details to get started:
+
+- Login Email: ${email}
+- Password: ${password}
+- ${periodType}: ${startDate} to ${endDate}
+- Web Portal Link: https://dev.billbizz.cloud/login
+
+Please log in using the credentials above to ${
+    isTrial
+      ? 'explore the features of BillBizz ERP Solution during your trial period'
+      : 'fully leverage the capabilities of BillBizz ERP Solution'
+  }. If you need any assistance, feel free to reach out to our support team.
+
+Thank you for choosing BillBizz. We ${
+    isTrial ? 'hope you enjoy your trial experience' : 'look forward to supporting your business success'
+  }.
+
+Best regards,  
+The BillBizz Team`;
+
+  const mailOptions = {
+    from: `"BillBizz Team" <${process.env.EMAIL}>`,
+    to: email,
+    subject: subject,
+    text: text,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log(`${isTrial ? 'Trial' : 'Licensed'} user email sent successfully`);
+    return true;
+  } catch (error) {
+    console.error(`Error sending ${isTrial ? 'trial' : 'licensed'} user email:`, error);
+    return false;
+  }
+};
