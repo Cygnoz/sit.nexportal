@@ -198,14 +198,13 @@ const logOperation = (req, status, operationId = null) => {
         return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
       }
       
-      // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
+      const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
     
-
-      // if (!emailSent) {
-      //   return res
-      //     .status(500)
-      //     .json({ success: false, message: 'Failed to send login credentials email' });
-      // }
+      if (!emailSent) {
+        return res
+          .status(500)
+          .json({ success: false, message: 'Failed to send login credentials email' });
+      }
 
       // Create user
       const newUser = await createUser(data);
@@ -346,15 +345,19 @@ const logOperation = (req, status, operationId = null) => {
 
 
 
-// Nodemailer transporter setup using environment variables
+// Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
-  service: 'gmail',
+  host: process.env.SMTP_HOST,
+  port: parseInt(process.env.SMTP_PORT, 10) || 587,
+  secure: false, // Use true for 465
   auth: {
-    user: process.env.EMAIL,
-    pass: process.env.PASSWORD,
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+  tls: {
+    rejectUnauthorized: false, // Skip TLS certificate validation (optional)
   },
 });
-
 
 // Function to send login credentials
 const sendCredentialsEmail = async (email, password, userName) => {
@@ -379,9 +382,7 @@ https://dev.nexportal.billbizz.cloud/
 If you have any questions or need assistance, please contact our support team.
 
 Best regards,  
-The CygnoNex Team  
-NexPortal  
-Support: notify@cygnonex.com`,
+`,
   };
 
   try {
@@ -394,6 +395,13 @@ Support: notify@cygnonex.com`,
   }
 };
     
+// The CygnoNex Team  
+// NexPortal  
+// Support: notify@cygnonex.com
+
+
+
+
 
 
 
