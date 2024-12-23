@@ -13,6 +13,7 @@ const praiseSchema = new Schema(
 
     userId:{ type:String },
     userName: { type: String },
+    openingDate: {type:String}
 
   });
 
