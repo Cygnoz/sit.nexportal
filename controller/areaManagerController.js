@@ -169,14 +169,14 @@ const logOperation = (req, status, operationId = null) => {
         return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
       }
 
-      const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
+      // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
     
 
-      if (!emailSent) {
-        return res
-          .status(500)
-          .json({ success: false, message: 'Failed to send login credentials email' });
-      }
+      // if (!emailSent) {
+      //   return res
+      //     .status(500)
+      //     .json({ success: false, message: 'Failed to send login credentials email' });
+      // }
       
 
   

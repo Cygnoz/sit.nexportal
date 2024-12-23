@@ -37,12 +37,12 @@ exports.addUser = async (req, res,next) => {
   
     
 
-    const emailSent = await sendCredentialsEmail(email, password, userName, true);
-if (!emailSent) {
-  return res
-    .status(500)
-    .json({ success: false, message: 'Failed to send login credentials email' });
-}
+//     const emailSent = await sendCredentialsEmail(email, password, userName, true);
+// if (!emailSent) {
+//   return res
+//     .status(500)
+//     .json({ success: false, message: 'Failed to send login credentials email' });
+// }
 
 
     // Create a new user entry
@@ -159,10 +159,10 @@ exports.updateUser = async (req, res, next) => {
       updateFields.password = hashedPassword;
 
       // Send email with updated credentials
-      const emailSent = await sendCredentialsEmail(email, password, userName, false);
-      if (!emailSent) {
-        return res.status(500).json({ success: false, message: 'Failed to send updated password email' });
-      }
+      // const emailSent = await sendCredentialsEmail(email, password, userName, false);
+      // if (!emailSent) {
+      //   return res.status(500).json({ success: false, message: 'Failed to send updated password email' });
+      // }
     }
 
     // Update the user
