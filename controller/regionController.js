@@ -1,4 +1,9 @@
-const Region = require('../database/model/region')
+const Region = require("../database/model/region");
+const Area = require("../database/model/area");
+const RegionManager = require("../database/model/regionManager");
+
+
+
 
 
 
@@ -125,35 +130,46 @@ const status = "Active"
 
   exports.deleteRegion = async (req, res, next) => {
     try {
-      const { regionId } = req.params;
-  
-      // Delete the region
-      const deletedRegion = await Region.findByIdAndDelete( regionId );
-  
-      if (!deletedRegion) {
+      const { id } = req.params;
+      console.log(id)
+      // Check if the region exists
+      const region = await Region.findById(id);
+      if (!region) {
         return res.status(404).json({ message: "Region not found" });
       }
   
+      // Check if the region is referenced in the Area collection
+      const areaReference = await Area.findOne({ region: id });
+      if (areaReference) {
+        return res
+          .status(400)
+          .json({ message: "Cannot delete region as it is referenced in areas" });
+      }
+  
+      // Check if the region is referenced in the RegionManager collection
+      const managerReference = await RegionManager.findOne({ region: id });
+      if (managerReference) {
+        return res.status(400).json({
+          message: "Cannot delete region as it is referenced in region managers",
+        });
+      }
+  
+      // Delete the region
+      await Region.findByIdAndDelete(id);
       res.status(200).json({ message: "Region deleted successfully" });
   
       // Pass operation details to middleware
-      // const { id, userName } = req.user;
-      // req.user = {id, userName,  status: "successfully", operationId: deletedRegion._id };
-      // next();
-      ActivityLog(req, "successfully");
+      ActivityLog(req, "successfully", id);
       next();
-  
     } catch (error) {
       console.error("Error deleting region:", error);
       res.status(500).json({ message: "Internal server error" });
-      // const { id, userName } = req.user;
-      // req.user = {id, userName,  status: "Failed" };
-      // next();
-     
-    ActivityLog(req, "Failed");
-    next();
+      ActivityLog(req, "Failed");
+      next();
     }
   };
+
+  
   
 
   const ActivityLog = (req, status, operationId = null) => {
