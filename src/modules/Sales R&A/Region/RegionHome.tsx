@@ -135,7 +135,20 @@ const code = "Code";
 
 const handleFilter = ({ options }: { options: string }) => {
   console.log("Filter applied for:", options);
+
+  if (options === 'Name') {
+    // Create a new sorted array to avoid mutating the original state
+    const sortedRegions = [...allRegion].sort((a, b) => a.regionName.localeCompare(b.regionName));
+    setAllRegion(sortedRegions);
+  }else if(options==='Country'){
+    const sortedRegions = [...allRegion].sort((a, b) => a.country.localeCompare(b.country));
+    setAllRegion(sortedRegions);
+  }else{
+    setAllRegion([...allRegion].reverse());
+  }
 };
+
+ 
 
   return (
     <>

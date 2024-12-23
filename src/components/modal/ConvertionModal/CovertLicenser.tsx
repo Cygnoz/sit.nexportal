@@ -1,19 +1,19 @@
 // Path: components/ConvertModal.tsx
 import Button from "../../ui/Button";
 
+import { useState } from "react";
 import bgpicturee from "../../../assets/image/Group.png";
 import Modal from "../Modal";
-import { useState } from "react";
 import OrganisationForm from "./OrganisationForm";
 
 type Props = {
     onClose: () => void;
     type:"lead"|"trial";
-    
+    orgData?:any
 };
 
-function ConvertModal({ onClose, type }: Props) {
-
+function ConvertModal({ onClose, type,orgData }: Props) {
+    
     const [isCurrentModalOpen, setIsCurrentModalOpen] = useState(true);
     const [isNextModalOpen, setIsNextModalOpen] = useState(false);
 
@@ -89,7 +89,7 @@ function ConvertModal({ onClose, type }: Props) {
                 onClose={onClose}
                 className="w-[35%]"
             >
-                <OrganisationForm onClose={onClose} />
+                <OrganisationForm orgData={orgData}  type={type} onClose={onClose} />
             </Modal>
         </>
     );

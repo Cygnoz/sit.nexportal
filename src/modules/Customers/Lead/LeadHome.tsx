@@ -16,13 +16,16 @@ import { endPoints } from "../../../services/apiEndpoints";
 import ImportLeadModal from "./ImportLeadModal";
 import LeadForm from './LeadForm';
 import { useRegularApi } from "../../../context/ApiContext";
+import { useResponse } from "../../../context/responseContext";
 
 type Props = {}
 
 function LeadHome({}: Props) {
   const {totalCounts}=useRegularApi()
   const {request:getAllLeads}=useApi('get',3001)
+  const {setCustomerData}=useResponse()
   const [allLead, setAllLead] = useState<LeadData[]>([]);
+  const {request:getLead}=useApi('get',3001)
   const [editId, setEditId] = useState('');
   const navigate=useNavigate()
 
@@ -76,7 +79,7 @@ function LeadHome({}: Props) {
     }
   }
   
-  console.log(allLead);
+  
   
   useEffect(()=>{
     getLeads()
@@ -109,11 +112,22 @@ function LeadHome({}: Props) {
 //   { leadID: "BDA12353", leadName: "Ava Jackson", phoneNumber: "(202) 555-0200", emailAddress: "ava.jackson@mail.com", source: "Website", status: "Contacted"},
 //   { leadID: "BDA12354", leadName: "Lucas Wright", phoneNumber: "(703) 555-0211", emailAddress: "lucas.wright@mail.com", source: "Referral", status: "Closed"},
 // ];
-
-  const handleConvert=(id:any)=>{
+  const handleConvert=async(id:any)=>{
     handleModalToggle(false,true,false)
-    console.log(id);
-  }
+      try {
+        const { response, error } = await getLead(`${endPoints.LEAD}/${id}`);
+        if (response && !error) {
+          const Lead = response.data; // Return the fetched data
+          console.log("Fetched Lead data:", Lead);
+          setCustomerData(Lead)
+        } else {
+          // Handle the error case if needed (for example, log the error)
+          console.error('Error fetching Lead data:', error);
+        }
+      } catch (err) {
+        console.error('Error fetching Lead data:', err);
+      }
+  };
   
   // Define the columns with strict keys
   // Define the columns with strict keys for LeadData
@@ -126,7 +140,12 @@ const columns: { key: any; label: any }[] = [
   { key: "leadStatus", label: "Status" },
 ];
 
- 
+
+
+
+
+
+
 
   return (
     <>

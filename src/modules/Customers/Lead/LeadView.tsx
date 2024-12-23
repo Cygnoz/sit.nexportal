@@ -19,6 +19,7 @@ import ViewActivities from "./ViewActivity/ViewActivities";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import { LeadData } from "../../../Interfaces/Lead";
+import { useResponse } from "../../../context/responseContext";
 
 type Props = {}
 
@@ -26,6 +27,7 @@ function LeadView({}: Props) {
     const {id}=useParams()
     const {request:getLead}=useApi('get',3001)
     const [leadData,setLeadData]=useState<LeadData>()
+    const {setCustomerData}=useResponse()
     const homeCardData = [
       { icon: <ComputerTick />, number: "Warm", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
       { icon: <RegionIcon />, number: "Website", title: "Closed Leads",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
@@ -63,6 +65,7 @@ function LeadView({}: Props) {
           const Lead = response.data; // Return the fetched data
           console.log("Fetched Lead data:", Lead);
           setLeadData(Lead)
+          setCustomerData(Lead)
         } else {
           // Handle the error case if needed (for example, log the error)
           console.error('Error fetching Lead data:', error);
