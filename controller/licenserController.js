@@ -236,7 +236,9 @@ exports.convertTrialToLicenser = async (req, res) => {
     // Find the trial by ID and update its customerStatus to "Licenser"
     const updatedTrial = await Leads.findByIdAndUpdate(
       trialId,
-      { customerStatus: "Licenser" },
+      { customerStatus: "Licenser",
+        licenserStatus:"Active"
+       },
       { new: true } // Return the updated document
     );
 
@@ -389,7 +391,7 @@ const ActivityLog = (req, status, operationId = null) => {
 
   // Create New Debit Note
   function createNewLicenser(data, regionId, areaId, bdaId, newLicenser, userId, userName) {
-    const newLicensers = new Leads({ ...data, regionId, areaId, bdaId, newLicenser, userId, userName, customerStatus:"Licenser" });
+    const newLicensers = new Leads({ ...data, regionId, areaId, bdaId, newLicenser, userId, userName, customerStatus:"Licenser", licenserStatus:"Active" });
     return newLicensers.save();
   }
   

@@ -295,6 +295,7 @@ exports.convertLeadToTrial = async (req, res) => {
     const updatedLead = await Leads.findByIdAndUpdate(
       leadId,
       { customerStatus: "Trial",
+        trialStatus:"In Progress",
         startDate,
         endDate,
         organizationId
@@ -342,9 +343,29 @@ exports.convertLeadToTrial = async (req, res) => {
 
 
 
+// exports.getAllTrials = async (req, res) => {
+//   try {
+//     // Fetch all records with customerStatus as "Trial"
+//     const trials = await Leads.find({ customerStatus: "Trial" });
+
+//     // Check if trials exist
+//     if (!trials || trials.length === 0) {
+//       return res.status(404).json({ message: "No trials found." });
+//     }
+
+//     // Respond with the trials
+//     res.status(200).json({ trials });
+    
+//   } catch (error) {
+//     console.error("Error fetching trials:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+
+// Get All Trials without validation
 exports.getAllTrials = async (req, res) => {
   try {
-    // Fetch all records with customerStatus as "Trial"
+    // Fetch all trials from the database
     const trials = await Leads.find({ customerStatus: "Trial" });
 
     // Check if trials exist
@@ -352,9 +373,25 @@ exports.getAllTrials = async (req, res) => {
       return res.status(404).json({ message: "No trials found." });
     }
 
-    // Respond with the trials
-    res.status(200).json({ trials });
-    
+    // Enrich data for each trial
+    const enrichedTrials = await Promise.all(
+      trials.map(async (trial) => {
+        const { regionId, areaId, bdaId } = trial;
+
+        // Fetch related details using dataExist
+        const { regionExists, areaExists, bdaExists } = await dataExist(regionId, areaId, bdaId);
+
+        return {
+          ...trial.toObject(),
+          regionDetails: regionExists?.[0] || null, // Assuming regionExists is an array
+          areaDetails: areaExists?.[0] || null,    // Assuming areaExists is an array
+          bdaDetails: bdaExists?.[0] || null,      // Assuming bdaExists is an array
+        };
+      })
+    );
+
+    // Respond with the enriched trials data
+    res.status(200).json({ trials: enrichedTrials });
   } catch (error) {
     console.error("Error fetching trials:", error);
     res.status(500).json({ message: "Internal server error." });
