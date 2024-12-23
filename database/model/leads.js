@@ -36,6 +36,7 @@ const leadSchema = new Schema({
 
   licensorStatus:{ type: String },
   leadStatus:{ type: String },
+  trialStatus:{type:String},
   customerStatus:{ type: String },
 
   
