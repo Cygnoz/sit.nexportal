@@ -2,7 +2,7 @@ const express = require("express")
 
 const router = new express.Router()
 
-const TicketController = require('../controller/ticketController')
+const TicketController = require('../controller/ticketsController')
 
 const PraiseController = require('../controller/praiseController')
 
