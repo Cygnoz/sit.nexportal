@@ -38,9 +38,10 @@ const dataExist = async (regionId, areaId, bdaId) => {
 exports.addLead = async (req, res , next ) => {
   try {
     const { id: userId, userName } = req.user;
-
+    
+    
     const cleanedData = cleanLeadData(req.body);
-
+    
     const { email, regionId, areaId , bdaId } = cleanedData;
 
 
