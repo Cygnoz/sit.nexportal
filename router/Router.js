@@ -26,6 +26,8 @@ router.put('/lead/:id',verifyToken,checkPermission('Edit Lead'),leadController.e
 
 // router.delete('/delete-lead/:leadId',verifyToken,checkPermission('Delete User'),leadController.deleteLead,ActivityLogGeneration('Delete Lead'))
 
+router.get('/client/:id',leadController.getClientDetails)
+
 
 //Trial
 router.put('/trial/:leadId',leadController.convertLeadToTrial)

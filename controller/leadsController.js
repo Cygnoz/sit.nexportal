@@ -287,14 +287,16 @@ exports.convertLeadToTrial = async (req, res) => {
       requestBody,
       axiosConfig
     );
-
+    const organizationId = response.data.organizationId;
+    console.log("response",organizationId)
 
     // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
     const updatedLead = await Leads.findByIdAndUpdate(
       leadId,
       { customerStatus: "Trial",
         startDate,
-        endDate
+        endDate,
+        organizationId
        },
       {new: true } // Return the updated document
     );
@@ -304,12 +306,12 @@ exports.convertLeadToTrial = async (req, res) => {
       return res.status(404).json({ message: "Lead not found or unable to convert." });
     }
 
-    const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = true );
-    if (!emailSent) {
-      return res
-        .status(500)
-        .json({ success: false, message: 'Failed to send login credentials email' });
-    }
+    // const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = true );
+    // if (!emailSent) {
+    //   return res
+    //     .status(500)
+    //     .json({ success: false, message: 'Failed to send login credentials email' });
+    // }
 
     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
     
@@ -359,11 +361,53 @@ exports.getAllTrials = async (req, res) => {
 };
 
 
+exports.getClientDetails = async (req, res) => {
+  try {
+    // Extract ID from request params
+    const { id } = req.params;
+
+    if (!id) {
+      return res.status(400).json({ message: "ID is required in the request parameters." });
+    }
+
+    // Configure Axios GET request
+    const axiosConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
+
+    // Make a GET request to the external API with the ID in the URL
+    const apiUrl = `https://g8c39dlj-5004.inc1.devtunnels.ms/get-one-organization-nex/${id}`;
+    const response = await axios.get(apiUrl, axiosConfig);
+
+    // Check response and handle errors
+    if (response.status !== 200) {
+      return res.status(response.status).json({ message: response.statusText });
+    }
+
+    // Respond with the data from the external API
+    res.status(200).json(response.data);
+
+  } catch (error) {
+    console.error("Error fetching client details:", error.message);
+    // Handle Axios error (e.g., 404 or network error)
+    if (error.response) {
+      return res
+        .status(error.response.status)
+        .json({ message: error.response.data || "Error from external API." });
+    }
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 
 exports.convertTrialToLicenser = async (req, res) => {
   try {
     const { trialId } = req.params; // Assume the request contains the ID of the trial to convert.
-    const { organizationName, contactName, contactNum, email, password ,startDate,endDate} = req.body;
+
+    const { startDate,endDate} = req.body;
+
 
     // Find the trial by ID and update its customerStatus to "Licenser"
     const updatedTrial = await Leads.findByIdAndUpdate(
@@ -375,12 +419,12 @@ exports.convertTrialToLicenser = async (req, res) => {
       { new: true } // Return the updated document
     );
 
-    const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = false );
-    if (!emailSent) {
-      return res
-        .status(500)
-        .json({ success: false, message: 'Failed to send login credentials email' });
-    }
+    // const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = false );
+    // if (!emailSent) {
+    //   return res
+    //     .status(500)
+    //     .json({ success: false, message: 'Failed to send login credentials email' });
+    // }
 
     // Check if the trial was found and updated
     if (!updatedTrial) {
@@ -528,7 +572,7 @@ const ActivityLog = (req, status, operationId = null) => {
 
   // Create New Debit Note
   function createNewLeads( data, regionId, areaId, bdaId,  userId, userName ) {
-    const newLeads = new Leads({ ...data, regionId, areaId, bdaId, userId, userName , leadStatus: "New", customerStatus: "Lead" 
+    const newLeads = new Leads({ ...data, regionId, areaId, bdaId, userId, userName , leadStatus: "New", customerStatus: "lead" 
 
     });
     return newLeads.save();
