@@ -4,6 +4,9 @@ const router = new express.Router()
 
 const TicketController = require('../controller/ticketsController')
 
+const PraiseController = require('../controller/praiseController')
+
+
 const checkPermission = require('../controller/authController/permission');
 
 const { verifyToken } = require('../controller/authController/middleware');
@@ -23,7 +26,12 @@ router.put('/ticket/:ticketId',verifyToken,checkPermission('Edit Ticket'),Ticket
 
 // router.delete('/delete-ticket/:ticketId',verifyToken,checkPermission('Delete Ticket'),TicketController.deleteTicket)
 
+
+//Praise
+
 router.post('/Praise',verifyToken,checkPermission('Add Praise'),PraiseController.addPraise,ActivityLogGeneration('Add Praise'))
 
 router.get('/Praises',verifyToken,checkPermission('View Praise'),PraiseController.getAllPraises)
+
+
 module.exports = router
