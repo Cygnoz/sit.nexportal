@@ -30,8 +30,7 @@ exports.addPraise = async (req, res, next) => {
 
         if (!validateUserExists( userExists, res )) return;
 
-
-        const savedPraise = await createNewPraise(cleanedData,  usersId , userId, userName );
+        const savedPraise = await createNewPraise(cleanedData, usersId , userId, userName );
 
       res.status(201).json({
         message: "Price added successfully",
@@ -49,6 +48,14 @@ exports.addPraise = async (req, res, next) => {
     }
   };
 
+  // Generate current date and time with specified time zone
+function generateDateTime(
+  timeZone = "Asia/Kolkata",
+  format = "YYYY-MM-DD HH:mm:ss"
+) {
+  return moment.tz(new Date(), timeZone).format(format);
+}
+
   //Clean Data 
   function cleanPraiseData(data) {
     const cleanData = (value) => (value === null || value === undefined || value === "" || value === 0 ? undefined : value);
@@ -60,63 +67,20 @@ exports.addPraise = async (req, res, next) => {
 
 
 
-  // const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
    // Create New Debit Note
-   function createNewPraise(data, newPraise , usersId,  userId, userName) {
-    // const { dateTime } = generateOpeningDate(); // Auto-generate dateTime
-    const openingDate = moment().format('YYYY-MM-DD HH:mm:ss');  // Or `moment().toDate()` if you need a Date object
-
+   function createNewPraise(data, usersId, newPraise ,  userId, userName) {
+    const openingDate = generateDateTime(); // Auto-generate current date and time
 
     const newTickets = new Praise({
-         ...data ,
-         newPraise, 
-         openingDate:openingDate,
+         ...data , 
+         openingDate, // Add the auto-generated date and time
         usersId ,
+        newPraise ,
         userId : userId, 
         userName : userName });
     return newTickets.save();
   }
-
-
-
-
-//   // Function to generate the current date and time in a specified time zone
-// function generateOpeningDate(
-//   timeZone = "Asia/Kolkata",
-//   dateFormat = "YYYY-MM-DD",
-//   dateSplit = "-",
-//   timeFormat = "HH:mm:ss",
-//   timeSplit = ":"
-// ) {
-//   // Get the current date-time in the specified time zone
-//   const localDate = moment.tz(new Date(), timeZone);
-
-//   // Format date
-//   let formattedDate = localDate.format(dateFormat);
-
-//   // Replace default separators in the date if a custom split character is provided
-//   if (dateSplit) {
-//     formattedDate = formattedDate.replace(/[-/]/g, dateSplit);
-//   }
-
-//   // Format time
-//   const formattedTime = localDate.format(timeFormat).replace(/:/g, timeSplit);
-
-//   // Get time zone abbreviation
-//   const timeZoneName = localDate.format("z");
-
-//   // Combine date, time, and time zone
-//   const dateTime = `${formattedDate} ${formattedTime} (${timeZoneName})`;
-
-//   return {
-//     date: formattedDate,
-//     time: `${formattedTime} (${timeZoneName})`,
-//     dateTime,
-//   };
-// }
-
-//const openingDate = generateOpeningDate();
 
 
   
@@ -152,8 +116,10 @@ const ActivityLog = (req, status, operationId = null) => {
       
               // Fetch related details using dataExist
               const { userExists } = await dataExist(usersId);
-    
-
+      
+              // Log the result for debugging
+              console.log("Enriching Praise:", usersId, userExists);
+      
               return {
                 ...praise.toObject(),
                 userDetails: userExists || null,
