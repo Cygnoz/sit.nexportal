@@ -63,13 +63,14 @@ exports.addPraise = async (req, res, next) => {
   // const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
    // Create New Debit Note
-   function createNewPraise(data, usersId,  userId, userName) {
+   function createNewPraise(data, newPraise , usersId,  userId, userName) {
     // const { dateTime } = generateOpeningDate(); // Auto-generate dateTime
     const openingDate = moment().format('YYYY-MM-DD HH:mm:ss');  // Or `moment().toDate()` if you need a Date object
 
 
     const newTickets = new Praise({
-         ...data , 
+         ...data ,
+         newPraise, 
          openingDate:openingDate,
         usersId ,
         userId : userId, 
