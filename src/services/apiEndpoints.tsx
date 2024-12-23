@@ -52,6 +52,9 @@ export const endPoints = {
   LICENSER: "/licenser",
 
   TICKETS:"/ticket",
-  GET_TICKETS:"/tickets",
-  REQUESTOR:"/getCustomers"
+  GET_TICKETS:"./tickets",
+
+  // Praise
+  PRAISE:"/praise",
+  GET_ALL_PRAISE:"/praises",
 };

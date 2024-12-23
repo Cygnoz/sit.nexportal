@@ -117,6 +117,7 @@ import UnderlineIcon from '../../../../assets/icons/UnderlineIcon';
 import LinkIcon from '../../../../assets/icons/LinkIcon';
 import EmojiIcon from '../../../../assets/icons/EmojiIcon';
 import Button from '../../../../components/ui/Button';
+import Input from '../../../../components/form/Input';
 
 
 type Props = {
@@ -169,16 +170,24 @@ const NotesForm = ({ onClose}: Props) => {
          
         </div>
         <div className='my-4'>
-          <p className='text-[#4B5C79] text-sm font-normal my-2'>Related to: <span className='text-[#303F58] text-xs font-semibold'>Anjela John</span></p>
-          <p className='text-[#4B5C79] text-sm font-normal'>Start typing. @mention people to notify them</p>
+          <div className="flex gap-2">
+          <p className='text-[#4B5C79] text-sm font-normal my-2'>Related to: </p>
+          <Input 
+            placeholder='Anjela John'
+            type="email"
+            className="w-fit h-fit flex p-2 mt-1 text-[#303F58] text-xs font-semibold"
+            />
+
+          </div>
+          {/* <p className='text-[#4B5C79] text-sm font-normal'>Start typing. @mention people to notify them</p> */}
         </div>
 
         <div className='w-full h-full mb-4 bg-[#FAFAFA]'>
           <ReactQuill
             value={value}
             onChange={setValue}
-            placeholder="Write text here..."
-            className="quill-editor h-[300px]"
+            placeholder="Start typing. @mention people to notify them"
+            className="quill-editor h-[300px] text-[#4B5C79] text-sm font-normal"
             theme="snow"
             modules={modules}
           />
