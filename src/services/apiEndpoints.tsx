@@ -52,7 +52,13 @@ export const endPoints = {
   LICENSER: "/licenser",
 
   TICKETS:"/ticket",
-  GET_TICKETS:"./tickets",
+  GET_TICKETS:"/tickets",
+  REQUESTOR:"/getCustomers",
+
+  // trial convertion
+  TRIAL:'/trial',
+  TRIALS:'/trials',
+  GET_TRIAL:'/client',
 
   // Praise
   PRAISE:"/praise",

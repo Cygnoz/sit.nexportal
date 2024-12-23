@@ -10,6 +10,7 @@ interface CustomPhoneInputProps {
   value?: string;
   onChange?: (value: string) => void;
   name?: string;
+  isReadOnly?:boolean
 }
 
 const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
@@ -19,14 +20,14 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
   required,
   value,
   onChange,
+  isReadOnly,
   ...props
 }) => {
   const handlePhoneChange = (value: string) => {
     if (onChange) {
       onChange(value); // Pass the value to parent component to update form state
     }
-  };
-
+  };  
   return (
     <div>
       <label
@@ -43,6 +44,7 @@ const CustomPhoneInput: React.FC<CustomPhoneInputProps> = ({
         value={value || ""} // Controlled component value
         onChange={handlePhoneChange} // Propagate change to parent
         placeholder={placeholder}
+        disabled={isReadOnly?true:false}
         {...props}
       />
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}

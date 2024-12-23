@@ -176,7 +176,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
         domain={[0, 25]} 
       />
       <Bar dataKey="uv" radius={[10, 10, 0, 0]}>
-        {normalizedData.map((entry, index) => (
+        {normalizedData.map((_, index) => (
           <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
         ))}
       </Bar>

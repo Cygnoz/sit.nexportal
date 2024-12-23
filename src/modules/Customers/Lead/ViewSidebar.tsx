@@ -120,7 +120,7 @@ const pieData = roles.map((role) => ({
         </div>
         <div className="flex gap-4  my-4">
           <p className="text-[#FFFFFF] text-xs font-normal">Region</p>
-          <p className="text-[#FFFFFF] text-xs font-bold">{leadData?.regionDetails.regionName?leadData?.regionDetails.regionName:'N/A'}</p>
+          <p className="text-[#FFFFFF] text-xs font-bold">{leadData?.regionDetails?.regionName?leadData?.regionDetails.regionName:'N/A'}</p>
         </div>
         <div className="flex gap-4 mb-4 ">
           <p className="text-[#FFFFFF] text-xs font-normal">Area</p>
@@ -170,7 +170,7 @@ const pieData = roles.map((role) => ({
           <div className="px-2 "><CalenderRound size={32} /></div>
           <p className="mt-2 text-[#FFFFFF] text-xs font-medium">View Calender</p>
         </div>
-        {leadData?.leadStatus==='Won'&&<div className="rounded-lg w-80 bg-[#820000] h-12 py-3 px-3 mb-4" onClick={covertModalToggle} >
+        {leadData?.leadStatus==='Won'&&<div className="rounded-lg cursor-pointer  w-80 bg-[#820000] h-12 py-3 px-3 mb-4" onClick={covertModalToggle} >
           <p className="text-center text-[#FEFDF9] text-base font-medium">Converted to Trail</p>
         </div>}
         <hr />

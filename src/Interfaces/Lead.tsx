@@ -15,4 +15,10 @@ export interface LeadData {
     companyPhone?: string;
     companyAddress?: string;
     pinCode?: string;
+    customerId?:string
+    customerStatus?:string
+    startDate?:string
+    endDate?:string
+    assignedBDA?:string
+    trialStatus?:string
   }
