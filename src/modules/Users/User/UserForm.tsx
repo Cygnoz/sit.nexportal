@@ -267,14 +267,14 @@ const editValidationSchema = Yup.object({
                   />
                 </>
               
-              <Select
+              {!editId&&<Select
                 required
                 label="Role"
                 placeholder={!editId ? "Select Role" : undefined}
                 options={editId ? editRoles : addRoles}
                 error={errors.role?.message}
                 {...register("role")}
-              />
+              />}
             </div>
           </div>
         </div>

@@ -12,37 +12,22 @@ import PackageMinus from "../../../assets/icons/PackageMinus";
 import CalenderClock from "../../../assets/icons/CalenderClock";
 import CalenderMultiple from "../../../assets/icons/CalenderMultiple";
 import { useNavigate } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import { useEffect, useState } from "react";
+import { LeadData } from "../../../Interfaces/Lead";
 
 
 
-interface LeadData {
-    trialID: string;
-    status: string;
-    startDate: string;
-    endDate: string;
-    assignedBDA: string;
-  }
+
   
 const TrialHome = () => {
 
-    // const [isModalOpen, setIsModalOpen] = useState(false);
-
-    // const handleModalToggle = () => {
-    //     setIsModalOpen((prev) => !prev);
-    //   };
+  const {request:getAllTrial}=useApi('get',3001)
+  const [allTrials,setAllTrials]=useState<LeadData[]>([])
    const navigate=useNavigate()
-      // const handleView=(editId?:any,viewId?:any,deleteId?:any)=>{
-      //   if(viewId){
-      //     // navigate(`/trialView/${viewId}`)
-      //     console.log(viewId);
-          
-         
-      //     console.log(editId);
-      //     console.log(deleteId);
-          
-          
-      //   }
-      // }
+     console.log("sdsz",allTrials);
+     
       const handleView=(id:any)=>{
         navigate(`/trialView/${id}`)
       }
@@ -57,37 +42,46 @@ const TrialHome = () => {
     { icon: <PackageMinus />, number: "30", title: "Exit Trails",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
-    // Data for the table
-    const leadData: LeadData[] = [
-        { trialID: "REG-12345", status:"Active", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "danten", },
-        { trialID: "REG-12345", status:"Converted", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "warn", },
-        { trialID: "REG-12345", status:"Expired", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "irnabela",  },
-        { trialID: "REG-12345", status:"Expired", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "tinest",},
-        { trialID: "REG-12345", status:"Active", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "irnabela",  },
-        { trialID: "REG-12345", status:"Active", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "qmaho@mail.ru",  },
-        { trialID: "REG-12345", status:"Converted", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "danten", },
-        { trialID: "REG-12345", status:"Expired", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "masonedwards",  },
-        { trialID: "REG-12345", status:"Active", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "lily.anderson ",  },
-        { trialID: "REG-12345", status:"Converted", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "oliverhall ",},
-        { trialID: "REG-12345", status:"Expired", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "sophia.lee ",  },
-        { trialID: "REG-12345", status:"Expired", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "ethan.clark ",},
-        { trialID: "REG-12345", status:"Active", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "isabella.carter ",},
-        { trialID: "REG-12345", status:"Converted", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "henry.thomas ", },
-        { trialID: "REG-12345", status:"Expired", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "ava.jackson ", },
-        { trialID: "REG-12345", status:"Expired", startDate: "22/11/2024", endDate: "31/12/2024", assignedBDA: "lucas.wright ", },
-      ];
+   
       
         // Define the columns with strict keys
         // Define the columns with strict keys for LeadData
-      const columns: { key: keyof LeadData; label: string }[] = [
-        { key: "trialID", label: "Lead ID" },
-        { key: "status", label: "Trial Status" },
+      const columns: { key:  any; label: any }[] = [
+        { key: "customerId", label: "Lead ID" },
+        { key: "trialStatus", label: "Trial Status" },
         { key: "startDate", label: "Trial Start Date" },
         { key: "endDate", label: "Trial End Date" },
-        { key: "assignedBDA", label: "Assigned BDA" },
+        { key: "bdaDetails.bdaName", label: "Assigned BDA" },
       ];
             
+  const getTrials=async()=>{
+    try{
+      const {response,error}=await getAllTrial(endPoints.TRIAL)
+      if(response && !error){
+     
+        const transformLicense= response.data.trials?.map((trial:any) => ({
+          ...trial,
+          startDate: trial.startDate
+          ? new Date(trial.startDate).toLocaleDateString("en-GB")
+          : "N/A",
+          endDate: trial.endDate
+          ? new Date(trial.endDate).toLocaleDateString("en-GB")
+          : "N/A", 
+        })) || [];
+       setAllTrials(transformLicense)
+      }else{
+        console.log(error.response.data.message);
+      }
+    }catch(err){
+      console.log(err);
+    }
+  }
 
+  useEffect(()=>{
+    getTrials()
+  },[])
+  console.log(allTrials);
+  
   return (
     <div className="space-y-3">
       {/* Header */}
@@ -114,7 +108,7 @@ const TrialHome = () => {
 
       {/* Table Section */}
       <div>
-        <Table<LeadData> data={leadData} columns={columns} headerContents={{
+        <Table<LeadData> data={allTrials} columns={columns} headerContents={{
           title:'Trial Details',
           search:{placeholder:'Search BDA by Name'},
         //   sort: [

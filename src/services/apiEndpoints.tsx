@@ -53,5 +53,14 @@ export const endPoints = {
 
   TICKETS:"/ticket",
   GET_TICKETS:"/tickets",
-  REQUESTOR:"/getCustomers"
+  REQUESTOR:"/getCustomers",
+
+  // trial convertion
+  TRIAL:'/trial',
+  TRIALS:'/trials',
+  GET_TRIAL:'/client',
+
+  // Praise
+  PRAISE:"/praise",
+  GET_ALL_PRAISE:"/praises",
 };
