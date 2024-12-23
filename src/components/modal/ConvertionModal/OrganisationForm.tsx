@@ -12,7 +12,7 @@ import useApi from "../../../Hooks/useApi";
 import { useEffect } from "react";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
-import { useResponse } from "../../../context/responseContext";
+import { useResponse } from "../../../context/ResponseContext";
 
 // import Select from "../../form/Select";
 //import CustomPhoneInput from "../../../components/form/CustomPhone";

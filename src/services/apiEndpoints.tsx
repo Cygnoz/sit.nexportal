@@ -58,5 +58,9 @@ export const endPoints = {
   // trial convertion
   TRIAL:'/trial',
   TRIALS:'/trials',
-  GET_TRIAL:'/client'
+  GET_TRIAL:'/client',
+
+  // Praise
+  PRAISE:"/praise",
+  GET_ALL_PRAISE:"/praises",
 };

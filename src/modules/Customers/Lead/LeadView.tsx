@@ -19,7 +19,7 @@ import ViewActivities from "./ViewActivity/ViewActivities";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import { LeadData } from "../../../Interfaces/Lead";
-import { useResponse } from "../../../context/responseContext";
+import { useResponse } from "../../../context/ResponseContext";
 
 type Props = {}
 

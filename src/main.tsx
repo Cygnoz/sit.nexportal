@@ -4,7 +4,7 @@ import "./index.css";
 import App from "./App.tsx";
 import { ApiProvider } from "./context/ApiContext.tsx";
 import { UserProvider } from "./context/UserContext.tsx";
-import { ResponseProvider } from "./context/responseContext.tsx";
+import { ResponseProvider } from "./context/ResponseContext.tsx";
 
 createRoot(document.getElementById("root")!).render(
   <UserProvider>

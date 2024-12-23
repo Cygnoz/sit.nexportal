@@ -28,7 +28,7 @@ const AMViewCardandTable = ({}: Props) => {
       }
 
     const viewCardData = [
-        { icon: <UserIcon />, number: "189", title: "Total Area Managed", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+        { icon: <UserIcon />, number: "189", title: "Total Area Manager", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
         { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
       ];
     
