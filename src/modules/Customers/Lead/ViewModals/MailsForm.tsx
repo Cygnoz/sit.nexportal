@@ -1,6 +1,5 @@
 import ReactQuill from "react-quill";
 import ExternalLinkIcon from "../../../../assets/icons/ExternalLinkIcon";
-import image from '../../../../assets/image/AvatarImg.png'
 import BoldIcon from "../../../../assets/icons/BoldIcon";
 import ItalicIcon from "../../../../assets/icons/ItalicIcon";
 import UnderlineIcon from "../../../../assets/icons/UnderlineIcon";
@@ -13,6 +12,7 @@ import { Quill } from 'react-quill';
 import 'quill-emoji';
 import ReactDOMServer from 'react-dom/server';
 import Button from "../../../../components/ui/Button";
+import Input from "../../../../components/form/Input";
 
 
 type Props = {
@@ -70,18 +70,29 @@ const MailsForm = ({ onClose }: Props) => {
         </div>
         <div className="flex gap-4 p-4">
           <p className="mt-3 text-[#303F58] text-xs font-semibold ms-2">To</p>
-          <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2">
+          <Input 
+            placeholder='Anjela John (anjela@gmail.com)'
+            type="email"
+            className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2 text-[#303F58] text-xs font-semibold text-center"
+            />
+
+          {/* <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2">
             <div className="rounded-full w-6 h-6 overflow-hidden ms-1 mt-[1%]">
               <img src={image} alt="" />
             </div>
             <p className="text-[#303F58] text-xs font-semibold mt-1">Anjela John (anjela@gmail.com)</p>
 
-          </div>
+          </div> */}
         </div>
         <p className="text-end px-6 -mt-11">Cc <span className="ms-2">Bcc</span></p>
 
 
-        <p className="text-[#303F58] text-sm font-semibold p-4 ms-2 mt-2">Your Subject Title</p>
+        {/* <p className="text-[#303F58] text-sm font-semibold p-4 ms-2 mt-2">Your Subject Title</p> */}
+        <Input
+        placeholder="Your Subject Title"
+        type="text"
+        className="text-[#303F58] text-sm font-semibold outline-none w-[493px] px-4 mt-6"
+        />
 
         <hr className="my-2" />
 
@@ -91,7 +102,7 @@ const MailsForm = ({ onClose }: Props) => {
             value={value}
             onChange={setValue}
             placeholder="Write here your message..."
-            className="quill-editor h-[250px] bg-[#FAFAFA]"
+            className="quill-editor h-[250px]  text-[#4B5C79] text-sm font-normal"
             theme="snow"
             modules={modules}
           />

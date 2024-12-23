@@ -1,34 +1,32 @@
 import Button from "../../../components/ui/Button";
-import firstMedal from '../../../assets/image/firstWon.png'
-import staryTwinkle from '../../../assets/image/StaryTwinkle.png'
-import LionIcon from "../../../assets/icons/LionIcon";
-import PraiseIcon from "../../../assets/icons/PraiseIcon";
-import BulbIcon from "../../../assets/icons/BulbIcon";
-import CupIcon from "../../../assets/icons/CupIcon";
-import HeartIcon from "../../../assets/icons/HeartIcon";
-import rewardWithRibbon from '../../../assets/image/rewardWitRibbon.png'
-import partyPopper from '../../../assets/image/partyPopper.png'
-import comfetti from '../../../assets/image/confetti.png'
+// import comfetti from '../../../assets/image/confetti.png'
 import useApi from "../../../Hooks/useApi";
 import { useEffect, useState } from "react";
-import { UserData } from "../../../Interfaces/User";
+// import { UserData } from "../../../Interfaces/User";
 import { endPoints } from "../../../services/apiEndpoints";
 import Input from "../../../components/form/Input";
+// import { PraiseData } from "../../../Interfaces/Praise";
+// import { SubmitHandler } from "react-hook-form";
+import toast from "react-hot-toast";
+import { themes } from "../../../Interfaces/Praise";
+import { achievements } from "../../../Interfaces/Praise";
 
 
 type Props = {
   onClose: () => void;
 }
 
+
 const PraiseForm = ({ onClose }: Props) => {
 
   const { request: getUsers } = useApi('get', 3002)
-  const [allUsers, setAllUsers] = useState<UserData[]>([]);
+  const { request: addPraise} = useApi('post',3004)
+  // const [allUsers, setAllUsers] = useState<UserData[]>([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
-  const [prise, setPrise] =useState({
-    userId:"",achievement:"",theme:"",notes:"",
+  const [prise, setPrise] = useState({
+    usersId: "", achievement: "", theme: "", notes: "",
   })
 
   const getAllUsers = async () => {
@@ -43,7 +41,7 @@ const PraiseForm = ({ onClose }: Props) => {
         //   ...users,
         // }));
 
-        setAllUsers(response.data.AllUsers);
+        // setAllUsers(response.data.AllUsers);
         setFilteredUsers(response.data.AllUsers);
       } else {
         console.log(error)
@@ -60,7 +58,7 @@ const PraiseForm = ({ onClose }: Props) => {
 
   // console.log(allUsers);
   console.log(prise);
-  
+
 
   // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const query = event.target.value.toLowerCase();
@@ -78,70 +76,127 @@ const PraiseForm = ({ onClose }: Props) => {
 
 
 
-  const themes = [
-    { name: "theme 1", bgColor: "bg-gradient-to-r from-[#F86C6C2B] to-[#F9DBA0A8]" },
-    { name: "theme 2", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#CCB7FE]" },
-    { name: "theme 3", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#DEFFDBA6]" },
-    { name: "theme 4", bgColor: "bg-gradient-to-r from-[#FFC9B182] to-[#FCCF7447]" },
-    { name: "theme 5", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#D786DD4D]" },
-    { name: "theme 6", bgColor: "bg-gradient-to-r from-[#D52B1E45] to-[#FCCF741F]" },
-    { name: "theme 7", bgColor: "bg-gradient-to-r from-[#FFFFFF] to-[#63D1F4]" },
-    { name: "theme 8", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#9EA1FFAE]" },
-    { name: "theme 9", bgColor: "bg-gradient-to-r from-[#FFFFFF] to-[#DD9F86]" },
-  ];
-  
-  const ThemeSelector = () => {
-    const [selectedTheme, setSelectedTheme] = useState<number | null>(null);
-  
-    const handleThemeSelect = (index: number) => {
-      setSelectedTheme(index);
-    };
-  }
-  
-  const achievements = [
-    {
-      icon: <img className="w-8 h-8 rotate-12" src={firstMedal} alt="Achiever Icon" />,
-      name: "Achiever",
-      bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-    },
-    {
-      icon: <PraiseIcon size={20} />,
-      name: "Congratulations",
-      bgImage: <img className="w-14 h-14 mt-20 ms-12" src={partyPopper} alt="" />
-    },
-    {
-      icon: <BulbIcon size={18} />,
-      name: "Problem Solver",
-      bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-    },
-    {
-      icon: <img className="w-6 h-6 ms-[6px] mt-1" src={staryTwinkle} alt="Thank You Icon" />,
-      name: "Thank You",
-      bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-    },
-    {
-      icon: <CupIcon size={20} />,
-      name: "Awesome",
-      bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-    },
-    {
-      icon: <LionIcon size={18} />,
-      name: "Courage",
-      bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-    },
-    {
-      icon: <HeartIcon size={20} />,
-      name: "Kind Heart",
-      bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-    },
-    {
-      icon: <HeartIcon size={20} />, // Replace with your actual icon
-      name: "Team Player",
-      bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-    },
-  ];
+  // const themes = [
+  //   { name: "theme 1", bgColor: "bg-gradient-to-r from-[#F86C6C2B] to-[#F9DBA0A8]" },
+  //   { name: "theme 2", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#CCB7FE]" },
+  //   { name: "theme 3", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#DEFFDBA6]" },
+  //   { name: "theme 4", bgColor: "bg-gradient-to-r from-[#FFC9B182] to-[#FCCF7447]" },
+  //   { name: "theme 5", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#D786DD4D]" },
+  //   { name: "theme 6", bgColor: "bg-gradient-to-r from-[#D52B1E45] to-[#FCCF741F]" },
+  //   { name: "theme 7", bgColor: "bg-gradient-to-r from-[#FFFFFF] to-[#63D1F4]" },
+  //   { name: "theme 8", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#9EA1FFAE]" },
+  //   { name: "theme 9", bgColor: "bg-gradient-to-r from-[#FFFFFF] to-[#DD9F86]" },
+  // ];
 
-  const ribbonBg = comfetti;
+  const [selectedTheme, setSelectedTheme] = useState<any | null>(0);
+
+  const handleThemeSelect = (index: number) => {
+    setSelectedTheme(index);
+    setPrise((prevState) => ({
+      ...prevState,
+      theme: themes[index].name,
+    }));
+  };
+
+  const [selectBg, setSelectedBg] = useState<any | null>(0)
+
+  const handleBgSelect = (index: number) => {
+    setSelectedBg(index);
+    setPrise((prevState) => ({
+      ...prevState,
+      achievement: achievements[index].name,
+    }));
+  };
+  // const achievements = [
+  //   {
+  //     icon: <img className="w-8 h-8 rotate-12" src={firstMedal} alt="Achiever Icon" />,
+  //     name: "Achiever",
+  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
+  //   },
+  //   {
+  //     icon: <PraiseIcon size={20} />,
+  //     name: "Congratulations",
+  //     bgImage: <img className="w-14 h-14 mt-20 ms-12" src={partyPopper} alt="" />
+  //   },
+  //   {
+  //     icon: <BulbIcon size={18} />,
+  //     name: "Problem Solver",
+  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
+  //   },
+  //   {
+  //     icon: <img className="w-6 h-6 ms-[6px] mt-1" src={staryTwinkle} alt="Thank You Icon" />,
+  //     name: "Thank You",
+  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
+  //   },
+  //   {
+  //     icon: <CupIcon size={20} />,
+  //     name: "Awesome",
+  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
+  //   },
+  //   {
+  //     icon: <LionIcon size={18} />,
+  //     name: "Courage",
+  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
+  //   },
+  //   {
+  //     icon: <HeartIcon size={20} />,
+  //     name: "Kind Heart",
+  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
+  //   },
+  //   {
+  //     icon: <HeartIcon size={20} />, // Replace with your actual icon
+  //     name: "Team Player",
+  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
+  //   },
+  // ];
+
+  // const onSubmit: SubmitHandler<PraiseData> = async (data: any, event) => {
+  //   event?.preventDefault(); // Prevent default form submission behavior
+  //   console.log("Form Data", data);
+ 
+  //   try {
+  //     // Call addLicenser function for adding a new licenser
+  //     const { response, error } = await addPraise(endPoints.PRAISE, data);
+ 
+  //     console.log("Response:", response);
+  //     console.log("Error:", error);
+ 
+  //     if (response && !error) {
+  //       toast.success(response.data.message); // Show success toast
+  //       onClose(); // Close the form/modal
+  //     } else {
+  //       toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
+  //     }
+  //   } catch (err) {
+  //     console.error("Error submitting tickets data:", err);
+  //     toast.error("An unexpected error occurred."); // Handle unexpected errors
+  //   }
+  // };
+
+  const handleSubmit= async()=>{
+    try {
+      // Call addLicenser function for adding a new licenser
+      const { response, error } = await addPraise(endPoints.PRAISE, prise);
+ 
+      console.log("Response:", response);
+      console.log("Error:", error);
+ 
+      if (response && !error) {
+        console.log(response.data);
+        
+        toast.success(response.data.message); // Show success toast
+        onClose(); // Close the form/modal
+      } else {
+        toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
+      }
+    } catch (err) {
+      console.error("Error submitting tickets data:", err);
+      toast.error("An unexpected error occurred."); // Handle unexpected errors
+    }
+
+  }
+
+  // const ribbonBg = comfetti;
 
 
 
@@ -157,42 +212,42 @@ const PraiseForm = ({ onClose }: Props) => {
           </div>
           <p>To</p>
           <div className="relative">
-  {/* Input Field */}
-  <Input
-    className="w-[672px] h-[40px] px-3 my-2 border border-gray-300 rounded-lg"
-    type="text"
-    placeholder="Search by name..."
-    value={search}
-    onChange={(event) => setSearch(event.target.value)} // Update the input value
-    onFocus={() => setShowDropdown(true)} // Show dropdown on focus
-    style={{ appearance: "none" }} // Remove default icon
-  />
+            {/* Input Field */}
+            <Input
+              className="w-[672px] h-[40px] px-3 my-2 border border-gray-300 rounded-lg"
+              type="text"
+              placeholder="Search by name..."
+              value={search}
+              onChange={(event) => setSearch(event.target.value)} // Update the input value
+              onFocus={() => setShowDropdown(true)} // Show dropdown on focus
+              style={{ appearance: "none" }} // Remove default icon
+            />
 
-  {/* Custom Dropdown */}
-  {showDropdown && search && (
-    <div
-      className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-[200px] overflow-y-auto z-10 custom-scrollbar"
-      style={{ width: "672px" }}
-    >
-      {filteredUsers?.map((user: any) => (
-        <div
-          key={user.value}
-          className="px-3 py-2 cursor-pointer hover:bg-gray-200"
-          onClick={() => {
-            setSearch(user.userName); // Display the selected value in the input
-            setPrise((prevData: any) => ({
-              ...prevData,
-              userId: user._id,
-            }));
-            setShowDropdown(false); // Close the dropdown
-          }}
-        >
-          {user.userName}
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+            {/* Custom Dropdown */}
+            {showDropdown && search && (
+              <div
+                className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-[200px] overflow-y-auto z-10 custom-scrollbar"
+                style={{ width: "672px" }}
+              >
+                {filteredUsers?.map((user: any) => (
+                  <div
+                    key={user.value}
+                    className="px-3 py-2 cursor-pointer hover:bg-gray-200"
+                    onClick={() => {
+                      setSearch(user.userName); // Display the selected value in the input
+                      setPrise((prevData: any) => ({
+                        ...prevData,
+                        usersId: user._id,
+                      }));
+                      setShowDropdown(false); // Close the dropdown
+                    }}
+                  >
+                    {user.userName}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
         </div>
 
@@ -258,23 +313,26 @@ const PraiseForm = ({ onClose }: Props) => {
 
 
         </div> */}
-        <div className="mt-2 mb-6 flex flex-wrap gap-2 cursor-pointer">
+        <div className="flex flex-wrap gap-4 mt-6 cursor-pointer">
           {achievements.map((achievement, index) => (
             <div
               key={index}
-              className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 mt-4 flex gap-2"
+              onClick={() => handleBgSelect(index)}
+              className={`${selectBg === index ? "border-2 border-blue-500" : "border border-gray-300"
+                } bg-[#F3F3F3] rounded-2xl w-fit h-11 p-3 flex gap-2 items-center`}
             >
-              <div className="bg-gradient-to-r from-[#EDE7FB] to-[#B5DBDB] rounded-full w-8 h-8 -mt-1 flex items-center justify-center">
+              <div className="rounded-full w-8 h-8 flex items-center justify-center bg-gradient-to-r from-[#EDE7FB] to-[#B5DBDB]">
                 {achievement.icon}
               </div>
-              <div>
-                <p className="text-center text-[#495160] text-xs font-normal mt-1 ms-1">
-                  {achievement.name}
-                </p>
-              </div>
+              <p className="text-[#495160] text-xs font-normal">{achievement.name}</p>
             </div>
           ))}
         </div>
+        {/* <div className="mt-6">
+        <p className="text-lg">
+          Selected Achievement: <span className="font-bold">{prise.achievement}</span>
+        </p>
+      </div> */}
 
         <p className="my-3">Select Background</p>
         {/* <div className="flex mb-6 gap-2">
@@ -297,21 +355,25 @@ const PraiseForm = ({ onClose }: Props) => {
             <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 6</p>
           </div>
         </div> */}
-    <div className="flex mb-6 gap-2 flex-wrap cursor-pointer">
-      {themes.map((item, index) => (
-        <div
-          key={index}
-          onClick={() => handleThemeSelect(index)}
-          className={`${
-            selectedTheme === index ? "border-2 border-blue-500" : ""
-          } ${item.bgColor} rounded-2xl w-40 h-12 p-3 flex gap-2`}
-        >
-          <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">
-            {item.name}
-          </p>
+        <div className="flex mb-6 gap-2 flex-wrap cursor-pointer">
+          {themes.map((item, index) => (
+            <div
+              key={index}
+              onClick={() => handleThemeSelect(index)}
+              className={`${selectedTheme === index
+                ? "border-2 border-blue-500"
+                : "border border-gray-300"
+                } ${item.bgColor} rounded-2xl w-36 h-12 p-3 flex gap-2`}
+            >
+              <p className="text-center mx-8 mt-1 text-[#495160] text-xs font-normal">
+                {item.name}
+              </p>
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+        {/* <div className="mt-4">
+          <p className="text-lg">Selected Theme: {prise.theme}</p>
+        </div> */}
 
 
         <div className="bg-[#F3F3F3] border border-[#EAECF0] rounded-2xl p-6">
@@ -319,18 +381,21 @@ const PraiseForm = ({ onClose }: Props) => {
           <div className="bg-[#FFFFFFA1] rounded-lg">
             {/* <p className="text-[#2C3E50A3] text-xs font-normal mb-4">Lorem ipsum dolor sit amet consectetur. Egestas amet purus.Lorem ipsum <br /> dolor sit amet consectetur. Egestas amet purus.</p>
             <p className="text-end text-[#495160A1] text-[10px] font-semibold">200/500</p> */}
-            <textarea className="w-full min-h-28 rounded-lg outline-none p-3" name="" id=""></textarea>
-          </div>
-
+            <textarea onChange={(e) => setPrise((prevData: any) => ({
+              ...prevData,
+              notes:e.target.value,
+            }))} className="w-full min-h-28 rounded-lg outline-none p-3 text-[#2C3E50A3] text-xs font-normal" name="" id=""></textarea>
         </div>
 
-        <div className="w-full bg-white flex justify-end gap-2 mt-4">
-          <Button variant="tertiary" className="h-8 text-sm border rounded-lg" size="lg">Cancel</Button>
-          <Button variant="primary" className="h-8 text-sm border rounded-lg" size="lg" type="submit">Send</Button>
+      </div>
 
-        </div>
+      <div className="w-full bg-white flex justify-end gap-2 mt-4">
+        <Button variant="tertiary" onClick={onClose} className="h-8 text-sm border rounded-lg" size="lg">Cancel</Button>
+        <Button variant="primary" onClick={handleSubmit} className="h-8 text-sm border rounded-lg" size="lg">Send</Button>
+
       </div>
     </div>
+    </div >
   )
 }
 
