@@ -136,13 +136,16 @@ exports.getAllLeads = async (req, res) => {
         const { regionId, areaId, bdaId } = lead;
 
         // Fetch related details using dataExist
-        const { regionExists, areaExists, bdaExists } = await dataExist(regionId, areaId, bdaId);
+        const { regionExists, areaExists, bdaExists , bdaName} = await dataExist(regionId, areaId, bdaId);
 
         return {
           ...lead.toObject(),
           regionDetails: regionExists?.[0] || null, // Assuming regionExists is an array
           areaDetails: areaExists?.[0] || null,    // Assuming areaExists is an array
-          bdaDetails: bdaExists?.[0] || null,      // Assuming bdaExists is an array
+          bdaDetails:{
+            bdaId: bdaExists[0]?._id || null,
+            bdaName: bdaName || null,
+          },    // Assuming bdaExists is an array
         };
       })
     );
@@ -379,13 +382,16 @@ exports.getAllTrials = async (req, res) => {
         const { regionId, areaId, bdaId } = trial;
 
         // Fetch related details using dataExist
-        const { regionExists, areaExists, bdaExists } = await dataExist(regionId, areaId, bdaId);
+        const { regionExists, areaExists, bdaExists, bdaName} = await dataExist(regionId, areaId, bdaId);
 
         return {
           ...trial.toObject(),
           regionDetails: regionExists?.[0] || null, // Assuming regionExists is an array
           areaDetails: areaExists?.[0] || null,    // Assuming areaExists is an array
-          bdaDetails: bdaExists?.[0] || null,      // Assuming bdaExists is an array
+          bdaDetails:{
+            bdaId: bdaExists[0]?._id || null,
+            bdaName: bdaName || null,
+          },      // Assuming bdaExists is an array
         };
       })
     );
