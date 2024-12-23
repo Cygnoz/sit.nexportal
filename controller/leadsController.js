@@ -379,7 +379,7 @@ exports.getClientDetails = async (req, res) => {
     };
 
     // Make a GET request to the external API with the ID in the URL
-    const apiUrl = `https://g8c39dlj-5004.inc1.devtunnels.ms/get-one-organization-nex/${id}`;
+    const apiUrl = `https://dev.billbizz.cloud:5004/get-one-organization-nex/${id}`;
     const response = await axios.get(apiUrl, axiosConfig);
 
     // Check response and handle errors
