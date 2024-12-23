@@ -23,5 +23,7 @@ router.put('/ticket/:ticketId',verifyToken,checkPermission('Edit Ticket'),Ticket
 
 // router.delete('/delete-ticket/:ticketId',verifyToken,checkPermission('Delete Ticket'),TicketController.deleteTicket)
 
+router.post('/Praise',verifyToken,checkPermission('Add Praise'),PraiseController.addPraise,ActivityLogGeneration('Add Praise'))
 
+router.get('/Praises',verifyToken,checkPermission('View Praise'),PraiseController.getAllPraises)
 module.exports = router
