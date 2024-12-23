@@ -136,7 +136,7 @@ function LeadView({}: Props) {
                 <ChevronDown size={20} color="#FEFDF9" />
               </Button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-1 bg-white border rounded-lg shadow-lg w-40">
+                <div className="absolute right-0 mt-1  bg-white border rounded-lg shadow-lg w-40">
                   {dropdownOptions.map((option, index) => (
                     <div
                       key={index}
