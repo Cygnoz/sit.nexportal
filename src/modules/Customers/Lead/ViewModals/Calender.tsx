@@ -11,7 +11,7 @@ type Props = {
 
 
 
-const CalenderModal = ({onClose}: Props) => {
+const Calender = ({onClose}: Props) => {
 
   return (
     <div>
@@ -276,4 +276,4 @@ const CalenderModal = ({onClose}: Props) => {
   )
 }
 
-export default CalenderModal
+export default Calender
