@@ -185,7 +185,7 @@ const columns: { key: any; label: any }[] = [
   columns={columns}
   headerContents={{
     title: "Lead Details",
-    search: { placeholder: "Search Leads" },
+    search: { placeholder: "Search Leads..." },
     // sort: [
     //   {
     //     sortHead: "Sort",

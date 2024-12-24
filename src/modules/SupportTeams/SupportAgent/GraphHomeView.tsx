@@ -225,7 +225,7 @@ const GraphHomeView = ({}: Props) => {
                 <img src={profileImage} alt="" />
               </div>
               <p className="mb-2 text-[#303F58] text-xs font-medium">Bessie Cooper</p>
-              <p><RatingStar count={Stars.ratingCount}/></p>
+              <p><RatingStar size={16}  count={Stars.ratingCount}/></p>
               </div>
               <p className="text-[#4B5C79] font-normal text-xs">The support agent was very responsive and resolved my issue quickly. I appreciated the help</p>
             </div>

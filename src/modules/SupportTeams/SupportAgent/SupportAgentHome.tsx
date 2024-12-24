@@ -17,6 +17,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 import { SAData } from "../../../Interfaces/SA";
 import useApi from "../../../Hooks/useApi";
 import { useRegularApi } from "../../../context/ApiContext";
+import EmailIcon from "../../../assets/icons/EmailIcon";
 
 
 
@@ -24,7 +25,7 @@ import { useRegularApi } from "../../../context/ApiContext";
 const SupportAgentHome = () => {
   const {totalCounts}=useRegularApi()
   const { request: getAllSA } = useApi("get", 3003);
-  const [allSA, setAllSA] = useState<SAData[]>([]);
+  const [allSA, setAllSA] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [editId, setEditId] = useState('');
@@ -98,7 +99,9 @@ const SupportAgentHome = () => {
             dateOfJoining: SA.dateOfJoining
               ? new Date(SA.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail:SA.user?.email
+              loginEmail: SA?.user?.email,
+              userName: SA?.user?.userName,
+              regionName: SA?.region?.regionName,
           })) || [];
         setAllSA(transformedSA);
         console.log(transformedSA);
@@ -115,6 +118,31 @@ const SupportAgentHome = () => {
   useEffect(() => {
     getSAs();
   }, []);
+
+  const name = "Name";
+  const email = "Email";
+  const region = "Region";
+
+  const handleFilter = ({ options }: { options: string }) => {
+    if (options === "Name") {
+      // Create a new sorted array to avoid mutating the original state
+      const sortedSAs = [...allSA].sort((a, b) =>
+        b?.userName?.localeCompare(a?.userName)
+      );
+      setAllSA(sortedSAs);
+    } else if (options === "Region") {
+      const sortedSAs = [...allSA].sort((a, b) =>
+        b?.regionName?.localeCompare(a?.regionName)
+      );
+      setAllSA(sortedSAs);
+    } else {
+      const sortedSAs = [...allSA].sort((a, b) =>
+        b?.loginEmail?.localeCompare(a?.loginEmail)
+      );
+      setAllSA(sortedSAs)
+    }
+  };
+
   return (
     <div className="space-y-3">
       {/* Header */}
@@ -146,16 +174,27 @@ const SupportAgentHome = () => {
       <div>
         <Table<SAData> data={allSA} columns={columns} headerContents={{
           title:'Support Agent Overview',
-          search:{placeholder:'Search Support Agent'},
+          search:{placeholder:'Search Support Agent...'},
           sort: [
                 {
                   sortHead: "Filter",
                   sortList: [
-                    { label: "Sort by supervisorCode", icon: <UserIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by supervisorCode", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
-                  ]
+                    {
+                      label: "Sort by Name",
+                      icon: <UserIcon size={14} color="#4B5C79" />,
+                      action: () => handleFilter({ options: name }),
+                    },
+                    {
+                      label: "Sort by Region",
+                      icon: <RegionIcon size={14} color="#4B5C79" />,
+                      action: () => handleFilter({ options: region }),
+                    },
+                    {
+                      label: "Sort by Email",
+                      icon: <EmailIcon size={14} color="#4B5C79" />,
+                      action: () => handleFilter({ options: email }),
+                    },
+                  ],
                 }
           ]
         }}
