@@ -148,15 +148,15 @@ const PraiseHome = ({ }: Props) => {
                   {/* {achievements.find((achievement) => achievement.name === praise.achievement)?.bgImage || ''} */}
 
                   </div>
-                  <div className="p-10">
+                  <div className="p-5">
                     <p className="text-[#000000] text-sm font-normal my-1">{praise.achievement}</p>
                     <p className="text-[#000000] text-sm font-semibold mb-1">{praise.userDetails[0]?.userName}</p>
                     <p className="text-[#000000] text-sm font-normal mb-1">{praise.notes}</p>
                   </div>
                 </div>
-                <div className="flex justify-between px-4 -mt-5">
+                <div className="flex justify-between px-5">
                   <p className="text-[#000000] text-sm font-normal">{praise.openingDate ? new Date(praise?.openingDate).toLocaleDateString() : 'N/A'}</p>
-                  <p className="me-12 text-[#000000] text-sm font-normal">From {praise.userId}</p>
+                  <p className="text-[#000000] text-sm font-normal">From {praise.userId}</p>
                 </div>
               </div>
             ))}
