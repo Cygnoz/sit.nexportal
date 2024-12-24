@@ -29,6 +29,8 @@ const PraiseForm = ({ onClose }: Props) => {
     usersId: "", achievement: "", theme: "", notes: "",
   })
 
+  console.log(showDropdown);
+
   const getAllUsers = async () => {
     const url = endPoints.GET_USERS
     try {
@@ -60,34 +62,6 @@ const PraiseForm = ({ onClose }: Props) => {
   console.log(prise);
 
 
-  // const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const query = event.target.value.toLowerCase();
-  //   setSearch(query);
-
-  //   const filtered: any = allUsers
-  //     .filter((user) => user.userName.toLowerCase().includes(query))
-  //    .sort((a, b) => a.userName.localeCompare(b.userName));
-
-  //   setFilteredUsers(filtered);
-  // };
-  // console.log(filteredUsers);
-  // console.log(search);
-
-
-
-
-  // const themes = [
-  //   { name: "theme 1", bgColor: "bg-gradient-to-r from-[#F86C6C2B] to-[#F9DBA0A8]" },
-  //   { name: "theme 2", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#CCB7FE]" },
-  //   { name: "theme 3", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#DEFFDBA6]" },
-  //   { name: "theme 4", bgColor: "bg-gradient-to-r from-[#FFC9B182] to-[#FCCF7447]" },
-  //   { name: "theme 5", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#D786DD4D]" },
-  //   { name: "theme 6", bgColor: "bg-gradient-to-r from-[#D52B1E45] to-[#FCCF741F]" },
-  //   { name: "theme 7", bgColor: "bg-gradient-to-r from-[#FFFFFF] to-[#63D1F4]" },
-  //   { name: "theme 8", bgColor: "bg-gradient-to-r from-[#EDE7FB] to-[#9EA1FFAE]" },
-  //   { name: "theme 9", bgColor: "bg-gradient-to-r from-[#FFFFFF] to-[#DD9F86]" },
-  // ];
-
   const [selectedTheme, setSelectedTheme] = useState<any | null>(0);
 
   const handleThemeSelect = (index: number) => {
@@ -107,71 +81,6 @@ const PraiseForm = ({ onClose }: Props) => {
       achievement: achievements[index].name,
     }));
   };
-  // const achievements = [
-  //   {
-  //     icon: <img className="w-8 h-8 rotate-12" src={firstMedal} alt="Achiever Icon" />,
-  //     name: "Achiever",
-  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-  //   },
-  //   {
-  //     icon: <PraiseIcon size={20} />,
-  //     name: "Congratulations",
-  //     bgImage: <img className="w-14 h-14 mt-20 ms-12" src={partyPopper} alt="" />
-  //   },
-  //   {
-  //     icon: <BulbIcon size={18} />,
-  //     name: "Problem Solver",
-  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-  //   },
-  //   {
-  //     icon: <img className="w-6 h-6 ms-[6px] mt-1" src={staryTwinkle} alt="Thank You Icon" />,
-  //     name: "Thank You",
-  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-  //   },
-  //   {
-  //     icon: <CupIcon size={20} />,
-  //     name: "Awesome",
-  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-  //   },
-  //   {
-  //     icon: <LionIcon size={18} />,
-  //     name: "Courage",
-  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-  //   },
-  //   {
-  //     icon: <HeartIcon size={20} />,
-  //     name: "Kind Heart",
-  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-  //   },
-  //   {
-  //     icon: <HeartIcon size={20} />, // Replace with your actual icon
-  //     name: "Team Player",
-  //     bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
-  //   },
-  // ];
-
-  // const onSubmit: SubmitHandler<PraiseData> = async (data: any, event) => {
-  //   event?.preventDefault(); // Prevent default form submission behavior
-  //   console.log("Form Data", data);
- 
-  //   try {
-  //     // Call addLicenser function for adding a new licenser
-  //     const { response, error } = await addPraise(endPoints.PRAISE, data);
- 
-  //     console.log("Response:", response);
-  //     console.log("Error:", error);
- 
-  //     if (response && !error) {
-  //       toast.success(response.data.message); // Show success toast
-  //       onClose(); // Close the form/modal
-  //     } else {
-  //       toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
-  //     }
-  //   } catch (err) {
-  //     console.error("Error submitting tickets data:", err);
-  //     toast.error("An unexpected error occurred."); // Handle unexpected errors
-  //   }
-  // };
 
   const handleSubmit= async()=>{
     try {
@@ -198,6 +107,8 @@ const PraiseForm = ({ onClose }: Props) => {
 
   // const ribbonBg = comfetti;
 
+  
+
 
 
   return (
@@ -213,18 +124,18 @@ const PraiseForm = ({ onClose }: Props) => {
           <p>To</p>
           <div className="relative">
             {/* Input Field */}
+            <div onClick={() => setShowDropdown(true)}>
             <Input
               className="w-[672px] h-[40px] px-3 my-2 border border-gray-300 rounded-lg"
               type="text"
               placeholder="Search by name..."
               value={search}
               onChange={(event) => setSearch(event.target.value)} // Update the input value
-              onFocus={() => setShowDropdown(true)} // Show dropdown on focus
               style={{ appearance: "none" }} // Remove default icon
             />
-
+            </div>
             {/* Custom Dropdown */}
-            {showDropdown && search && (
+            {showDropdown  && (
               <div
                 className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-[200px] overflow-y-auto z-10 custom-scrollbar"
                 style={{ width: "672px" }}

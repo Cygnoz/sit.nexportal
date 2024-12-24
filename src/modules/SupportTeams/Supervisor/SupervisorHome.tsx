@@ -1,28 +1,28 @@
 import { useEffect, useState } from "react";
-import Button from "../../../components/ui/Button";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
+import { SVData } from "../../../Interfaces/SV";
+import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
+import EmailIcon from "../../../assets/icons/EmailIcon";
+import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
+import RegionIcon from "../../../assets/icons/RegionIcon";
+import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
+import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
+import UserIcon from "../../../assets/icons/UserIcon";
 import Modal from "../../../components/modal/Modal";
+import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import UserIcon from "../../../assets/icons/UserIcon";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import RegionIcon from "../../../assets/icons/RegionIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
-import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
-import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
-import AddSupervisor from "./SupervisorForm";
-import { useNavigate } from "react-router-dom";
-import { SVData } from "../../../Interfaces/SV";
-import { endPoints } from "../../../services/apiEndpoints";
-import toast from "react-hot-toast";
-import useApi from "../../../Hooks/useApi";
 import { useRegularApi } from "../../../context/ApiContext";
+import { endPoints } from "../../../services/apiEndpoints";
+import AddSupervisor from "./SupervisorForm";
 
 
 const SupervisorHome = () => {
   const {totalCounts}=useRegularApi()
   const { request: getAllSV } = useApi("get", 3003);
-  const [allSV, setAllSV] = useState<SVData[]>([]);
+  const [allSV, setAllSV] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [editId, setEditId] = useState('');
@@ -82,10 +82,10 @@ const SupervisorHome = () => {
 
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
-    { key: "user.userName", label: "Name" },
+    { key: "userName", label: "Name" },
     { key: "loginEmail", label: "Email Address" },
     { key: "user.phoneNo", label: "Phone No" },
-    { key: "region.regionName", label: "Region" },
+    { key: "regionName", label: "Region" },
     { key: "dateOfJoining", label: "Date Of Joining" },
   ];
 
@@ -100,12 +100,14 @@ const SupervisorHome = () => {
         console.log(response);
         
         const transformedSV =
-          response.data.supervisor?.map((SV:any) => ({
+          response.data?.supervisor?.map((SV:any) => ({
             ...SV,
-            dateOfJoining: SV.dateOfJoining
+            dateOfJoining: SV?.dateOfJoining
               ? new Date(SV.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail:SV.user?.email
+              loginEmail: SV?.user?.email,
+              userName: SV?.user?.userName,
+              regionName: SV?.region?.regionName,
           })) || [];
         setAllSV(transformedSV);
         console.log(transformedSV);
@@ -122,6 +124,30 @@ const SupervisorHome = () => {
   useEffect(() => {
     getSVs();
   }, []);
+
+  const name = "Name";
+  const email = "Email";
+  const region = "Region";
+
+  const handleFilter = ({ options }: { options: string }) => {
+    if (options === "Name") {
+      // Create a new sorted array to avoid mutating the original state
+      const sortedSvs = [...allSV].sort((a, b) =>
+        b?.userName?.localeCompare(a?.userName)
+      );
+      setAllSV(sortedSvs);
+    } else if (options === "Region") {
+      const sortedSvs = [...allSV].sort((a, b) =>
+        b?.regionName?.localeCompare(a?.regionName)
+      );
+      setAllSV(sortedSvs);
+    } else {
+      const sortedSvs = [...allSV].sort((a, b) =>
+        b?.loginEmail?.localeCompare(a?.loginEmail)
+      );
+      setAllSV(sortedSvs);
+    }
+  };
 
   return (
     <>
@@ -158,26 +184,25 @@ const SupervisorHome = () => {
           columns={columns}
           headerContents={{
             title: "Supervisor Overview",
-            search: { placeholder: "Search Supervisor" },
+            search: { placeholder: "Search Supervisor..." },
             sort: [
               {
                 sortHead: "Filter",
                 sortList: [
                   {
-                    label: "Sort by supervisorCode",
+                    label: "Sort by Name",
                     icon: <UserIcon size={14} color="#4B5C79" />,
+                    action: () => handleFilter({ options: name }),
                   },
                   {
-                    label: "Sort by Age",
+                    label: "Sort by Region",
                     icon: <RegionIcon size={14} color="#4B5C79" />,
+                    action: () => handleFilter({ options: region }),
                   },
                   {
-                    label: "Sort by supervisorCode",
-                    icon: <AreaManagerIcon size={14} color="#4B5C79" />,
-                  },
-                  {
-                    label: "Sort by Age",
-                    icon: <CalenderDays size={14} color="#4B5C79" />,
+                    label: "Sort by Email",
+                    icon: <EmailIcon size={14} color="#4B5C79" />,
+                    action: () => handleFilter({ options: email }),
                   },
                 ],
               },

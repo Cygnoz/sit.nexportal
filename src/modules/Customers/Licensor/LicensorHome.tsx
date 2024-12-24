@@ -131,7 +131,7 @@ const LicensorHome = () => {
       <div>
         <Table<LicenserData> data={allLicenser} columns={columns} headerContents={{
           title:'Licenser Details',
-          search:{placeholder:'Search BDA by Name'},
+          search:{placeholder:'Search Licensor...'},
           sort: [
                 {
                   sortHead: "Status",
