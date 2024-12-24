@@ -18,7 +18,7 @@ import AwardIcon from "../../../assets/icons/AwardIcon";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import RMForm from "./RMForm";
-import AMViewAward from "../AreaManager/AMViewAward";
+import RMViewAward from "./RMViewAward";
 
 interface AreaData {
   areaCode: string;
@@ -50,7 +50,7 @@ const RMView = () => {
   const [getData, setGetData] = useState<{
     rmData:any;}>
     ({rmData:[]})
- 
+
     const getARM = async()=>{
       try{
         const {response,error}= await getaRM(`${endPoints.GET_ALL_RM}/${id}`);
@@ -379,7 +379,7 @@ const RMView = () => {
         <RMForm editId={id} onClose={()=>handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.awardRM} onClose={()=>handleModalToggle()} align="right" className="w-[25%] me-16">
-        <AMViewAward onClose={()=>handleModalToggle()} />
+        <RMViewAward getData={getData} onClose={()=>handleModalToggle()} />
       </Modal>
     </>
   );

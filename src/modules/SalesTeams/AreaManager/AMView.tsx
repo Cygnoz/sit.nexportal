@@ -739,7 +739,7 @@ const AMView = ({ }: Props) => {
         <AMViewForm onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.awardAM} onClose={() => handleModalToggle()} align='right' className="w-[25%] me-12 mt-14">
-        <AMViewAward onClose={() => handleModalToggle()} />
+        <AMViewAward getData={getData} onClose={() => handleModalToggle()} />
       </Modal>
     </div>
   )

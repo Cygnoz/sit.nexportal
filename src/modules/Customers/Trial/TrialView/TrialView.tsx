@@ -199,6 +199,8 @@ const TrialView = ({}: Props) => {
         return "bg-cyan-800 text-white py-1 px-2 rounded-full";
       case "In Progress":
         return "bg-yellow-100 text-black py-1 px-2 rounded-full";
+        case "In progress":
+        return "bg-yellow-100 text-black py-1 px-2 rounded-full";
       case "Proposal":
         return "bg-violet-300 text-black py-1 px-2 rounded-full";
       case "Lost":
@@ -209,6 +211,12 @@ const TrialView = ({}: Props) => {
         return "";
     }
   };
+
+  let data:any={}
+  data={trial,customerData}
+ 
+  console.log("data",data);
+  
 
   return (
     <div
@@ -408,14 +416,14 @@ const TrialView = ({}: Props) => {
                   View
                 </p>
               </div>
-              <div>
-                <div className="rounded-full cursor-pointer  bg-[#C4A25D4D] h-9 w-9 border border-white">
+              <div >
+                <div className="rounded-full cursor-pointer ms-2  bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
                     <DeActivateIcon size={18} color="#D52B1E4D" />
                   </div>
                 </div>
-                <p className="text-[#FFF9F9] text-[10px] font-medium mt-1">
-                  Delete
+                <p className="text-[#FFF9F9] text-center text-[10px] font-medium mt-1">
+                  DeActivate
                 </p>
               </div>
             </div>
@@ -662,7 +670,7 @@ const TrialView = ({}: Props) => {
         onClose={handleModalToggle}
         className="w-[40%]"
       >
-        <TrialViewForm   onClose={handleModalToggle} />
+        <TrialViewForm data={data}   onClose={handleModalToggle} />
       </Modal>
 
       {/* Modal controlled by state */}

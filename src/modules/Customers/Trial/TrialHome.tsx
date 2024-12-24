@@ -110,18 +110,7 @@ const TrialHome = () => {
       <div>
         <Table<LeadData> data={allTrials} columns={columns} headerContents={{
           title:'Trial Details',
-          search:{placeholder:'Search BDA by Name'},
-        //   sort: [
-        //         {
-        //           sortHead: "Filter",
-        //           sortList: [
-        //             { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
-        //             { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
-        //             { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-        //             { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
-        //           ]
-        //         }
-        //   ]
+          search:{placeholder:'Search Trials...'}
         }}
         actionList={[
             { label: 'view', function: handleView },

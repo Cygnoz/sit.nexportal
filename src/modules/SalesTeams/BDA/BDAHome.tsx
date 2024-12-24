@@ -17,11 +17,13 @@ import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { BDAData } from "../../../Interfaces/BDA";
 import { useRegularApi } from "../../../context/ApiContext";
+import AreaIcon from "../../../assets/icons/AreaIcon";
+import EmailIcon from "../../../assets/icons/EmailIcon";
 
 const BDAHome = () => {
   const {totalCounts}=useRegularApi()
   const { request: getAllBDA } = useApi("get", 3002);
-  const [allBDA, setAllBDA] = useState<BDAData[]>([]);
+  const [allBDA, setAllBDA] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId, setEditId] = useState('');
   const handleModalToggle = () => {
@@ -73,11 +75,11 @@ const BDAHome = () => {
 
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
-    { key: "user.userName", label: "Name" },
+    { key: "userName", label: "Name" },
     { key: "loginEmail", label: "Email Address" },
     { key: "user.phoneNo", label: "Phone No" },
-    { key: "region.regionName", label: "Region" },
-    { key: "area.areaName", label: "Area" },
+    { key: "regionName", label: "Region" },
+    { key: "areaName", label: "Area" },
     { key: "dateOfJoining", label: "Date Of Joining" },
   ];
 
@@ -91,7 +93,10 @@ const BDAHome = () => {
             dateOfJoining: bda.dateOfJoining
               ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-            loginEmail:bda.user?.email
+            loginEmail:bda.user?.email,
+            userName:bda?.user?.userName,
+            regionName:bda?.region?.regionName,
+            areaName:bda?.area?.areaName
           })) || [];
         setAllBDA(transformedBDA);
         console.log(transformedBDA);
@@ -109,6 +114,35 @@ const BDAHome = () => {
     getBDAs();
   }, []);
   
+  const name = "Name";
+        const email = "Email";
+        const region = "Region";
+        const area ="Area";
+      
+        const handleFilter = ({ options }: { options: string }) => {
+          if (options === "Name") {
+            // Create a new sorted array to avoid mutating the original state
+            const sortedAms = [...allBDA].sort((a, b) =>
+              b?.userName?.localeCompare(a?.userName)
+            );
+            setAllBDA(sortedAms);
+          } else if (options === "Region") {
+            const sortedAms = [...allBDA].sort((a, b) =>
+              b?.regionName?.localeCompare(a?.regionName)
+            );
+            setAllBDA(sortedAms)
+          } else if(options=='Email') {
+            const sortedAms = [...allBDA].sort((a, b) =>
+              b?.loginEmail?.localeCompare(a?.loginEmail)
+            );
+            setAllBDA(sortedAms);
+          }else{
+            const sortedAms = [...allBDA].sort((a, b) =>
+              b?.areaName?.localeCompare(a?.areaName)
+            );
+            setAllBDA(sortedAms);
+          }
+        };
   
   return (
     <>
@@ -147,29 +181,17 @@ const BDAHome = () => {
             // title:'Region',
             search: {
               placeholder:
-                "Search Invoice by client name, invoice number, or date",
+                "Search BDA....",
             },
             sort: [
               {
                 sortHead: "Filter",
                 sortList: [
-                  {
-                    label: "Sort by Name",
-                    icon: <UserIcon size={14} color="#4B5C79" />,
-                  },
-                  {
-                    label: "Sort by Age",
-                    icon: <RegionIcon size={14} color="#4B5C79" />,
-                  },
-                  {
-                    label: "Sort by Name",
-                    icon: <AreaManagerIcon size={14} color="#4B5C79" />,
-                  },
-                  {
-                    label: "Sort by Age",
-                    icon: <CalenderDays size={14} color="#4B5C79" />,
-                  },
-                ],
+                  { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/>, action: () => handleFilter({ options: name }), },
+                  { label: "Sort by Region", icon: <RegionIcon size={14} color="#4B5C79"/>, action: () => handleFilter({ options: region }), },
+                  { label: "Sort by Area", icon: <AreaIcon size={14} color="#4B5C79"/>, action: () => handleFilter({ options: area }), },
+                  { label: "Sort by Email", icon: <EmailIcon size={14} color="#4B5C79"/>, action: () => handleFilter({ options: email }), }
+                ]
               },
             ],
           }}

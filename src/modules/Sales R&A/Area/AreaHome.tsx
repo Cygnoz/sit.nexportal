@@ -16,6 +16,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { AreaData } from "../../../Interfaces/Area";
 import { useRegularApi } from "../../../context/ApiContext";
+import Notebook from "../../../assets/icons/Notebook";
 
 
 
@@ -49,7 +50,8 @@ const AreaHome = () => {
         const transformedAreas = response.data.areas?.map((area:any) => ({
           ...area,
           createdAt: new Date(area.createdAt)
-            .toLocaleDateString("en-GB") // Extracts the date part
+            .toLocaleDateString("en-GB"), // Extracts the date part
+          region:area?.region?.regionName  
         }));
         
         // Then set the transformed regions into state
@@ -109,10 +111,34 @@ const AreaHome = () => {
     { key: "areaCode", label: "Area Code" },
     { key: "areaName", label: "Area Name" },
     { key: "createdAt", label: "Created Date" },
-    { key: "region.regionName", label: "Region" },
+    { key: "region", label: "Region" },
     { key: "description", label: "Discription" },
   ];
+  
+  const name = "Name";
+  const region = "Region";
+  const code = "Code";
 
+  const handleFilter = ({ options }: { options: string }) => {
+    if (options === 'Name') {
+      // Create a new sorted array to avoid mutating the original state
+      const sortedAreas = [...allAreas].sort((a, b) =>b.areaName.localeCompare(a.areaName));
+      setAllAreas(sortedAreas);
+    }else if(options==='Region'){
+      const sortedAreas = [...allAreas].sort((a, b) => b.region.localeCompare(a.region));
+      setAllAreas(sortedAreas);
+    }else {
+      const sortedAreas = [...allAreas].sort((a:any, b:any) => {
+        // Extract the numeric part of the regionCode
+        const numA = parseInt(a.areaCode.split('-')[1], 10);
+        const numB = parseInt(b.areaCode.split('-')[1], 10);
+        
+        // Sort in descending order
+        return numB - numA;
+      });
+      setAllAreas(sortedAreas);
+    }
+  };
   
   return (
     <>
@@ -146,18 +172,29 @@ const AreaHome = () => {
       <div>
         <Table<AreaData> data={allAreas} columns={columns} headerContents={{
           title:"Area's",
-          search:{placeholder:'Search Area By Name, Region'},
+          search:{placeholder:'Search Area...'},
           sort: [
+            {
+              sortHead: "Filter",
+              sortList: [
                 {
-                  sortHead: "Filter",
-                  sortList: [
-                    { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
-                  ]
-                }
-          ]
+                  label: "Sort by Name",
+                  icon: <AreaIcon size={14} color="#4B5C79" />,
+                  action: () => handleFilter({ options: name }),
+                },
+                {
+                  label: "Sort by Region",
+                  icon: <RegionIcon size={14} color="#4B5C79" />,
+                  action: () => handleFilter({ options: region }),
+                },
+                {
+                  label: "Sort by Code",
+                  icon: <Notebook size={14} color="#4B5C79" />,
+                  action: () => handleFilter({ options: code }),
+                },
+              ],
+            },
+          ],
         }}
         actionList={[
           { label: 'edit', function:handleEdit },
