@@ -7,13 +7,14 @@ const moment = require('moment-timezone');
 
 const dataExist = async (usersId) => {
     const [userExists] = await Promise.all([
-      User.find({ _id: usersId }, { _id: 1, userName: 1 }),
+      User.find({ _id: usersId }, { _id: 1, userName: 1 , userImage:1 }),
     ]);
 
     return{
         userExists
     };
 }
+
 
  
 // Add Price Function
@@ -117,9 +118,6 @@ const ActivityLog = (req, status, operationId = null) => {
               // Fetch related details using dataExist
               const { userExists } = await dataExist(usersId);
       
-              // Log the result for debugging
-              console.log("Enriching Praise:", usersId, userExists);
-      
               return {
                 ...praise.toObject(),
                 userDetails: userExists || null,
@@ -140,39 +138,8 @@ const ActivityLog = (req, status, operationId = null) => {
       };
       
 
-//   exports.getAllPraises = async (req, res) => {
-//     try {
-//       const praises = await Praise.find(); // Fetch all praises
-    
-//  // Enrich data for each lead
-//  const enrichedPraise = await Promise.all(
-//   praises.map(async (praise) => {
-//     const {  usersId  } = praise;
 
 
-//         // Fetch related details using dataExist
-//         const { userExists } = await dataExist( usersId );
-
-//         return {
-//           ...praise.toObject(),
-//           userDetails: userExists?.[0] || null,      // Assuming bdaExists is an array
-//         };
-//       })
-//     );
-//       res.status(200).json({ 
-//         message: "Praises fetched successfully.", 
-//         praises : enrichedPraise
-//       });
-//     } catch (error) {
-//       console.error("Error fetching praises:", error);
-//       res.status(500).json({ 
-//         message: "Internal server error." 
-//       });
-//     }
-//   };
-  
-
-  // Get All Praises for a User
 exports.getAllPraisesForUser = async (req, res) => {
   try {
     const { userId } = req.params;
@@ -189,12 +156,28 @@ exports.getAllPraisesForUser = async (req, res) => {
       return res.status(404).json({ message: "No praises found for this user." });
     }
 
+    // Enrich praises with user details
+    const enrichedPraises = await Promise.all(
+      praises.map(async (praise) => {
+        const user = await User.findOne(
+          { _id: praise.usersId },
+          { _id: 1, userName: 1, userImage: 1 } // Fetch only required fields
+        );
+
+        return {
+          ...praise.toObject(),
+          userDetails: user || null, // Include user details, fallback to null if not found
+        };
+      })
+    );
+
     res.status(200).json({
       message: "Praises fetched successfully.",
-      praises,
+      praises: enrichedPraises,
     });
   } catch (error) {
     console.error("Error fetching praises for user:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
