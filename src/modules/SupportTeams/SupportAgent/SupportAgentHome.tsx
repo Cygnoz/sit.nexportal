@@ -1,23 +1,21 @@
 import { useEffect, useState } from "react";
-import Button from "../../../components/ui/Button";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
+import { SAData } from "../../../Interfaces/SA";
+import EmailIcon from "../../../assets/icons/EmailIcon";
+import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
+import RegionIcon from "../../../assets/icons/RegionIcon";
+import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
+import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
+import UserIcon from "../../../assets/icons/UserIcon";
 import Modal from "../../../components/modal/Modal";
+import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import UserIcon from "../../../assets/icons/UserIcon";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import RegionIcon from "../../../assets/icons/RegionIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import TicketCardIcon from "../../../assets/icons/TicketCardIcon";
-import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
-import ResolvedTicket from "../../../assets/icons/ResolvedTicket";
-import SupportAgentForm from "./SupportAgentForm";
-import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import { endPoints } from "../../../services/apiEndpoints";
-import { SAData } from "../../../Interfaces/SA";
-import useApi from "../../../Hooks/useApi";
 import { useRegularApi } from "../../../context/ApiContext";
-import EmailIcon from "../../../assets/icons/EmailIcon";
+import { endPoints } from "../../../services/apiEndpoints";
+import SupportAgentForm from "./SupportAgentForm";
 
 
 

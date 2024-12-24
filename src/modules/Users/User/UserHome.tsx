@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react";
 import useApi from "../../../Hooks/useApi";
 import { UserData } from "../../../Interfaces/User";
+import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import EmailIcon from "../../../assets/icons/EmailIcon";
-import RegionIcon from "../../../assets/icons/RegionIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import Table from "../../../components/ui/Table";
 import { endPoints } from "../../../services/apiEndpoints";
 import UserForm from "./UserForm";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 
 
 

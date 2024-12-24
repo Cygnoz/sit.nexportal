@@ -1,16 +1,14 @@
 import Button from "../../../components/ui/Button";
 // import comfetti from '../../../assets/image/confetti.png'
-import useApi from "../../../Hooks/useApi";
 import { useEffect, useRef, useState } from "react";
+import useApi from "../../../Hooks/useApi";
 // import { UserData } from "../../../Interfaces/User";
-import { endPoints } from "../../../services/apiEndpoints";
 import Input from "../../../components/form/Input";
+import { endPoints } from "../../../services/apiEndpoints";
 // import { PraiseData } from "../../../Interfaces/Praise";
 // import { SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
-import { themes } from "../../../Interfaces/Praise";
-import { achievements } from "../../../Interfaces/Praise";
-import { UserData } from "../../../Interfaces/User";
+import { achievements, themes } from "../../../Interfaces/Praise";
 
 
 type Props = {

@@ -1,23 +1,22 @@
 import { useEffect, useState } from "react";
-import Button from "../../../components/ui/Button";
-import Modal from "../../../components/modal/Modal";
-import HomeCard from "../../../components/ui/HomeCards";
-import Table from "../../../components/ui/Table";
-import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
-import UserIcon from "../../../assets/icons/UserIcon";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
+import EmailIcon from "../../../assets/icons/EmailIcon";
+import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import Licensor from "../../../assets/icons/Licensor";
 import RegionIcon from "../../../assets/icons/RegionIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import { useNavigate } from "react-router-dom";
+import UserIcon from "../../../assets/icons/UserIcon";
+import Modal from "../../../components/modal/Modal";
+import Button from "../../../components/ui/Button";
+import HomeCard from "../../../components/ui/HomeCards";
+import Table from "../../../components/ui/Table";
+import { useRegularApi } from "../../../context/ApiContext";
 import useApi from "../../../Hooks/useApi";
 import { AMData } from "../../../Interfaces/AM";
 import { endPoints } from "../../../services/apiEndpoints";
 import AMForm from "./AMForm";
-import toast from "react-hot-toast";
-import { useRegularApi } from "../../../context/ApiContext";
-import AreaIcon from "../../../assets/icons/AreaIcon";
-import EmailIcon from "../../../assets/icons/EmailIcon";
 
 
 

@@ -85,7 +85,7 @@ const TrialView = ({}: Props) => {
   };
 
   const { id } = useParams();
-  function calculateDuration(startDate:any, endDate:any) {
+  function calculateDuration( endDate:any) {
     // Parse the date strings into Date objects
     const start:any = new Date();
     const end:any = new Date(endDate);
@@ -134,7 +134,7 @@ const TrialView = ({}: Props) => {
         const Lead = response.data; // Return the fetched data
         console.log("Fetched Customer data:", Lead);
         setCustomerData(response.data);
-        calculateDuration(response.data.startDate,response.data.endDate)
+        calculateDuration(response.data.endDate)
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching Lead data:", error);

@@ -1,11 +1,10 @@
 import BloodGroupIcon from "../../../../assets/icons/BloodGroupIcon";
 import Boxes from "../../../../assets/icons/Boxes";
-import CalenderDays from "../../../../assets/icons/CalenderDays";
+import BuildingIcon from "../../../../assets/icons/BuildingIcon";
 import EmailIcon from "../../../../assets/icons/EmailIcon";
 import LocationIcon from "../../../../assets/icons/LocationIcon";
 import PhoneIcon from "../../../../assets/icons/PhoneIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
-import BuildingIcon from "../../../../assets/icons/BuildingIcon";
 
 type Props = {
   onClose: () => void;
