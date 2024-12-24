@@ -13,6 +13,9 @@ import 'quill-emoji';
 import ReactDOMServer from 'react-dom/server';
 import Button from "../../../../components/ui/Button";
 import Input from "../../../../components/form/Input";
+import NumberListIcon from "../../../../assets/icons/NumberListIcon";
+import BulletListIcon from "../../../../assets/icons/BulletListIcon";
+import StrikeThroughIcon from "../../../../assets/icons/StrikeThroughIcon";
 
 
 type Props = {
@@ -25,16 +28,21 @@ const MailsForm = ({ onClose }: Props) => {
   Quill.register('modules/emoji', Emoji);
   const icons = Quill.import('ui/icons');
 
-
+  const OrderedListIconHTML = ReactDOMServer.renderToStaticMarkup(<NumberListIcon color='#4B5C79' />);
+  const BulletListIconHTML = ReactDOMServer.renderToStaticMarkup(<BulletListIcon color='#4B5C79' />);
   const boldIconHTML = ReactDOMServer.renderToStaticMarkup(<BoldIcon size={12} color='#4B5C79' />);
   const ItalicIconHTML = ReactDOMServer.renderToStaticMarkup(<ItalicIcon color='#4B5C79' />);
   const UnderlineIconHTML = ReactDOMServer.renderToStaticMarkup(<UnderlineIcon color='#4B5C79' />);
+  const StrikeIconHTML = ReactDOMServer.renderToStaticMarkup( <StrikeThroughIcon color='#4B5C79' /> );
   const LinkIconHTML = ReactDOMServer.renderToStaticMarkup(<LinkIcon color='#4B5C79' />);
   const EmojiIconHTML = ReactDOMServer.renderToStaticMarkup(<EmojiIcon color='#4B5C79' />);
 
+  icons['list-ordered'] = OrderedListIconHTML;
+  icons['list-bullet'] = BulletListIconHTML;
   icons['bold'] = boldIconHTML;
   icons['italic'] = ItalicIconHTML;
   icons['underline'] = UnderlineIconHTML;
+  icons['strike'] = StrikeIconHTML;
   icons['link'] = LinkIconHTML;
   icons['emoji'] = EmojiIconHTML;
 
@@ -42,7 +50,8 @@ const MailsForm = ({ onClose }: Props) => {
 
   const modules = {
     toolbar: [
-      ['bold', 'italic', 'underline'],
+      [{ 'list': 'ordered' }, { 'list': 'bullet' }], // Add ordered and bullet lists
+      ['bold', 'italic', 'underline', 'strike'],
       ['link',],
       [{ 'emoji': true }],
     ],
