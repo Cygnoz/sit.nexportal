@@ -351,7 +351,7 @@ const BDAView = ({}: Props) => {
   </Modal>
 
   <Modal align='right' className='w-[25%] mt-[500px] me-16' open={isModalOpen.awards} onClose={()=>handleModalToggle()}>
-        <BDAViewAward onClose={()=>handleModalToggle()} />
+        <BDAViewAward data={data} onClose={()=>handleModalToggle()} />
       </Modal>
 
       <Modal open={isModalOpen.viewBda} onClose={()=>handleModalToggle()}>
