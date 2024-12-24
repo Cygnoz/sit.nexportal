@@ -85,9 +85,9 @@ const TrialView = ({}: Props) => {
   };
 
   const { id } = useParams();
-  function calculateDuration(startDate:any, endDate:any) {
+  function calculateDuration( endDate:any) {
     // Parse the date strings into Date objects
-    const start:any = new Date(startDate);
+    const start:any = new Date();
     const end:any = new Date(endDate);
   
     // Validate dates
@@ -104,7 +104,7 @@ const TrialView = ({}: Props) => {
     const durationInMilliseconds = end - start;
     const durationInDays = durationInMilliseconds / (1000 * 60 * 60 * 24);
   
-    setCustomerData((prev:any)=>({...prev,duration:durationInDays}))
+    setCustomerData((prev:any)=>({...prev,duration:durationInDays.toFixed()}))
   }
 
   const getOneTrial = async () => {
@@ -134,7 +134,7 @@ const TrialView = ({}: Props) => {
         const Lead = response.data; // Return the fetched data
         console.log("Fetched Customer data:", Lead);
         setCustomerData(response.data);
-        calculateDuration(response.data.startDate,response.data.endDate)
+        calculateDuration(response.data.endDate)
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching Lead data:", error);
@@ -396,7 +396,7 @@ const TrialView = ({}: Props) => {
                   Email
                 </p>
               </div>
-              <div onClick={edtiModalToggle}>
+              {/* <div onClick={edtiModalToggle}>
                 <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
                     <EditIcon size={18} color="#F0D5A0" />
@@ -405,7 +405,7 @@ const TrialView = ({}: Props) => {
                 <p className="text-[#FFF9F9] text-[10px] font-medium mt-1 ms-2">
                   Edit
                 </p>
-              </div>
+              </div> */}
               <div onClick={handleModalToggle}>
                 <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">

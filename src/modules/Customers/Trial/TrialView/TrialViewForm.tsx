@@ -1,11 +1,10 @@
 import BloodGroupIcon from "../../../../assets/icons/BloodGroupIcon";
 import Boxes from "../../../../assets/icons/Boxes";
-import CalenderDays from "../../../../assets/icons/CalenderDays";
+import BuildingIcon from "../../../../assets/icons/BuildingIcon";
 import EmailIcon from "../../../../assets/icons/EmailIcon";
 import LocationIcon from "../../../../assets/icons/LocationIcon";
 import PhoneIcon from "../../../../assets/icons/PhoneIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
-import BuildingIcon from "../../../../assets/icons/BuildingIcon";
 
 type Props = {
   onClose: () => void;
@@ -72,15 +71,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               <h1 className="text-sm font-semibold my-2">
                 Contact Information
               </h1>
-              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">
-                Address
-              </h3>
-              <div className="flex">
-                <LocationIcon size={20} />
-                <p className="text-sm font-semibold ms-2">
-                  2827 ethikoli rd.pattambi
-                </p>
-              </div>
+             
 
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">
@@ -88,7 +79,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">784541221</p>
+                <p className="text-sm font-semibold ms-2">{data?.trial?.primaryContactNum}</p>
               </div>
 
               <hr />
@@ -98,7 +89,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">abhi@gmail.com</p>
+                <p className="text-sm font-semibold ms-2">{data?.trial?.primaryContactEmail}</p>
               </div>
             </div>
           </div>
@@ -145,24 +136,24 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" size={20} />
-                <p className="text-sm font-semibold ms-2">CGNE01476</p>
+                <p className="text-sm font-semibold ms-2">{data?.customerData?.companyId}</p>
               </div>
 
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">
-                Work Mail
+                Company Name
               </h3>
               <div className="flex">
-                <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">subi@gmail.com</p>
+                <BuildingIcon size={20} />
+                <p className="text-sm font-semibold ms-2">{data?.customerData?.companyName}</p>
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">
-                Work Phone
+                Company Phone
               </h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">784541221</p>
+                <p className="text-sm font-semibold ms-2">{data?.customerData?.companyPhone}</p>
               </div>
 
               <hr />
@@ -171,7 +162,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <LocationIcon size={20} />
-                <p className="text-sm font-semibold ms-2">2987-pulimootil</p>
+                <p className="text-sm font-semibold ms-2">{data?.customerData?.companyAddress}</p>
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">
@@ -179,7 +170,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <Boxes color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">Region-6383</p>
+                <p className="text-sm font-semibold ms-2">{data?.customerData?.regionDetails?.regionName}</p>
               </div>
             </div>
           </div>

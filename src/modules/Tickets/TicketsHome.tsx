@@ -1,18 +1,16 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import Bell from "../../assets/icons/Bell";
+import Notebook from "../../assets/icons/Notebook";
+import UserIcon from "../../assets/icons/UserIcon";
 import Modal from "../../components/modal/Modal";
 import Button from "../../components/ui/Button";
-import Table from "../../components/ui/Table";
-import CalenderDays from "../../assets/icons/CalenderDays";
-import Package from "../../assets/icons/Package";
 import SortBy from "../../components/ui/SortBy";
-import CreateTickets from "./TicketsForm";
-import { useNavigate } from "react-router-dom";
+import Table from "../../components/ui/Table";
 import useApi from "../../Hooks/useApi";
 import { TicketsData as BaseTicketsData } from "../../Interfaces/Tickets";
 import { endPoints } from "../../services/apiEndpoints";
-import UserIcon from "../../assets/icons/UserIcon";
-import Notebook from "../../assets/icons/Notebook";
-import Bell from "../../assets/icons/Bell";
+import CreateTickets from "./TicketsForm";
 
 type Props = {};
 

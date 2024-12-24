@@ -93,7 +93,19 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
     }
   },[orgData])
 
-  console.log(watch());
+  useEffect(() => {
+    if (type === 'lead' && watch("startDate")) {
+      // Calculate 7 days after the startDate
+      const calculatedEndDate = new Date(watch("startDate"));
+      calculatedEndDate.setDate(calculatedEndDate.getDate() + 7);
+      
+      // Format the date to YYYY-MM-DD format (required for <input type="date">)
+      const formattedEndDate = calculatedEndDate.toISOString().split('T')[0];
+      
+      // Set the calculated endDate in the form
+      setValue("endDate", formattedEndDate);
+    }
+  }, [watch("startDate"), type, setValue]);
   
     
 

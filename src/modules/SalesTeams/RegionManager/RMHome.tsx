@@ -1,22 +1,20 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import AreaIcon from "../../../assets/icons/AreaIcon";
+import EmailIcon from "../../../assets/icons/EmailIcon";
+import MutiUserIcon from "../../../assets/icons/MultiUserIcon";
+import RegionIcon from "../../../assets/icons/RegionIcon";
+import UserIcon from "../../../assets/icons/UserIcon";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
-import AddRegionManager from "./RMForm";
 import HomeCard from "../../../components/ui/HomeCards";
-import UserIcon from "../../../assets/icons/UserIcon";
-import AreaIcon from "../../../assets/icons/AreaIcon";
-import MutiUserIcon from "../../../assets/icons/MultiUserIcon";
 import Table from "../../../components/ui/Table";
-import RegionIcon from "../../../assets/icons/RegionIcon";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import { useNavigate } from "react-router-dom";
+import { useRegularApi } from "../../../context/ApiContext";
 import useApi from "../../../Hooks/useApi";
 import { RMData } from "../../../Interfaces/RM";
 import { endPoints } from "../../../services/apiEndpoints";
-import toast from "react-hot-toast";
-import { useRegularApi } from "../../../context/ApiContext";
-import EmailIcon from "../../../assets/icons/EmailIcon";
+import AddRegionManager from "./RMForm";
 
 const RMHome = () => {
   const { totalCounts } = useRegularApi();

@@ -1,24 +1,23 @@
 import { useEffect, useState } from "react";
-import Button from "../../../components/ui/Button";
-import Modal from "../../../components/modal/Modal";
-import HomeCard from "../../../components/ui/HomeCards";
-import Table from "../../../components/ui/Table";
-import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
-import UserIcon from "../../../assets/icons/UserIcon";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import Licensor from "../../../assets/icons/Licensor";
-import RegionIcon from "../../../assets/icons/RegionIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import TrialIcon from "../../../assets/icons/TrialIcon";
-import BDAForm from "./BDAForm";
+import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
-import { endPoints } from "../../../services/apiEndpoints";
-import toast from "react-hot-toast";
 import { BDAData } from "../../../Interfaces/BDA";
-import { useRegularApi } from "../../../context/ApiContext";
 import AreaIcon from "../../../assets/icons/AreaIcon";
+import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import EmailIcon from "../../../assets/icons/EmailIcon";
+import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
+import Licensor from "../../../assets/icons/Licensor";
+import RegionIcon from "../../../assets/icons/RegionIcon";
+import TrialIcon from "../../../assets/icons/TrialIcon";
+import UserIcon from "../../../assets/icons/UserIcon";
+import Modal from "../../../components/modal/Modal";
+import Button from "../../../components/ui/Button";
+import HomeCard from "../../../components/ui/HomeCards";
+import Table from "../../../components/ui/Table";
+import { useRegularApi } from "../../../context/ApiContext";
+import { endPoints } from "../../../services/apiEndpoints";
+import BDAForm from "./BDAForm";
 
 const BDAHome = () => {
   const {totalCounts}=useRegularApi()

@@ -1,22 +1,21 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import useApi from "../../../Hooks/useApi";
+import { AreaData } from "../../../Interfaces/Area";
+import AreaIcon from "../../../assets/icons/AreaIcon";
+import AreaManagerIcon from '../../../assets/icons/AreaMangerIcon';
+import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
+import Notebook from "../../../assets/icons/Notebook";
+import RegionIcon from '../../../assets/icons/RegionIcon';
+import UserIcon from "../../../assets/icons/UserIcon";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
-import UserIcon from "../../../assets/icons/UserIcon";
-import AreaManagerIcon from '../../../assets/icons/AreaMangerIcon';
-import RegionIcon from '../../../assets/icons/RegionIcon';
 import Table from "../../../components/ui/Table";
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import AreaIcon from "../../../assets/icons/AreaIcon";
-import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
-import AreaForm from "./AreaForm";
-import { useNavigate } from "react-router-dom";
-import useApi from "../../../Hooks/useApi";
-import { endPoints } from "../../../services/apiEndpoints";
-import toast from "react-hot-toast";
-import { AreaData } from "../../../Interfaces/Area";
 import { useRegularApi } from "../../../context/ApiContext";
-import Notebook from "../../../assets/icons/Notebook";
+import { endPoints } from "../../../services/apiEndpoints";
+import AreaForm from "./AreaForm";
 
 
 

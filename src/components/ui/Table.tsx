@@ -251,7 +251,7 @@ const Table = <T extends object>({
       } else {
         setNoDataFound(false);
       }
-    }, 3000);
+    },3000);
     return () => clearTimeout(timeout);
   }, [data]);
 
@@ -264,7 +264,7 @@ const Table = <T extends object>({
         className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
         <table
-          className={`w-full border-collapse border text-left  ${
+          className={`w-full border-collapse border-[#e7e6e6] border text-left  ${
             maxHeight && "table-fixed"
           }`}
         >
@@ -272,13 +272,13 @@ const Table = <T extends object>({
             className={` bg-[#F6F9FC]  ${maxHeight && "z-40 sticky top-0"}`}
           >
             <tr>
-              <th className="border p-4 text-sm  text-[#303F58] font-medium">
+              <th className="border border-[#e7e6e6] p-4 text-sm  text-[#303F58] font-medium">
                 SI No.
               </th>
               {columns.map((col:any) => (
                 <th
                   key={String(col.key)}
-                  className={`border p-4 text-sm  text-[#303F58] font-medium ${
+                  className={`border border-[#e7e6e6]  p-4 text-sm  text-[#303F58] font-medium ${
                     col.key=='convert' ? "w-48 text-center":
                     col.key?.toLowerCase().includes("status")&&'text-center min-w-[120px]'
                   }`}
@@ -287,7 +287,7 @@ const Table = <T extends object>({
                 </th>
               ))}
               {!noAction && (
-                <th className="border p-4 text-sm text-[#303F58] text-center font-medium">
+                <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium">
                   Action
                 </th>
               )}
@@ -311,13 +311,13 @@ const Table = <T extends object>({
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 z-10">
-                  <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
+                  <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
                     {(currentPage - 1) * rowsPerPage + rowIndex + 1}
                   </td>
                   {columns.map((col: any) => (
                     <td
                       key={col.key}
-                      className="border border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
+                      className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
                     >
                       <div
                         className={`flex ${
@@ -355,7 +355,7 @@ const Table = <T extends object>({
                     </td>
                   ))}
                   {!noAction && (
-                    <td className="border-b border-gray-300 p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
+                    <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
                       <div className="flex justify-center gap-2">
                         {actionList?.map((action, index) => {
                           if (
