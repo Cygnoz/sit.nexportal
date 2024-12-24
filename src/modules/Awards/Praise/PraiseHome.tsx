@@ -28,18 +28,8 @@ const PraiseHome = ({ }: Props) => {
     const url = endPoints.GET_ALL_PRAISE
     try {
       const { response, error } = await getAllPraise(url)
-      console.log(response)
-      console.log(error)
-      // if(response && !error){
-      //   // toast.success(response.data.message)
-      //   setAllUsers(response.data.AllUsers.map((user:UserData)=>({
-      //     ...user,
-      //     type:(user.role=='Super Admin' ||user.role=='Sales Admin'||user.role=='Support Admin')?user.role:'User'
-      //   })))
       if (response && !error) {
-        // toast.success(response.data.message)
-        console.log(response.data.praises);
-        setAllPraise(response.data.praises.reverse())
+        setAllPraise(response.data.praises)
 
       } else {
         console.log(error)
@@ -55,6 +45,36 @@ const PraiseHome = ({ }: Props) => {
   }, [])
 
 
+  const renderSkelton=()=>(
+    <div className="w-full  p-4 bg-gray-100 rounded-lg shadow-md">
+
+  <div className="flex items-center  gap-2 mb-2">
+    <div className="w-6 h-6 bg-gray-300 rounded-full animate-pulse"></div>
+    <div className="h-4 w-24 bg-gray-300 rounded-lg animate-pulse"></div>
+    <div className=" text-right flex items-center justify-end  ms-auto ">
+    <div className="h-4 w-20 bg-gray-300 rounded-lg inline-block animate-pulse"></div>
+    <div className="h-3 w-16 bg-gray-300 rounded-lg inline-block  animate-pulse"></div>
+  </div>
+  </div>
+
+
+  <div className="flex justify-center py-4">
+    <div className="w-12 h-12 bg-gray-300 rounded-full animate-pulse"></div>
+  </div>
+
+  <div className="space-y-2 text-center">
+    <div className="h-6 w-32 bg-gray-300 rounded-lg mx-auto animate-pulse"></div>
+    <div className="h-4 w-20 bg-gray-300 rounded-lg mx-auto animate-pulse"></div>
+    <div className="h-4 w-40 bg-gray-300 rounded-lg mx-auto animate-pulse"></div>
+  </div>
+
+  <div className="mt-4 text-right flex items-center justify-end  ms-auto">
+    <div className="h-4 w-20 bg-gray-300 rounded-lg inline-block animate-pulse"></div>
+    <div className="h-3 w-16 bg-gray-300 rounded-lg inline-block  animate-pulse"></div>
+  </div>
+  
+</div>
+  )
 
   return (
     <>
@@ -129,7 +149,13 @@ const PraiseHome = ({ }: Props) => {
           </div>
           <div className="grid grid-cols-2 gap-10">
 
-            {allPraise.map((praise) => (
+            {allPraise.length==0?
+              [...Array(4)].map((_, index) => (
+                <div key={index} className="mb-4">
+                  {renderSkelton()}
+                </div>
+              )):
+            allPraise?.map((praise) => (
               <div className={`${themes.find((theme) => theme.name === praise.theme)?.bgColor || ''} rounded-lg justify-between w-full h-52`}>          {/* <PraiseIcon/> */}
                 <div className="flex justify-between">
                   <div className="bg-[#F3F3F3] rounded-2xl w-48 h-12 p-3 ms-4 mt-4 flex gap-2">

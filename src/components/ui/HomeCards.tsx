@@ -12,7 +12,7 @@ interface HomeCardProps {
 
 const HomeCard = ({ icon: Icon, title, number, iconFrameColor, iconFrameBorderColor,bgColor,titleColor,numberColor,border }: HomeCardProps) => {
   return (
-    <div className={`flex justify-between items-start w-full  p-4 ${bgColor ? `bg-[${bgColor}]` : 'bg-white'} ${border ? `border-[${border}]` : ''} border shadow-md rounded-lg hover:shadow-lg transition-shadow duration-300`}>
+    <div className={`flex justify-between items-start w-full  p-4 ${bgColor ? `bg-[${bgColor}]` : 'bg-white'} ${border ? `border-[${border}]` : ''}   rounded-lg  `}>
     {/* Title and Number */}
     <div>
       <h4 className={`text-sm font-semibold ${titleColor ? `text-[${titleColor}]` : 'text-[#8392A9]'}`}>{title}</h4>

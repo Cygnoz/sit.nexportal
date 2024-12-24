@@ -35,7 +35,7 @@ body{
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #303F58; /* Gray color for the scrollbar thumb */
+  background-color: #bec6d3; /* Gray color for the scrollbar thumb */
   border-radius: 6px; /* Border radius for rounded corners */
 }
 

@@ -1,7 +1,7 @@
 import Button from "../../../components/ui/Button";
 // import comfetti from '../../../assets/image/confetti.png'
 import useApi from "../../../Hooks/useApi";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 // import { UserData } from "../../../Interfaces/User";
 import { endPoints } from "../../../services/apiEndpoints";
 import Input from "../../../components/form/Input";
@@ -10,6 +10,7 @@ import Input from "../../../components/form/Input";
 import toast from "react-hot-toast";
 import { themes } from "../../../Interfaces/Praise";
 import { achievements } from "../../../Interfaces/Praise";
+import { UserData } from "../../../Interfaces/User";
 
 
 type Props = {
@@ -22,14 +23,15 @@ const PraiseForm = ({ onClose }: Props) => {
   const { request: getUsers } = useApi('get', 3002)
   const { request: addPraise} = useApi('post',3004)
   // const [allUsers, setAllUsers] = useState<UserData[]>([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [filteredUsers, setFilteredUsers] = useState<any>([]);
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [prise, setPrise] = useState({
     usersId: "", achievement: "", theme: "", notes: "",
   })
 
-  console.log(showDropdown);
+  const [allUsers, setAllUsers] = useState<any>([]);
+ 
 
   const getAllUsers = async () => {
     const url = endPoints.GET_USERS
@@ -44,7 +46,7 @@ const PraiseForm = ({ onClose }: Props) => {
         // }));
 
         // setAllUsers(response.data.AllUsers);
-        setFilteredUsers(response.data.AllUsers);
+        setAllUsers(response.data.AllUsers);
       } else {
         console.log(error)
       }
@@ -108,6 +110,45 @@ const PraiseForm = ({ onClose }: Props) => {
   // const ribbonBg = comfetti;
 
   
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Handle clicks outside the dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  useEffect(() => {
+    const searchValue = search.toLowerCase();
+  
+    // Always filter and sort from the full list
+    const sortedUsers = allUsers
+      .filter((user: any) =>
+        user.userName.toLowerCase().includes(searchValue)
+      )
+      .sort((a: any, b: any) => {
+        const aStartsWith = a.userName.toLowerCase().startsWith(searchValue);
+        const bStartsWith = b.userName.toLowerCase().startsWith(searchValue);
+  
+        if (aStartsWith && !bStartsWith) return -1; // a should come before b
+        if (!aStartsWith && bStartsWith) return 1; // b should come before a
+        return a.userName.localeCompare(b.userName); // Sort alphabetically
+      });
+  
+    setFilteredUsers(sortedUsers);
+  }, [search, allUsers]); // Use allUsers instead of filteredUsers
+  
 
 
 
@@ -122,42 +163,50 @@ const PraiseForm = ({ onClose }: Props) => {
             <p onClick={onClose} className="text-3xl cursor-pointer">&times;</p>
           </div>
           <p>To</p>
-          <div className="relative">
+          <div className="relative" ref={dropdownRef}>
             {/* Input Field */}
-            <div onClick={() => setShowDropdown(true)}>
+           
             <Input
               className="w-[672px] h-[40px] px-3 my-2 border border-gray-300 rounded-lg"
               type="text"
               placeholder="Search by name..."
               value={search}
+              onFocus={() => setShowDropdown(true)}
               onChange={(event) => setSearch(event.target.value)} // Update the input value
               style={{ appearance: "none" }} // Remove default icon
             />
-            </div>
+        
             {/* Custom Dropdown */}
-            {showDropdown  && (
-              <div
-                className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-[200px] overflow-y-auto z-10 custom-scrollbar"
-                style={{ width: "672px" }}
-              >
-                {filteredUsers?.map((user: any) => (
-                  <div
-                    key={user.value}
-                    className="px-3 py-2 cursor-pointer hover:bg-gray-200"
-                    onClick={() => {
-                      setSearch(user.userName); // Display the selected value in the input
-                      setPrise((prevData: any) => ({
-                        ...prevData,
-                        usersId: user._id,
-                      }));
-                      setShowDropdown(false); // Close the dropdown
-                    }}
-                  >
-                    {user.userName}
-                  </div>
-                ))}
-              </div>
-            )}
+            {showDropdown && (
+  <div
+    className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-[200px] overflow-y-auto z-10 custom-scrollbar"
+    style={{ width: "672px" }}
+  >
+    {filteredUsers.length > 0 ? (
+      filteredUsers.map((user: any) => (
+        <div
+          key={user.value}
+          className="px-3 py-2 cursor-pointer hover:bg-gray-200"
+          onClick={() => {
+            setSearch(user.userName); // Display the selected value in the input
+            setPrise((prevData: any) => ({
+              ...prevData,
+              usersId: user._id,
+            }));
+            setShowDropdown(false); // Close the dropdown
+          }}
+        >
+          {user.userName}
+        </div>
+      ))
+    ) : (
+      <div className="px-3 text-center text-red-500 font-bold py-5">
+        No Users Found
+      </div>
+    )}
+  </div>
+)}
+
           </div>
 
         </div>
