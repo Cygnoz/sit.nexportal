@@ -1,15 +1,15 @@
+import { useEffect, useState } from "react";
+import useApi from "../../../Hooks/useApi";
+import { UserData } from "../../../Interfaces/User";
+import EmailIcon from "../../../assets/icons/EmailIcon";
+import RegionIcon from "../../../assets/icons/RegionIcon";
+import UserIcon from "../../../assets/icons/UserIcon";
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
-import UserIcon from "../../../assets/icons/UserIcon";
 import Table from "../../../components/ui/Table";
-import RegionIcon from "../../../assets/icons/RegionIcon";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays";
-import { useEffect, useState } from "react";
-import UserForm from "./UserForm";
-import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
-import { UserData } from "../../../Interfaces/User";
+import UserForm from "./UserForm";
+import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 
 
 
@@ -70,7 +70,40 @@ const UserHome = () => {
       { key: "type", label: "Type" },
     ];
 
+    const name = "Name";
+  const email = "Email";
+  const role = "Role";
 
+  const handleFilter = ({ options }: { options: string }) => {
+    const roleOrder:any = {
+      "Super Admin": 1,
+      "Sales Admin": 2,
+      "Support Admin": 3,
+      "Region Manager": 4,
+      "Area Manager": 5,
+      BDA: 6,
+      Supervisor: 7,
+      "Support Agent": 8,
+    };
+    if (options === "Name") {
+      // Create a new sorted array to avoid mutating the original state
+      const sortedUsers = [...allUsers].sort((a, b) =>
+        b?.userName?.localeCompare(a?.userName)
+      );
+      setAllUsers(sortedUsers);
+    } else if (options === "Role") {
+      // Sort based on custom Role order
+      const sortedUsers = [...allUsers].sort(
+        (a, b) => roleOrder[b?.role] - roleOrder[a?.role]
+      );
+      setAllUsers(sortedUsers);
+     } else {
+      const sortedUsers = [...allUsers].sort((a, b) =>
+        b?.email?.localeCompare(a?.email)
+      );
+      setAllUsers(sortedUsers);
+    }
+  };
 
   return (
     <div>
@@ -95,16 +128,27 @@ const UserHome = () => {
        <div className=" py-2 mt-3">
         <Table data={allUsers} columns={columns} headerContents={{
           
-          search:{placeholder:'Search User'},
+          search:{placeholder:'Search Users...'},
           sort: [
                 {
                   sortHead: "Filter",
                   sortList: [
-                    { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
-                  ]
+                    {
+                      label: "Sort by Name",
+                      icon: <UserIcon size={14} color="#4B5C79" />,
+                      action: () => handleFilter({ options: name }),
+                    },
+                    {
+                      label: "Sort by Role",
+                      icon: <AreaManagerIcon size={14} color="#4B5C79" />,
+                      action: () => handleFilter({ options: role }),
+                    },
+                    {
+                      label: "Sort by Email",
+                      icon: <EmailIcon size={14} color="#4B5C79" />,
+                      action: () => handleFilter({ options: email }),
+                    },
+                  ],
                 }
           ]
         }}

@@ -93,25 +93,6 @@ function LeadHome({}: Props) {
     { icon: <PackageMinus  />, number: "147", title: "Leads Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
- // Data for the table
-// const leadData: any[] = [
-//   { leadID: "BDA12345", leadName: "Anjela John", phoneNumber: "(406) 555-0120", emailAddress: "danten@mail.ru", source: "Website", status: "New"},
-//   { leadID: "BDA12345", leadName: "Kristin Watson", phoneNumber: "(480) 555-0103", emailAddress: "warn@mail.ru", source: "Referral", status: "Contacted"},
-//   { leadID: "BDA12345", leadName: "Jacob Jones", phoneNumber: "(208) 555-0112", emailAddress: "irnabela@gmail.com", source: "Website", status: "Closed"},
-//   { leadID: "BDA12345", leadName: "Wade Warren", phoneNumber: "(702) 555-0122", emailAddress: "tinest@mail.ru", source: "Event", status: "Closed"},
-//   { leadID: "BDA12345", leadName: "Jacob Jones", phoneNumber: "(208) 555-0112", emailAddress: "irnabela@gmail.com", source: "Website", status: "Closed" },
-//   { leadID: "BDA12345", leadName: "Devon Lane", phoneNumber: "(308) 555-0121", emailAddress: "qmaho@mail.ru", source: "Website", status: "New" },
-//   { leadID: "BDA12345", leadName: "Kathryn Murphy", phoneNumber: "(406) 555-0120", emailAddress: "danten@mail.ru", source: "Website", status: "New" },
-//   { leadID: "BDA12346", leadName: "Mason Edwards", phoneNumber: "(512) 555-0133", emailAddress: "masonedwards@mail.com", source: "Referral", status: "Contacted" },
-//   { leadID: "BDA12347", leadName: "Lily Anderson", phoneNumber: "(315) 555-0144", emailAddress: "lily.anderson@mail.com", source: "Website", status: "New" },
-//   { leadID: "BDA12348", leadName: "Oliver Hall", phoneNumber: "(401) 555-0155", emailAddress: "oliverhall@mail.com", source: "Event", status: "New" },
-//   { leadID: "BDA12349", leadName: "Sophia Lee", phoneNumber: "(216) 555-0166", emailAddress: "sophia.lee@mail.com", source: "Referral", status: "Closed" },
-//   { leadID: "BDA12350", leadName: "Ethan Clark", phoneNumber: "(334) 555-0177", emailAddress: "ethan.clark@mail.com", source: "Website", status: "Contacted"},
-//   { leadID: "BDA12351", leadName: "Isabella Carter", phoneNumber: "(518) 555-0188", emailAddress: "isabella.carter@mail.com", source: "Website", status: "New" },
-//   { leadID: "BDA12352", leadName: "Henry Thomas", phoneNumber: "(609) 555-0199", emailAddress: "henry.thomas@mail.com", source: "Event", status: "Closed" },
-//   { leadID: "BDA12353", leadName: "Ava Jackson", phoneNumber: "(202) 555-0200", emailAddress: "ava.jackson@mail.com", source: "Website", status: "Contacted"},
-//   { leadID: "BDA12354", leadName: "Lucas Wright", phoneNumber: "(703) 555-0211", emailAddress: "lucas.wright@mail.com", source: "Referral", status: "Closed"},
-// ];
   const handleConvert=async(id:any)=>{
     handleModalToggle(false,true,false)
       try {
