@@ -131,7 +131,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
             {isOpen && (
               <div
                 ref={dropdownRef}
-                className="absolute -right-16 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-2"
+                className="absolute -right-16 mt-2 z-50  w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-2"
               >
                 <div className="py-1">
                   {statuses.map((status) => (
@@ -176,7 +176,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
         domain={[0, 25]} 
       />
       <Bar dataKey="uv" radius={[10, 10, 0, 0]}>
-        {normalizedData.map((entry, index) => (
+        {normalizedData.map((_, index) => (
           <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
         ))}
       </Bar>

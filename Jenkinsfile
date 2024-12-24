@@ -11,7 +11,7 @@ pipeline {
         SONARQUBE_PROJECT_KEY = 'nexsell-leads'
         SONARQUBE_SCANNER_CREDENTIALS_ID = 'cb3a1e6c-1d83-4c58-ad71-17b4515c3a4f' // Jenkins credentials ID for SonarQube token
         ECS_CLUSTER_NAME = 'nexsell' // Replace with your ECS cluster name
-        ECS_SERVICE_NAME = 'nexsell-frontend' // Replace with your ECS service name
+        ECS_SERVICE_NAME = 'nexsell-frontendd' // Replace with your ECS service name
         ECS_TASK_DEFINITION_NAME = 'nexsell-frontend' // Replace with your ECS task definition name
     }
  

@@ -54,7 +54,12 @@ function SortBy({sort}: Props) {
           {sort?.sortList?.map((item:any, index:number) => (
             <div key={index}>
               <li
-                onClick={item?.action}
+                onClick={
+                  ()=>{
+                    item?.action()
+                    toggleDropdown()
+                  }
+                }
                 className={`px-2 py-2 flex items-center gap-2 ${index==0&&"rounded-t-lg"} ${index==sort.sortList.length-1&&"rounded-b-lg"}  hover:bg-orange-100  text-[14px] font-medium cursor-pointer`}
               >
                <p>{item.icon}</p>
