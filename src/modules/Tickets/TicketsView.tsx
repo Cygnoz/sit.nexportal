@@ -8,9 +8,22 @@ import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import useApi from "../../Hooks/useApi"
 import { endPoints } from "../../services/apiEndpoints"
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css'; // Import Quill styles
 type Props = {}
 
+ 
+
 const TicketsView = ({ }: Props) => {
+  const [content, setContent] = useState<string>('');
+
+  const handleChange = (value: string) => {
+    setContent(value);
+  };
+
+ 
+
+
 
   const {request: getaTicket}=useApi('get',3004)
   const { id } = useParams();
@@ -60,9 +73,9 @@ const TicketsView = ({ }: Props) => {
   ]);
   const [newMessage, setNewMessage] = useState("");
 
-  const handleInputChange = (e: any) => {
-    setNewMessage(e.target.value);
-  };
+  // const handleInputChange = (e: any) => {
+  //   setNewMessage(e.target.value);
+  // };
 
   const handleSendMessage = () => {
     if (newMessage.trim() === "") return;
@@ -156,13 +169,20 @@ const TicketsView = ({ }: Props) => {
 
                 {/* Reply Section */}
                 <div className="border-t p-4 flex items-center mt-60">
-                  <input
+                  {/* <input
                     type="text"
                     className="flex-grow border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Reply..."
+                   
                     value={newMessage}
                     onChange={handleInputChange}
-                  />
+                  /> */}
+                   <ReactQuill
+                    placeholder="Reply..."
+        value={content}
+        onChange={handleChange}
+        className="h-35 max-w-full border border-gray-300 rounded"
+        theme="snow"
+      />
                   <button
                     className="ml-4 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
                     onClick={handleSendMessage}
