@@ -20,6 +20,7 @@ import {
   VictoryPie,
   VictoryTheme
 } from "victory";
+import Calender from "./ViewModals/Calender"
 type Props = {
   leadData:any
   getLead:()=>void
@@ -29,17 +30,20 @@ const ViewSidebar = ({ leadData,getLead}: Props) => {
   // const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState({
     editLead:false,
-    viewLead:false
+    viewLead:false,
+    calender:false
+   
   });
   const [convLicModalOpen, setConvLicModalOpen] = useState(false);
 
 
-  const handleModalToggle = (editLead=false, viewLead=false) => {
+  const handleModalToggle = (editLead=false, viewLead=false , calender=false) => {
     
     setIsModalOpen((prevState:any )=> ({
         ...prevState,
         editLead: editLead,
-        viewLead: viewLead
+        viewLead: viewLead,
+        calender: calender
     }));
     getLead()
 }
@@ -81,6 +85,7 @@ const pieData = roles.map((role) => ({
     };
 
   return (
+    <>
     <div className="space-y-4 mb-2">
       <div className="h-fit w-full bg-cover rounded-xl p-6" style={{ backgroundImage: `url(${BackgroundImage})` }}>
        
@@ -138,7 +143,7 @@ const pieData = roles.map((role) => ({
                  
             <p className="text-[#FFF9F9] text-[10px] font-medium ms-1 mt-1">Email</p>
           </div>
-          <div className="cursor-pointer" onClick={()=>handleModalToggle(true,false)} >
+          <div className="cursor-pointer" onClick={()=>handleModalToggle(true,false,false)} >
           <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <EditIcon size={18} color="#F0D5A0" />
@@ -146,7 +151,7 @@ const pieData = roles.map((role) => ({
                     </div>
             <p className="text-[#FFF9F9] text-[10px] font-medium mt-1 ms-2">Edit</p>
           </div>
-          <div onClick={()=>handleModalToggle(false,true)}>
+          <div onClick={()=>handleModalToggle(false,true,false)}>
             <div className="cursor-pointer">            
             <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -166,7 +171,8 @@ const pieData = roles.map((role) => ({
           </div>
 
         </div>
-        <div className="flex gap-2 rounded-xl bg-[#FFFFFF33] w-80 justify-center cursor-pointer  py-3 px-2 h-14 my-4">
+        <div onClick={()=>handleModalToggle(false,false,true)}
+        className="flex gap-2 rounded-xl bg-[#FFFFFF33] w-80 justify-center cursor-pointer  py-3 px-2 h-14 my-4">
           <div className="px-2 "><CalenderRound size={32} /></div>
           <p className="mt-2 text-[#FFFFFF] text-xs font-medium">View Calender</p>
         </div>
@@ -239,18 +245,25 @@ const pieData = roles.map((role) => ({
 
       {/* Modal controlled by state */}
       
-      <Modal open={isModalOpen.viewLead} onClose={()=>handleModalToggle()} className="w-[35%]">
-        <LeadViewInfo leadData={leadData} onClose={()=>handleModalToggle()} />
-      </Modal>
-      <Modal open={isModalOpen.editLead} onClose={()=>handleModalToggle()} className="w-[50%]">
-        <LeadForm editId={leadData?._id} onClose={()=>handleModalToggle()} />
-      </Modal>
-
-      <Modal open={convLicModalOpen} align="center" onClose={covertModalToggle} className="w-[30%]">
-        <ConvertModal onClose={covertModalToggle} type="lead" />
-      </Modal>
+      
 
     </div>
+    <Modal open={isModalOpen.viewLead} onClose={()=>handleModalToggle()} className="w-[35%]">
+    <LeadViewInfo leadData={leadData} onClose={()=>handleModalToggle()} />
+  </Modal>
+  <Modal open={isModalOpen.editLead} onClose={()=>handleModalToggle()} className="w-[50%]">
+    <LeadForm editId={leadData?._id} onClose={()=>handleModalToggle()} />
+  </Modal>
+  <Modal open={isModalOpen.calender} align="center"
+   onClose={()=>handleModalToggle()}
+    className="w-[65%]">
+    <Calender onClose={()=>handleModalToggle()} />
+  </Modal>
+
+  <Modal open={convLicModalOpen} align="center" onClose={covertModalToggle} className="w-[30%]">
+    <ConvertModal onClose={covertModalToggle} type="lead" />
+  </Modal>
+    </>
   )
 }
 

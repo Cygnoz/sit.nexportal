@@ -484,8 +484,8 @@ const SuperVisorView = ({}: Props) => {
         align="right"
         className="w-[25%] me-16"
       >
-        <SVViewAward onClose={() => handleModalToggle()} />
-      </Modal>
+        <SVViewAward getData={getData} onClose={() => handleModalToggle()} />
+      </Modal >
     </>
   );
 };

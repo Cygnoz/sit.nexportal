@@ -54,8 +54,8 @@ function TicketsHome({ }: Props) {
         const transformTicket = response.data.tickets?.map((tickets: any) => ({
           ...tickets,
           name: `${tickets?.customerDetails?.firstName}${tickets?.customerDetails?.lastName ? tickets?.customerDetails?.lastName : ""}`,
-          openingDate: tickets.openingDate,
-          timeAgo: calculateTimeAgo(new Date(tickets.openingDate), currentTime),
+          openingDate: tickets?.openingDate,
+          timeAgo: calculateTimeAgo(new Date(tickets?.openingDate), currentTime),
         })) || [];
         setAllTickets(transformTicket);
       }
@@ -66,6 +66,7 @@ function TicketsHome({ }: Props) {
 
   const calculateTimeAgo = (date: Date, currentTime: Date) => {
     const diffInSeconds = Math.floor((currentTime.getTime() - date.getTime()) / 1000);
+    if(diffInSeconds==0) return `Just now`
     if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
     const diffInMinutes = Math.floor(diffInSeconds / 60);
     if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
@@ -86,7 +87,7 @@ function TicketsHome({ }: Props) {
           timeAgo: calculateTimeAgo(new Date(ticket.openingDate), new Date()),
         }))
       );
-    }, 60000); // Update every 60 seconds
+    }, 1000); // Update every 60 seconds
 
     return () => clearInterval(interval); // Cleanup interval on unmount
   }, []);
