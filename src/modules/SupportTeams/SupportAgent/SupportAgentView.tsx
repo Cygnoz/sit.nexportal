@@ -105,7 +105,7 @@ const SupportAgentView = ({}: Props) => {
         ))}
       </div>
       <div>
-        <ViewHomwTable />
+        <ViewHomwTable getData={getData} />
       </div>
 
       {/* Graph & feedback */}
