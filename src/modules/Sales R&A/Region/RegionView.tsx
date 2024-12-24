@@ -49,8 +49,8 @@ function RegionView({}: Props) {
     { countryName: "United Arab Emirates", countryLogo: UAELogo },
   ];
 
-  const tabs = ["Aria", "Team", "Performance Analytics"];
-  const [activeTab, setActiveTab] = useState<string>("Aria");
+  const tabs = ["Area", "Team", "Performance Analytics"];
+  const [activeTab, setActiveTab] = useState<string>("Area");
   const getARegion = async () => {
     try {
       const { response, error } = await getRegion(`${endPoints.REGION}/${id}`);
@@ -304,7 +304,7 @@ function RegionView({}: Props) {
           </div>
 
           <div className="absolute z-10">
-            {activeTab === "Aria" && <RegionAriaView regionData={data.regionData} />}
+            {activeTab === "Area" && <RegionAriaView regionData={data.regionData} />}
             {activeTab === "Team" && <RegionTeamView />}
             {activeTab === "Performance Analytics" && <RegionPerformanceView />}
           </div>

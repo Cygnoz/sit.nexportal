@@ -16,6 +16,8 @@ import { endPoints } from "../../../services/apiEndpoints";
 import AMForm from "./AMForm";
 import toast from "react-hot-toast";
 import { useRegularApi } from "../../../context/ApiContext";
+import AreaIcon from "../../../assets/icons/AreaIcon";
+import EmailIcon from "../../../assets/icons/EmailIcon";
 
 
 
@@ -23,7 +25,7 @@ import { useRegularApi } from "../../../context/ApiContext";
 const AMHome = () => {
   const {totalCounts}=useRegularApi()
   const {request:getAllAM}=useApi('get',3002)
-  const [allAM,setAllAM]=useState<AMData[]>([]);
+  const [allAM,setAllAM]=useState<any[]>([]);
   const [editId, setEditId] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -55,7 +57,10 @@ const AMHome = () => {
               dateOfJoining: am.dateOfJoining
               ? new Date(am.dateOfJoining).toLocaleDateString("en-GB")
               : "N/A",
-              loginEmail:am?.user?.email
+              loginEmail:am?.user?.email,
+              userName:am?.user?.userName,
+              regionName:am?.region?.regionName,
+              areaName:am?.area?.areaName
           })) || [];
              console.log(transformedAreas);
              
@@ -82,14 +87,44 @@ const AMHome = () => {
 
         // Define the columns with strict keys
         const columns: { key: any; label: string }[] = [
-          { key: "user.userName", label: "Name" },
+          { key: "userName", label: "Name" },
           { key: "loginEmail", label: "Email Address" },
           { key: "user.phoneNo", label: "Phone No" },
-          { key: "region.regionName", label: "Region" },
-          { key: "area.areaName", label: "Area" },
+          { key: "regionName", label: "Region" },
+          { key: "areaName", label: "Area" },
           { key: "dateOfJoining", label: "Date of Joining" },
         ];
       
+        const name = "Name";
+        const email = "Email";
+        const region = "Region";
+        const area ="Area";
+      
+        const handleFilter = ({ options }: { options: string }) => {
+          if (options === "Name") {
+            // Create a new sorted array to avoid mutating the original state
+            const sortedAms = [...allAM].sort((a, b) =>
+              b?.userName?.localeCompare(a?.userName)
+            );
+            setAllAM(sortedAms);
+          } else if (options === "Region") {
+            const sortedAms = [...allAM].sort((a, b) =>
+              b?.regionName?.localeCompare(a?.regionName)
+            );
+            setAllAM(sortedAms)
+          } else if(options=='Email') {
+            const sortedAms = [...allAM].sort((a, b) =>
+              b?.loginEmail?.localeCompare(a?.loginEmail)
+            );
+            setAllAM(sortedAms);
+          }else{
+            const sortedAms = [...allAM].sort((a, b) =>
+              b?.areaName?.localeCompare(a?.areaName)
+            );
+            setAllAM(sortedAms);
+          }
+        };
+
 
   return (
     <div>
@@ -123,15 +158,15 @@ const AMHome = () => {
       <div>
         <Table<AMData> data={allAM} columns={columns} headerContents={{
           // title:'Region',
-          search:{placeholder:'Search Invoice by client name, invoice number, or date'},
+          search:{placeholder:'Search Area Manager....'},
           sort: [
                 {
                   sortHead: "Filter",
                   sortList: [
-                    { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-                    { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
+                    { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/>, action: () => handleFilter({ options: name }), },
+                    { label: "Sort by Region", icon: <RegionIcon size={14} color="#4B5C79"/>, action: () => handleFilter({ options: region }), },
+                    { label: "Sort by Area", icon: <AreaIcon size={14} color="#4B5C79"/>, action: () => handleFilter({ options: area }), },
+                    { label: "Sort by Email", icon: <EmailIcon size={14} color="#4B5C79"/>, action: () => handleFilter({ options: email }), }
                   ]
                 }
           ]

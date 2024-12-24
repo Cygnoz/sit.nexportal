@@ -134,17 +134,23 @@ const country = "Country";
 const code = "Code";
 
 const handleFilter = ({ options }: { options: string }) => {
-  console.log("Filter applied for:", options);
-
   if (options === 'Name') {
     // Create a new sorted array to avoid mutating the original state
-    const sortedRegions = [...allRegion].sort((a, b) => a.regionName.localeCompare(b.regionName));
+    const sortedRegions = [...allRegion].sort((a, b) => b.regionName.localeCompare(a.regionName));
     setAllRegion(sortedRegions);
   }else if(options==='Country'){
-    const sortedRegions = [...allRegion].sort((a, b) => a.country.localeCompare(b.country));
+    const sortedRegions = [...allRegion].sort((a, b) => b.country.localeCompare(a.country));
     setAllRegion(sortedRegions);
-  }else{
-    setAllRegion([...allRegion].reverse());
+  }else {
+    const sortedRegions = [...allRegion].sort((a:any, b:any) => {
+      // Extract the numeric part of the regionCode
+      const numA = parseInt(a.regionCode.split('-')[1], 10);
+      const numB = parseInt(b.regionCode.split('-')[1], 10);
+      
+      // Sort in descending order
+      return numB - numA;
+    });
+    setAllRegion(sortedRegions);
   }
 };
 
@@ -189,7 +195,7 @@ const handleFilter = ({ options }: { options: string }) => {
             columns={columns}
             headerContents={{
               title: "Region",
-              search: { placeholder: "Search Region By Name Country" },
+              search: { placeholder: "Search Region..." },
               sort: [
                 {
                   sortHead: "Filter",

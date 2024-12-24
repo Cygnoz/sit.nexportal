@@ -10,6 +10,9 @@ import { useNavigate } from "react-router-dom";
 import useApi from "../../Hooks/useApi";
 import { TicketsData as BaseTicketsData } from "../../Interfaces/Tickets";
 import { endPoints } from "../../services/apiEndpoints";
+import UserIcon from "../../assets/icons/UserIcon";
+import Notebook from "../../assets/icons/Notebook";
+import Bell from "../../assets/icons/Bell";
 
 type Props = {};
 
@@ -22,7 +25,7 @@ interface TicketsData extends BaseTicketsData {
 
 function TicketsHome({ }: Props) {
   const { request: getAllTickets } = useApi("get", 3004);
-  const [allTickets, setAllTickets] = useState<TicketsData[]>([]);
+  const [allTickets, setAllTickets] = useState<any[]>([]);
   const navigate = useNavigate();
 
   // State to manage modal visibility
@@ -101,11 +104,55 @@ function TicketsHome({ }: Props) {
     { key: "timeAgo", label: "Requested" },
   ];
 
+  const requestor = "Requestor";
+  const priority = "Priority";
+  const status = "Status";
+
+  const handleFilter = ({ options }: { options: string }) => {
+    // Define custom order for Priority and Status
+    const priorityOrder:any = { High: 1, Medium: 2, Low: 3 };
+    const statusOrder:any = { Open: 1, "In progress": 2, Resolved: 3 };
+  
+    if (options === "Requestor") {
+      // Sort alphabetically by requestor name
+      const sortedTickets = [...allTickets].sort((a, b) =>
+        b?.name?.localeCompare(a?.name)
+      );
+      setAllTickets(sortedTickets);
+    } else if (options === "Priority") {
+      // Sort based on custom Priority order
+      const sortedTickets = [...allTickets].sort(
+        (a, b) => priorityOrder[b?.priority] - priorityOrder[a?.priority]
+      );
+      setAllTickets(sortedTickets);
+    } else if (options === "Status") {
+      // Sort based on custom Status order
+      const sortedTickets = [...allTickets].sort(
+        (a, b) => statusOrder[b?.status] - statusOrder[a?.status]
+      );
+      setAllTickets(sortedTickets);
+    }
+  };
+  
+
   const sort = {
     sortHead: "Sort",
     sortList: [
-      { label: "Sort by Name", icon: <CalenderDays size={14} color="#4B5C79" /> },
-      { label: "Sort by Age", icon: <Package size={14} color="#4B5C79" /> },
+      {
+        label: "Sort by Name",
+        icon: <UserIcon size={14} color="#4B5C79" />,
+        action: () => handleFilter({ options: requestor }),
+      },
+      {
+        label: "Sort by Priority",
+        icon: <Notebook size={14} color="#4B5C79" />,
+        action: () => handleFilter({ options: priority }),
+      },
+      {
+        label: "Sort by Status",
+        icon: <Bell size={14} color="#4B5C79" />,
+        action: () => handleFilter({ options: status }),
+      },
     ],
   };
 
@@ -162,7 +209,7 @@ function TicketsHome({ }: Props) {
                 columns={columns}
                 headerContents={{
                   title: "Ticket Details",
-                  search: { placeholder: "Search BDA By Name" },
+                  search: { placeholder: "Search Tickets..." },
 
                 }}
                 actionList={[
