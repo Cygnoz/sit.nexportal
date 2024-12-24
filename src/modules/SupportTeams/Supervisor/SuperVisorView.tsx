@@ -25,6 +25,9 @@ import AwardIcon from "../../../assets/icons/AwardIcon";
 import SVViewAward from "./SVViewAward";
 import SupervisorForm from "./SupervisorForm";
 import RatingStar from "../../../components/ui/RatingStar";
+import person1 from "../../../assets/image/Ellipse 14.png";
+import person2 from "../../../assets/image/Ellipse 43.png";
+
 
 interface SupervisorData {
   memberID: string;
@@ -95,6 +98,12 @@ const SuperVisorView = ({}: Props) => {
       number: "167",
       title: "Total Agent Supervised",
       subTitle: "look loo",
+      images: [
+        <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
+        <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
+        <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
+        <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
+    ],
     },
     {
       icon: <UserIcon size={24} />,
@@ -107,6 +116,7 @@ const SuperVisorView = ({}: Props) => {
       number: "4.5/4",
       title: "Customer Feedback",
       subTitle: "look loo",
+      rating:<RatingStar size={14} count={3}/>
     },
   ];
 
@@ -117,98 +127,98 @@ const SuperVisorView = ({}: Props) => {
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={3} />,
     },
     {
       memberID: "002",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={3} />,
     },
     {
       memberID: "003",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={4} />,
     },
     {
       memberID: "004",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={5} />,
     },
     {
       memberID: "005",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={2} />,
     },
     {
       memberID: "006",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={4} />,
     },
     {
       memberID: "007",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={1} />,
     },
     {
       memberID: "008",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={3} />,
     },
     {
       memberID: "009",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={4} />,
     },
     {
       memberID: "010",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={2} />,
     },
     {
       memberID: "011",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={4} />,
     },
     {
       memberID: "012",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={5} />,
     },
     {
       memberID: "013",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={4} />,
     },
     {
       memberID: "014",
       supervisorName: "subi",
       ticketsResolved: "33",
       time: "3hrs",
-      rating: <RatingStar count={5} />,
+      rating: <RatingStar size={14} count={3} />,
     },
   ];
   // Define the columns with strict keys
@@ -250,6 +260,8 @@ const SuperVisorView = ({}: Props) => {
                   number={card.number}
                   title={card.title}
                   subTitle={card.subTitle}
+                  images={card.images}
+                  rating={card.rating}
                 />
               ))}
             </div>
@@ -297,7 +309,8 @@ const SuperVisorView = ({}: Props) => {
               backgroundImage: `url(${Background})`, // Use the imported image
             }}
           >
-            <div className="rounded-full flex my-2">
+            <div className="rounded-full flex my-2 justify-between">
+              <div className="flex">
               {getData.svData?.user?.userImage ? (
                 <img
                   className="w-16 h-16 rounded-full"
@@ -314,6 +327,8 @@ const SuperVisorView = ({}: Props) => {
                   ? getData.svData?.user?.userName
                   : "N/A"}
               </h2>
+
+              </div>
               <p className="font-medium text-xs bg-[#D5DCB3] h-8 w-20 p-2 mt-4 rounded-2xl ml-40">
                 SuperVisor
               </p>

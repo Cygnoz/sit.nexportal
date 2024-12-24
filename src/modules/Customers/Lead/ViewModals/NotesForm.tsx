@@ -187,13 +187,13 @@ const NotesForm = ({ onClose}: Props) => {
             value={value}
             onChange={setValue}
             placeholder="Start typing. @mention people to notify them"
-            className="quill-editor h-[300px] text-[#4B5C79] text-sm font-normal"
+            className="quill-editor h-[300px] text-[#4B5C79] text-sm font-normal outline-none"
             theme="snow"
             modules={modules}
           />
         </div>
       </div>
-      <div className='justify-end my-2 ms-[680px]'>
+      <div className='m-4 flex justify-end'>
         <Button className='w-16 h-9 ms-2' variant='primary' size='sm'>Done</Button>
       </div>
 

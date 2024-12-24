@@ -108,7 +108,7 @@ const MailsForm = ({ onClose }: Props) => {
           />
         </div>
 
-        <div className='m-5 justify-end ms-[680px]'>
+        <div className='m-5 flex justify-end'>
           <Button className="w-16 h-9" variant='primary' size='sm'>Done</Button>
         </div>
 
