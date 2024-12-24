@@ -29,6 +29,8 @@ const PraiseForm = ({ onClose }: Props) => {
     usersId: "", achievement: "", theme: "", notes: "",
   })
 
+  console.log(showDropdown);
+
   const getAllUsers = async () => {
     const url = endPoints.GET_USERS
     try {
@@ -105,6 +107,8 @@ const PraiseForm = ({ onClose }: Props) => {
 
   // const ribbonBg = comfetti;
 
+  
+
 
 
   return (
@@ -120,18 +124,18 @@ const PraiseForm = ({ onClose }: Props) => {
           <p>To</p>
           <div className="relative">
             {/* Input Field */}
+            <div onClick={() => setShowDropdown(true)}>
             <Input
               className="w-[672px] h-[40px] px-3 my-2 border border-gray-300 rounded-lg"
               type="text"
               placeholder="Search by name..."
               value={search}
               onChange={(event) => setSearch(event.target.value)} // Update the input value
-              onFocus={() => setShowDropdown(true)} // Show dropdown on focus
               style={{ appearance: "none" }} // Remove default icon
             />
-
+            </div>
             {/* Custom Dropdown */}
-            {showDropdown && search && (
+            {showDropdown  && (
               <div
                 className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-[200px] overflow-y-auto z-10 custom-scrollbar"
                 style={{ width: "672px" }}
