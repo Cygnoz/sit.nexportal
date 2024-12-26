@@ -35,7 +35,7 @@ const AreaHome = () => {
   };
 
   const handleView=(id:any)=>{
-    navigate(`/areaView/${id}`)
+    navigate(`/areas/${id}`)
   }
   const handleEdit=(id:any)=>{
     handleModalToggle()

@@ -29,7 +29,7 @@ const TrialHome = () => {
      console.log("sdsz",allTrials);
      
       const handleView=(id:any)=>{
-        navigate(`/trialView/${id}`)
+        navigate(`/trial/${id}`)
       }
     
 

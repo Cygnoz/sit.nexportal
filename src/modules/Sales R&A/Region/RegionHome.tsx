@@ -34,7 +34,7 @@ const RegionHome = () => {
   };
 
   const handleView = (id: any) => {
-    navigate(`/regionView/${id}`);
+    navigate(`/regions/${id}`);
   };
 
   // const handleDelete=async(id:any)=>{

@@ -32,7 +32,7 @@ const BDAHome = () => {
   const navigate = useNavigate();
 
   const handleView = (id: any) => {
-    navigate(`/bdaView/${id}`);
+    navigate(`/bda/${id}`);
   };
 
   const handleEdit = (id: any) => {

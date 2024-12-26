@@ -37,7 +37,7 @@ const RMHome = () => {
     setEditId(id);
   };
   const handleView = (id: any) => {
-    navigate(`/region-managerView/${id}`);
+    navigate(`/region-manager/${id}`);
   };
 
   const getRMs = async () => {

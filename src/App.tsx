@@ -52,33 +52,33 @@ const App: React.FC = () => {
             {/* Define authenticated routes inside Layout */}
             <Route path="dashboard" element={<DashboardPage />} />
             <Route path="regions" element={<RegionHome />} />
-            <Route path="regionView/:id" element={<RegionView />} />
-            <Route path="leadView/:id" element={<LeadView />} />
-            <Route path="areaView/:id" element={<AreaView/>} />
+            <Route path="regions/:id" element={<RegionView />} />
+            <Route path="lead/:id" element={<LeadView />} />
+            <Route path="areas/:id" element={<AreaView/>} />
             <Route path="lead" element={<LeadHome />} />
-            <Route path="area" element={<AreaHome />} />
+            <Route path="areas" element={<AreaHome />} />
             {/* Support Agent */}
             <Route path="support-agent" element={<SupportagentHome />} />
-            <Route path='supportAgentView/:id' element={<SupportAgentView />} />
+            <Route path='support-agent/:id' element={<SupportAgentView />} />
             <Route path="lead" element={<LeadHome />} />
             {/* Area Manager */}
             <Route path="area-manager" element={<AMHome />} />
-            <Route path="amView/:id" element={<AMView/>} />
+            <Route path="area-manager/:id" element={<AMView/>} />
             {/* BDA */}
             <Route path="bda" element={<BDAHome />} />
-            <Route path="bdaView/:id" element={<BDAView />} />
+            <Route path="bda/:id" element={<BDAView />} />
             <Route path="supervisor" element={<SupervisorHome />} />
             <Route path="supervisor/:id" element={<SuperVisorView />} />
             <Route path="trial" element={<TrialHome />} />
-            <Route path="trialView/:id" element={<TrialView/>} />
+            <Route path="trial/:id" element={<TrialView/>} />
             <Route path="licenser" element={<LicensorHome />} />
-            <Route path="licenserView/:id" element={<LicenserView />} />
+            <Route path="licenser/:id" element={<LicenserView />} />
             <Route path="region-manager" element={<RMHome />} />
-            <Route path="region-managerView/:id" element={<RMView />} />
-            <Route path="user" element={<UserHome/>} />
+            <Route path="region-manager/:id" element={<RMView />} />
+            <Route path="users" element={<UserHome/>} />
             <Route path="worker-commission" element={<WCommisionHome/>} />
-            <Route path="tickets" element={<TicketsHome/>} />
-            <Route path="ticketsView/:id" element={<TicketsView/>} />
+            <Route path="ticket" element={<TicketsHome/>} />
+            <Route path="ticket/:id" element={<TicketsView/>} />
             <Route path="user-log" element={<UserLogHome/>} />
             <Route path='prises' element={<PraiseHome/>} />
             {/* <Route path='' elementement={<SettingsHome/>} /> */}

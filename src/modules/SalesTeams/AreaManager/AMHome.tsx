@@ -37,7 +37,7 @@ const AMHome = () => {
       
 
       const handleView=(id:any)=>{
-        navigate(`/amView/${id}`)
+        navigate(`/area-manager/${id}`)
       }
 
       const handleEdit= (id:any)=>{

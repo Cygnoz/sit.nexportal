@@ -50,7 +50,7 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
 // Define routes for each sidebar option
 const sidebarRoutes: { [key: string]: string } = {
     "Regions": "/regions",
-    "Area": "/area",
+    "Area": "/areas",
     "Region Manager": "/region-manager",
     "Area Manager": "/area-manager",
     "BDA": "/bda",
@@ -59,8 +59,8 @@ const sidebarRoutes: { [key: string]: string } = {
     "Lead": "/lead",
     "Trial": "/trial",
     "Licenser": "/licenser",
-    "Tickets": "/tickets",
-    "User": "/user",
+    "Tickets": "/ticket",
+    "User": "/users",
     "User Log": "/user-log",
     "Work Commission":'/worker-commission',
     "Prise":'/prises',

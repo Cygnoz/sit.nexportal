@@ -42,7 +42,7 @@ function TicketsHome({ }: Props) {
   };
 
   const handleView = (id: any) => {
-    navigate(`/ticketsView/${id}`);
+    navigate(`/ticket/${id}`);
   };
 
   const getTickets = async () => {
