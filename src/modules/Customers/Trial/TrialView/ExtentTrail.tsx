@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 type Props = {
     onClose: () => void;
     trialData?:any
+    getCutomer:()=>void
 };
 
 interface ExtentTrialData {
@@ -27,8 +28,8 @@ const validationSchema = Yup.object({
     duration: Yup.string().required("duration is required"),
 });
 
-function ExtentTrail({ onClose,trialData }: Props) {
-    const {request:extendTrial}=useApi('put',3001)
+function ExtentTrail({ onClose,trialData,getCutomer }: Props) {
+    const {request:extendTrial}=useApi('post',3001)
     const {
         register,
         handleSubmit,
@@ -48,6 +49,8 @@ function ExtentTrail({ onClose,trialData }: Props) {
             const {response,error}=await extendTrial(`${endPoints.TRIAL}/${trialData?.customerData?._id}`,body)
             if(response && !error){
                 toast.success(response.data.message)
+                onClose()
+                getCutomer()
             }else{
                 toast.error(error.response.data.message)
             }
