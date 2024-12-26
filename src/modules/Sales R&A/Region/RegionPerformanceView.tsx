@@ -33,7 +33,7 @@ const [selectedMonth,setSelectedMonth]=useState()
   const CustomLegend = () => {
     return (
       <div
-        className="justify-between mt-6"
+        className=""
         style={{ display: "flex", gap: "10px" }}
       >
         <span style={{ color: "#e2b0ff" }}>Area1</span>
@@ -203,7 +203,7 @@ const [selectedMonth,setSelectedMonth]=useState()
 
   return (
     <div className="flex flex-col gap-2 mt-5">
-      <div className="p-3 bg-white w-full space-y-2 rounded-lg">
+      <div className="p-3 bg-white space-y-2 rounded-lg">
                 <h2 className='font-bold'>Lead Conversion Rate Per Area</h2>
                 <h3 className='text-xs'>Area 9</h3>
                 <h1 className='text-2xl font-medium'>80 Percentage</h1>
@@ -230,7 +230,7 @@ const [selectedMonth,setSelectedMonth]=useState()
                 </div>
             
                 </div>
-      <div className="py-3 bg-white p-2">
+      <div className="bg-white">
                  <div className="py-1 ms-2 flex justify-between">
                    <h2 className="font-bold">License Over Time By Area</h2>
                    <div className="">
