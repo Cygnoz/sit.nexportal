@@ -24,11 +24,10 @@ router.get('/lead/:leadId',verifyToken,checkPermission('View Lead'),leadControll
 
 router.put('/lead/:id',verifyToken,checkPermission('Edit Lead'),leadController.editLead,ActivityLogGeneration('Edit Lead'))
 
-// router.delete('/delete-lead/:leadId',verifyToken,checkPermission('Delete User'),leadController.deleteLead,ActivityLogGeneration('Delete Lead'))
+router.delete('/delete-lead/:leadId',verifyToken,checkPermission('Delete User'),leadController.deleteLead,ActivityLogGeneration('Delete Lead'))
 
 router.get('/client/:id',leadController.getClientDetails)
 
-router.put("/trial/:leadId", leadController.extendTrialDuration);
 
 
 //Trial
@@ -38,6 +37,7 @@ router.get('/trial',leadController.getAllTrials)
 
 router.put('/trials/:trialId',leadController.convertTrialToLicenser)
 
+router.put("/trial/:leadId", leadController.extendTrialDuration);
 
 
 //add licenser
