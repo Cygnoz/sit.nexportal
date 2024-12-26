@@ -902,7 +902,7 @@ The BillBizz Team`;
 
 exports.extendTrialDuration = async (req, res) => {
   try {
-    const { leadId } = req.params;
+    const { trialId } = req.params;
     const { duration } = req.body;
 
     // Validate request body
@@ -911,7 +911,7 @@ exports.extendTrialDuration = async (req, res) => {
     }
 
     // Find the lead by ID
-    const lead = await Leads.findById(leadId);
+    const lead = await Leads.findById(trialId);
     if (!lead) {
       return res.status(404).json({ message: "Lead not found." });
     }
