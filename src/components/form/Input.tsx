@@ -5,9 +5,10 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   placeholder?: string;
+  readOnly?:boolean
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, placeholder,required, ...props }, ref) => {
+const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, placeholder,required,readOnly, ...props }, ref) => {
   return (
     <div className="">
       {label && (
@@ -18,6 +19,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, placehol
       <input
         ref={ref} // Forward ref to the input element
         id={props.name}
+        readOnly={readOnly}
         className={`w-full py-2 px-3 text-sm border rounded-[4px] font-[400] h-9 text-[#495160] ${
           error ? "border-red-500" : "border-gray-300"
         }

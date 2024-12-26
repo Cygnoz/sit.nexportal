@@ -99,7 +99,6 @@ function TicketsHome({ }: Props) {
     { key: "subject", label: "Subject" },
     { key: "name", label: "Requestor" },
     { key: "priority", label: "Priority" },
-    { key: "description", label: "Description" },
     { key: "timeAgo", label: "Requested" },
   ];
 

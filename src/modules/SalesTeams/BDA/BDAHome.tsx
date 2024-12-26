@@ -157,8 +157,9 @@ const BDAHome = () => {
         </Button>
       </div>
 
-      {/* HomeCards Section */}
-      <div className="flex gap-3 py-2 justify-between mt-6">
+     <div className="space-y-4">
+       {/* HomeCards Section */}
+       <div className="flex gap-3 py-2 justify-between mt-6">
         {homeCardData.map((card, index) => (
           <HomeCard
             iconFrameColor={card.iconFrameColor}
@@ -200,6 +201,7 @@ const BDAHome = () => {
           ]}
         />
       </div>
+     </div>
 
       {/* Modal Section */}
       
