@@ -215,7 +215,7 @@ const TrialView = ({}: Props) => {
   let data:any={}
   data={trial,customerData}
  
-  console.log("data",data);
+
   
 
   return (
@@ -690,7 +690,7 @@ const TrialView = ({}: Props) => {
         onClose={extentModalToggle}
         className="w-[35%]"
       >
-        <ExtentTrail onClose={extentModalToggle} />
+        <ExtentTrail trialData={data}  onClose={extentModalToggle} />
       </Modal>
 
       {/* Modal controlled by state */}
