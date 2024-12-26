@@ -11,6 +11,7 @@ import { themes } from "../../../Interfaces/Praise"
 import { achievements } from "../../../Interfaces/Praise"
 import { endPoints } from "../../../services/apiEndpoints"
 import useApi from "../../../Hooks/useApi"
+import No_Data_found from '../../../assets/image/NO_DATA.png'
 
 type Props = {}
 
@@ -148,51 +149,63 @@ const PraiseHome = ({ }: Props) => {
             <p className="text-[#303F58] text-base font-bold">Praise History</p>
           </div>
           <div className="grid grid-cols-2 gap-10">
-
-            {allPraise.length==0?
-              [...Array(4)].map((_, index) => (
-                <div key={index} className="mb-4">
-                  {renderSkelton()}
-                </div>
-              )):
-            allPraise?.map((praise) => (
-              <div className={`${themes.find((theme) => theme.name === praise.theme)?.bgColor || ''} rounded-lg justify-between w-full h-52`}>          {/* <PraiseIcon/> */}
+    {allPraise.length === 0 ? (
+        // Skeleton Loader when data is loading or empty
+        [...Array(4)].map((_, index) => (
+            <div key={index} className="mb-4">
+                {renderSkelton()}
+            </div>
+        ))
+    ) : allPraise.length > 0 ? (
+        // Display praise cards if data exists
+        allPraise.map((praise) => (
+            <div
+                key={praise.id || praise.userId} // Ensure a unique key
+                className={`${
+                    themes.find((theme) => theme.name === praise.theme)?.bgColor || ''
+                } rounded-lg justify-between w-full h-52`}
+            >
                 <div className="flex justify-between">
-                  <div className="bg-[#F3F3F3] rounded-2xl w-48 h-12 p-3 ms-4 mt-4 flex gap-2">
-                    <div className="bg-[#EDE7FB] rounded-full w-8 h-8 -mt-1">
-                      <div className="p-[6px] ms-[2px]">
-                        {achievements.find((achievement) => achievement.name === praise.achievement)?.icon || ''}
-                      </div>
+                    <div className="bg-[#F3F3F3] rounded-2xl w-48 h-12 p-3 ms-4 mt-4 flex gap-2">
+                        <div className="bg-[#EDE7FB] rounded-full w-8 h-8 -mt-1">
+                            <div className="p-[6px] ms-[2px]">
+                                {achievements.find((achievement) => achievement.name === praise.achievement)?.icon || ''}
+                            </div>
+                        </div>
+                        <div>
+                            <p className="text-center">
+                                {achievements.find((achievement) => achievement.name === praise.achievement)?.name || ''}
+                            </p>
+                        </div>
                     </div>
-                    <div>
-                      <p className="text-center">{achievements.find((achievement) => achievement.name === praise.achievement)?.name || ''}</p>
+                    <div className="">
+                        <img className="w-[490px] h-[180px] -mt-36 -rotate-90" src={comfetti} alt="Confetti" />
                     </div>
-                  </div>
-                  <div className="">
-                  {achievements.find((achievement) => achievement.name === praise.achievement)?.bgImage || ''}
-                  <img className="w-[490] h-[180px] -mt-36 -rotate-90" src={comfetti} alt="" />
-                  {/* {achievements.find((achievement) => achievement.name === praise.achievement)?.bgImage || ''} */}
-
-                  </div>
-                  <div className="p-5">
-                    <p className="text-[#000000] text-sm font-normal my-1">{praise.achievement}</p>
-                    <p className="text-[#000000] text-sm font-semibold mb-1">{praise.userDetails[0]?.userName}</p>
-                    <p className="text-[#000000] text-sm font-normal mb-1">{praise.notes}</p>
-                  </div>
+                    <div className="p-5">
+                        <p className="text-[#000000] text-sm font-normal my-1">{praise.achievement}</p>
+                        <p className="text-[#000000] text-sm font-semibold mb-1">{praise.userDetails[0]?.userName}</p>
+                        <p className="text-[#000000] text-sm font-normal mb-1">{praise.notes}</p>
+                    </div>
                 </div>
                 <div className="flex justify-between px-5">
-                  <p className="text-[#000000] text-sm font-normal">{praise.openingDate ? new Date(praise?.openingDate).toLocaleDateString() : 'N/A'}</p>
-                  <p className="text-[#000000] text-sm font-normal">From {praise.userId}</p>
+                    <p className="text-[#000000] text-sm font-normal">
+                        {praise.openingDate
+                            ? new Date(praise?.openingDate).toLocaleDateString()
+                            : 'N/A'}
+                    </p>
+                    <p className="text-[#000000] text-sm font-normal">From {praise.userId}</p>
                 </div>
-              </div>
-            ))}
+            </div>
+        ))
+    ) : (
+        // Display No Records Found when data fetching is complete and no praises are available
+        <div className="flex justify-center flex-col items-center col-span-2 h-full">
+            <img width={70} src={No_Data_found} alt="No Data Found" />
+            <p className="font-bold text-red-700">No Praise Found!</p>
+        </div>
+    )}
+</div>
 
-
-
-
-
-
-          </div>
         </div>
 
       </div>

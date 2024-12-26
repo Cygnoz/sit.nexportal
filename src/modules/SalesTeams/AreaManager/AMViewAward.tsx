@@ -3,6 +3,7 @@ import useApi from '../../../Hooks/useApi';
 import { useEffect, useState } from 'react';
 import { endPoints } from '../../../services/apiEndpoints';
 import UserIcon from '../../../assets/icons/UserIcon';
+import No_Data_found from '../../../assets/image/NO_DATA.png'
 
 type Props = {
     onClose: () => void;
@@ -45,27 +46,45 @@ const AMViewAward = ({ getData }: Props) => {
         <div>
             <div className="p-3 bg-[#FFFFFF] gap-4 mt-3 rounded-lg">
                 <p className="text-[#303F58] font-semibold text-base">Achievements and Awards</p>
-                <div className='h-96 overflow-y-scroll custom-scrollbar'>
-                {getAwards?.map((praises: any) => (
-                    <div className="bg-[#F5F9FC] p-4 gap-3 h-auto rounded-lg my-3">
-                        <p className="bg-[#9DF6B42E] w-fit h-7 p-2 rounded-xl mb-3 text-[#303F58] font-semibold text-xs">{praises?.achievement}</p>
-                        <div className="flex gap-4 mb-3">
-                           
-                                {
-                                    praises?.userDetails?.userImage ?
-                                        <img className="w-8 h-8 rounded-full" src={praises?.userDetails?.userImage} alt="" />
-                                        :
-                                        <p className="w-8 h-8    bg-black rounded-full flex justify-center items-center">
+                <div className={`h-96 ${getAwards.length > 3 ? 'overflow-y-scroll custom-scrollbar' : ''}`}>
+                    {getAwards?.length > 0 ? (
+                        getAwards.map((praises: any) => (
+                            <div key={praises?.id} className="bg-[#F5F9FC] p-4 gap-3 h-auto rounded-lg my-3">
+                                <p className="bg-[#9DF6B42E] w-fit h-7 p-2 rounded-xl mb-3 text-[#303F58] font-semibold text-xs">
+                                    {praises?.achievement}
+                                </p>
+                                <div className="flex gap-4 mb-3">
+                                    {praises?.userDetails?.userImage ? (
+                                        <img
+                                            className="w-8 h-8 rounded-full"
+                                            src={praises?.userDetails?.userImage}
+                                            alt="User"
+                                        />
+                                    ) : (
+                                        <p className="w-8 h-8 bg-black rounded-full flex justify-center items-center">
                                             <UserIcon color="white" size={18} />
                                         </p>
-                                }
-
-                           
-                            <p className="mb-2 text-[#4B5C79] text-xs font-normal mt-1">{praises?.notes}</p>
+                                    )}
+                                    <p className="mb-2 text-[#4B5C79] text-xs font-normal mt-1">
+                                        {praises?.notes}
+                                    </p>
+                                </div>
+                                <p className="text-[#303F58] font-normal text-xs">
+                                    Date Received:{" "}
+                                    <span className="font-bold">
+                                        {praises?.openingDate
+                                            ? new Date(praises?.openingDate).toLocaleDateString()
+                                            : "N/A"}
+                                    </span>
+                                </p>
+                            </div>
+                        ))
+                    ) : (
+                        <div className="flex justify-center flex-col items-center h-full">
+                            <img width={70} src={No_Data_found} alt="No Data Found" />
+                            <p className="font-bold text-red-700">No Achievements Found!</p>
                         </div>
-                        <p className="text-[#303F58] font-normal text-xs">Date Received: <span className="font-bold">{praises.openingDate ? new Date(praises?.openingDate).toLocaleDateString() : 'N/A'}</span></p>
-                    </div>
-                ))}
+                    )}
                 </div>
  
 
