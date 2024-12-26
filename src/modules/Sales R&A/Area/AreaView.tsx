@@ -63,7 +63,7 @@ Props) => {
     <>
     <div>
       <div className="flex items-center text-[16px] my-2 space-x-2">
-        <p onClick={()=>navigate('/area')}  className="font-bold cursor-pointer  text-[#820000] ">Aria</p>
+        <p onClick={()=>navigate('/areas')}  className="font-bold cursor-pointer  text-[#820000] ">Aria</p>
         <ChevronRight color="#4B5C79" size={18} />
         <p className="font-bold text-[#303F58] ">{area?.areaName}</p>
       </div>
@@ -99,7 +99,7 @@ Props) => {
             <div className="border-r border-[#DADADA] h-10 me-4 "></div>
             <div className="text-center">
               <p className="text-xs text-[#8F99A9]">Region</p>
-              <p  onClick={()=>navigate(`/regionView/${area?.region?._id}`)} className="text-xs underline cursor-pointer">{area?.region?.regionCode}</p>
+              <p  onClick={()=>navigate(`/regions/${area?.region?._id}`)} className="text-xs underline cursor-pointer">{area?.region?.regionCode}</p>
             </div>
           </div>
         </div>

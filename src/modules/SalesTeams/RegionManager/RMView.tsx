@@ -30,50 +30,51 @@ interface AreaData {
 const RMView = () => {
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
-    editRM:false,
-    viewRM:false,
-    awardRM:false
+    editRM: false,
+    viewRM: false,
+    awardRM: false,
   });
-  const handleModalToggle = (editRM=false, viewRM=false, awardRM=false) => {
-    setIsModalOpen((prevState:any )=> ({
-        ...prevState,
-        editRM: editRM,
-        viewRM: viewRM,
-        awardRM: awardRM
+  const handleModalToggle = (
+    editRM = false,
+    viewRM = false,
+    awardRM = false
+  ) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      editRM: editRM,
+      viewRM: viewRM,
+      awardRM: awardRM,
     }));
     getARM();
-}
+  };
 
-
-  const {request: getaRM}=useApi('get',3002)
-  const {id} =useParams()
+  const { request: getaRM } = useApi("get", 3002);
+  const { id } = useParams();
   const [getData, setGetData] = useState<{
-    rmData:any;}>
-    ({rmData:[]})
+    rmData: any;
+  }>({ rmData: [] });
 
-    const getARM = async()=>{
-      try{
-        const {response,error}= await getaRM(`${endPoints.GET_ALL_RM}/${id}`);
-        if(response && !error){
-          setGetData((prevData)=>({
-            ...prevData,
-            rmData:response.data
-          }))
-        }
-        else{
-          console.error(error.response.data.message)
-        }
+  const getARM = async () => {
+    try {
+      const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${id}`);
+      if (response && !error) {
+        setGetData((prevData) => ({
+          ...prevData,
+          rmData: response.data,
+        }));
+      } else {
+        console.error(error.response.data.message);
       }
-      catch(err){
-        console.error("Error fetching AM data:", err);
-      }
+    } catch (err) {
+      console.error("Error fetching AM data:", err);
     }
-    useEffect(()=>{
-      getARM();
-    },[id])
-    console.log(getData);
-   
-    const navigate=useNavigate()
+  };
+  useEffect(() => {
+    getARM();
+  }, [id]);
+  console.log(getData);
+
+  const navigate = useNavigate();
 
   // Data for HomeCards
   const homeCardData = [
@@ -177,72 +178,106 @@ const RMView = () => {
     { key: "areaManagers", label: "Area Managers" },
   ];
 
- // const { id } = useParams();
+  // const { id } = useParams();
 
   return (
     <>
-    <div>
-      <div className="flex items-center text-[16px] my-2 space-x-2">
-        <p onClick={()=>navigate('/region-manager')}  className="font-bold cursor-pointer text-[#820000] ">RM</p>
-        <ChevronRight color="#4B5C79" size={18} />
-        <p className="font-bold text-[#303F58] ">{getData.rmData?.user?.userName?getData.rmData?.user?.userName:'N/A'}</p>
-      </div>
+      <div>
+        <div className="flex items-center text-[16px] my-2 space-x-2">
+          <p
+            onClick={() => navigate("/region-manager")}
+            className="font-bold cursor-pointer text-[#820000] "
+          >
+            RM
+          </p>
+          <ChevronRight color="#4B5C79" size={18} />
+          <p className="font-bold text-[#303F58] ">
+            {getData.rmData?.user?.userName
+              ? getData.rmData?.user?.userName
+              : "N/A"}
+          </p>
+        </div>
 
-      <div className="flex items-center justify-between rounded-xl ">
-        <div
-          className="grid grid-cols-12 gap-3 bg-cover rounded-xl p-2 w-full"
-          style={{
-            backgroundImage: `url(${BackgroundImage})`, // Use the imported image
-          }}
-        >
-          <div className="col-span-6 ">
-            <div>
-              {/* Left Section: Area Icon and Details */}
+        <div className="flex items-center justify-between rounded-xl ">
+          <div
+            className="grid grid-cols-12 gap-3 bg-cover rounded-xl p-2 w-full"
+            style={{
+              backgroundImage: `url(${BackgroundImage})`, // Use the imported image
+            }}
+          >
+            <div className="col-span-6 ">
+              <div>
+                {/* Left Section: Area Icon and Details */}
 
-              <div className="flex items-center gap-4 text-white">
-                <div className="flex items-center gap-2">
-                  <div className="w-25 h-25 bg-blue ms-2 py-2 items-center justify-center rounded-full ">
-                  {
-              getData.rmData?.user?.userImage?
-              <img className="w-16 h-16 rounded-full" src={getData.rmData?.user?.userImage} alt="" />
-              :
-              <p className="w-16 h-16    bg-black rounded-full flex justify-center items-center">
-              <UserIcon color="white" size={34} />
-              </p>
-            }
-                    <h2 className="font-normal text-center text-2xl py-2">{getData.rmData?.user?.userName?getData.rmData?.user?.userName:'N/A'}</h2>
+                <div className="flex items-center gap-4 text-white">
+                  <div className="flex items-center gap-2">
+                    <div className="w-25 h-25 bg-blue ms-2 py-2 items-center justify-center rounded-full ">
+                      {getData.rmData?.user?.userImage ? (
+                        <img
+                          className="w-16 h-16 rounded-full"
+                          src={getData.rmData?.user?.userImage}
+                          alt=""
+                        />
+                      ) : (
+                        <p className="w-16 h-16    bg-black rounded-full flex justify-center items-center">
+                          <UserIcon color="white" size={34} />
+                        </p>
+                      )}
+                      <h2 className="font-normal text-center text-2xl py-2">
+                        {getData.rmData?.user?.userName
+                          ? getData.rmData?.user?.userName
+                          : "N/A"}
+                      </h2>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex ms-4 gap-2 py-2 text-white">
+                  <div className="">
+                    <p className="text-xs font-medium text-[#8F99A9] py-2">
+                      Contact Number
+                    </p>
+                    <h3 className="text-sm font-medium">
+                      {getData.rmData?.user?.phoneNo
+                        ? getData.rmData?.user?.phoneNo
+                        : "N/A"}
+                    </h3>
+                  </div>
+                  <div className="border-r border-[#DADADA] h-10 me-4"></div>
+                  <div className="">
+                    <p className="text-xs font-medium text-[#8F99A9] py-2">
+                      Email
+                    </p>
+                    <p className="text-sm font-medium">
+                      {getData.rmData?.user?.email
+                        ? getData.rmData?.user?.email
+                        : "N/A"}
+                    </p>
+                  </div>
+                  <div className="border-r border-[#DADADA] h-10 me-4 "></div>
+                  <div className="cursor-pointer">
+                    <p className="text-xs font-medium text-[#8F99A9] py-2">
+                      Region
+                    </p>
+                    <p
+                      onClick={() =>
+                        navigate(`/regions/${getData.rmData?.region?._id}`)
+                      }
+                      className=" text-[#FFFFFF] text-sm font-medium underline"
+                    >
+                      {getData.rmData?.region?.regionCode
+                        ? getData.rmData?.region?.regionCode
+                        : "N/A"}
+                    </p>{" "}
                   </div>
                 </div>
               </div>
-              <div className="flex ms-4 gap-2 py-2 text-white">
-                <div className="">
-                  <p className="text-xs font-medium text-[#8F99A9] py-2">
-                    Contact Number
-                  </p>
-                  <h3 className="text-sm font-medium">{getData.rmData?.user?.phoneNo?getData.rmData?.user?.phoneNo:'N/A'}</h3>
-                </div>
-                <div className="border-r border-[#DADADA] h-10 me-4"></div>
-                <div className="">
-                  <p className="text-xs font-medium text-[#8F99A9] py-2">
-                    Email
-                  </p>
-                  <p className="text-sm font-medium">{getData.rmData?.user?.email ? getData.rmData?.user?.email:'N/A'}</p>
-                </div>
-                <div className="border-r border-[#DADADA] h-10 me-4 "></div>
-                <div className="cursor-pointer">
-                  <p className="text-xs font-medium text-[#8F99A9] py-2">
-                    Region
-                  </p>
-                  <p onClick={()=>navigate(`/regionView/${getData.rmData?.region?._id}`)} className=" text-[#FFFFFF] text-sm font-medium underline">{getData.rmData?.region?.regionCode ?getData.rmData?.region?.regionCode:'N/A'}</p>                </div>
-              </div>
             </div>
-          </div>
 
-          <div className="col-span-6 m-3">
-            <div>
-              <div className="flex gap-4 ms-auto text-[10px] py-2  text-white">
-                {/* Right Section: Managers and Actions */}
-                
+            <div className="col-span-6 m-3">
+              <div>
+                <div className="flex gap-4 ms-auto text-[10px] py-2  text-white">
+                  {/* Right Section: Managers and Actions */}
+
                   <div className="flex -ms-3 mt-2">
                     {/* Sales Managers */}
                     <div className=" text-end w-48">
@@ -252,134 +287,142 @@ const RMView = () => {
 
                     <div className="text-center w-24">
                       <p className="text-xs text-[#D4D4D4] py-2">Employee ID</p>
-                      <p className="text-xs">{getData.rmData?.user?.employeeId ? getData.rmData?.user?.employeeId:'N/A'}</p>
+                      <p className="text-xs">
+                        {getData.rmData?.user?.employeeId
+                          ? getData.rmData?.user?.employeeId
+                          : "N/A"}
+                      </p>
                     </div>
 
                     <div className="text-center w-24">
                       <p className="text-xs text-[#D4D4D4] py-2">
                         Joining Date
                       </p>
-                      <p className="text-xs ">{getData.rmData?.dateOfJoining
-                  ? new Date(getData.rmData.dateOfJoining).toLocaleDateString()
-                  : 'N/A'}</p>
+                      <p className="text-xs ">
+                        {getData.rmData?.dateOfJoining
+                          ? new Date(
+                              getData.rmData.dateOfJoining
+                            ).toLocaleDateString()
+                          : "N/A"}
+                      </p>
                     </div>
                   </div>
 
                   <div className="flex flex-col w-fit items-center space-y-1">
-                    <div  onClick={()=>handleModalToggle(true,false,false)} 
-                    className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <EditIcon size={18} color="#F0D5A0" />
-                   </div>
-                    </div>
-                     
+                    <div
+                      onClick={() => handleModalToggle(true, false, false)}
+                      className="w-8 h-8 mb-2 rounded-full cursor-pointer"
+                    >
+                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                        <div className="ms-2 mt-2">
+                          <EditIcon size={18} color="#F0D5A0" />
+                        </div>
+                      </div>
                     </div>
                     <p className="text-center ms-3">Edit Profile</p>
                   </div>
-                
 
-                <div className="flex flex-col  items-center space-y-1">
-                  <div
-                     onClick={()=>handleModalToggle(false,true,false)}
-                    className="w-8 h-8 mb-2 rounded-full cursor-pointer"
-                  >
-                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <ViewRoundIcon size={18} color="#B6D6FF" />
-                   </div>
-                    </div>
-                  </div>
-                  <p className="text-center ms-3">View Details</p>
-                </div>
-
-                <div className="flex flex-col   items-center space-y-1">
-                  <div
-                    onClick={()=>handleModalToggle(false,false,true)}
-                    className="w-8 h-8 mb-2 rounded-full cursor-pointer"
-                  >
+                  <div className="flex flex-col  items-center space-y-1">
+                    <div
+                      onClick={() => handleModalToggle(false, true, false)}
+                      className="w-8 h-8 mb-2 rounded-full cursor-pointer"
+                    >
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <AwardIcon size={18} color="#B6FFD7" />
-                   </div>
+                        <div className="ms-2 mt-2">
+                          <ViewRoundIcon size={18} color="#B6D6FF" />
+                        </div>
+                      </div>
                     </div>
-                    
+                    <p className="text-center ms-3">View Details</p>
                   </div>
-                  <p className="text-center ms-3">
-                    Awards
-                  </p>
-                </div>
 
-                <div className="flex flex-col -ms-2 items-center space-y-1">
-                  <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <DeActivateIcon size={18} color="#D52B1E4D" />
-                   </div>
+                  <div className="flex flex-col   items-center space-y-1">
+                    <div
+                      onClick={() => handleModalToggle(false, false, true)}
+                      className="w-8 h-8 mb-2 rounded-full cursor-pointer"
+                    >
+                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                        <div className="ms-2 mt-2">
+                          <AwardIcon size={18} color="#B6FFD7" />
+                        </div>
+                      </div>
                     </div>
+                    <p className="text-center ms-3">Awards</p>
                   </div>
-                  <p className="text-center ms-3">DeActivate</p>
-                </div>
-              
-            </div>
-              {/* HomeCards Section */}
 
-              <div className="flex gap-3 py-2 justify-between mt-4">
-                {homeCardData.map((card, index) => (
-                  <HomeCard
-                    iconFrameColor={card.iconFrameColor}
-                    iconFrameBorderColor={card.iconFrameBorderColor}
-                    key={index}
-                    icon={card.icon}
-                    bgColor="transparent"
-                    titleColor="#D4D4D4"
-                    numberColor="#FFFFFF"
-                    number={card.number}
-                    title={card.title}
-                  />
-                ))}
+                  <div className="flex flex-col -ms-2 items-center space-y-1">
+                    <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                        <div className="ms-2 mt-2">
+                          <DeActivateIcon size={18} color="#D52B1E4D" />
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-center ms-3">DeActivate</p>
+                  </div>
+                </div>
+                {/* HomeCards Section */}
+
+                <div className="flex gap-3 py-2 justify-between mt-4">
+                  {homeCardData.map((card, index) => (
+                    <HomeCard
+                      iconFrameColor={card.iconFrameColor}
+                      iconFrameBorderColor={card.iconFrameBorderColor}
+                      key={index}
+                      icon={card.icon}
+                      bgColor="transparent"
+                      titleColor="#D4D4D4"
+                      numberColor="#FFFFFF"
+                      number={card.number}
+                      title={card.title}
+                      border='white'
+                    />
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-12 gap-3">
-        {/* Table Section */}
-        <div className="col-span-7 py-6 ">
-          <div>
-            <Table<AreaData>
-              data={data}
-              columns={columns}
-              headerContents={{
-                title: "Total Area Managed",
-              }}
-              noAction
-              noPagination
-              maxHeight="345px"
-            />
+        <div className="grid grid-cols-12 gap-3">
+          {/* Table Section */}
+          <div className="col-span-7 py-6 ">
+            <div>
+              <Table<AreaData>
+                data={data}
+                columns={columns}
+                headerContents={{
+                  title: "Total Area Managed",
+                }}
+                noAction
+                noPagination
+                maxHeight="345px"
+              />
+            </div>
+          </div>
+          <div className="col-span-5 py-6">
+            <RMViewAriaManagers />
           </div>
         </div>
-        <div className="col-span-5 py-6">
-          <RMViewAriaManagers />
+
+        <div>
+          <RMViewBDAandGraph />
         </div>
       </div>
-
-      <div>
-        <RMViewBDAandGraph />
-      </div>
-
-     
-    </div>
-     {/* Modal controlled by state */}
-     <Modal open={isModalOpen.viewRM} onClose={()=>handleModalToggle()}>
-        <RMViewForm onClose={()=>handleModalToggle()} />
+      {/* Modal controlled by state */}
+      <Modal open={isModalOpen.viewRM} onClose={() => handleModalToggle()}>
+        <RMViewForm onClose={() => handleModalToggle()} />
       </Modal>
-      <Modal open={isModalOpen.editRM} onClose={()=>handleModalToggle()}>
-        <RMForm editId={id} onClose={()=>handleModalToggle()} />
+      <Modal open={isModalOpen.editRM} onClose={() => handleModalToggle()}>
+        <RMForm editId={id} onClose={() => handleModalToggle()} />
       </Modal>
-      <Modal open={isModalOpen.awardRM} onClose={()=>handleModalToggle()} align="right" className="w-[25%] me-16">
-        <RMViewAward getData={getData} onClose={()=>handleModalToggle()} />
+      <Modal
+        open={isModalOpen.awardRM}
+        onClose={() => handleModalToggle()}
+        align="right"
+        className="w-[25%] me-16"
+      >
+        <RMViewAward getData={getData} onClose={() => handleModalToggle()} />
       </Modal>
     </>
   );

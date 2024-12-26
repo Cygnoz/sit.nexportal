@@ -439,7 +439,7 @@ const AMView = ({ }: Props) => {
             </div>
             <div className="">
               <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Area</p>
-              <p onClick={() => navigate(`/areaView/${getData.amData?.area?._id}`)} className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
+              <p onClick={() => navigate(`/areas/${getData.amData?.area?._id}`)} className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
             </div>
             <div className="-mt-5 ms-32 me-6">
               <p className="text-[#D4D4D4] text-xs font-medium">Role</p>
