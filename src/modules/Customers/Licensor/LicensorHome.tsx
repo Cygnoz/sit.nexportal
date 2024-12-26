@@ -42,7 +42,7 @@ const LicensorHome = () => {
     getLicensers();
       };
        const handleView=(id:any)=>{
-        navigate(`/licenserView/${id}`)
+        navigate(`/licenser/${id}`)
       }
     
       const getLicensers=async()=>{

@@ -34,7 +34,7 @@ const SupportAgentHome = () => {
   };
 
   const handleView = (id: any) => {
-    navigate(`/supportAgentView/${id}`);
+    navigate(`/support-agent/${id}`);
   };
 
   const handleEdit = (id: any) => {

@@ -49,7 +49,7 @@ function LeadHome({}: Props) {
    
 
   const handleView=(id:any)=>{
-    navigate(`/leadView/${id}`)
+    navigate(`/lead/${id}`)
   }
 
   const handleEdit = (id: any) => {
