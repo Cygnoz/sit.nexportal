@@ -4,7 +4,7 @@ pipeline {
     environment {
         // Define environment variables for AWS ECR and ECS
         AWS_REGION = 'ap-south-1'
-        ECR_REPOSITORY = 'sit-nexsell-frontend'
+        ECR_REPOSITORY = 'sit-frontend'
         IMAGE_NAME = 'nexsell/frontend'
         AWS_CREDENTIALS_ID = '2157424a-b8a7-45c0-90c2-bc0d407f6cea'
         AWS_ACCOUNT_ID = '654654462146' // Add your AWS account ID here
