@@ -6,41 +6,90 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import Select from "../../../../components/form/Select";
+import { useEffect } from "react";
+import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
+import toast from "react-hot-toast";
 //import CustomPhoneInput from "../../../components/form/CustomPhone";
 //import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 type Props = {
     onClose: () => void;
+    trialData?:any
 };
 
 interface ExtentTrialData {
    duration:string;
-   date?:string
-
-
+   endDate?:string;
 }
 
 const validationSchema = Yup.object({
     duration: Yup.string().required("duration is required"),
 });
 
-function ExtentTrail({ onClose }: Props) {
+function ExtentTrail({ onClose,trialData }: Props) {
+    const {request:extendTrial}=useApi('put',3001)
     const {
         register,
         handleSubmit,
         formState: { errors },
-
+        watch,
+        setValue
 
     } = useForm<ExtentTrialData>({
         resolver: yupResolver(validationSchema),
     });
 
-    const onSubmit: SubmitHandler<ExtentTrialData> = (data) => {
-        console.log("Form Data:", data);
+    const onSubmit: SubmitHandler<ExtentTrialData> = async(data) => {
+        const body={
+            duration:data.duration
+        }
+        try{
+            const {response,error}=await extendTrial(`${endPoints.TRIAL}/${trialData?.customerData?._id}`,body)
+            if(response && !error){
+                toast.success(response.data.message)
+            }else{
+                toast.error(error.response.data.message)
+            }
+        }catch(err){
+            console.log(err);
+            
+        }
     };
 
+  
+
+        
+        useEffect(() => {
+            const duration = watch("duration"); // Get the current duration value
+            console.log(duration);
+            
+            if ( duration && trialData?.customerData?.endDate) {  
+                const startDate = new Date(trialData?.customerData?.endDate); // Convert endDate string to Date
+        
+                // Ensure startDate is a valid date
+                if (!isNaN(startDate.getTime())) {
+                    const newEndDate = new Date(startDate);
+                    newEndDate.setDate(startDate.getDate() + parseInt(duration)); // Add duration days
+        
+                    // Format newEndDate back to "YYYY-MM-DD"
+                    const formattedDate = newEndDate.toISOString().split("T")[0];
+                    console.log("dsds",formattedDate);
+                    
+                    setValue("endDate", formattedDate);
+                } else {
+                    console.error("Invalid startDate:", trialData?.customerData?.endDate);
+                }
+            }
+        }, [watch("duration"),trialData]);
 
 
+        
+       
+        
+
+       
+     
 
     return (
         <div className="p-2 bg-white rounded shadow-md space-y-2">
@@ -60,37 +109,37 @@ function ExtentTrail({ onClose }: Props) {
                 <form onSubmit={handleSubmit(onSubmit)}>
                     <div >
 
-                        <div className=" my-2">
-                            <div className="mx-3 gap-4 space-y-2 max-w-xl">
+                    <div className="my-2">
+    <div className="mx-3 gap-4 space-y-2 max-w-xl">
+        <Select
+            label="Duration"
+            required
+            placeholder="Select Duration"
+            error={errors.duration?.message}
+            options={[
+                { value: "1", label: "1 day" },
+                { value: "2", label: "2 days" },
+                { value: "3", label: "3 days" },
+                { value: "4", label: "4 days" },
+                { value: "5", label: "5 days" },
+                { value: "6", label: "6 days" },
+                { value: "7", label: "7 days" },
+            ]}
+            {...register("duration")}
+        />
 
-                                 
-                            <Select
-                                    label="Duration"
-                                    placeholder="Select Duration"
-                                    error={errors.duration?.message}
-                                    options={[
-                                        { value: "name", label: "7 days" },
-                                        { value: "name", label: "10 days" },
-                                        { value: "name", label: "14 days" },
-                                    ]}
-                                    {...register("duration")}
-                                />
+        <Input
+            readOnly
+            label="New End Date"
+            type="date"
+            value={watch("endDate") || ""}
+            placeholder="Select Duration to calculate End Date"
+            error={errors.endDate?.message}
+            {...register("endDate")}
+        />
+    </div>
+</div>
 
-
-                                <Input
-                                    label="New End Date"
-                                    type="date"
-                                    placeholder="Enter Name"
-                                    error={errors.date?.message}
-                                    {...register("date")}
-
-                                />
-                               
-
-
-
-                            </div>
-                        </div>
                     </div>
                     <div className=" flex justify-end gap-2 mt-3 pb-2 me-3">
                         <Button
@@ -107,7 +156,7 @@ function ExtentTrail({ onClose }: Props) {
                             size="lg"
                             type="submit"
                         >
-                            update
+                            Extend
                         </Button>
                     </div>
                 </form>
