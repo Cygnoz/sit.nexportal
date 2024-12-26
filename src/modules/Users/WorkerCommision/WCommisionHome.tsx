@@ -129,7 +129,7 @@ const WCommisionHome = () => {
           data={allWC}
           columns={columns}
           headerContents={{
-            search: { placeholder: "Search BDA By Name" },
+            search: { placeholder: "Search worker commission..." },
           }}
           actionList={[
             { label: "delete", function: openDeleteModal },
