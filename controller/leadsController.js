@@ -1,12 +1,13 @@
 const Leads = require("../database/model/leads")
 const Region = require('../database/model/region')
 const Area = require('../database/model/area')
-// const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const Bda = require('../database/model/bda')
 const User = require("../database/model/user");
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const moment = require("moment"); 
+const Ticket = require("../database/model/ticket");
 
 
 
@@ -257,6 +258,85 @@ const existingUserId = existingLead.user;
 //     res.status(500).json({ message: "Internal server error." });
 //   }
 // };
+
+
+
+// exports.deleteLead = async (req, res) => {
+//   try {
+//     const { leadId } = req.params;
+
+//     // Validate if leadId is a valid ObjectId
+//     if (!mongoose.Types.ObjectId.isValid(leadId)) {
+//       return res.status(400).json({ message: "Invalid lead ID." });
+//     }
+
+//     // Check if the lead exists
+//     const lead = await Leads.findById(leadId);
+//     if (!lead) {
+//       return res.status(404).json({ message: "Lead not found." });
+//     }
+
+//     // Check if leadId is referenced in other collections (Tickets and Praise)
+//     const referenceChecks = await Promise.all([
+//       Ticket.exists({ customerId : leadId  }),         // Check if leadId exists in Tickets collection
+//     ]);
+
+
+    
+//     // If any of the reference checks are true, block deletion
+//     if (referenceChecks.includes(true)) {
+//       return res.status(400).json({
+//         message: "Cannot delete lead because it is referenced in Tickets collections.",
+//       });
+//     }
+    
+//     // Delete the lead
+//     await Leads.findByIdAndDelete(leadId);
+
+//     res.status(200).json({ message: "Lead deleted successfully." });
+//   } catch (error) {
+//     console.error("Error deleting lead:", error.message || error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+
+
+
+exports.deleteLead = async (req, res) => {
+  try {
+    const { leadId } = req.params;
+
+    // Validate if leadId is a valid ObjectId
+    if (!mongoose.Types.ObjectId.isValid(leadId)) {
+      return res.status(400).json({ message: "Invalid lead ID." });
+    }
+
+    // Check if the lead exists
+    const lead = await Leads.findById(leadId);
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found." });
+    }
+
+    // Check if leadId is referenced in Tickets collection
+    const ticket = await Ticket.findOne({ customerId: leadId });
+    if (ticket) {
+      return res.status(400).json({
+        message: "Cannot delete lead because it is referenced in Tickets collection.",
+      });
+    }
+
+    // Delete the lead
+    await Leads.findByIdAndDelete(leadId);
+
+    res.status(200).json({ message: "Lead deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting lead:", error.message || error);
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
+
+
 
 exports.convertLeadToTrial = async (req, res) => {
   try {
