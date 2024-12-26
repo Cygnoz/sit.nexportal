@@ -91,7 +91,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
         </div>
         <div  className="">
             <p className="text-[#8F99A9] text-xs font-medium mb-1">Region</p>
-            <p onClick={()=>navigate(`/regionView/${getData.saData?.region?._id}`)} className="text-[#303F58] text-xs font-medium underline cursor-pointer">{getData.saData?.region?.regionCode ?getData.saData?.region?.regionCode  :'N/A'}</p>
+            <p onClick={()=>navigate(`/regions/${getData.saData?.region?._id}`)} className="text-[#303F58] text-xs font-medium underline cursor-pointer">{getData.saData?.region?.regionCode ?getData.saData?.region?.regionCode  :'N/A'}</p>
         </div>
         <div className="">
             <p className="text-[#8F99A9] text-xs font-medium mb-1">Assigned Supervisor</p>

@@ -270,7 +270,7 @@ function LicenserForm({ onClose ,editId}: Props) {
       </div>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-12 gap-2"
+        className="grid grid-cols-12 gap-2 mt-3"
       >
         <div className="col-span-2">
         <label className="cursor-pointer text-center flex justify-center" htmlFor="file-upload">

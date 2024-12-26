@@ -12,9 +12,9 @@ import DownloadIcon from "../../../assets/icons/DownloadIcon";
 import Trash from "../../../assets/icons/Trash";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
 import ViewIcon from "../../../assets/icons/ViewIcon";
-import bcardfront from "../../../assets/image/Business-card-front.svg";
-import bcardback from "../../../assets/image/Business-card-back.svg";
-import idcard from "../../../assets/image/ID-card 1.svg";
+import bcardfront from "../../../assets/image/Business-card-front.png";
+import bcardback from "../../../assets/image/Business-card-back.png";
+import idcard from "../../../assets/image/ID-card 1.png";
 import { AMData } from "../../../Interfaces/AM";
 import useApi from "../../../Hooks/useApi";
 import toast from "react-hot-toast";
@@ -49,7 +49,6 @@ const addValidationSchema = Yup.object().shape({
   .required("Email required")
   .email("Invalid email"),
   password: Yup.string()
-    .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
@@ -629,51 +628,49 @@ label: area.areaName,
               </div>
             </div>
           )}
-          {activeTab === "ID & Business Card" && (
-            <div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
-                  <p className="text-[#303F58] text-base font-bold">
-                    Business Card
-                  </p>
-                  <p className="text-xs font-normal text-[#8F99A9] mt-1">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt
-                  </p>
-                  <img src={bcardfront} className="my-3" alt="" />
-                  <img src={bcardback} className="mb-3" alt="" />
-                  <div className="flex gap-3 justify-end">
-                    <Button
-                      variant="tertiary"
-                      size="sm"
-                      className="text-xs text-[#565148] font-medium rounded-md"
-                    >
-                      <ViewIcon size="13" color="#565148" />
-                      View
-                    </Button>
-                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+        {activeTab === "ID & Business Card" && (
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                <p className="text-[#303F58] text-base font-bold">
+                  Business Card
+                </p>
+                <p className="text-xs font-normal text-[#8F99A9] mt-1">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt
+                </p>
+                <img src={bcardfront} width={220} className="my-3" alt="" />
+                <img src={bcardback} width={220} className="mb-3" alt="" />
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="tertiary"
+                    size="sm"
+                    className="text-xs text-[#565148] font-medium rounded-md"
+                  >
+                    <ViewIcon size="13" color="#565148" />
+                    View
+                  </Button>
+                  {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
                 <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
-                  </div>
                 </div>
-                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
-                  <p className="text-[#303F58] text-base font-bold">ID Card</p>
-                  <p className="text-xs font-normal text-[#8F99A9] mt-1">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt
-                  </p>
-                  <img src={idcard} className="my-3" alt="" />
-                  <div className="flex gap-3 justify-end">
-                    <Button
-                      variant="tertiary"
-                      size="sm"
-                      className="text-xs text-[#565148] font-medium rounded-md"
-                    >
-                      <ViewIcon size="13" color="#565148" />
-                      View
-                    </Button>
-                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+              </div>
+              <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                <p className="text-[#303F58] text-base font-bold">ID Card</p>
+                <p className="text-xs font-normal text-[#8F99A9] mt-1">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                  do eiusmod tempor incididunt
+                </p>
+                <img src={idcard} className="my-3" alt="" />
+                <div className="flex gap-3 justify-end">
+                  <Button
+                    variant="tertiary"
+                    size="sm"
+                    className="text-xs text-[#565148] font-medium rounded-md"
+                  >
+                    <ViewIcon size="13" color="#565148" />
+                    View
+                  </Button>
+                  {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
                 <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
-                  </div>
                 </div>
               </div>
             </div>
