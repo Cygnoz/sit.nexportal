@@ -19,14 +19,17 @@ const leadSchema = new Schema({
   website: { type: String },
   leadSource: { type: String },
 
+  
 
   address: { type: String },
   city:{ type: String },
   state: { type: String },
 
-  licenseType: { type: String },
+  // licenseType: { type: String },
+
   startDate: { type: String },
   endDate:{ type: String },
+  duration:{type:String},
 
   companyId: { type: String },
   companyName: { type: String },

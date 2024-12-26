@@ -6,6 +6,8 @@ const Bda = require('../database/model/bda')
 const User = require("../database/model/user");
 const axios = require('axios');
 const nodemailer = require('nodemailer');
+const moment = require("moment"); 
+
 
 
 
@@ -294,13 +296,34 @@ exports.convertLeadToTrial = async (req, res) => {
     const organizationId = response.data.organizationId;
     console.log("response",organizationId)
 
+
+
+ // Validate and parse dates in dd-MM-yyyy format
+ const StartDate = moment(startDate, "DD-MM-YYYY", true);
+ const EndDate = moment(endDate, "DD-MM-YYYY", true);
+ const currentDate = moment();
+
+
+  // Determine trialStatus
+let trialStatus = "Expired";  // Default to expired
+
+// Check if the current date is between the startDate and endDate (inclusive)
+if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)) {
+  trialStatus = "In Progress";
+} else if (currentDate.isAfter(EndDate)) {
+  trialStatus = "Expired";  // explicitly set it to expired if currentDate is past endDate
+} else if (currentDate.isBefore(StartDate)) {
+  trialStatus = "Not Started";  // for trials that have not started yet
+}
+
+
     // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
     const updatedLead = await Leads.findByIdAndUpdate(
       leadId,
       { customerStatus: "Trial",
-        trialStatus:"In Progress",
-        startDate,
-        endDate,
+        trialStatus: trialStatus,  // Update trialStatus
+        startDate:StartDate.toDate(),
+        endDate:EndDate.toDate(),
         organizationId
        },
       {new: true } // Return the updated document
@@ -317,6 +340,11 @@ exports.convertLeadToTrial = async (req, res) => {
     //     .status(500)
     //     .json({ success: false, message: 'Failed to send login credentials email' });
     // }
+
+    // Format dates back to dd-MM-yyyy for the response
+    updatedLead.startDate = StartDate.format("DD-MM-YYYY");
+    updatedLead.endDate = EndDate.format("DD-MM-YYYY");
+
 
     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
     
@@ -787,5 +815,50 @@ The BillBizz Team`;
   } catch (error) {
     console.error(`Error sending ${isTrial ? 'trial' : 'licensed'} user email:`, error);
     return false;
+  }
+};
+
+
+
+exports.extendTrialDuration = async (req, res) => {
+  try {
+    const { leadId } = req.params;
+    const { duration } = req.body;
+
+    // Validate request body
+    if (!duration || isNaN(duration)) {
+      return res.status(400).json({ message: "Valid duration is required." });
+    }
+
+    // Find the lead by ID
+    const lead = await Leads.findById(leadId);
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found." });
+    }
+
+    // Parse the current endDate from the database in YYYY-MM-DD format
+    const currentEndDate = moment(lead.endDate, "YYYY-MM-DD");
+    if (!currentEndDate.isValid()) {
+      return res.status(400).json({ message: "Invalid end date in the database." });
+    }
+
+    // Calculate the new endDate
+    const newEndDate = currentEndDate.add(parseInt(duration, 10), "days");
+
+    // Update the lead
+    lead.endDate = newEndDate.format("YYYY-MM-DD"); // Save in YYYY-MM-DD format
+    lead.trialStatus = "Extended";
+    lead.duration = duration; // Save the duration if needed
+
+    // Save the updated lead
+    await lead.save();
+
+    res.status(200).json({
+      message: "Trial duration extended successfully.",
+      lead,
+    });
+  } catch (error) {
+    console.error("Error extending trial duration:", error.message || error);
+    res.status(500).json({ message: "Internal server error." });
   }
 };

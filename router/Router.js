@@ -28,6 +28,8 @@ router.put('/lead/:id',verifyToken,checkPermission('Edit Lead'),leadController.e
 
 router.get('/client/:id',leadController.getClientDetails)
 
+router.put("/trial/:leadId", leadController.extendTrialDuration);
+
 
 //Trial
 router.put('/trial/:leadId',leadController.convertLeadToTrial)
