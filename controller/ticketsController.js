@@ -10,7 +10,7 @@ const moment = require('moment-timezone');
 
 const dataExist = async (customerId, supportAgentId) => {
   const [customerExists, supportAgentExists] = await Promise.all([
-    Leads.find({ _id: customerId }, { _id: 1, firstName: 1 }),
+    Leads.find({ _id: customerId }, { _id: 1, firstName: 1 , image:1 }),
     SupportAgent.findOne({ _id: new Types.ObjectId(supportAgentId) }, { _id: 1, user: 1 }), // Fetch one record
   ]);
 
@@ -60,22 +60,7 @@ exports.addTicket = async (req, res , next) => {
 
     // Create a new ticket dynamically using req.body
     const savedTickets = await createNewTicket(cleanedData, customerId , supportAgentId , openingDate , userId , userName );
-    
-  console.log("Saving ticket with data:", {
-  ...cleanedData,
-  customerId,
-  supportAgentId,
-  openingDate,
-  userId,
-  userName,
-});
-
-
-    // // Format the `createdAt` and `updatedAt` fields to show only time in IST
-    // const formattedTicket = {
-    //   ...savedTickets.toObject(),
-    //   createdAt: moment(savedTickets.createdAt).tz('Asia/Kolkata').format('HH:mm:ss'),
-    // };
+  
 
     res.status(201).json({ message: "Ticket added successfully", savedTickets });
 
@@ -166,7 +151,7 @@ exports.getAllTickets = async (req, res) => {
         // Fetch customer from Leads with status "Trial" or "Licenser"
         const customerExists = await Leads.findOne(
           { _id: customerId, customerStatus: { $in: ["Trial", "Licenser"] } },
-          { _id: 1, firstName: 1 , lastName: 1 , email:1 , phone:1 } // Only fetch _id and firstName
+          { _id: 1, firstName: 1 , lastName: 1 , email:1 , phone:1 , image:1 }
         );
 
         const { supportAgentExists, supportAgentName } = await dataExist(customerId, supportAgentId);
@@ -337,8 +322,6 @@ function generateOpeningDate(
     dateTime,
   };
 }
-
-
 
 // Usage example
 const openingDate = generateOpeningDate();
