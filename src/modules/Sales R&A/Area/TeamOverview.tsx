@@ -405,7 +405,7 @@ const TeamOverview = ({}: Props) => {
                          className="h-fit"
                          barGap={54}
                          barCategoryGap="40%"
-                         width={550}
+                         width={500}
                          height={295}
                          data={normalizedData}
                        >
@@ -440,7 +440,7 @@ const TeamOverview = ({}: Props) => {
                            />
                          </Bar>
                        </BarChart>
-                       <div className="flex ms-[85px] gap-[40px] -mt-2">
+                       <div className="flex ms-20 gap-[34px] -mt-2">
                          {ChartData.map((chart) => (
                            <img
                              className="w-5 h-5 rounded-full"

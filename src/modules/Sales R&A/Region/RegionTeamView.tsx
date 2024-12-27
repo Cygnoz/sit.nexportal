@@ -293,10 +293,10 @@ const RegionTeamView = ({}: Props) => {
   };
 
   return (
-    <div className="w-[60%]">
-      <div className="bg-white p-3 mt-5 rounded-lg">
+    <div>
+      <div className="bg-white p-3 mt-5 rounded-lg w-full">
         {/* HomeCards Section */}
-        <div className="flex gap-3 py-1 justify-between">
+        <div className="flex gap-4 py-1 justify-between w-[52%]">
           {homeCardData.map((card, index) => (
             <HomeCard
               iconFrameColor={card.iconFrameColor}
@@ -312,10 +312,10 @@ const RegionTeamView = ({}: Props) => {
         </div>
       </div>
 
-      <div className="bg-white my-4 h-72 px-3 ">
+      <div className="bg-white my-4 h-72 px-3 w-full">
         <div className="flex justify-between">
           <h1 className=" my-6 font-bold text-base">Area Managers</h1>
-          <div className="w-[50%] mt-4">
+          <div className="mt-4">
             <SearchBar
               placeholder="Search Area Manager"
               searchValue={searchValue}
@@ -325,7 +325,7 @@ const RegionTeamView = ({}: Props) => {
         </div>
 
         <div
-          className="w-full px-4 overflow-x-auto custom-scrollbar"
+          className="w-[53%] px-4 overflow-x-auto custom-scrollbar"
           style={{
             display: "flex",
             overflowX: "auto",
@@ -365,9 +365,8 @@ const RegionTeamView = ({}: Props) => {
         </div>
       </div>
 
-      <div>
         {/* Table Section */}
-        <div>
+        <div className="w-[53%]">
           <Table<TeamData>
             data={data}
             columns={columns}
@@ -403,10 +402,8 @@ const RegionTeamView = ({}: Props) => {
             maxHeight="500px"
           />
         </div>
-      </div>
-      <div className="grid-cols-2 grid gap-3 my-2">
-        <div>
-        <div className="w-full h-fit p-4 bg-white rounded-lg">
+      <div className="grid-cols-2 grid my-3 w-fit gap-2">
+        <div className="w-fit h-fit p-4 bg-white rounded-lg">
             <p className="text-[#303F58] text-lg font-bold p-3">
               Top performing Area Managers
             </p>
@@ -419,7 +416,7 @@ const RegionTeamView = ({}: Props) => {
                 className="h-fit"
                 barGap={54}
                 barCategoryGap="40%"
-                width={550}
+                width={500}
                 height={300}
                 data={normalizedData}
               >
@@ -454,7 +451,7 @@ const RegionTeamView = ({}: Props) => {
                   />
                 </Bar>
               </BarChart>
-              <div className="flex ms-[85px] gap-[40px] -mt-2">
+              <div className="flex ms-20 gap-[34px] -mt-2">
                 {ChartData.map((chart) => (
                   <img
                     className="w-5 h-5 rounded-full"
@@ -464,10 +461,8 @@ const RegionTeamView = ({}: Props) => {
                 ))}
               </div>
             </div>
-          </div>
         </div>
-        <div>
-        <div className="w-full h-fit p-4 bg-white rounded-lg">
+        <div className="w-fit h-fit p-4 bg-white rounded-lg">
             <p className="text-[#303F58] text-lg font-bold p-3">
               Top performing BDA's
             </p>
@@ -480,7 +475,7 @@ const RegionTeamView = ({}: Props) => {
                 className="h-fit"
                 barGap={54}
                 barCategoryGap="40%"
-                width={550}
+                width={500}
                 height={300}
                 data={normalizedData}
               >
@@ -515,7 +510,7 @@ const RegionTeamView = ({}: Props) => {
                   />
                 </Bar>
               </BarChart>
-              <div className="flex ms-[85px] gap-[40px] -mt-2">
+              <div className="flex gap-[34px] ms-20 -mt-2">
                 {ChartData.map((chart) => (
                   <img
                     className="w-5 h-5 rounded-full"
@@ -526,7 +521,6 @@ const RegionTeamView = ({}: Props) => {
               </div>
             </div>
           </div>
-        </div>
       </div>
     </div>
   );
