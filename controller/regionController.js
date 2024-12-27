@@ -1,9 +1,12 @@
 const Region = require("../database/model/region");
 const Area = require("../database/model/area");
-const RegionManager = require("../database/model/regionManager");
 const Leads = require("../database/model/leads")
 const mongoose = require('mongoose')
-
+const RegionManger = require('../database/model/regionManager')
+const AreaManager = require("../database/model/areaManager");
+const Bda = require("../database/model/bda");
+const Supervisor = require("../database/model/supervisor");
+const SupportAgent = require("../database/model/supportAgent");
 
 
 

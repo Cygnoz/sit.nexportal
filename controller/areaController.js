@@ -2,7 +2,8 @@ const Area = require('../database/model/area');
 const Region = require('../database/model/region')
 const Leads = require("../database/model/leads")
 const mongoose = require('mongoose');
-
+const Bda = require("../database/model/bda");
+const AreaManager = require('../database/model/areaManager')
 
 // exports.addArea = async (req, res, next) => {
 //     try {
