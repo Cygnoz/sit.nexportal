@@ -439,10 +439,10 @@ const TrialView = ({}: Props) => {
               </p>
             </div>
 
-            <div className=" gap-2 w-full cursor-pointer  flex justify-between my-2">
+            <div className="w-full cursor-pointer  flex justify-between my-2">
               <div onClick={extentModalToggle}>
                 <Button
-                  className="w-36 h-10 flex justify-center"
+                  className="w-fit h-10 flex justify-center"
                   variant="tertiary"
                 >
                   <CalenderPlus size={16} color="#4B5C79" />
@@ -453,7 +453,7 @@ const TrialView = ({}: Props) => {
               </div>
               <div onClick={pauseModalToggle}>
                 <Button
-                  className="w-36 h-10 flex justify-center"
+                  className="w-fit h-10 flex justify-center"
                   variant="secondary"
                 >
                   {trialStatus ? (

@@ -209,7 +209,7 @@ const [selectedMonth,setSelectedMonth]=useState()
                 <h1 className='text-2xl font-medium'>80 Percentage</h1>
         
                 <div className='-ms-7 mt-2'>
-                <BarChart width={1170} height={280} data={leadConversionData}>
+                <BarChart width={1050} height={280} data={leadConversionData}>
                 <CartesianGrid   strokeDasharray="3 3" vertical={false}/>
             
             {/* Hide axis lines but keep labels visible */}
@@ -252,7 +252,7 @@ const [selectedMonth,setSelectedMonth]=useState()
                  </div>
                  <div className="mt-5">
                    <LineChart
-                     width={1150}
+                     width={1050}
                      height={400}
                      data={datas}
                      margin={{

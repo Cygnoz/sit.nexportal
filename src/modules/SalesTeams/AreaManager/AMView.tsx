@@ -560,7 +560,7 @@ const AMView = ({ }: Props) => {
   className="h-fit"
   barGap={54}
   barCategoryGap="40%"
-  width={940}
+  width={800}
   height={350}
   data={normalizedData}
 >
@@ -589,7 +589,7 @@ const AMView = ({ }: Props) => {
 </Bar>
 
 </BarChart>
-<div className='flex ms-24 gap-[67px] -mt-2'>
+<div className='flex ms-24 gap-[53px] -mt-2'>
 {ChartData.map((chart)=>(
   <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
 )) 
@@ -670,7 +670,7 @@ const AMView = ({ }: Props) => {
             </div>
             <div className="mt-5 w-full">
               <LineChart
-                width={1400}
+                width={1200}
                 height={400}
                 data={datas}
                 margin={{
