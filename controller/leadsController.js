@@ -378,41 +378,85 @@ exports.convertLeadToTrial = async (req, res) => {
 
 
 
- // Validate and parse dates in dd-MM-yyyy format
- const StartDate = moment(startDate, "DD-MM-YYYY", true);
- const EndDate = moment(endDate, "DD-MM-YYYY", true);
- const currentDate = moment();
+        // Validate and parse dates in YYYY-MM-DD format
+        const StartDate = moment(startDate, "YYYY-MM-DD", true);
+        const EndDate = moment(endDate, "YYYY-MM-DD", true);
+        const currentDate = moment();
+    
+        if (!StartDate.isValid() || !EndDate.isValid()) {
+          return res.status(400).json({ message: "Invalid startDate or endDate format. Use YYYY-MM-DD." });
+        }
+    
+        // Determine trialStatus
+        let trialStatus = "Expired"; // Default to expired
+    
+        // Check if the current date is between the startDate and endDate (inclusive)
+        if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)) {
+          trialStatus = "In Progress";
+        } else if (currentDate.isAfter(EndDate)) {
+          trialStatus = "Expired"; // explicitly set it to expired if currentDate is past endDate
+        } else if (currentDate.isBefore(StartDate)) {
+          trialStatus = "Not Started"; // for trials that have not started yet
+        }
+    
+        // Convert startDate and endDate to the desired format for storage
+        const formattedStartDate = StartDate.format("YYYY-MM-DD");
+        const formattedEndDate = EndDate.format("YYYY-MM-DD");
+    
+        // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
+        const updatedLead = await Leads.findByIdAndUpdate(
+          leadId,
+          {
+            customerStatus: "Trial",
+            trialStatus: trialStatus,
+            startDate: formattedStartDate, // Save formatted date
+            endDate: formattedEndDate,    // Save formatted date
+            organizationId,
+          },
+          { new: true } // Return the updated document
+        );
+    
+        // Check if the lead was found and updated
+        if (!updatedLead) {
+          return res.status(404).json({ message: "Lead not found or unable to convert." });
+        }
+    
+
+//  // Validate and parse dates in dd-MM-yyyy format
+//  const StartDate = moment(startDate, "YYYY-MM-DD", true);
+//  const EndDate = moment(endDate, "YYYY-MM-DD", true);
+//  const currentDate = moment();
 
 
-  // Determine trialStatus
-let trialStatus = "Expired";  // Default to expired
+//   // Determine trialStatus
+// let trialStatus = "Expired";  // Default to expired
 
-// Check if the current date is between the startDate and endDate (inclusive)
-if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)) {
-  trialStatus = "In Progress";
-} else if (currentDate.isAfter(EndDate)) {
-  trialStatus = "Expired";  // explicitly set it to expired if currentDate is past endDate
-} else if (currentDate.isBefore(StartDate)) {
-  trialStatus = "Not Started";  // for trials that have not started yet
-}
+// // Check if the current date is between the startDate and endDate (inclusive)
+// if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)) {
+//   trialStatus = "In Progress";
+// } else if (currentDate.isAfter(EndDate)) {
+//   trialStatus = "Expired";  // explicitly set it to expired if currentDate is past endDate
+// } else if (currentDate.isBefore(StartDate)) {
+//   trialStatus = "Not Started";  // for trials that have not started yet
+// }
 
 
-    // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
-    const updatedLead = await Leads.findByIdAndUpdate(
-      leadId,
-      { customerStatus: "Trial",
-        trialStatus: trialStatus,  // Update trialStatus
-        startDate:StartDate.toDate(),
-        endDate:EndDate.toDate(),
-        organizationId
-       },
-      {new: true } // Return the updated document
-    );
+//     // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
+//     const updatedLead = await Leads.findByIdAndUpdate(
+//       leadId,
+//       { customerStatus: "Trial",
+//         trialStatus: trialStatus,  // Update trialStatus
+//         startDate:StartDate.toDate(),
+//         endDate:EndDate.toDate(),
+//         organizationId
+//        },
+//       {new: true } // Return the updated document
+//     );
 
-    // Check if the lead was found and updated
-    if (!updatedLead) {
-      return res.status(404).json({ message: "Lead not found or unable to convert." });
-    }
+//     // Check if the lead was found and updated
+//     if (!updatedLead) {
+//       return res.status(404).json({ message: "Lead not found or unable to convert." });
+//     }
 
     // const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = true );
     // if (!emailSent) {
@@ -422,8 +466,8 @@ if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate))
     // }
 
     // Format dates back to dd-MM-yyyy for the response
-    updatedLead.startDate = StartDate.format("DD-MM-YYYY");
-    updatedLead.endDate = EndDate.format("DD-MM-YYYY");
+    updatedLead.startDate = StartDate.format("YYYY-MM-DD");
+    updatedLead.endDate = EndDate.format("YYYY-MM-DD");
 
 
     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
