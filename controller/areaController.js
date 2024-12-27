@@ -1,6 +1,7 @@
 const Area = require('../database/model/area');
 const Region = require('../database/model/region')
-
+const Leads = require("../database/model/leads")
+const mongoose = require('mongoose');
 
 
 // exports.addArea = async (req, res, next) => {
@@ -177,28 +178,48 @@ exports.getAllAreas = async (req, res) => {
   };
   
 
-exports.deleteArea = async (req, res, next) => {
-  try {
-    const { areaId } = req.params;
-
-    const deletedArea = await Area.findByIdAndDelete(areaId);
-
-    if (!deletedArea) {
-      return res.status(404).json({ message: "Area not found" });
+  exports.deleteArea = async (req, res) => {
+    try {
+      const { areaId } = req.params;
+  
+      // Validate if areaId is a valid ObjectId
+      if (!mongoose.Types.ObjectId.isValid(areaId)) {
+        return res.status(400).json({ message: "Invalid Area ID." });
+      }
+  
+      // Check if the area exists
+      const area = await Area.findById(areaId);
+      if (!area) {
+        return res.status(404).json({ message: "Area not found." });
+      }
+  
+      // Check if areaId is referenced in other collections
+      const [lead, areaManager, bda] = await Promise.all([
+        Leads.findOne({ areaId }),
+        AreaManager.findOne({ area }),
+        Bda.findOne({ area }),
+     
+      ]);
+  
+      if (lead || areaManager || bda ) {
+        return res.status(400).json({
+          message: "Cannot delete Area because it is referenced in another collection.",
+          referencedIn: {
+            leads: !!lead, areaManager: !!areaManager, bda: !!bda,
+          },
+        });
+      }
+  
+      // Delete the area
+      await Area.findByIdAndDelete(areaId);
+  
+      res.status(200).json({ message: "Area deleted successfully." });
+    } catch (error) {
+      console.error("Error deleting Area:", error.message || error);
+      res.status(500).json({ message: "Internal server error." });
     }
-
-    res.status(200).json({ message: "Area deleted successfully" });
-
-    // Pass operation details to middleware
-    logOperation(req, "successfully");
-    next();
-  } catch (error) {
-    console.error("Error deleting area:", error);
-    res.status(500).json({ message: "Internal server error" });
-    logOperation(req, "Failed");
-    next();
-  }
-};
+  };
+  
 
 
 

@@ -9,7 +9,7 @@ const commissionController = require('../controller/commissionController');
 const supervisorController = require('../controller/supervisorController');
 const supportAgentController = require('../controller/supportAgentController');
 const dashboardController = require('../controller/dashboardController');
-
+const regionDashboardController = require('../controller/regionDashboardController');
 
 const checkPermission = require('../controller/authController/permission');
 
@@ -25,7 +25,6 @@ router.post('/roles',userController.addOrUpdateRoles)
 router.get('/countries',userController.getCountriesData)
 
 // region
-
 router.post("/region",verifyToken,checkPermission('Add Region'), regionController.addRegion,ActivityLogGeneration('Add Region'));
 
 router.get("/region/:regionId",verifyToken,checkPermission('View Region'), regionController.getRegion);
@@ -35,6 +34,10 @@ router.get("/regions",verifyToken,checkPermission('View Region'), regionControll
 router.put("/region/:regionId",verifyToken,checkPermission('Edit Region'), regionController.updateRegion,ActivityLogGeneration('Edit Region'));
 
 router.delete("/region/:regionId",verifyToken,checkPermission('Delete Region'), regionController.deleteRegion,ActivityLogGeneration('Delete Region'));
+
+// region dashboard
+router.get("/regions/:regionId/areas",verifyToken,checkPermission('View Region'), regionDashboardController.getAreasByRegion);
+
 
 // area
 router.post("/area",verifyToken,checkPermission('Add Area'), areaController.addArea,ActivityLogGeneration('Add Area'));
