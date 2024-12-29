@@ -45,16 +45,25 @@ exports.addLead = async (req, res , next ) => {
     
     const cleanedData = cleanLeadData(req.body);
     
-    const { email, regionId, areaId , bdaId } = cleanedData;
+    const { firstName, email, phone, regionId, areaId , bdaId } = cleanedData;
 
 
 
     
-    // Check if a lead with the same email already exists
-    const existingLead = await Leads.findOne({ email });
-    if (existingLead) {
-      return res.status(400).json({ message: "A lead with this email already exists" });
-    }
+    // // Check if a lead with the same email already exists
+    // const existingLead = await Leads.findOne({ email });
+    // if (existingLead) {
+    //   return res.status(400).json({ message: "A lead with this email already exists" });
+    // }
+
+    // Extract the user field (ObjectId)
+
+   // Check for duplicate user details
+   const duplicateCheck = await checkDuplicateUser(firstName, email, phone);
+   if (duplicateCheck) {
+     return res.status(200).json({ message: `Conflict: ${duplicateCheck}` }); // Return a success response with conflict details
+   }
+
 
     const { regionExists, areaExists , bdaExists } = await dataExist( regionId, areaId , bdaId);
 
@@ -176,7 +185,6 @@ if (!existingLead) {
 
 // Extract the user field (ObjectId)
 const existingUserId = existingLead.user;
-
 
 
     // Check for duplicate user details, excluding the current document
@@ -326,17 +334,21 @@ exports.deleteLead = async (req, res) => {
     }
 
     // Delete the lead
-    await Leads.findByIdAndDelete(leadId);
+    const deletedLead = await Leads.findByIdAndDelete(leadId);
 
+    if (!deletedLead) {
+      ActivityLog(req, "Failed - Lead deletion failed");
+      return res.status(404).json({ message: "Lead not found or already deleted." });
+    }
+
+    ActivityLog(req, "Success - Lead deleted successfully", leadId);
     res.status(200).json({ message: "Lead deleted successfully." });
   } catch (error) {
     console.error("Error deleting lead:", error.message || error);
+    ActivityLog(req, "Failed - Internal server error");
     res.status(500).json({ message: "Internal server error." });
   }
 };
-
-
-
 
 exports.convertLeadToTrial = async (req, res) => {
   try {
@@ -377,40 +389,15 @@ exports.convertLeadToTrial = async (req, res) => {
     console.log("response",organizationId)
 
 
-
-        // Validate and parse dates in YYYY-MM-DD format
-        const StartDate = moment(startDate, "YYYY-MM-DD", true);
-        const EndDate = moment(endDate, "YYYY-MM-DD", true);
-        const currentDate = moment();
-    
-        if (!StartDate.isValid() || !EndDate.isValid()) {
-          return res.status(400).json({ message: "Invalid startDate or endDate format. Use YYYY-MM-DD." });
-        }
-    
-        // Determine trialStatus
-        let trialStatus = "Expired"; // Default to expired
-    
-        // Check if the current date is between the startDate and endDate (inclusive)
-        if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)) {
-          trialStatus = "In Progress";
-        } else if (currentDate.isAfter(EndDate)) {
-          trialStatus = "Expired"; // explicitly set it to expired if currentDate is past endDate
-        } else if (currentDate.isBefore(StartDate)) {
-          trialStatus = "Not Started"; // for trials that have not started yet
-        }
-    
-        // Convert startDate and endDate to the desired format for storage
-        const formattedStartDate = StartDate.format("YYYY-MM-DD");
-        const formattedEndDate = EndDate.format("YYYY-MM-DD");
-    
+        
         // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
         const updatedLead = await Leads.findByIdAndUpdate(
           leadId,
           {
             customerStatus: "Trial",
-            trialStatus: trialStatus,
-            startDate: formattedStartDate, // Save formatted date
-            endDate: formattedEndDate,    // Save formatted date
+            trialStatus: "In Progress",
+            startDate, // Save formatted date
+            endDate,    // Save formatted date
             organizationId,
           },
           { new: true } // Return the updated document
@@ -420,60 +407,11 @@ exports.convertLeadToTrial = async (req, res) => {
         if (!updatedLead) {
           return res.status(404).json({ message: "Lead not found or unable to convert." });
         }
-    
-
-//  // Validate and parse dates in dd-MM-yyyy format
-//  const StartDate = moment(startDate, "YYYY-MM-DD", true);
-//  const EndDate = moment(endDate, "YYYY-MM-DD", true);
-//  const currentDate = moment();
-
-
-//   // Determine trialStatus
-// let trialStatus = "Expired";  // Default to expired
-
-// // Check if the current date is between the startDate and endDate (inclusive)
-// if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)) {
-//   trialStatus = "In Progress";
-// } else if (currentDate.isAfter(EndDate)) {
-//   trialStatus = "Expired";  // explicitly set it to expired if currentDate is past endDate
-// } else if (currentDate.isBefore(StartDate)) {
-//   trialStatus = "Not Started";  // for trials that have not started yet
-// }
-
-
-//     // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
-//     const updatedLead = await Leads.findByIdAndUpdate(
-//       leadId,
-//       { customerStatus: "Trial",
-//         trialStatus: trialStatus,  // Update trialStatus
-//         startDate:StartDate.toDate(),
-//         endDate:EndDate.toDate(),
-//         organizationId
-//        },
-//       {new: true } // Return the updated document
-//     );
-
-//     // Check if the lead was found and updated
-//     if (!updatedLead) {
-//       return res.status(404).json({ message: "Lead not found or unable to convert." });
-//     }
-
-    // const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = true );
-    // if (!emailSent) {
-    //   return res
-    //     .status(500)
-    //     .json({ success: false, message: 'Failed to send login credentials email' });
-    // }
-
-    // Format dates back to dd-MM-yyyy for the response
-    updatedLead.startDate = StartDate.format("YYYY-MM-DD");
-    updatedLead.endDate = EndDate.format("YYYY-MM-DD");
+  
 
 
     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
-    
-    // Successful response
-    
+        
 
   } catch (error) {
     console.error("Error during client creation:", error.message || error);
@@ -495,6 +433,88 @@ exports.convertLeadToTrial = async (req, res) => {
   }
 };
 
+
+// exports.convertLeadToTrial = async (req, res) => {
+//   try {
+
+//     const { leadId } = req.params; // Get the lead ID from request parameters
+//     const { organizationName, contactName, contactNum, email, password ,startDate,endDate} = req.body;
+
+
+//     // Validate request body
+//     if (!organizationName || !contactName || !contactNum || !email || !password) {
+//       return res.status(400).json({ message: "All fields are required" });
+//     }
+
+//     // Configure the request with timeout
+//     const axiosConfig = {
+//       headers: {
+//         'Content-Type': 'application/json',
+//       },
+//       timeout: 5000, // 5 seconds timeout
+//     };
+
+//     // Body for the POST request
+//     const requestBody = {
+//       organizationName,
+//       contactName,
+//       contactNum,
+//       email,
+//       password,
+//     };
+
+//     // Send POST request to external API
+//     const response = await axios.post(
+//       'https://dev.billbizz.cloud:5004/create-client',
+//       requestBody,
+//       axiosConfig
+//     );
+//     const organizationId = response.data.organizationId;
+//     console.log("response",organizationId)
+
+
+        
+//         // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
+//         const updatedLead = await Leads.findByIdAndUpdate(
+//           leadId,
+//           {
+//             customerStatus: "Trial",
+//             trialStatus: "In Progress",
+//             startDate, // Save formatted date
+//             endDate,    // Save formatted date
+//             organizationId,
+//           },
+//           { new: true } // Return the updated document
+//         );
+    
+        
+//     // Check if the lead was found and updated
+//     if (!updatedLead) {
+//       ActivityLog(req, "Failed - Lead not found or unable to convert");
+//       return res.status(404).json({ message: "Lead not found or unable to convert." });
+//     }
+
+//     ActivityLog(req, "Success - Lead converted to Trial", leadId);
+//     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
+//   } catch (error) {
+//     console.error("Error during client creation:", error.message || error);
+
+//     // Handle specific error cases
+//     if (error.response) {
+//       ActivityLog(req, `Failed`);
+//       return res.status(error.response.status).json({
+//         message: `Client creation failed with status code: ${error.response.status}`,
+//         error: error.response.data,
+//       });
+//     } else if (error.request) {
+//       ActivityLog(req, "Failed - No response from client creation service");
+//       return res.status(504).json({ message: "No response from client creation service" });
+//     } else {
+//       ActivityLog(req, "Failed - Internal server error");
+//       return res.status(500).json({ message: "Internal server error" });
+//     }
+//   }
+// };
 
 
 
@@ -518,40 +538,49 @@ exports.convertLeadToTrial = async (req, res) => {
 // };
 
 // Get All Trials without validation
+
 exports.getAllTrials = async (req, res) => {
   try {
-    // Fetch all trials from the database
     const trials = await Leads.find({ customerStatus: "Trial" });
 
-    // Check if trials exist
     if (!trials || trials.length === 0) {
       return res.status(404).json({ message: "No trials found." });
     }
 
-    // Enrich data for each trial
     const enrichedTrials = await Promise.all(
       trials.map(async (trial) => {
-        const { regionId, areaId, bdaId } = trial;
+        const { startDate, endDate, regionId, areaId, bdaId } = trial;
+        const currentDate = moment();
+        const StartDate = moment(startDate, "YYYY-MM-DD");
+        const EndDate = moment(endDate, "YYYY-MM-DD");
+
+        // Calculate trialStatus dynamically (Only In Progress or Expired)
+        let trialStatus = "Expired";
+        if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)) {
+          trialStatus = "In Progress";
+        }
 
         // Fetch related details using dataExist
-        const { regionExists, areaExists, bdaExists, bdaName} = await dataExist(regionId, areaId, bdaId);
+        const { regionExists, areaExists, bdaExists, bdaName } = await dataExist(regionId, areaId, bdaId);
 
         return {
           ...trial.toObject(),
-          regionDetails: regionExists?.[0] || null, // Assuming regionExists is an array
-          areaDetails: areaExists?.[0] || null,    // Assuming areaExists is an array
-          bdaDetails:{
-            bdaId: bdaExists[0]?._id || null,
+          trialStatus, // Add dynamically calculated status
+          regionDetails: regionExists?.[0] || null,
+          areaDetails: areaExists?.[0] || null,
+          bdaDetails: {
+            bdaId: bdaExists?.[0]?._id || null,
             bdaName: bdaName || null,
-          },      // Assuming bdaExists is an array
+          },
         };
       })
     );
 
-    // Respond with the enriched trials data
+    // ActivityLog(req, "Success - Trials fetched successfully");
     res.status(200).json({ trials: enrichedTrials });
   } catch (error) {
     console.error("Error fetching trials:", error);
+    // ActivityLog(req, "Failed - Error fetching trials");
     res.status(500).json({ message: "Internal server error." });
   }
 };
@@ -724,26 +753,15 @@ const ActivityLog = (req, status, operationId = null) => {
 
 
 
-  const checkDuplicateUser = async (firstName, email, phone, excludeId) => {
-    const existingUser = await User.findOne({
-      $and: [
-        { _id: { $ne: excludeId } }, // Exclude the current document
-        {
-          $or: [
-            { firstName },
-            { email },
-            { phone },
-          ],
-        },
-      ],
+  const checkDuplicateUser = async (firstName, email, phone) => {
+    const existingUser = await Leads.findOne({
+      $or: [{ firstName }, { email }, { phone }],
     });
   
-
-
     if (!existingUser) return null;
   
     const duplicateMessages = [];
-    if (existingUser.firstName === userName)
+    if (existingUser.firstName === firstName)
       duplicateMessages.push("Full name already exists");
     if (existingUser.email === email)
       duplicateMessages.push("Login email already exists");
@@ -752,7 +770,6 @@ const ActivityLog = (req, status, operationId = null) => {
   
     return duplicateMessages.join(". ");
   };
-  
 
 
    //Clean Data 
@@ -837,6 +854,7 @@ validateField( typeof data.phone === 'undefined', "Phone number required", error
 
 const validSalutations = ["Mr.", "Mrs.", "Ms.", "Miss.", "Dr."];
 const validLeadStatus = ["New", "Contacted", "Inprogress", "Lost", "Won"];
+
 
 
 
@@ -977,12 +995,14 @@ exports.extendTrialDuration = async (req, res) => {
     // Save the updated lead
     await lead.save();
 
+    ActivityLog(req, `Success - Trial duration extended for lead ID ${trialId} by ${duration} days.`);
     res.status(200).json({
       message: "Trial duration extended successfully.",
       lead,
     });
   } catch (error) {
     console.error("Error extending trial duration:", error.message || error);
+    ActivityLog(req, "Failed - Error extending trial duration.");
     res.status(500).json({ message: "Internal server error." });
   }
 };
