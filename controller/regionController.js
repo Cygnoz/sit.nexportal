@@ -132,47 +132,6 @@ const status = "Active"
   };
   
 
-  // exports.deleteRegion = async (req, res, next) => {
-  //   try {
-  //     const { id } = req.params;
-  //     console.log(id)
-  //     // Check if the region exists
-  //     const region = await Region.findById(id);
-  //     if (!region) {
-  //       return res.status(404).json({ message: "Region not found" });
-  //     }
-  
-  //     // Check if the region is referenced in the Area collection
-  //     const areaReference = await Area.findOne({ region: id });
-  //     if (areaReference) {
-  //       return res
-  //         .status(400)
-  //         .json({ message: "Cannot delete region as it is referenced in areas" });
-  //     }
-  
-  //     // Check if the region is referenced in the RegionManager collection
-  //     const managerReference = await RegionManager.findOne({ region: id });
-  //     if (managerReference) {
-  //       return res.status(400).json({
-  //         message: "Cannot delete region as it is referenced in region managers",
-  //       });
-  //     }
-  
-  //     // Delete the region
-  //     await Region.findByIdAndDelete(id);
-  //     res.status(200).json({ message: "Region deleted successfully" });
-  
-  //     // Pass operation details to middleware
-  //     ActivityLog(req, "successfully", id);
-  //     next();
-  //   } catch (error) {
-  //     console.error("Error deleting region:", error);
-  //     res.status(500).json({ message: "Internal server error" });
-  //     ActivityLog(req, "Failed");
-  //     next();
-  //   }
-  // };
-
 
 
 
@@ -211,16 +170,29 @@ const status = "Active"
       }
       
   
-      // Delete the region
-      await Region.findByIdAndDelete(regionId);
-  
-      res.status(200).json({ message: "Region deleted successfully." });
-    } catch (error) {
-      console.error("Error deleting Region:", error.message || error);
-      res.status(500).json({ message: "Internal server error." });
-    }
-  };
-  
+       // Delete the region
+       const deletedRegion = await Region.findByIdAndDelete(regionId);
+       if (!deletedRegion) {
+         return res.status(404).json({ message: "Region not found." });
+       }
+   
+       // Log successful operation
+       ActivityLog(req, "successfully", deletedRegion._id);
+       next();
+   
+       res.status(200).json({ message: "Region deleted successfully." });
+     } catch (error) {
+       console.error("Error deleting Region:", error.message || error);
+   
+       // Log error as failure
+       ActivityLog(req, "Failed");
+       next();
+   
+       res.status(500).json({ message: "Internal server error." });
+     }
+   };
+   
+ 
   
   const ActivityLog = (req, status, operationId = null) => {
     const { id, userName } = req.user;

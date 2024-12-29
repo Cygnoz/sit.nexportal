@@ -211,15 +211,26 @@ exports.getAllAreas = async (req, res) => {
         });
       }
   
-      // Delete the area
-      await Area.findByIdAndDelete(areaId);
+      const deletedArea = await Area.findByIdAndDelete(areaId);
+      if (!deletedArea) {
+        return res.status(404).json({ message: "Area not found." });
+      }
+  
+      logOperation(req, "successfully", deletedArea._id);
+      next();
   
       res.status(200).json({ message: "Area deleted successfully." });
+      
     } catch (error) {
       console.error("Error deleting Area:", error.message || error);
+  
+      logOperation(req, "Failed");
+      next();
+  
       res.status(500).json({ message: "Internal server error." });
     }
   };
+  
   
 
 

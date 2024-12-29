@@ -347,6 +347,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // Trial
+      { action: "Add Trial", note: "Add Trial" },
+      { action: "View Trial", note: "View Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Delete Trial", note: "Delete Trial" },
+
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
       { action: "View Licenser", note: "View Licenser" },
