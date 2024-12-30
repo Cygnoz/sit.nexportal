@@ -58,7 +58,7 @@ function TicketsHome({ }: Props) {
           openingDate: tickets?.openingDate,
           timeAgo: calculateTimeAgo(new Date(tickets?.openingDate), currentTime),
         })) || [];
-        setAllTickets(transformTicket);
+        setAllTickets(transformTicket)
       }
     } catch (err) {
       console.log(err);
@@ -78,20 +78,24 @@ function TicketsHome({ }: Props) {
   };
 
   useEffect(() => {
+    if(allTickets.length>0){
+      // Set an interval to update the "time ago" values
+      const interval = setInterval(() => {
+        setAllTickets((prevTickets) =>
+          prevTickets.map((ticket) => ({
+            ...ticket,
+            timeAgo: calculateTimeAgo(new Date(ticket.openingDate), new Date()),
+          }))
+        );
+      }, 1000); // Update every 60 seconds
+  
+      return () => clearInterval(interval); // Cleanup interval on unmount
+    }
+  }, [allTickets])
+
+  useEffect(()=>{
     getTickets();
-
-    // Set an interval to update the "time ago" values
-    const interval = setInterval(() => {
-      setAllTickets((prevTickets) =>
-        prevTickets.map((ticket) => ({
-          ...ticket,
-          timeAgo: calculateTimeAgo(new Date(ticket.openingDate), new Date()),
-        }))
-      );
-    }, 1000); // Update every 60 seconds
-
-    return () => clearInterval(interval); // Cleanup interval on unmount
-  }, []);
+  },[])
 
   // Define the columns with strict keys
   const columns: { key: keyof TicketsData; label: string }[] = [

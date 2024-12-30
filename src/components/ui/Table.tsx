@@ -29,7 +29,7 @@ interface TableProps<T> {
     search?: { placeholder: string };
     sort?: {
       sortHead: string;
-      sortList: { label: string; icon: React.ReactNode;action?:()=>void }[];
+      sortList: { label: string; icon: React.ReactNode; action?: () => void }[];
     }[];
   };
   actionList?: {
@@ -82,14 +82,14 @@ const Table = <T extends object>({
       case "New":
         return "bg-blue-500 text-center text-white py-1 px-2 w-fit rounded-lg";
       case "Contacted":
-          return "bg-cyan-800 text-center text-white py-1 px-2 rounded-lg";
+        return "bg-cyan-800 text-center text-white py-1 px-2 rounded-lg";
       case "In progress":
         return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
-        case "In Progress":
+      case "In Progress":
         return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
       case "Proposal":
         return "bg-violet-300 text-center text-black py-1 px-2 rounded-lg";
-        case "Lost":
+      case "Lost":
         return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
       case "Closed":
         return "bg-gray-400 text-center text-white py-1 px-2 rounded-lg";
@@ -99,6 +99,10 @@ const Table = <T extends object>({
         return "bg-purple-500 text-center text-white py-1 px-2 rounded-lg";
       case "Expired":
         return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
+      case "Not Started":
+        return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
+      case "Extended":
+        return "bg-violet-500 text-center text-white py-1 px-2 rounded-lg";
       case "Pending Renewal":
         return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
       case "Open":
@@ -111,8 +115,8 @@ const Table = <T extends object>({
         return "bg-orange-300 text-center text-white py-1 px-2 rounded-lg";
       case "Low":
         return "bg-green-300 text-center text-white py-1 px-2 rounded-lg";
-        case "Won":
-          return "bg-green-500 text-center text-white  py-1 px-2 w-fit rounded-lg";
+      case "Won":
+        return "bg-green-500 text-center text-white  py-1 px-2 w-fit rounded-lg";
       case "Resolved":
         return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
       case "Paid":
@@ -182,7 +186,7 @@ const Table = <T extends object>({
       {headerContents.sort && (
         <div className="flex gap-2">
           {headerContents.sort.map((sort, index) => (
-            <SortBy  key={index} sort={sort} />
+            <SortBy key={index} sort={sort} />
           ))}
         </div>
       )}
@@ -243,7 +247,6 @@ const Table = <T extends object>({
     </tr>
   );
 
-
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (data?.length === 0) {
@@ -251,7 +254,7 @@ const Table = <T extends object>({
       } else {
         setNoDataFound(false);
       }
-    },3000);
+    }, 3000);
     return () => clearTimeout(timeout);
   }, [data]);
 
@@ -275,15 +278,17 @@ const Table = <T extends object>({
               <th className="border border-[#e7e6e6] p-4 text-sm  text-[#303F58] font-medium">
                 SI No.
               </th>
-              {columns.map((col:any) => (
+              {columns.map((col: any) => (
                 <th
                   key={String(col.key)}
                   className={`border border-[#e7e6e6]  p-4 text-sm  text-[#303F58] font-medium ${
-                    col.key=='convert' ? "w-48 text-center":
-                    col.key?.toLowerCase().includes("status")&&'text-center min-w-[120px]'
+                    col.key == "convert"
+                      ? "w-48 text-center"
+                      : col.key?.toLowerCase().includes("status") &&
+                        "text-center min-w-[120px]"
                   }`}
                 >
-                  {col.key=='convert'?'Convert':col.label}
+                  {col.key == "convert" ? "Convert" : col.label}
                 </th>
               ))}
               {!noAction && (
@@ -297,7 +302,7 @@ const Table = <T extends object>({
             {noDataFound ? (
               <tr>
                 <td
-                  colSpan={columns.length + 2}
+                  colSpan={columns?.length + 2}
                   className="text-center py-4 text-gray-500"
                 >
                   <div className="flex justify-center flex-col items-center">
@@ -321,35 +326,41 @@ const Table = <T extends object>({
                     >
                       <div
                         className={`flex ${
-                          col.key.toLowerCase().includes("status") ||  col?.key == "convert"
+                          col.key.toLowerCase().includes("status") ||
+                          col?.key == "convert"
                             ? "justify-center"
                             : "justify-start"
                         } items-center gap-2`}
                       >
                         {col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
-                        ) : ["userName", "user.userName", "leadName","firstName"].includes(
-                            col.key
-                          ) ? (
+                        ) : [
+                            "userName",
+                            "user.userName",
+                            "leadName",
+                            "firstName",
+                          ].includes(col.key) ? (
                           renderImageAndLabel(row)
                         ) : col.key.toLowerCase().includes("status") ? (
                           <p className={getStatusClass(row[col.key])}>
                             {row[col.key]}
                           </p>
-                        ) : col?.key == "convert" ?
+                        ) : col?.key == "convert" ? (
                           row["leadStatus"] == "Won" ? (
-                          <Button
-                            onClick={() => col.label(row._id)}
-                            variant="tertiary"
-                            className="h-8 text-sm  text-[#565148]  border border-[#565148] rounded-xl"
-                            // size="lg"
-                          >
-                            Convert to Trial 
-                            <ArrowRight/>
-                          </Button>
-                          
-                        ):'' : (
-                          getNestedValue(row, col.key) ||'N/A'
+                            <Button
+                              onClick={() => col.label(row._id)}
+                              variant="tertiary"
+                              className="h-8 text-sm  text-[#565148]  border border-[#565148] rounded-xl"
+                              // size="lg"
+                            >
+                              Convert to Trial
+                              <ArrowRight />
+                            </Button>
+                          ) : (
+                            ""
+                          )
+                        ) : (
+                          getNestedValue(row, col.key) || "N/A"
                         )}
                       </div>
                     </td>

@@ -21,6 +21,7 @@ import useApi from "../../../Hooks/useApi";
 import { SAData } from "../../../Interfaces/SA";
 import { endPoints } from "../../../services/apiEndpoints";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 interface AddSupportAgentProps {
   onClose: () => void;
@@ -486,20 +487,20 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                   {...register("email")}
                 />
                
-                    <Input
-                      required
-                      placeholder="Enter Password"
-                      label="Create Password"
-                      error={errors.password?.message}
-                      {...register("password")}
-                    />
-                    <Input
-                      required
-                      placeholder="Re-enter Password"
-                      label="Confirm Password"
-                      error={errors.confirmPassword?.message}
-                      {...register("confirmPassword")}
-                    />
+               <InputPasswordEye
+                    label={editId?"New Password":"Password"}
+                    required
+                    placeholder="Enter your password"
+                    error={errors.password?.message}
+                    {...register("password")}
+                  />
+                  <InputPasswordEye
+                    label="Confirm Password"
+                    required
+                    placeholder="Confirm your password"
+                    error={errors.confirmPassword?.message}
+                    {...register("confirmPassword")}
+                  />
                     </div>
                   </>
                 )}

@@ -37,19 +37,7 @@ const RegionHome = () => {
     navigate(`/regions/${id}`);
   };
 
-  // const handleDelete=async(id:any)=>{
-  //   try{
-  //     const {response,error}=await deleteRegion(`${endPoints.REGION}/${id}`)
-  //   if(response && !error){
-  //     toast.success(response.data.message)
-  //     getAllRegions()
-  //   }else{
-  //     toast.error(error.response.data.message)
-  //   }
-  //   }catch(err){
-  //     console.log();
-  //   }
-  // }
+
 
   const handleEdit = (id: any) => {
     handleModalToggle();
@@ -66,11 +54,10 @@ const RegionHome = () => {
             createdAt: new Date(region.createdAt).toLocaleDateString("en-GB"), // This formats the date to "dd/mm/yyyy"
           })
         );
-
         // Then set the transformed regions into state
         setAllRegion(transformedRegions);
       } else {
-        toast.error(error.response.data.message);
+        console.log(error.response.data.message);
       }
     } catch (err) {
       console.log(err);

@@ -61,9 +61,6 @@ function LeadHome({}: Props) {
   const getLeads=async()=>{
     try{
       const {response,error}=await getAllLeads(endPoints.LEADS)
-      console.log("res",response);
-      console.log("err",error);
-      
       if(response && !error){
         console.log(response.data.leads);
        const transformLead= response.data.leads?.map((lead:any) => ({
@@ -202,7 +199,7 @@ const columns: { key: any; label: any }[] = [
     <ImportLeadModal  onClose={()=>handleModalToggle()}/>
     </Modal>
     <Modal open={isModalOpen.convert} align="center" onClose={()=>handleModalToggle()} className="w-[30%]">
-        <ConvertModal onClose={()=>handleModalToggle()} type="lead" />
+        <ConvertModal getLeads={getLeads}  onClose={()=>handleModalToggle()} type="lead" />
       </Modal>
     </>
   )

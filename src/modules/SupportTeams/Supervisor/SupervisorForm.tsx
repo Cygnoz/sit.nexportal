@@ -21,6 +21,7 @@ import bcardback from "../../../assets/image/Business-card-back.png";
 import bcardfront from "../../../assets/image/Business-card-front.png";
 import idcard from "../../../assets/image/ID-card 1.png";
 import ViewIcon from "../../../assets/icons/ViewIcon";
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 
 
@@ -482,20 +483,20 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose ,editId}) => {
                   {...register("email")}
                 />
               
-               <Input
-                  required
-                  placeholder="Enter Password"
-                  label="Create Password"
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-                <Input
-                  required
-                  placeholder="Re-enter Password"
-                  label="Confirm Password"
-                  error={errors.confirmPassword?.message}
-                  {...register("confirmPassword")}
-                />
+              <InputPasswordEye
+                    label={editId?"New Password":"Password"}
+                    required
+                    placeholder="Enter your password"
+                    error={errors.password?.message}
+                    {...register("password")}
+                  />
+                  <InputPasswordEye
+                    label="Confirm Password"
+                    required
+                    placeholder="Confirm your password"
+                    error={errors.confirmPassword?.message}
+                    {...register("confirmPassword")}
+                  />
                  </div>
               </>
                }

@@ -56,7 +56,7 @@ const AreaHome = () => {
         // Then set the transformed regions into state
         setAllAreas(transformedAreas);
       }else{
-        toast.error(error.response.data.message)
+        console.log(error.response.data.message)
       }
     }catch(err){
       console.log(err);

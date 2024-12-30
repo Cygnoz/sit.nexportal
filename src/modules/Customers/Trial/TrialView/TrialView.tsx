@@ -201,6 +201,14 @@ const TrialView = ({}: Props) => {
         return "bg-yellow-100 text-black py-1 px-2 rounded-full";
         case "In progress":
         return "bg-yellow-100 text-black py-1 px-2 rounded-full";
+        case "Extended":
+          return "bg-violet-500 text-center text-white py-1 px-2 rounded-lg";
+        case "Expired":
+        return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
+        case "Pause":
+          return "bg-yellow-500 text-center text-black py-1 px-2 rounded-lg";
+        case "Not Started":
+            return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
       case "Proposal":
         return "bg-violet-300 text-black py-1 px-2 rounded-full";
       case "Lost":
@@ -700,7 +708,7 @@ const TrialView = ({}: Props) => {
         onClose={covertModalToggle}
         className="w-[30%]"
       >
-        <ConvertModal orgData={trial}  onClose={covertModalToggle} type="trial" />
+        <ConvertModal getLeads={getOneTrial}  orgData={trial}  onClose={covertModalToggle} type="trial" />
       </Modal>
 
       {/* Modal controlled by state */}
