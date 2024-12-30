@@ -15,6 +15,9 @@ import AreaForm from "./AreaForm";
 import LeadAndLisence from "./LeadAndLisence";
 import ResendActivity from "./ResendActivity";
 import TeamOverview from "./TeamOverview";
+import toast from "react-hot-toast";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
+import Trash from "../../../assets/icons/Trash";
 
 type Props = {};
 
@@ -22,6 +25,7 @@ const AreaView = ({}: // status,
 // salesManagers
 //areaCode,region
 Props) => {
+  const {request:deleteArea}=useApi('delete',3003)
   const { id } = useParams();
   const navigate=useNavigate()
   const {request:getArea}=useApi('get',3003)
@@ -33,12 +37,19 @@ Props) => {
   ];
   const [activeTab, setActiveTab] = useState<string>("Team Overview");
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState({
+    editArea:false,
+    deleteArea:false
+  });
 
   // Function to toggle modal visibility
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
-    getAreas()
+  const handleModalToggle = (editArea = false,deleteArea=false) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      editArea,
+      deleteArea
+    }));
+    getAreas();
   };
 
   const getAreas=async()=>{
@@ -57,6 +68,22 @@ Props) => {
  useEffect(()=>{
   getAreas()
  },[id])
+
+ const handleDelete = async () => {
+  try {
+    const { response, error } = await deleteArea(`${endPoints.AREA}/${id}`);
+    if (response) {
+      toast.success(response.data.message);
+      navigate("/areas");
+    } else {
+      toast.error(error?.response?.data?.message || "An error occurred");
+      
+    }
+  } catch (err) {
+    console.error("Delete error:", err);
+    toast.error("Failed to delete the lead.");
+  }
+};
  
 
   return (
@@ -114,7 +141,7 @@ Props) => {
               <img src={person2} alt="" />
             </div>
           </div>
-          <div onClick={handleModalToggle} className="flex flex-col items-center  space-y-1 cursor-pointer">
+          <div onClick={()=>handleModalToggle(true,false)} className="flex flex-col items-center  space-y-1 cursor-pointer">
             <div className="w-8 h-8 mb-2 rounded-full">
             <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -136,7 +163,16 @@ Props) => {
                     DeActivate
                   </p>
                 </div>
-          
+                <div onClick={() => handleModalToggle(false,true)}  className="cursor-pointer">
+                <div className="rounded-full bg-[#D52B1E4D] h-9 w-9 border border-white mb-2">
+                  <div className="ms-2 mt-2 ">
+                    <Trash size={18} color="#BC3126" />
+                  </div>
+                </div>
+                <p className="text-center font-medium  ">
+                    Delete
+                  </p>
+              </div>
         </div>
       </div>
       <div className="flex gap-8 text-base font-bold my-5 border-b border-gray-200">
@@ -161,9 +197,20 @@ Props) => {
 
       {activeTab === "Recend Activity Feed" && <ResendActivity />}
     </div>
-     <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[35%]">
-     <AreaForm editId={id} onClose={handleModalToggle} />
+     <Modal open={isModalOpen.editArea} onClose={()=>handleModalToggle()} className="w-[35%]">
+     <AreaForm editId={id} onClose={()=>handleModalToggle()} />
    </Modal>
+   <Modal
+        open={isModalOpen.deleteArea}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>
  </>
   );
 };

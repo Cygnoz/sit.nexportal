@@ -22,10 +22,13 @@ import RegionForm from "./RegionForm";
 import RegionPerformanceView from "./RegionPerformanceView";
 import RegionTeamView from "./RegionTeamView";
 import UserIcon from "../../../assets/icons/UserIcon";
+import Trash from "../../../assets/icons/Trash";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
 type Props = {};
 
 function RegionView({}: Props) {
   const { request: getRM } = useApi("get", 3002);
+  const { request: deleteRegion } = useApi("delete", 3003);
   const [dropDown, setDropDown] = useState([]);
   const navigate=useNavigate()
   // Function to toggle dropdown state
@@ -69,20 +72,22 @@ function RegionView({}: Props) {
     }
   };
 
-  console.log(id);
+
 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
     editRegion: false,
     addArea: false,
+    deleteRegion:false
   });
 
   // Function to toggle modal visibility
-  const handleModalToggle = (editRegion = false, addArea = false) => {
+  const handleModalToggle = (editRegion = false, addArea = false,deleteRegion=false) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
-      editRegion: editRegion,
-      addArea: addArea,
+      editRegion,
+      addArea,
+      deleteRegion
     }));
     getARegion();
   };
@@ -129,7 +134,22 @@ function RegionView({}: Props) {
     getARegion();
   }, [id]);
 
-  console.log(data.regionManager);
+
+  const handleDelete = async () => {
+    try {
+      const { response, error } = await deleteRegion(`${endPoints.REGION}/${id}`);
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/regions");
+      } else {
+        toast.error(error?.response?.data?.message || "An error occurred");
+        
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete the lead.");
+    }
+  };
 
   return (
     <>
@@ -175,7 +195,7 @@ function RegionView({}: Props) {
               <div className="flex justify-evenly items-center w-full text-[10px]">
                 <div className="flex flex-col items-center space-y-1">
                   <div
-                    onClick={() => handleModalToggle(true, false)}
+                    onClick={() => handleModalToggle(true, false,false)}
                     className="cursor-pointer w-8 h-8 mb-2 rounded-full"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -189,7 +209,7 @@ function RegionView({}: Props) {
 
                 <div className="flex flex-col  items-center space-y-1">
                   <div
-                    onClick={() => handleModalToggle(false, true)}
+                    onClick={() => handleModalToggle(false, true,false)}
                     className="cursor-pointer w-8 h-8 mb-2 rounded-full"
                   >
                     <PlusCircleIcon size={35} color="#D52B1E4D" />
@@ -211,6 +231,17 @@ function RegionView({}: Props) {
                     DeActivate
                   </p>
                 </div>
+
+                <div onClick={() => handleModalToggle(false,false,true)}  className="cursor-pointer">
+                <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
+                  <div className="ms-2 mt-2 ">
+                    <Trash size={18} color="#BC3126" />
+                  </div>
+                </div>
+                <p className="text-center font-medium  text-xs ">
+                    Delete
+                  </p>
+              </div>
               </div>
               <hr className="w-full" />
               {data.regionManager.length > 0 && (
@@ -328,6 +359,19 @@ function RegionView({}: Props) {
       >
         <AreaForm onClose={() => handleModalToggle()} />
       </Modal>
+
+      <Modal
+        open={isModalOpen.deleteRegion}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>       
+
     </>
   );
 }

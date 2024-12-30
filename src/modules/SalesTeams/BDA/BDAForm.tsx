@@ -21,6 +21,7 @@ import useApi from "../../../Hooks/useApi";
 import { BDAData } from "../../../Interfaces/BDA";
 import { endPoints } from "../../../services/apiEndpoints";
 import { useRegularApi } from "../../../context/ApiContext";
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 interface BDAProps {
   onClose: () => void; // Prop for handling modal close
@@ -489,20 +490,20 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 />
             
                <>
-               <Input
-                  required
-                  placeholder="Enter Password"
-                  label="Create Password"
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-                <Input
-                  required
-                  placeholder="Re-enter Password"
-                  label="Confirm Password"
-                  error={errors.confirmPassword?.message}
-                  {...register("confirmPassword")}
-                />
+               <InputPasswordEye
+                    label={editId?"New Password":"Password"}
+                    required
+                    placeholder="Enter your password"
+                    error={errors.password?.message}
+                    {...register("password")}
+                  />
+                  <InputPasswordEye
+                    label="Confirm Password"
+                    required
+                    placeholder="Confirm your password"
+                    error={errors.confirmPassword?.message}
+                    {...register("confirmPassword")}
+                  />
                </>
                
               </div>

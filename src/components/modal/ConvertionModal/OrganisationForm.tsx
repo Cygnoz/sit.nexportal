@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { useResponse } from "../../../context/ResponseContext";
+import { useNavigate } from "react-router-dom";
 
 // import Select from "../../form/Select";
 //import CustomPhoneInput from "../../../components/form/CustomPhone";
@@ -22,6 +23,7 @@ type Props = {
   onClose: () => void;
   type:"lead"|"trial";
   orgData?:any
+  getLeads:()=>void
 };
 
 const validationSchema = Yup.object({
@@ -38,10 +40,11 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Start date is required"),
   endDate: Yup.string().required("End date is required"),
 });
-const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
+const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
    const {customerData}=useResponse()
     const {request:leadToTrial}=useApi('put',3001)
     const {request:trialToLicenser}=useApi('put',3001)
+    const navigate=useNavigate()
   const {
     register,
     handleSubmit,
@@ -62,7 +65,10 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
         
         if(response && !error){
             toast.success(response.data.message)
+            navigate(type==='lead'?'/lead':'/trial'); // Trigger navigation first
+            getLeads()
             onClose()
+            
         }else{
             toast.error(error.response.data.error.message)
         }
@@ -71,7 +77,7 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
     }
   };
   
-  console.log(errors)
+
 
 
   const handleInputChange = (field: keyof Conversion) => {
@@ -104,6 +110,7 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
       
       // Set the calculated endDate in the form
       setValue("endDate", formattedEndDate);
+      clearErrors("endDate")
     }
   }, [watch("startDate"), type, setValue]);
   
@@ -189,6 +196,7 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
                   required
                   type="date"
                   label="End Date"
+                  value={watch("endDate")}
                   error={errors.endDate?.message}
                   {...register("endDate")}
                 />

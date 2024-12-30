@@ -22,6 +22,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 // import { AreaData } from "../../../Interfaces/Area";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
 import { useRegularApi } from "../../../context/ApiContext";
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 
 interface AddAreaManagerProps {
@@ -477,20 +478,20 @@ label: area.areaName,
                 />
                
                <>
-               <Input
-                  required
-                  placeholder="Enter Password"
-                  label="Create Password"
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-                <Input
-                  required
-                  placeholder="Re-enter Password"
-                  label="Confirm Password"
-                  error={errors.confirmPassword?.message}
-                  {...register("confirmPassword")}
-                />
+               <InputPasswordEye
+                    label={editId?"New Password":"Password"}
+                    required
+                    placeholder="Enter your password"
+                    error={errors.password?.message}
+                    {...register("password")}
+                  />
+                  <InputPasswordEye
+                    label="Confirm Password"
+                    required
+                    placeholder="Confirm your password"
+                    error={errors.confirmPassword?.message}
+                    {...register("confirmPassword")}
+                  />
                </>
               
                 

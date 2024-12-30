@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { AreaData } from "../../../Interfaces/Area";
@@ -56,7 +55,7 @@ const AreaHome = () => {
         // Then set the transformed regions into state
         setAllAreas(transformedAreas);
       }else{
-        toast.error(error.response.data.message)
+        console.log(error.response.data.message)
       }
     }catch(err){
       console.log(err);

@@ -31,7 +31,7 @@ const baseSchema = {
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
-  phoneNo: Yup.string().optional(), // Optional field
+  phoneNo: Yup.string().required("Phone Number is required"), // Optional field
   role: Yup.string().required("Role is required"),
 };
 
@@ -225,7 +225,6 @@ const editValidationSchema = Yup.object({
                 placeholder="Enter Full Name"
                 error={errors.userName?.message}
                 {...register("userName")}
-                onChange={() => handleInputChange("userName")}
               />
               <Input
                 label="Email Address"
@@ -234,7 +233,6 @@ const editValidationSchema = Yup.object({
                 placeholder="Enter Email"
                 error={errors.email?.message}
                 {...register("email")}
-                onChange={() => handleInputChange("email")}
               />
               <CustomPhoneInput
                 label="Phone Number"
