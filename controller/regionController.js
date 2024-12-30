@@ -1,12 +1,14 @@
 const Region = require("../database/model/region");
 const Area = require("../database/model/area");
 const Leads = require("../database/model/leads");
+const User = require('../database/model/user');
 const mongoose = require("mongoose");
 const RegionManager = require("../database/model/regionManager");
 const AreaManager = require("../database/model/areaManager");
 const Bda = require("../database/model/bda");
 const Supervisor = require("../database/model/supervisor");
 const SupportAgent = require("../database/model/supportAgent");
+const moment = require("moment");
 
 exports.addRegion = async (req, res, next) => {
   try {
@@ -217,7 +219,6 @@ exports.deleteRegion = async (req, res) => {
   }
 };
 
-const moment = require("moment");
 
 exports.getAreasByRegion = async (req, res) => {
   try {
@@ -265,12 +266,33 @@ exports.getAreasByRegion = async (req, res) => {
       createdAt: { $gte: startOfMonth, $lte: endOfMonth },
     });
 
+    // Fetch the Region Manager details
+    const regionManagerData = await RegionManager.findOne({ region: regionId });
+    let regionManager = null;
+
+    if (regionManagerData) {
+      const user = await User.findById(regionManagerData.user, {
+        userName: 1,
+        email: 1,
+        phoneNo: 1,
+      });
+
+      if (user) {
+        regionManager = {
+          userName: user.userName,
+          email: user.email,
+          phoneNo: user.phoneNo,
+        };
+      }
+    }
+
     res.status(200).json({
       areas,
       totalAreaManagers,
       totalBdas,
       totalLicensors,
       totalLeadThisMonth,
+      regionManager,
     });
   } catch (error) {
     console.error("Error fetching areas by region:", error);
