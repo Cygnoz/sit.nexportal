@@ -107,6 +107,7 @@ const SupervisorHome = () => {
               : "N/A",
               loginEmail: SV?.user?.email,
               userName: SV?.user?.userName,
+              userImage:SV?.user?.userImage,
               regionName: SV?.region?.regionName,
           })) || [];
         setAllSV(transformedSV);

@@ -58,6 +58,7 @@ const AMHome = () => {
               : "N/A",
               loginEmail:am?.user?.email,
               userName:am?.user?.userName,
+              userImage:am?.user?.userImage,
               regionName:am?.region?.regionName,
               areaName:am?.area?.areaName
           })) || [];

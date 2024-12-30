@@ -63,5 +63,8 @@ export const endPoints = {
   // Praise
   PRAISE:"/praise",
   GET_ALL_PRAISE:"/praises",
-  GET_ONE_PRAISE:"/praises"
+  GET_ONE_PRAISE:"/praises",
+
+  // Region Inside View 
+  
 };
