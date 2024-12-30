@@ -1,7 +1,7 @@
 const Region = require("../database/model/region");
 const Area = require("../database/model/area");
 const Leads = require("../database/model/leads");
-const User = require('../database/model/user');
+const User = require("../database/model/user");
 const mongoose = require("mongoose");
 const RegionManager = require("../database/model/regionManager");
 const AreaManager = require("../database/model/areaManager");
@@ -239,6 +239,27 @@ exports.getAreasByRegion = async (req, res) => {
         .json({ message: "No areas found for the given region" });
     }
 
+    // Transform areas to include areaCode, areaName, and userName
+    const transformedAreas = await Promise.all(
+      areas.map(async (area) => {
+        const areaManager = await AreaManager.findOne({ area: area._id });
+        let userName = null;
+
+        if (areaManager && areaManager.user) {
+          const user = await User.findById(areaManager.user, { userName: 1 });
+          if (user) {
+            userName = user.userName;
+          }
+        }
+
+        return {
+          areaCode: area.areaCode,
+          areaName: area.areaName,
+          userName,
+        };
+      })
+    );
+
     // Count AreaManagers associated with the given region
     const totalAreaManagers = await AreaManager.countDocuments({
       region: regionId,
@@ -254,6 +275,12 @@ exports.getAreasByRegion = async (req, res) => {
       customerStatus: "Licenser",
       regionId: regionId,
     });
+
+    // Fetch Licensers with specified fields
+    const licensers = await Leads.find(
+      { customerStatus: "Licenser", regionId },
+      { customerId: 1, firstName: 1, trialStatus: 1 }
+    );
 
     // Get the current month's start and end dates
     const startOfMonth = moment().startOf("month").toDate();
@@ -275,6 +302,7 @@ exports.getAreasByRegion = async (req, res) => {
         userName: 1,
         email: 1,
         phoneNo: 1,
+        userImage: 1,
       });
 
       if (user) {
@@ -282,12 +310,14 @@ exports.getAreasByRegion = async (req, res) => {
           userName: user.userName,
           email: user.email,
           phoneNo: user.phoneNo,
+          userImage: user.userImage,
         };
       }
     }
 
     res.status(200).json({
-      areas,
+      areas: transformedAreas,
+      licensers,
       totalAreaManagers,
       totalBdas,
       totalLicensors,
@@ -302,7 +332,6 @@ exports.getAreasByRegion = async (req, res) => {
 
 
 
-
 exports.getRegionDetails = async (req, res) => {
   try {
     const { id: regionId } = req.params;
@@ -313,17 +342,44 @@ exports.getRegionDetails = async (req, res) => {
       return res.status(404).json({ message: "Region not found" });
     }
 
-    // Fetch data and counts from collections
+    // Fetch data and counts from collections, populating `user` reference fields
     const [areaManagers, bdas, regionManagers, supervisors, supportAgents] =
       await Promise.all([
-        AreaManager.find({ region: regionId }),
-        Bda.find({ region: regionId }),
-        RegionManager.find({ region: regionId }),
-        Supervisor.find({ region: regionId }),
-        SupportAgent.find({ region: regionId }),
+        AreaManager.find({ region: regionId })
+          .select("user area") // Include only `user` and `area` fields from the AreaManager collection
+          .populate({
+            path: "user",
+            select: "userName email userImage phoneNo", // Select only the specified fields from User
+          })
+          .populate({
+            path: "area",
+            select: "areaName", // Replace 'name' and 'location' with the specific fields you want from the Area model
+          }),
+        Bda.find({ region: regionId })
+          .select("user area") // Include only `user` and `area` fields from the Bda collection
+          .populate({
+            path: "user",
+            select: "employeeId userName email userImage phoneNo", // Select only the specified fields from User
+          })
+          .populate({
+            path: "area",
+            select: "areaName", // Replace 'name' and 'location' with the specific fields you want from the Area model
+          }),
+        RegionManager.find({ region: regionId }).populate({
+          path: "user",
+          select: "userName email userImage phoneNo",
+        }),
+        Supervisor.find({ region: regionId }).populate({
+          path: "user",
+          select: "userName email userImage phoneNo",
+        }),
+        SupportAgent.find({ region: regionId }).populate({
+          path: "user",
+          select: "userName email userImage phoneNo",
+        }),
       ]);
 
-    // Fetch active team members with status: "Active"
+    // Fetch active team members with status: "Active", also populating `user` fields
     const [
       activeAreaManagers,
       activeBdas,
@@ -331,8 +387,14 @@ exports.getRegionDetails = async (req, res) => {
       activeSupervisors,
       activeSupportAgents,
     ] = await Promise.all([
-      AreaManager.find({ region: regionId, status: "Active" }),
-      Bda.find({ region: regionId, status: "Active" }),
+      AreaManager.find({ region: regionId, status: "Active" }).populate({
+        path: "user",
+        select: "userName email userImage phoneNo",
+      }),
+      Bda.find({ region: regionId, status: "Active" }).populate({
+        path: "user",
+        select: "userName email userImage phoneNo",
+      }),
       RegionManager.find({ region: regionId, status: "Active" }),
       Supervisor.find({ region: regionId, status: "Active" }),
       SupportAgent.find({ region: regionId, status: "Active" }),
@@ -373,9 +435,6 @@ exports.getRegionDetails = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
-
 
 const ActivityLog = (req, status, operationId = null) => {
   const { id, userName } = req.user;
