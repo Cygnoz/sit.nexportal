@@ -11,7 +11,7 @@ const regionSchema = new Schema(
     description: { type: String }, // Optional field
     status: { type: String }
   },
-  { timestamps: true } // Enables createdAt and updatedAt fields
+  { timestamps: true } 
 );
 
 const Region = mongoose.model("Region", regionSchema);

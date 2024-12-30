@@ -3,7 +3,7 @@ const User = require("../database/model/user");
 const Region = require("../database/model/region");
 const Commission = require("../database/model/commission");
 const SupportAgent = require("../database/model/supportAgent");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const crypto = require('crypto');
 const { ObjectId } = require('mongoose').Types;
 const nodemailer = require('nodemailer');
@@ -152,31 +152,7 @@ const logOperation = (req, status, operationId = null) => {
     return newSupportAgent.save();
   }
 
-  const dataExist = async (organizationId) => {
-    const [organizationExists, taxExists, currencyExists, allSupplier ,settings] = await Promise.all([
-      Organization.findOne({ organizationId },{ timeZoneExp: 1, dateFormatExp: 1, dateSplit: 1, organizationCountry: 1 }),
-      Tax.findOne({ organizationId },{ taxType: 1 }),
-      Currency.find({ organizationId }, { currencyCode: 1, _id: 0 }),
-      Supplier.find({ organizationId }),
-      Settings.find({ organizationId },{ duplicateSupplierDisplayName: 1, duplicateSupplierEmail: 1, duplicateSupplierMobile: 1 })
-    ]);
-    return { organizationExists, taxExists, currencyExists, allSupplier , settings };
-  };
-  function validateExsistance(organizationExists, taxExists, currencyExists, res) {
-    if (!organizationExists) {
-      res.status(404).json({ message: "Organization not found" });
-      return false;
-    }
-    if (!taxExists) {
-      res.status(404).json({ message: "Tax not found" });
-      return false;
-    }
-    if (!currencyExists.length) {
-      res.status(404).json({ message: "Currency not found" });
-      return false;
-    }
-    return true;
-  }
+
   exports.addSupportAgent = async (req, res, next) => {
     try {
       // Destructure and validate
@@ -185,7 +161,6 @@ const logOperation = (req, status, operationId = null) => {
     
       const requiredFields = ["userName", "phoneNo", "email", "password"];
       const validationError = validateRequiredFields(requiredFields, data);
-      // if (!validateExsistance(organizationExists, taxExists, currencyExists, res)) return;     
 
       if (validationError) {
         return res.status(400).json({ message: validationError });
@@ -212,7 +187,7 @@ const logOperation = (req, status, operationId = null) => {
         // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
-
+      data.status = 'Active'
   
       // Create region manager
       const newSupportAgent = await createSupportAgent(data, newUser._id);

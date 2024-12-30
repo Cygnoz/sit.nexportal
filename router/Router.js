@@ -35,6 +35,9 @@ router.put("/region/:regionId",verifyToken,checkPermission('Edit Region'), regio
 
 router.delete("/region/:regionId",verifyToken,checkPermission('Delete Region'), regionController.deleteRegion,ActivityLogGeneration('Delete Region'));
 
+router.get("/regions/:id/areas",verifyToken,checkPermission('View Region'), regionController.getAreasByRegion);
+router.get("/regions/:id/details",verifyToken,checkPermission('View Region'), regionController.getRegionDetails);
+
 // region dashboard
 router.get("/regions/:regionId/areas",verifyToken,checkPermission('View Region'), regionDashboardController.getAreasByRegion);
 

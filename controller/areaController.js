@@ -70,7 +70,7 @@ exports.addArea = async (req, res, next) => {
     if (!existingRegion) {
       return res.status(404).json({ message: "The specified region does not exist" });
     }
-
+    const status = "Active"
     // Check if the areaCode or areaName already exists
     const existingArea = await Area.findOne({
       $or: [ { areaName }],
@@ -80,7 +80,7 @@ exports.addArea = async (req, res, next) => {
     }
 
     // Create a new area entry
-    const newArea = new Area({ areaCode, areaName, region, description  });
+    const newArea = new Area({ areaCode, areaName, region, description, status  });
 
     await newArea.save();
     res.status(201).json({ message: "Area added successfully"});

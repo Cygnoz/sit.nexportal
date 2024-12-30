@@ -17,6 +17,7 @@ const regionManagerSchema = new mongoose.Schema({
   dateOfJoining: { type: Date },
   workEmail: { type: String},
   workPhone: { type: String},
+  status: { type: String},
   region : { type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
   commission: { type: mongoose.Schema.Types.ObjectId, ref: 'Commission'},
   bankDetails: {
