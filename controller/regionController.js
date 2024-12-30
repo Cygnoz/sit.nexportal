@@ -139,7 +139,7 @@ exports.updateRegion = async (req, res, next) => {
   }
 };
 
-exports.deleteRegion = async (req, res) => {
+exports.deleteRegion = async (req, res, next) => {
   try {
     const { regionId } = req.params;
 
@@ -219,7 +219,6 @@ exports.deleteRegion = async (req, res) => {
   }
 };
 
-
 exports.getAreasByRegion = async (req, res) => {
   try {
     const { id: regionId } = req.params;
@@ -244,18 +243,25 @@ exports.getAreasByRegion = async (req, res) => {
       areas.map(async (area) => {
         const areaManager = await AreaManager.findOne({ area: area._id });
         let userName = null;
+        let userImage = null;
 
         if (areaManager && areaManager.user) {
-          const user = await User.findById(areaManager.user, { userName: 1 });
+          const user = await User.findById(areaManager.user, {
+            userName: 1,
+            userImage: 1,
+          });
           if (user) {
             userName = user.userName;
+            userImage = user.userImage;
           }
         }
 
         return {
+          _id: area._id,
           areaCode: area.areaCode,
           areaName: area.areaName,
           userName,
+          userImage, // Include userImage in the response
         };
       })
     );
@@ -329,8 +335,6 @@ exports.getAreasByRegion = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
-
 
 exports.getRegionDetails = async (req, res) => {
   try {
