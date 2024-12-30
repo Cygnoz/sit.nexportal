@@ -38,7 +38,9 @@ const leadSchema = new Schema({
   leadStatus:{ type: String },
   customerStatus:{ type: String }
 
-});
+},
+{ timestamps: true } 
+);
 
 const Lead = mongoose.model("Lead", leadSchema);
 
