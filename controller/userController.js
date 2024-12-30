@@ -1,6 +1,6 @@
 const User = require("../database/model/user"); 
 const ActivityLog = require('../database/model/activityLog'); 
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 
 

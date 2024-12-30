@@ -9,6 +9,7 @@ const areaSchema = new Schema(
     areaName: { type: String, required: true },
     region: { type: Schema.Types.ObjectId, ref: "Region", required: true }, // References the Region collection
     description: { type: String }, 
+    status: { type: String}
   },
   { timestamps: true } 
 );

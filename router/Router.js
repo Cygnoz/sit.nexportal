@@ -37,6 +37,8 @@ router.get("/region-managers/:id",verifyToken,checkPermission('View Region Manag
 
 router.put("/region-managers/:id",verifyToken,checkPermission('Edit Region Manager'), regionManagerController.editRegionManager,ActivityLogGeneration('Edit Region Manager'));
 
+router.get("/region-manager/:id/details",verifyToken,checkPermission('View Region Manager'), regionManagerController.getRegionManagerDetails);
+
 // router.delete("/user/:userId",verifyToken,checkPermission('Delete Region Manager'), userController.deleteUser,ActivityLogGeneration('Delete Region Manager'));
 
 // Area manager

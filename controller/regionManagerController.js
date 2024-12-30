@@ -1,77 +1,76 @@
-
 const User = require("../database/model/user");
 const Region = require("../database/model/region");
+const Area = require("../database/model/area");
+const AreaManager = require("../database/model/areaManager");
+const Bda = require("../database/model/bda");
 const Commission = require("../database/model/commission");
 const RegionManager = require("../database/model/regionManager");
-const bcrypt = require("bcrypt");
-const crypto = require('crypto');
-const { ObjectId } = require('mongoose').Types;
-const nodemailer = require('nodemailer');
-const key = Buffer.from(process.env.ENCRYPTION_KEY, 'utf8'); 
-const iv = Buffer.from(process.env.ENCRYPTION_IV, 'utf8'); 
+const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const { ObjectId } = require("mongoose").Types;
+const nodemailer = require("nodemailer");
+const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
+const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
 
-
-//Encrpytion 
+//Encrpytion
 function encrypt(text) {
   try {
-      const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-      let encrypted = cipher.update(text, 'utf8', 'hex');
-      encrypted += cipher.final('hex');
+    const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+    let encrypted = cipher.update(text, "utf8", "hex");
+    encrypted += cipher.final("hex");
 
-      const authTag = cipher.getAuthTag().toString('hex'); // Get authentication tag
+    const authTag = cipher.getAuthTag().toString("hex"); // Get authentication tag
 
-      return `${iv.toString('hex')}:${encrypted}:${authTag}`; // Return IV, encrypted text, and tag
+    return `${iv.toString("hex")}:${encrypted}:${authTag}`; // Return IV, encrypted text, and tag
   } catch (error) {
-      console.error("Encryption error:", error);
-      throw error;
+    console.error("Encryption error:", error);
+    throw error;
   }
 }
-
 
 //Decrpytion
 function decrypt(encryptedText) {
   try {
-      // Split the encrypted text to get the IV, encrypted data, and authentication tag
-      const [ivHex, encryptedData, authTagHex] = encryptedText.split(':');
-      const iv = Buffer.from(ivHex, 'hex');
-      const authTag = Buffer.from(authTagHex, 'hex');
+    // Split the encrypted text to get the IV, encrypted data, and authentication tag
+    const [ivHex, encryptedData, authTagHex] = encryptedText.split(":");
+    const iv = Buffer.from(ivHex, "hex");
+    const authTag = Buffer.from(authTagHex, "hex");
 
-      // Create the decipher with the algorithm, key, and IV
-      const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-      decipher.setAuthTag(authTag); // Set the authentication tag
+    // Create the decipher with the algorithm, key, and IV
+    const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
+    decipher.setAuthTag(authTag); // Set the authentication tag
 
-      let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
-      decrypted += decipher.final('utf8');
-      return decrypted;
+    let decrypted = decipher.update(encryptedData, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
   } catch (error) {
-      console.error("Decryption error:", error);
-      throw error;
+    console.error("Decryption error:", error);
+    throw error;
   }
 }
 
 // A function to encrypt sensitive fields if they exist
 const encryptSensitiveFields = (data) => {
-  const encryptIfExists = (field) => field ? encrypt(field) : field;
+  const encryptIfExists = (field) => (field ? encrypt(field) : field);
 
   data.adhaarNo = encryptIfExists(data.adhaarNo);
   data.panNo = encryptIfExists(data.panNo);
   if (data.bankDetails) {
-    data.bankDetails.bankAccountNo = encryptIfExists(data.bankDetails.bankAccountNo);
+    data.bankDetails.bankAccountNo = encryptIfExists(
+      data.bankDetails.bankAccountNo
+    );
   }
 
   return data;
 };
 
-
 // Validation utility function
 const validateRequiredFields = (requiredFields, data) => {
-  const missingFields = requiredFields.filter(field => !data[field]);
-  return missingFields.length === 0 
-    ? null 
+  const missingFields = requiredFields.filter((field) => !data[field]);
+  return missingFields.length === 0
+    ? null
     : `Missing required fields: ${missingFields.join(", ")}`;
 };
-
-
 
 // Duplicate check utility function
 
@@ -80,11 +79,7 @@ const checkDuplicateUser = async (userName, email, phoneNo, excludeId) => {
     $and: [
       { _id: { $ne: excludeId } }, // Exclude the current document
       {
-        $or: [
-          { userName },
-          { email },
-          { phoneNo },
-        ],
+        $or: [{ userName }, { email }, { phoneNo }],
       },
     ],
   });
@@ -102,195 +97,169 @@ const checkDuplicateUser = async (userName, email, phoneNo, excludeId) => {
   return duplicateMessages.join(". ");
 };
 
-
 // Logging utility function
 const logOperation = (req, status, operationId = null) => {
-    const { id, userName } = req.user;
-    const log = { id, userName, status };
-  
-    if (operationId) {
-      log.operationId = operationId;
-    }
-  
-    req.user = log;
-  };
+  const { id, userName } = req.user;
+  const log = { id, userName, status };
 
-  function cleanData(data) {
-    const cleanData = (value) => (value === null || value === undefined || value === "" || value === 0 ? undefined : value);
-    return Object.keys(data).reduce((acc, key) => {
-      acc[key] = cleanData(data[key]);
-      return acc;
-    }, {});
+  if (operationId) {
+    log.operationId = operationId;
   }
 
-  async function createUser(data) {
-    const { password, ...rest } = data; // Extract password and the rest of the data
-    const hashedPassword = await bcrypt.hash(password, 10);
+  req.user = log;
+};
 
-    // employee id
-    let nextId = 1;
-    const lastUser = await User.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
-    if (lastUser) {
-      const lastId = parseInt(lastUser.employeeId.slice(6));
-      // Extract the numeric part from the customerID
-      nextId = lastId + 1; // Increment the last numeric part
-    }    
-    const employeeId = `EMPID-${nextId.toString().padStart(4, '0')}`;
-  
-    const newUser = new User({
-      ...rest, // Spread other properties from data
-      employeeId,
-      password: hashedPassword, // Use hashed password
-      role: "Region Manager", // Set default role
-    });
-    return newUser.save();
-  }
-  
-  
-  async function createRegionManager(data, user) {
-    const newRegionManager = new RegionManager({...data, user});
-    return newRegionManager.save();
-  }
+function cleanData(data) {
+  const cleanData = (value) =>
+    value === null || value === undefined || value === "" || value === 0
+      ? undefined
+      : value;
+  return Object.keys(data).reduce((acc, key) => {
+    acc[key] = cleanData(data[key]);
+    return acc;
+  }, {});
+}
 
-  const dataExist = async (organizationId) => {
-    const [organizationExists, taxExists, currencyExists, allSupplier ,settings] = await Promise.all([
-      Organization.findOne({ organizationId },{ timeZoneExp: 1, dateFormatExp: 1, dateSplit: 1, organizationCountry: 1 }),
-      Tax.findOne({ organizationId },{ taxType: 1 }),
-      Currency.find({ organizationId }, { currencyCode: 1, _id: 0 }),
-      Supplier.find({ organizationId }),
-      Settings.find({ organizationId },{ duplicateSupplierDisplayName: 1, duplicateSupplierEmail: 1, duplicateSupplierMobile: 1 })
-    ]);
-    return { organizationExists, taxExists, currencyExists, allSupplier , settings };
-  };
-  function validateExsistance(organizationExists, taxExists, currencyExists, res) {
-    if (!organizationExists) {
-      res.status(404).json({ message: "Organization not found" });
-      return false;
-    }
-    if (!taxExists) {
-      res.status(404).json({ message: "Tax not found" });
-      return false;
-    }
-    if (!currencyExists.length) {
-      res.status(404).json({ message: "Currency not found" });
-      return false;
-    }
-    return true;
+async function createUser(data) {
+  const { password, ...rest } = data; // Extract password and the rest of the data
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // employee id
+  let nextId = 1;
+  const lastUser = await User.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+  if (lastUser) {
+    const lastId = parseInt(lastUser.employeeId.slice(6));
+    // Extract the numeric part from the customerID
+    nextId = lastId + 1; // Increment the last numeric part
   }
-  exports.addRegionManager = async (req, res, next) => {
-    try {
-      // Destructure and validate
-      let data = cleanData(req.body);
+  const employeeId = `EMPID-${nextId.toString().padStart(4, "0")}`;
+
+  const newUser = new User({
+    ...rest, // Spread other properties from data
+    employeeId,
+    password: hashedPassword, // Use hashed password
+    role: "Region Manager", // Set default role
+  });
+  return newUser.save();
+}
+
+async function createRegionManager(data, user) {
+  const newRegionManager = new RegionManager({ ...data, user });
+  return newRegionManager.save();
+}
+
+exports.addRegionManager = async (req, res, next) => {
+  try {
+    // Destructure and validate
+    let data = cleanData(req.body);
     //   const data = req.body;
-    
-      const requiredFields = ["userName", "phoneNo", "email", "password"];
-      const validationError = validateRequiredFields(requiredFields, data);
-      // if (!validateExsistance(organizationExists, taxExists, currencyExists, res)) return;     
 
-      if (validationError) {
-        return res.status(400).json({ message: validationError });
-      }
-      
-  
-      // Check for duplicates
-      const duplicateCheck = await checkDuplicateUser(data.userName, data.email, data.phoneNo);
-      if (duplicateCheck) {
-        return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
-      }
-      
-      // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
-    
-      // if (!emailSent) {
-      //   return res
-      //     .status(500)
-      //     .json({ success: false, message: 'Failed to send login credentials email' });
-      // }
+    const requiredFields = ["userName", "phoneNo", "email", "password"];
+    const validationError = validateRequiredFields(requiredFields, data);
 
-      // Create user
-      const newUser = await createUser(data);
-      
-      // Encrypt sensitive fields
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
+
+    // Check for duplicates
+    const duplicateCheck = await checkDuplicateUser(
+      data.userName,
+      data.email,
+      data.phoneNo
+    );
+    if (duplicateCheck) {
+      return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
+    }
+
+    // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
+
+    // if (!emailSent) {
+    //   return res
+    //     .status(500)
+    //     .json({ success: false, message: 'Failed to send login credentials email' });
+    // }
+
+    // Create user
+    const newUser = await createUser(data);
+
+    // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
+    data.status = "Active";
 
+    // Create region manager
+    const newRegionManager = await createRegionManager(data, newUser._id);
 
-       // Create region manager
-      const newRegionManager = await createRegionManager(data, newUser._id);
-  
-      logOperation(req, "Successfully", newRegionManager._id);
-      next()
-      return res.status(201).json({
-        message: "Region Manager added successfully",
-        userId: newUser._id,
-        regionManagerId: newRegionManager._id,
-      });
-    } catch (error) {
-      
-      logOperation(req, "Failed");
-       next();
-      console.error("Unexpected error:", error);
-      return res.status(500).json({ message: "Internal server error" });
+    logOperation(req, "Successfully", newRegionManager._id);
+    next();
+    return res.status(201).json({
+      message: "Region Manager added successfully",
+      userId: newUser._id,
+      regionManagerId: newRegionManager._id,
+    });
+  } catch (error) {
+    logOperation(req, "Failed");
+    next();
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getRegionManager = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const regionManager = await RegionManager.findById(id).populate([
+      { path: "user", select: "userName phoneNo userImage  employeeId email" },
+      { path: "region", select: "regionName regionCode" },
+      { path: "commission", select: "profileName" },
+    ]);
+
+    if (!regionManager) {
+      return res.status(404).json({ message: "Region Manager not found" });
     }
-  };
-  
 
-  exports.getRegionManager = async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      const regionManager = await RegionManager.findById(id).populate([
-        { path: 'user', select: 'userName phoneNo userImage  employeeId email' },
-        { path: 'region', select: 'regionName regionCode' },
-        { path: 'commission', select: 'profileName' },
-      ]);
-  
-      if (!regionManager) {
-        return res.status(404).json({ message: "Region Manager not found" });
-      }
-  
-      const decryptField = (field) => field ? decrypt(field) : field;
-  
-      regionManager.adhaarNo = decryptField(regionManager.adhaarNo);
-      regionManager.panNo = decryptField(regionManager.panNo);
-      if (regionManager.bankDetails) {
-        regionManager.bankDetails.bankAccountNo = decryptField(regionManager.bankDetails.bankAccountNo);
-      }
-  
-      res.status(200).json(regionManager);
-    } catch (error) {
-      console.error("Error fetching Region Manager:", error);
-      res.status(500).json({ message: "Internal server error" });
+    const decryptField = (field) => (field ? decrypt(field) : field);
+
+    regionManager.adhaarNo = decryptField(regionManager.adhaarNo);
+    regionManager.panNo = decryptField(regionManager.panNo);
+    if (regionManager.bankDetails) {
+      regionManager.bankDetails.bankAccountNo = decryptField(
+        regionManager.bankDetails.bankAccountNo
+      );
     }
-  };
-  
-  
-  
-  exports.getAllRegionManager = async (req, res) => {
-    try {
-      const regionManager = await RegionManager.find({}).populate([
-        { path: 'user', select: 'userName phoneNo userImage email' },
-        { path: 'region', select: 'regionName' },
-        { path: 'commission', select: 'profileName' },
-      ]);
-  
-      if (regionManager.length === 0) {
-        return res.status(404).json({ message: "No Region Manager found" });
-      }
-  
-      res.status(200).json({ regionManager });
-    } catch (error) {
-      console.error("Error fetching all Region Managers:", error);
-      res.status(500).json({ message: "Internal server error" });
+
+    res.status(200).json(regionManager);
+  } catch (error) {
+    console.error("Error fetching Region Manager:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getAllRegionManager = async (req, res) => {
+  try {
+    const regionManager = await RegionManager.find({}).populate([
+      { path: "user", select: "userName phoneNo userImage email" },
+      { path: "region", select: "regionName" },
+      { path: "commission", select: "profileName" },
+    ]);
+
+    if (regionManager.length === 0) {
+      return res.status(404).json({ message: "No Region Manager found" });
     }
-  };
-  
 
+    res.status(200).json({ regionManager });
+  } catch (error) {
+    console.error("Error fetching all Region Managers:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-    exports.editRegionManager = async (req, res,next) => {
-      try {
-        const { id } = req.params;
-        let data = cleanData(req.body);
-        // Fetch the existing document to get the user field
+exports.editRegionManager = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    let data = cleanData(req.body);
+    // Fetch the existing document to get the user field
     const existingRegionManager = await RegionManager.findById(id);
     if (!existingRegionManager) {
       return res.status(404).json({ message: "Region Manager not found" });
@@ -299,51 +268,51 @@ const logOperation = (req, status, operationId = null) => {
     // Extract the user field (ObjectId)
     const existingUserId = existingRegionManager.user;
 
-  
-        
-        // Validate required fields
-        const requiredFields = ["userName", "phoneNo", "email"];
-        const validationError = validateRequiredFields(requiredFields, data);
-    
-        if (validationError) {
-          return res.status(400).json({ message: validationError });
-        }
-    
-        // Check for duplicate user details, excluding the current document
-        const duplicateCheck = await checkDuplicateUser(data.userName, data.email, data.phoneNo, existingUserId);
-        if (duplicateCheck) {
-          return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
-        }
-        
-     // Encrypt sensitive fields
-     data = encryptSensitiveFields(data);
+    // Validate required fields
+    const requiredFields = ["userName", "phoneNo", "email"];
+    const validationError = validateRequiredFields(requiredFields, data);
 
-        const user = await User.findById(existingUserId);
-        Object.assign(user, data);
-        await user.save();
-       
-        Object.assign(existingRegionManager, data);
-        const updatedRegionManager = await existingRegionManager.save();
-    
-        if (!updatedRegionManager) {
-          return res.status(404).json({ message: "Region Manager not found" });
-        }
-    
-        res.status(200).json({
-          message: "Region Manager updated successfully"
-        });
-        logOperation(req, "Successfully", updatedRegionManager._id);
-      next()
-      } catch (error) {
-        console.error("Error editing Region Manager:", error);
-        res.status(500).json({ message: "Internal server error" });
-        logOperation(req, "Failed");
-       next();
-      }
-    };
-    
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
 
+    // Check for duplicate user details, excluding the current document
+    const duplicateCheck = await checkDuplicateUser(
+      data.userName,
+      data.email,
+      data.phoneNo,
+      existingUserId
+    );
+    if (duplicateCheck) {
+      return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
+    }
 
+    // Encrypt sensitive fields
+    data = encryptSensitiveFields(data);
+
+    const user = await User.findById(existingUserId);
+    Object.assign(user, data);
+    await user.save();
+
+    Object.assign(existingRegionManager, data);
+    const updatedRegionManager = await existingRegionManager.save();
+
+    if (!updatedRegionManager) {
+      return res.status(404).json({ message: "Region Manager not found" });
+    }
+
+    res.status(200).json({
+      message: "Region Manager updated successfully",
+    });
+    logOperation(req, "Successfully", updatedRegionManager._id);
+    next();
+  } catch (error) {
+    console.error("Error editing Region Manager:", error);
+    res.status(500).json({ message: "Internal server error" });
+    logOperation(req, "Failed");
+    next();
+  }
+};
 
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
@@ -364,7 +333,7 @@ const sendCredentialsEmail = async (email, password, userName) => {
   const mailOptions = {
     from: `"NexPortal" <${process.env.EMAIL}>`,
     to: email,
-    subject: 'Your NexPortal Login Credentials',
+    subject: "Your NexPortal Login Credentials",
     text: `Dear ${userName},
 
 Welcome to NexPortal – Sales & Support System.
@@ -387,22 +356,46 @@ Best regards,
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('Login credentials email sent successfully');
+    console.log("Login credentials email sent successfully");
     return true;
   } catch (error) {
-    console.error('Error sending login credentials email:', error);
+    console.error("Error sending login credentials email:", error);
     return false;
   }
 };
-    
-// The CygnoNex Team  
-// NexPortal  
+
+// The CygnoNex Team
+// NexPortal
 // Support: notify@cygnonex.com
 
 
+exports.getRegionManagerDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
 
+    // Fetch areas managed by the region
+    const totalAreaManaged = await Area.find({ region: id });
 
+    // Get area IDs from the fetched areas
+    const areaIds = totalAreaManaged.map((area) => area._id);
 
+    // Fetch area managers managing the fetched areas
+    const totalAreaManagers = await AreaManager.find({ area: { $in: areaIds } });
 
+    // Get area manager IDs to fetch BDAs
+    const areaManagerIds = totalAreaManagers.map((manager) => manager._id);
 
+    // Fetch BDAs associated with the area managers
+    const totalBdas = await Bda.find({ areaManager: { $in: areaManagerIds } });
 
+    // Send the response
+    res.status(200).json({
+      totalAreaManaged,
+      totalAreaManagers,
+      totalBdas,
+    });
+  } catch (error) {
+    console.error("Error fetching region manager details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
