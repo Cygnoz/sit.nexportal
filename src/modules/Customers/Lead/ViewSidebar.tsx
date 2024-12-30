@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CalenderRound from "../../../assets/icons/CalenderRound";
 import DeltaTech from "../../../assets/icons/DeltaTech";
 import EditIcon from "../../../assets/icons/EditIcon";
@@ -15,14 +15,14 @@ import ConvertModal from "../../../components/modal/ConvertionModal/CovertLicens
 import LeadForm from "./LeadForm";
 import LeadViewInfo from "./ViewModals/LeadViewInfo";
 // import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 import { VictoryLabel, VictoryPie, VictoryTheme } from "victory";
-import Calender from "./ViewModals/Calender";
+import Trash from "../../../assets/icons/Trash";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
-import toast from "react-hot-toast";
-import Trash from "../../../assets/icons/Trash";
-import { useNavigate } from "react-router-dom";
-import ConfirmModal from "../../../components/modal/ConfirmModal";
+import Calender from "./ViewModals/Calender";
 type Props = {
   leadData: any;
   getLead: () => void;

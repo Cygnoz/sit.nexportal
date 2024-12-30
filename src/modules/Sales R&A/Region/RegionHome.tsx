@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { RegionData } from "../../../Interfaces/Region";
