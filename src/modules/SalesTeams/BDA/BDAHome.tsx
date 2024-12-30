@@ -94,6 +94,7 @@ const BDAHome = () => {
               : "N/A",
             loginEmail:bda.user?.email,
             userName:bda?.user?.userName,
+            userImage:bda?.user?.userImage,
             regionName:bda?.region?.regionName,
             areaName:bda?.area?.areaName
           })) || [];
