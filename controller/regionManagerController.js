@@ -171,6 +171,12 @@ exports.addRegionManager = async (req, res, next) => {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
+    // Check if the region is already assigned to another RegionManager
+    const existingRegionManager = await RegionManager.findOne({ region: data.region });
+    if (existingRegionManager) {
+      return res.status(400).json({ message: "Region is already assigned to another Region Manager. Try adding another region." });
+    }
+
     // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
 
     // if (!emailSent) {

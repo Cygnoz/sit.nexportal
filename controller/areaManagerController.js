@@ -168,6 +168,11 @@ exports.addAreaManager = async (req, res, next) => {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
+    const existingAreaManager = await AreaManager.findOne({ area: data.area });
+        if (existingAreaManager) {
+          return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });
+        }
+
     // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
 
     // if (!emailSent) {
