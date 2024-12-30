@@ -61,7 +61,7 @@ exports.addLead = async (req, res , next ) => {
    // Check for duplicate user details
    const duplicateCheck = await checkDuplicateUser(firstName, email, phone);
    if (duplicateCheck) {
-     return res.status(200).json({ message: `Conflict: ${duplicateCheck}` }); // Return a success response with conflict details
+     return res.status(400).json({ message: `Conflict: ${duplicateCheck}` }); // Return a success response with conflict details
    }
 
 
@@ -183,12 +183,9 @@ if (!existingLead) {
   return res.status(404).json({ message: "Lead  not found" });
 }
 
-// Extract the user field (ObjectId)
-const existingUserId = existingLead.user;
-
 
     // Check for duplicate user details, excluding the current document
-    const duplicateCheck = await checkDuplicateUser(data.firstName, data.email, data.phone, existingUserId);
+    const duplicateCheck = await checkDuplicateUser(data.firstName, data.email, data.phone, id);
     if (duplicateCheck) {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
@@ -753,18 +750,45 @@ const ActivityLog = (req, status, operationId = null) => {
 
 
 
-  const checkDuplicateUser = async (firstName, email, phone) => {
+  // const checkDuplicateUser = async (firstName, email, phone) => {
+  //   const existingUser = await Leads.findOne({
+  //     $or: [{ firstName }, { email }, { phone }],
+  //   });
+  
+  //   if (!existingUser) return null;
+  
+  //   const duplicateMessages = [];
+  //   if (existingUser.firstName === firstName)
+  //     duplicateMessages.push("Full name already exists");
+  //   if (existingUser.email === email)
+  //     duplicateMessages.push("Login email already exists");
+  //   if (existingUser.phone === phone)
+  //     duplicateMessages.push("Phone number already exists");
+  
+  //   return duplicateMessages.join(". ");
+  // };
+
+  const checkDuplicateUser = async (firstName, email, phone, excludeId) => {
     const existingUser = await Leads.findOne({
-      $or: [{ firstName }, { email }, { phone }],
+      $and: [
+        { _id: { $ne: excludeId } }, // Exclude the current document
+        {
+          $or: [
+            { firstName },
+            { email },
+            { phone },
+          ],
+        },
+      ],
     });
   
     if (!existingUser) return null;
   
     const duplicateMessages = [];
     if (existingUser.firstName === firstName)
-      duplicateMessages.push("Full name already exists");
+      duplicateMessages.push("First already exists");
     if (existingUser.email === email)
-      duplicateMessages.push("Login email already exists");
+      duplicateMessages.push(" Email already exists");
     if (existingUser.phone === phone)
       duplicateMessages.push("Phone number already exists");
   

@@ -45,7 +45,9 @@ const leadSchema = new Schema({
   
   organizationId:{ type: String }
 
-});
+},
+  { timestamps: true } 
+);
 
 const Lead = mongoose.model("Lead", leadSchema);
 
