@@ -53,6 +53,7 @@ const RMHome = () => {
               : "N/A",
             loginEmail: region?.user?.email,
             userName: region?.user?.userName,
+            userImage:region?.user?.userImage,
             regionName: region?.region?.regionName,
           })) || [];
         setAllRms(transformedRMss);

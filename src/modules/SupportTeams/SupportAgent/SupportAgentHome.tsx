@@ -99,6 +99,7 @@ const SupportAgentHome = () => {
               : "N/A",
               loginEmail: SA?.user?.email,
               userName: SA?.user?.userName,
+              userImage:SA?.user?.userImage,
               regionName: SA?.region?.regionName,
           })) || [];
         setAllSA(transformedSA);
