@@ -299,6 +299,7 @@ const SuperVisorView = ({}: Props) => {
                   ],
                 }}
                 noAction
+                maxHeight="450px"
               />
             </div>
           </div>
@@ -402,7 +403,7 @@ const SuperVisorView = ({}: Props) => {
               </p>
               <hr />
 
-              <div className="flex py-1 mt-3">
+              <div className="flex py-2 mt-24 space-x-6">
                 <div className="flex flex-col items-center space-y-1">
                   <div
                     onClick={() => handleModalToggle(true, false, false)}

@@ -3,6 +3,7 @@ import Chevronleft from "../../assets/icons/Chevronleft";
 import Button from "../../components/ui/Button";
 import SearchBar from "../../components/ui/SearchBar";
 import BusinessCard from "./BusinessCard";
+import Target from "./Target/Target";
 
 const SettingsHome = () => {
     const [currentPage, setCurrentPage] = useState("Target");
@@ -61,7 +62,7 @@ const SettingsHome = () => {
 
                 {/* Main Content */}
                 <div className="col-span-10 p-3">
-                    {currentPage === "Target" && <div>Target</div>}
+                    {currentPage === "Target" && <Target/>}
                     {currentPage === "User" && <div>Users</div>}
                     {currentPage === "UserLog" && <div>User Log</div>}
                     {currentPage === "Business Card" && <BusinessCard />}
