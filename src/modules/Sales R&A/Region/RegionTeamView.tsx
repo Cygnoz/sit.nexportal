@@ -135,145 +135,6 @@ const RegionTeamView = ({ }: Props) => {
   ];
 
 
-  // const areaManager: AreaData[] = [
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: 'kerala',
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  // ];
-
-  // Data for the table
-  // const data: TeamData[] = [
-  //   {
-  //     employeeID: "001",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "002",
-  //     bdaName: "sanu",
-  //     aasignedArea: "Area-002",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "003",
-  //     bdaName: "kuttu",
-  //     aasignedArea: "Area-003",
-  //     phoneNumber: "111222777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "004",
-  //     bdaName: "krishnan",
-  //     aasignedArea: "Area-004",
-  //     phoneNumber: "778899665",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "005",
-  //     bdaName: "ajith",
-  //     aasignedArea: "Area-005",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "006",
-  //     bdaName: "anu",
-  //     aasignedArea: "Area-006",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "007",
-  //     bdaName: "minnu",
-  //     aasignedArea: "Area-007",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "008",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "009",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "010",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "011",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "012",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  // ];
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
     { key: "employeeId", label: "Employee ID" },
@@ -441,9 +302,9 @@ const RegionTeamView = ({ }: Props) => {
       </div>
 
       {/* Table Section */}
-      <div className="w-full">
+      <div>
         <Table<TeamData>
-          data={teamData.transformedBdas}
+          data={teamData?.transformedBdas ?? []}
           columns={columns}
           headerContents={{
             title: "BDA,s",
@@ -474,7 +335,8 @@ const RegionTeamView = ({ }: Props) => {
           }}
           noAction
           noPagination
-          maxHeight="500px"
+          maxHeight="350px"
+          skeltonCount={9}
         />
       </div>
       <div className="grid-cols-2 grid my-3 w-fit gap-2">
