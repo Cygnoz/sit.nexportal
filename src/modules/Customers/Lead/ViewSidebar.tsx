@@ -195,7 +195,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
             </p>
           </div>
 
-          <div className="flex w-80  justify-between  h-20 px-6 py-4 gap-5 rounded-xl bg-[#FFFFFF33] ">
+          <div className="flex w-full justify-between  h-20 px-6 py-4 gap-6 rounded-xl bg-[#FFFFFF33] ">
             <div>
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                 <div className="ms-2 mt-2">
@@ -247,7 +247,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
           </div>
           <div
             onClick={() => handleModalToggle(false, false, true, false)}
-            className="flex gap-2 rounded-xl bg-[#FFFFFF33] w-80 justify-center cursor-pointer  py-3 px-2 h-14 my-4"
+            className="flex gap-2 rounded-xl bg-[#FFFFFF33] w-full justify-center cursor-pointer  py-3 px-2 h-14 my-4"
           >
             <div className="px-2 ">
               <CalenderRound size={32} />
