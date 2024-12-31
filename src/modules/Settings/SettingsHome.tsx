@@ -1,9 +1,8 @@
 import { useMemo, useState } from "react";
-import Button from "../../components/ui/Button";
 import Chevronleft from "../../assets/icons/Chevronleft";
-import BusinessCard from "./BusinessCard";
-import SearchIcon from "../../assets/icons/SearchIcon";
+import Button from "../../components/ui/Button";
 import SearchBar from "../../components/ui/SearchBar";
+import BusinessCard from "./BusinessCard";
 
 const SettingsHome = () => {
     const [currentPage, setCurrentPage] = useState("Target");
