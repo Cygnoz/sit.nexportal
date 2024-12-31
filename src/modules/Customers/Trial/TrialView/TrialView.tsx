@@ -635,7 +635,7 @@ const TrialView = ({}: Props) => {
 
             <div className="ms-1">
               <BarChart
-                width={450}
+                width={400}
                 height={470}
                 data={AreaRevData}
                 margin={{ top: 5, right: 30, left: 20, bottom: 5 }}

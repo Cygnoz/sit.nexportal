@@ -256,7 +256,7 @@ const BDAView = ({}: Props) => {
           <p onClick={()=>navigate(`/areaView/${data.bdaData?.area?._id}`)} className="mx-4 underline cursor-pointer text-[#FFFFFF] text-sm font-normal">{data.bdaData?.area?.areaCode?data.bdaData?.area?.areaCode:'N/A'}</p>
         </div>
             </div>
-            <div className="flex gap-8 ms-6 my-12">
+            <div className="flex gap-8 ms-6 my-12 space-x-8">
               <div>
                 <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Role</p>
                 {/* <p>Employee ID</p> */}
@@ -271,7 +271,7 @@ const BDAView = ({}: Props) => {
                 <p className="text-[#FFFFFF] text-sm font-medium">{new Date(data.bdaData.dateOfJoining).toLocaleDateString("en-GB")}</p>
               </div>
             </div>
-            <div className="flex gap-1">
+            <div className="flex gap-1 space-x-6">
             <div onClick={()=>handleModalToggle(true,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
               <div className="w-8 h-8 mb-2  rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
