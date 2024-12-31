@@ -30,7 +30,7 @@ const PraiseHome = ({ }: Props) => {
     try {
       const { response, error } = await getAllPraise(url)
       if (response && !error) {
-        setAllPraise(response.data.praises)
+        setAllPraise(response.data.praises.reverse())
 
       } else {
         console.log(error)
@@ -166,7 +166,7 @@ const PraiseHome = ({ }: Props) => {
                 } rounded-lg justify-between w-full h-52`}
             >
                 <div className="flex justify-between">
-                    <div className="bg-[#F3F3F3] rounded-2xl w-48 h-12 p-3 ms-4 mt-4 flex gap-2">
+                    <div className="bg-[#F3F3F3] rounded-2xl w-72 h-12 p-3 ms-4 mt-4 flex gap-2">
                         <div className="bg-[#EDE7FB] rounded-full w-8 h-8 -mt-1">
                             <div className="p-[6px] ms-[2px]">
                                 {achievements.find((achievement) => achievement.name === praise.achievement)?.icon || ''}

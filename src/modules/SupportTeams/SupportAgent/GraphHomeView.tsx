@@ -191,8 +191,8 @@ const GraphHomeView = ({}: Props) => {
             </div>
           <div className="mt-3 p-2 gap-4">
            <LineChart
-                width={990}
-                height={400}
+                width={900}
+                height={450}
                 data={datas}
                 margin={{
                   top: 5,

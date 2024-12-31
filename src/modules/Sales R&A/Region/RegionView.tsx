@@ -283,7 +283,7 @@ function RegionView({}: Props) {
               </div>
               </div>
              
-              {data?.regionAreaData?.regionManager.userName && (
+              {data?.regionAreaData?.regionManager?.userName && (
                 <>
                  <hr className="w-full" />
   <div className="space-y-1 w-full text-xs mt-2">
