@@ -15,7 +15,6 @@ import Modal from "../../../../components/modal/Modal";
 import TrialViewForm from "./TrialViewForm";
 import { useEffect, useRef, useState } from "react";
 // import ArrowRight from "../../../../assets/icons/ArrowRight"
-import TrialEditForm from "./TrialEditForm";
 import Button from "../../../../components/ui/Button";
 import ExtentTrail from "./ExtentTrail";
 import ConvertModal from "../../../../components/modal/ConvertionModal/CovertLicenser";
@@ -33,20 +32,29 @@ import { endPoints } from "../../../../services/apiEndpoints";
 import { useResponse } from "../../../../context/ResponseContext";
 import CalenderClock from "../../../../assets/icons/CalenderClock";
 import Timer from "../../../../assets/icons/Timer";
+import Trash from "../../../../assets/icons/Trash";
+import ConfirmModal from "../../../../components/modal/ConfirmModal";
+import toast from "react-hot-toast";
 type Props = {};
 
-const TrialView = ({}: Props) => {
+const TrialView = ({ }: Props) => {
   // State to manage modal visibility
   const { request: getCustomerData } = useApi("get", 3001);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState({
+    editTrail: false,
+    viewTrail: false,
+    calender: false,
+    confirm: false,
+  });
+  // const [editModalOpen, setEditModalOpen] = useState(false);
   const [extentModalOpen, setExtentModalOpen] = useState(false);
   const [conLicModalOpen, setConvLicModalOpen] = useState(false);
   const [pausModalOpen, setPausModalOpen] = useState(false);
-  const [calenderModalOpen, setCalenderModalOpen] = useState(false);
+  // const [calenderModalOpen, setCalenderModalOpen] = useState(false);
   const [trialStatus, setTrialStatus] = useState(false);
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const { request: getTrial } = useApi("get", 3001);
+  const { request : deleteTrail} = useApi('delete',3001)
   const [trial, setTrial] = useState<any>([]);
   const handleScrollToTop = () => {
     if (mainContainerRef.current) {
@@ -60,13 +68,28 @@ const TrialView = ({}: Props) => {
   const { setCustomerData, customerData } = useResponse();
 
   // Function to toggle modal visibility
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
+  // const handleModalToggle = () => {
+  //   setIsModalOpen((prev) => !prev);
+  // };
+  const handleModalToggle = (
+    editTrail = false,
+    viewTrail = false,
+    calender = false,
+    confirm = false
+  ) => {
+    setIsModalOpen((prevState) => ({
+      ...prevState,
+      editTrail,
+      viewTrail,
+      calender,
+      confirm,
+    }));
   };
 
-  const edtiModalToggle = () => {
-    setEditModalOpen((prev) => !prev);
-  };
+
+  // const edtiModalToggle = () => {
+  //   setEditModalOpen((prev) => !prev);
+  // };
 
   const extentModalToggle = () => {
     setExtentModalOpen((prev) => !prev);
@@ -80,31 +103,31 @@ const TrialView = ({}: Props) => {
     setPausModalOpen((prev) => !prev);
   };
 
-  const calenderModalToggle = () => {
-    setCalenderModalOpen((prev) => !prev);
-  };
+  // const calenderModalToggle = () => {
+  //   setCalenderModalOpen((prev) => !prev);
+  // };
 
   const { id } = useParams();
-  function calculateDuration( endDate:any) {
+  function calculateDuration(endDate: any) {
     // Parse the date strings into Date objects
-    const start:any = new Date();
-    const end:any = new Date(endDate);
-  
+    const start: any = new Date();
+    const end: any = new Date(endDate);
+
     // Validate dates
     if (isNaN(start.getTime()) || isNaN(end.getTime())) {
       return "Invalid date format. Please use YYYY-MM-DD.";
     }
-  
+
     // Ensure the end date is after or equal to the start date
     if (end < start) {
       return "End date must be after or the same as the start date.";
     }
-  
+
     // Calculate the duration in days
     const durationInMilliseconds = end - start;
     const durationInDays = durationInMilliseconds / (1000 * 60 * 60 * 24);
-  
-    setCustomerData((prev:any)=>({...prev,duration:durationInDays.toFixed()}))
+
+    setCustomerData((prev: any) => ({ ...prev, duration: durationInDays.toFixed() }))
   }
 
   const getOneTrial = async () => {
@@ -143,17 +166,31 @@ const TrialView = ({}: Props) => {
       console.error("Error fetching Lead data:", err);
     }
   };
-  
+
 
   useEffect(() => {
     getCustomer();
   }, [id]);
 
-  useEffect(()=>{
+  useEffect(() => {
     getOneTrial();
-  },[customerData])
+  }, [customerData])
 
 
+  const handleDelete = async () => {
+    try {
+      const { response, error } = await deleteTrail(`${endPoints.LEAD}/${id}`);
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/trial");
+      } else {
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete the trail.");
+    }
+  };
 
   const AreaRevData = [
     { name: "Area 001", pv: 74479, color: "#4caf50" }, // Green
@@ -199,32 +236,32 @@ const TrialView = ({}: Props) => {
         return "bg-cyan-800 text-white py-1 px-2 rounded-full";
       case "In Progress":
         return "bg-yellow-100 text-black py-1 px-2 rounded-full";
-        case "In progress":
+      case "In progress":
         return "bg-yellow-100 text-black py-1 px-2 rounded-full";
-        case "Extended":
-          return "bg-violet-500 text-center text-white py-1 px-2 rounded-lg";
-        case "Expired":
+      case "Extended":
+        return "bg-violet-500 text-center text-white py-1 px-2 rounded-lg";
+      case "Expired":
         return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
-        case "Pause":
-          return "bg-yellow-500 text-center text-black py-1 px-2 rounded-lg";
-        case "Not Started":
-            return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
+      case "Pause":
+        return "bg-yellow-500 text-center text-black py-1 px-2 rounded-lg";
+      case "Not Started":
+        return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
       case "Proposal":
         return "bg-violet-300 text-black py-1 px-2 rounded-full";
       case "Lost":
         return "bg-red-500 text-white py-1 px-2 rounded-full";
       case "Won":
         return "bg-green-500 text-white  py-1 px-2 w-fit rounded-full";
-  default:
+      default:
         return "";
     }
   };
 
-  let data:any={}
-  data={trial,customerData}
- 
+  let data: any = {}
+  data = { trial, customerData }
 
-  
+
+
 
   return (
     <div
@@ -289,15 +326,15 @@ const TrialView = ({}: Props) => {
             style={{ backgroundImage: `url(${BackgroundImage})` }}
           >
             <div className="flex justify-end">
-            <div className={`${getStatusClass(customerData?.trialStatus)}  flex items-center gap-2  w-fit ms-auto `}>
-        <div className={`w-2 h-2 -mt-[2px] ${customerData?.trialStatus=='In Progress' ||customerData?.trialStatus=='Proposal'?'bg-black':'bg-white'} rounded-full`}></div>
-         <p className="text-sm">{customerData?.trialStatus}</p>
-        </div>
+              <div className={`${getStatusClass(customerData?.trialStatus)}  flex items-center gap-2  w-fit ms-auto `}>
+                <div className={`w-2 h-2 -mt-[2px] ${customerData?.trialStatus == 'In Progress' || customerData?.trialStatus == 'Proposal' ? 'bg-black' : 'bg-white'} rounded-full`}></div>
+                <p className="text-sm">{customerData?.trialStatus}</p>
+              </div>
             </div>
             <div className="flex gap-4">
               <div className="w-14 h-14 rounded-full overflow-hidden">
                 <img
-                  src={customerData?.image?customerData?.image:profileImage} // Replace with the actual image URL
+                  src={customerData?.image ? customerData?.image : profileImage} // Replace with the actual image URL
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
@@ -307,7 +344,7 @@ const TrialView = ({}: Props) => {
                   {trial?.primaryContactName}
                 </p>
                 <p className="text-[#FFFFFF] text-xs font-normal">
-              
+
                   <span className="text-xs font-bold ">{customerData?.customerId}</span>
                 </p>
               </div>
@@ -338,7 +375,7 @@ const TrialView = ({}: Props) => {
               <div className="flex gap-4 my-4 ">
                 <EmailIcon color="#FFFFFF" size={16} />
                 <p className="text-[#FFFFFF] text-xs font-normal">
-                 {trial?.primaryContactEmail}
+                  {trial?.primaryContactEmail}
                 </p>
               </div>
               <div className="flex gap-4 mb-2">
@@ -356,7 +393,7 @@ const TrialView = ({}: Props) => {
               </span>
               <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
               <span className="text-[#FFFFFF] text-xs font-normal">
-                { new Date(customerData?.startDate).toLocaleDateString("en-GB")}
+                {new Date(customerData?.startDate).toLocaleDateString("en-GB")}
               </span>
             </div>
             <div className="flex gap-4 my-4 ">
@@ -366,7 +403,7 @@ const TrialView = ({}: Props) => {
               </span>
               <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
               <span className="text-[#FFFFFF] text-xs font-normal">
-              { new Date(customerData?.endDate).toLocaleDateString("en-GB")}
+                {new Date(customerData?.endDate).toLocaleDateString("en-GB")}
               </span>
             </div>
 
@@ -404,7 +441,7 @@ const TrialView = ({}: Props) => {
                   Email
                 </p>
               </div>
-              {/* <div onClick={edtiModalToggle}>
+              {/* <div onClick={() => handleModalToggle(true, false, false, false)}>
                 <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
                     <EditIcon size={18} color="#F0D5A0" />
@@ -414,7 +451,7 @@ const TrialView = ({}: Props) => {
                   Edit
                 </p>
               </div> */}
-              <div onClick={handleModalToggle}>
+              <div onClick={() => handleModalToggle(false, true, false, false)}>
                 <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
                     <ViewRoundIcon size={18} color="#B6D6FF" />
@@ -434,9 +471,20 @@ const TrialView = ({}: Props) => {
                   DeActivate
                 </p>
               </div>
+
+              <div onClick={() => handleModalToggle(false, false, false, true)} className="cursor-pointer">
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                    <Trash size={18} color="red" />
+                  </div>
+                </div>
+                <p className="text-[#FFF9F9] text-[10px] font-medium mt-1">
+                  Delete
+                </p>
+              </div>
             </div>
             <div
-              onClick={calenderModalToggle}
+              onClick={() => handleModalToggle(false, false, true, false)}
               className="flex gap-2 rounded-xl w-full justify-center cursor-pointer  bg-[#FFFFFF33]  py-3 px-2 h-14 my-4"
             >
               <div className="px-2 ">
@@ -672,25 +720,34 @@ const TrialView = ({}: Props) => {
       </div>
 
       {/* Modal controlled by state */}
-      <Modal
+      {/* <Modal
         open={isModalOpen}
         align="center"
         onClose={handleModalToggle}
         className="w-[40%]"
       >
         <TrialViewForm data={data}   onClose={handleModalToggle} />
-      </Modal>
+      </Modal> */}
 
-      {/* Modal controlled by state */}
       <Modal
-        open={editModalOpen}
-        align="center"
-        onClose={edtiModalToggle}
+        open={isModalOpen.viewTrail}
+        onClose={() => handleModalToggle()}
         className="w-[35%]"
       >
-        <TrialEditForm onClose={edtiModalToggle} />
+        <TrialViewForm onClose={() => handleModalToggle()} />
       </Modal>
 
+
+      {/* Modal controlled by state */}
+      {/* <Modal
+        open={isModalOpen.editTrail}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[35%]"
+      >
+        <TrialEditForm onClose={() => handleModalToggle()} />
+      </Modal>
+ */}
       {/* Modal controlled by state */}
       <Modal
         open={extentModalOpen}
@@ -698,7 +755,7 @@ const TrialView = ({}: Props) => {
         onClose={extentModalToggle}
         className="w-[35%]"
       >
-        <ExtentTrail getCutomer={getCustomer}  trialData={data}  onClose={extentModalToggle} />
+        <ExtentTrail getCutomer={getCustomer} trialData={data} onClose={extentModalToggle} />
       </Modal>
 
       {/* Modal controlled by state */}
@@ -708,7 +765,7 @@ const TrialView = ({}: Props) => {
         onClose={covertModalToggle}
         className="w-[30%]"
       >
-        <ConvertModal getLeads={getOneTrial}  orgData={trial}  onClose={covertModalToggle} type="trial" />
+        <ConvertModal getLeads={getOneTrial} orgData={trial} onClose={covertModalToggle} type="trial" />
       </Modal>
 
       {/* Modal controlled by state */}
@@ -728,13 +785,25 @@ const TrialView = ({}: Props) => {
 
       {/* Modal controlled by state */}
       <Modal
-        open={calenderModalOpen}
+        open={isModalOpen.calender}
         align="center"
-        onClose={calenderModalToggle}
+        onClose={() => handleModalToggle()}
         className="w-[65%]"
       >
-        <CalenderModal onClose={calenderModalToggle} />
+        <CalenderModal onClose={() => handleModalToggle()} />
       </Modal>
+      <Modal
+        open={isModalOpen.confirm}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>
+
     </div>
   );
 };

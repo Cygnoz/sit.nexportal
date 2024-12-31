@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Bar,
   BarChart,
@@ -13,118 +13,171 @@ import EditIcon from "../../../assets/icons/EditIcon";
 import RegionIcon from "../../../assets/icons/RegionIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import profileImage from "../../../assets/image/AvatarImg.png";
-import person from "../../../assets/image/Ellipse 14 (3).png";
+// import person from "../../../assets/image/Ellipse 14 (3).png";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import SearchBar from "../../../components/ui/SearchBar";
 import Table from "../../../components/ui/Table";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import { useParams } from "react-router-dom";
+import Modal from "../../../components/modal/Modal";
+import AMForm from "../../SalesTeams/AreaManager/AMForm";
+// import { RegionData } from "../../../Interfaces/Region";
 // import SearchBar from "../../../components/ui/SearchBar";
 
-interface AreaData {
-  image: string;
-  name: string;
-  state: string;
-  mail: string;
-  phone: string;
-}
+// interface AreaData {
+//   image: string;
+//   name: string;
+//   state: string;
+//   mail: string;
+//   phone: string;
+// }
 interface TeamData {
   employeeID: string;
   bdaName: string;
   aasignedArea: string;
   phoneNumber: string;
-
   dateOfJoining: string;
 }
 
 type Props = {};
 // Data for HomeCards
-const homeCardData = [
-  {
-    icon: <AreaIcon size={24} />,
-    number: "167",
-    title: "Total Area",
-    iconFrameColor: "#30B777",
-    iconFrameBorderColor: "#B3F0D3CC",
-  },
-  {
-    icon: <UserIcon />,
-    number: "189",
-    title: "Total Area Manager",
-    iconFrameColor: "#1A9CF9",
-    iconFrameBorderColor: "#BBD8EDCC",
-  },
-
-  {
-    icon: <AreaManagerIcon />,
-    number: "498",
-    title: "Total BDA's",
-    iconFrameColor: "#E07253",
-    iconFrameBorderColor: "#F4D7CFCC",
-  },
-
-  {
-    icon: <AreaManagerIcon />,
-    number: "498",
-    title: "Total BDA's",
-    iconFrameColor: "#DA8FE0",
-    iconFrameBorderColor: "#F4D7CFCC",
-  },
-];
 
 const RegionTeamView = ({}: Props) => {
   const [searchValue, setSearchValue] = useState<string>("");
+  const [teamData, setTeamData]=useState<any>({})
+  const {request: getTeam} =useApi('get',3003)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editId, setEditId]=useState('')
 
-  const areaManager: AreaData[] = [
+  // const {totalCounts}=useRegularApi()
+
+
+  const handleModalToggle = () => {
+    setIsModalOpen((prev) => !prev);
+  };
+
+    const { id } = useParams();
+
+
+  const getAllTeam = async()=>{
+    try{
+      const {response, error}= await getTeam(`${endPoints.GET_REGIONS}/${id}/details`)
+      if(response && !error){
+        const transformedTeam = response.data?.bdas?.map((team:any)=>({
+          ...team,
+          dateOfJoining:team.user?.dateOfJoining
+          ? new Date(team.user?.dateOfJoining).toLocaleDateString("en-GB")
+              : "N/A",
+          phoneNo:team?.user?.PhoneNo,
+        }))
+        console.log(transformedTeam);
+        setTeamData(transformedTeam)
+      }
+      else{
+        console.log(error.response.data.message);
+        
+      }
+    }
+    catch(err){
+      console.log(err);
+      
+    }
+  }
+  useEffect(()=>{
+    getAllTeam()
+  },[])
+
+  console.log(teamData);
+  
+
+  
+  const homeCardData = [
     {
-      image: person,
-      name: "David",
-      state: "Kerala",
-      mail: "Davide@gmail.com",
-      phone: "1122334455",
+      icon: <AreaIcon size={24} />,
+      number: teamData?.totalTeamMembers ?teamData?.totalTeamMembers:'0',
+      title: "Total Team Members",
+      iconFrameColor: "#30B777",
+      iconFrameBorderColor: "#B3F0D3CC",
     },
     {
-      image: person,
-      name: "David",
-      state: "Kerala",
-      mail: "Davide@gmail.com",
-      phone: "1122334455",
+      icon: <UserIcon />,
+      number: teamData?.activeTeamMembers ? teamData?.activeTeamMembers: '0',
+      title: "Active Team Members",
+      iconFrameColor: "#1A9CF9",
+      iconFrameBorderColor: "#BBD8EDCC",
     },
+  
     {
-      image: person,
-      name: "David",
-      state: "Kerala",
-      mail: "Davide@gmail.com",
-      phone: "1122334455",
+      icon: <AreaManagerIcon />,
+      number: teamData?.leadsAssigned ? teamData?.leadsAssigned: '0',
+      title: "Leads Assigned",
+      iconFrameColor: "#E07253",
+      iconFrameBorderColor: "#F4D7CFCC",
     },
+  
     {
-      image: person,
-      name: "David",
-      state: "Kerala",
-      mail: "Davide@gmail.com",
-      phone: "1122334455",
-    },
-    {
-      image: person,
-      name: "David",
-      state: "Kerala",
-      mail: "Davide@gmail.com",
-      phone: "1122334455",
-    },
-    {
-      image: person,
-      name: "David",
-      state: "Kerala",
-      mail: "Davide@gmail.com",
-      phone: "1122334455",
-    },
-    {
-      image: person,
-      name: "David",
-      state: "Kerala",
-      mail: "Davide@gmail.com",
-      phone: "1122334455",
+      icon: <AreaManagerIcon />,
+      number: "498",
+      title: "Revenue Generated",
+      iconFrameColor: "#DA8FE0",
+      iconFrameBorderColor: "#F4D7CFCC",
     },
   ];
+  
+
+  // const areaManager: AreaData[] = [
+  //   {
+  //     image: person,
+  //     name: "David",
+  //     state: 'kerala',
+  //     mail: "Davide@gmail.com",
+  //     phone: "1122334455",
+  //   },
+  //   {
+  //     image: person,
+  //     name: "David",
+  //     state: "Kerala",
+  //     mail: "Davide@gmail.com",
+  //     phone: "1122334455",
+  //   },
+  //   {
+  //     image: person,
+  //     name: "David",
+  //     state: "Kerala",
+  //     mail: "Davide@gmail.com",
+  //     phone: "1122334455",
+  //   },
+  //   {
+  //     image: person,
+  //     name: "David",
+  //     state: "Kerala",
+  //     mail: "Davide@gmail.com",
+  //     phone: "1122334455",
+  //   },
+  //   {
+  //     image: person,
+  //     name: "David",
+  //     state: "Kerala",
+  //     mail: "Davide@gmail.com",
+  //     phone: "1122334455",
+  //   },
+  //   {
+  //     image: person,
+  //     name: "David",
+  //     state: "Kerala",
+  //     mail: "Davide@gmail.com",
+  //     phone: "1122334455",
+  //   },
+  //   {
+  //     image: person,
+  //     name: "David",
+  //     state: "Kerala",
+  //     mail: "Davide@gmail.com",
+  //     phone: "1122334455",
+  //   },
+  // ];
 
   // Data for the table
   const data: TeamData[] = [
@@ -214,12 +267,12 @@ const RegionTeamView = ({}: Props) => {
     },
   ];
   // Define the columns with strict keys
-  const columns: { key: keyof TeamData; label: string }[] = [
-    { key: "employeeID", label: "Employee ID" },
+  const columns: { key:any; label: string }[] = [
+    { key: "employeeId", label: "Employee ID" },
     { key: "bdaName", label: "BDA Name" },
     { key: "aasignedArea", label: "Assigned Area" },
-    { key: "phoneNumber", label: "Phone Number" },
-    { key: "dateOfJoining", label: "Date Of Joining" },
+    { key: "phoneNo", label: "Phone Number" },
+    { key: "teamData.bdas?.dateOfJoining", label: "Date Of Joining" },
   ];
 
 
@@ -294,9 +347,10 @@ const RegionTeamView = ({}: Props) => {
 
   return (
     <div>
+      
       <div className="bg-white p-3 mt-5 rounded-lg w-full">
         {/* HomeCards Section */}
-        <div className="flex gap-4 py-1 justify-between w-[52%]">
+        <div className="flex gap-4 py-1 justify-between">
           {homeCardData.map((card, index) => (
             <HomeCard
               iconFrameColor={card.iconFrameColor}
@@ -325,7 +379,7 @@ const RegionTeamView = ({}: Props) => {
         </div>
 
         <div
-          className="w-[53%] px-4 overflow-x-auto custom-scrollbar"
+          className="px-4 overflow-x-auto custom-scrollbar"
           style={{
             display: "flex",
             overflowX: "auto",
@@ -335,23 +389,30 @@ const RegionTeamView = ({}: Props) => {
           }}
         >
           <div className="flex gap-4">
-            {areaManager.map((card, index) => (
+            {teamData?.areaManagers?.map((card:any, index:any) => (
               <div
                 key={index}
                 className="my-1 bg-[#F5F9FC] p-4 w-64 rounded-lg flex-shrink-0"
               >
                 <div className="flex justify-between my-1">
-                  <img className="w-10" src={card.image} alt="Area Manager" />
-                  <EditIcon size={30} />
+                  
+                  <img className="w-10 h-10 rounded-full" src={card.user?.userImage} alt="" />
+                  <div onClick={()=>setEditId(card?._id)} className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB]">
+                  <EditIcon color="#C4A25D" size={14} />
+                  </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <h1 className="font-bold text-sm">{card.name}</h1>
-                  <h1 className="font-medium my-1 text-xs text-center h-5 w-14 rounded-lg bg-[#30B777] text-white flex items-center justify-center">
-                    {card.state}
+                  <h1 className="font-bold text-sm">{card.user?.userName}</h1>
+                  <h1 className="font-medium my-1 text-xs text-center h-5 w-fit p-1 rounded-lg bg-[#30B777] text-white flex items-center justify-center">
+                    {card.area?.areaName}
                   </h1>
                 </div>
-                <p className="font-medium text-xs my-1">{card.mail}</p>
-                <p className="font-medium text-xs my-2">{card.phone}</p>
+                <div className="flex gap-1 my-3">
+                <p className="font-medium text-xs">{card.user?.email}</p>
+                <div className="w-1 h-1 rounded-full bg-[#F9A51A] mt-1"></div>
+                <p className="font-medium text-xs">{card.user?.phoneNo}</p>
+
+                </div>
                 <Button
                   variant="tertiary"
                   className="font-medium text-xs"
@@ -366,7 +427,7 @@ const RegionTeamView = ({}: Props) => {
       </div>
 
         {/* Table Section */}
-        <div className="w-[53%]">
+        <div className="w-full">
           <Table<TeamData>
             data={data}
             columns={columns}
@@ -522,6 +583,10 @@ const RegionTeamView = ({}: Props) => {
             </div>
           </div>
       </div>
+      <Modal className="" open={isModalOpen} onClose={handleModalToggle}>
+        <AMForm editId={editId} onClose={handleModalToggle} />
+      </Modal>
+
     </div>
   );
 };
