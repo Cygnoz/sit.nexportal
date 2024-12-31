@@ -6,6 +6,7 @@ import BusinessCard from "./BusinessCard";
 import UserHome from "../Users/User/UserHome";
 import UserLogHome from "../Users/UserLog/UserLogHome";
 import WCommisionHome from "../Users/WorkerCommision/WCommisionHome";
+import Target from "./Target/Target";
 
 const SettingsHome = () => {
     const [currentPage, setCurrentPage] = useState("Target");
@@ -25,9 +26,9 @@ const SettingsHome = () => {
 
     return (
         <>
-            <div className="grid grid-cols-12 text-[#303F58] -ms-5 -mt-4">
+            <div className="grid grid-cols-12 text-[#303F58] ">
                 {/* Sidebar */}
-                <div className="col-span-2">
+                <div className="col-span-2 -ms-5 -mt-4">
                     <div className="bg-white w-60 h-screen fixed  p-6 ">
                         <div className="mb-3">
                             <Button variant="secondary" size="sm">
@@ -63,10 +64,13 @@ const SettingsHome = () => {
                 </div>
 
                 {/* Main Content */}
-                <div className="col-span-10 p-3">
+                <div className="col-span-10 ps-[14px] ">
                     {currentPage === "Target" && <div>Target</div>}
                     {currentPage === "User" && <UserHome/>}
                     {currentPage === "UserLog" && <UserLogHome/>}
+                    {currentPage === "Target" && <Target/>}
+                    {currentPage === "User" && <div>Users</div>}
+                    {currentPage === "UserLog" && <div>User Log</div>}
                     {currentPage === "Business Card" && <BusinessCard />}
                     {currentPage === "Worker Commission" && <WCommisionHome/>}
                 </div>

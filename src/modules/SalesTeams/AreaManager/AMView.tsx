@@ -426,10 +426,13 @@ const AMView = ({ }: Props) => {
             }
           </div>
         </div>
-        <div>
+        <div className='justify-between  w-full'>
+          <div>
           <h1 className="ms-7 text-[#FFFEFB] text-2xl font-normal">{getData.amData?.user?.userName ? getData.amData?.user?.userName : 'N/A'}</h1>
+          </div>
           <div className="flex mt-1">
-            <div className="border-r ms-3">
+           <div className='flex'>
+           <div className="border-r ms-3">
               <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
               <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.phoneNo ? getData.amData?.user?.phoneNo : 'N/A'}</p>
             </div>
@@ -441,7 +444,9 @@ const AMView = ({ }: Props) => {
               <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Area</p>
               <p onClick={() => navigate(`/areas/${getData.amData?.area?._id}`)} className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
             </div>
-            <div className="-mt-5 ms-32 me-6">
+           </div>
+           <div className='flex justify-between'>
+           <div className="-mt-5 ms-32 me-6">
               <p className="text-[#D4D4D4] text-xs font-medium">Role</p>
               <p className="text-[#FFFFFF] text-sm font-medium">Area Manager</p>
             </div>
@@ -453,8 +458,9 @@ const AMView = ({ }: Props) => {
               <p className="text-[#D4D4D4] text-xs font-medium">Joining Date</p>
               <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.dateOfJoining ? new Date(getData.amData?.dateOfJoining).toLocaleDateString() : 'N/A'}</p>
             </div>
-            <div className="flex -mt-9 gap-4 ms-16">
-              <div className="flex flex-col items-center space-y-1">
+           </div>
+            <div className="flex ms-auto -mt-6 ">
+              <div className="flex flex-col items-center space-y-1 ">
                 <div onClick={()=>handleModalToggle(true,false,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">

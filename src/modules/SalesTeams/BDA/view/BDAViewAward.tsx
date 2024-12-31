@@ -10,7 +10,7 @@ type Props = {
     data: any
 }
 
-const BDAViewAward = ({ data }: Props) => {
+const BDAViewAward = ({ data , onClose }: Props) => {
     const {request: getaAWARD}=useApi('get',3004)
     const {id}= useParams()
      const [getAwards, setGetDatas] = useState<any>([])
@@ -43,7 +43,16 @@ const BDAViewAward = ({ data }: Props) => {
     return (
         <div>
             <div className="p-3 bg-[#FFFFFF] gap-4 mt-3 rounded-lg">
-                <p className="text-[#303F58] font-semibold text-base">Achievements and Awards</p>
+            <div className='flex justify-between items-center'>
+               <p className="text-[#303F58] font-semibold text-base">Achievements and Awards</p>
+                <button
+          type="button"
+          onClick={onClose}
+          className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900 -mt-2"
+        >
+          &times;
+        </button>
+               </div>
                 <div className={`h-96 ${getAwards.length > 3 ? 'overflow-y-scroll custom-scrollbar' : ''}`}>
                     {getAwards?.length > 0 ? (
                         getAwards.map((praises: any) => (
