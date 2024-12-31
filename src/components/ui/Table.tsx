@@ -39,6 +39,7 @@ interface TableProps<T> {
   noAction?: boolean;
   noPagination?: boolean;
   maxHeight?: string;
+  skeltonCount?:number
 }
 
 const Table = <T extends object>({
@@ -49,6 +50,7 @@ const Table = <T extends object>({
   noAction,
   noPagination,
   maxHeight,
+  skeltonCount=5
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -197,7 +199,6 @@ const Table = <T extends object>({
     for (const { key, imageKey } of ImageAndLabel) {
       const keyValue = getNestedValue(data, key);
       const imageValue = getNestedValue(data, imageKey);
-
       if (keyValue) {
         if (imageValue && imageValue.length > 500) {
           return (
@@ -228,8 +229,8 @@ const Table = <T extends object>({
   const renderSkeletonLoader = () => (
     <tr>
       <td colSpan={columns.length + 2}>
-        <div className="flex flex-col gap-2 mt-2">
-          {Array.from({ length: 5 }).map((_, index) => (
+        <div className="flex flex-col   gap-2 mt-2">
+          {Array.from({ length: skeltonCount }).map((_, index) => (
             <div key={index} className="flex gap-2 animate-pulse">
               {columns.map((_, colIndex) => (
                 <div
@@ -263,10 +264,12 @@ const Table = <T extends object>({
       {renderHeader()}
 
       <div
-        style={maxHeight ? { maxHeight: maxHeight, overflowY: "auto" } : {}}
-        className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
+      style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
+         className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
         <table
+          style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
+       
           className={`w-full border-collapse border-[#e7e6e6] border text-left  ${
             maxHeight && "table-fixed"
           }`}
@@ -315,7 +318,7 @@ const Table = <T extends object>({
               renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
-                <tr key={rowIndex} className="hover:bg-gray-50 z-10">
+                <tr onClick={() => actionList?.find((data) => data.label === "view")?.function(row?._id)}  key={rowIndex} className="hover:bg-gray-50 z-10 cursor-pointer">
                   <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
                     {(currentPage - 1) * rowsPerPage + rowIndex + 1}
                   </td>
