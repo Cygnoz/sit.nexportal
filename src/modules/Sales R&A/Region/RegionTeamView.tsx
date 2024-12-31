@@ -44,12 +44,12 @@ interface TeamData {
 type Props = {};
 // Data for HomeCards
 
-const RegionTeamView = ({}: Props) => {
+const RegionTeamView = ({ }: Props) => {
   const [searchValue, setSearchValue] = useState<string>("");
-  const [teamData, setTeamData]=useState<any>({})
-  const {request: getTeam} =useApi('get',3003)
+  const [teamData, setTeamData] = useState<any>({})
+  const { request: getTeam } = useApi('get', 3003)
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editId, setEditId]=useState('')
+  const [editId, setEditId] = useState('')
 
   // const {totalCounts}=useRegularApi()
 
@@ -58,65 +58,73 @@ const RegionTeamView = ({}: Props) => {
     setIsModalOpen((prev) => !prev);
   };
 
-    const { id } = useParams();
+  const { id } = useParams();
 
 
-  const getAllTeam = async()=>{
-    try{
-      const {response, error}= await getTeam(`${endPoints.GET_REGIONS}/${id}/details`)
-      if(response && !error){
-        const transformedTeam = response.data?.bdas?.map((team:any)=>({
+  const getAllTeam = async () => {
+    try {
+      const { response, error } = await getTeam(`${endPoints.GET_REGIONS}/${id}/details`);
+
+      if (response && !error) {
+        console.log(response.data);
+
+        const { bdas = [], areaManagers = [], ...restData } = response?.data || {};
+
+        const transformedBdas = bdas.map((team: any) => ({
           ...team,
-          dateOfJoining:team.user?.dateOfJoining
-          ? new Date(team.user?.dateOfJoining).toLocaleDateString("en-GB")
-              : "N/A",
-          phoneNo:team?.user?.PhoneNo,
-        }))
-        console.log(transformedTeam);
-        setTeamData(transformedTeam)
+          dateOfJoining: team.user?.dateOfJoining
+            ? new Date(team.user?.dateOfJoining).toLocaleDateString("en-GB")
+            : "N/A",
+          phoneNo: team?.user?.PhoneNo,
+          userName: team?.user?.userName,
+          userImage: team?.user?.userImage,
+          areaName: team?.area?.areaName,
+          employeeId: team?.user?.employeeId,
+        }));
+
+        const transformedData = { transformedBdas, areaManagers, ...restData };
+        console.log(transformedData);
+        setTeamData(transformedData);
+      } else {
+        console.log(error?.response?.data?.message || "Unknown error occurred");
       }
-      else{
-        console.log(error.response.data.message);
-        
-      }
-    }
-    catch(err){
+    } catch (err) {
       console.log(err);
-      
     }
-  }
-  useEffect(()=>{
-    getAllTeam()
-  },[])
+  };
+
+  useEffect(() => {
+    getAllTeam();
+  }, []);
 
   console.log(teamData);
-  
 
-  
+
+
   const homeCardData = [
     {
       icon: <AreaIcon size={24} />,
-      number: teamData?.totalTeamMembers ?teamData?.totalTeamMembers:'0',
+      number: teamData?.totalTeamMembers ? teamData?.totalTeamMembers : '0',
       title: "Total Team Members",
       iconFrameColor: "#30B777",
       iconFrameBorderColor: "#B3F0D3CC",
     },
     {
       icon: <UserIcon />,
-      number: teamData?.activeTeamMembers ? teamData?.activeTeamMembers: '0',
+      number: teamData?.activeTeamMembers ? teamData?.activeTeamMembers : '0',
       title: "Active Team Members",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
-  
+
     {
       icon: <AreaManagerIcon />,
-      number: teamData?.leadsAssigned ? teamData?.leadsAssigned: '0',
+      number: teamData?.leadsAssigned ? teamData?.leadsAssigned : '0',
       title: "Leads Assigned",
       iconFrameColor: "#E07253",
       iconFrameBorderColor: "#F4D7CFCC",
     },
-  
+
     {
       icon: <AreaManagerIcon />,
       number: "498",
@@ -125,7 +133,7 @@ const RegionTeamView = ({}: Props) => {
       iconFrameBorderColor: "#F4D7CFCC",
     },
   ];
-  
+
 
   // const areaManager: AreaData[] = [
   //   {
@@ -180,99 +188,99 @@ const RegionTeamView = ({}: Props) => {
   // ];
 
   // Data for the table
-  const data: TeamData[] = [
-    {
-      employeeID: "001",
-      bdaName: "subi",
-      aasignedArea: "Area-001",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "002",
-      bdaName: "sanu",
-      aasignedArea: "Area-002",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "003",
-      bdaName: "kuttu",
-      aasignedArea: "Area-003",
-      phoneNumber: "111222777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "004",
-      bdaName: "krishnan",
-      aasignedArea: "Area-004",
-      phoneNumber: "778899665",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "005",
-      bdaName: "ajith",
-      aasignedArea: "Area-005",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "006",
-      bdaName: "anu",
-      aasignedArea: "Area-006",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "007",
-      bdaName: "minnu",
-      aasignedArea: "Area-007",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "008",
-      bdaName: "subi",
-      aasignedArea: "Area-001",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "009",
-      bdaName: "subi",
-      aasignedArea: "Area-001",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "010",
-      bdaName: "subi",
-      aasignedArea: "Area-001",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "011",
-      bdaName: "subi",
-      aasignedArea: "Area-001",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-    {
-      employeeID: "012",
-      bdaName: "subi",
-      aasignedArea: "Area-001",
-      phoneNumber: "333999777",
-      dateOfJoining: "21-07-2022",
-    },
-  ];
+  // const data: TeamData[] = [
+  //   {
+  //     employeeID: "001",
+  //     bdaName: "subi",
+  //     aasignedArea: "Area-001",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "002",
+  //     bdaName: "sanu",
+  //     aasignedArea: "Area-002",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "003",
+  //     bdaName: "kuttu",
+  //     aasignedArea: "Area-003",
+  //     phoneNumber: "111222777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "004",
+  //     bdaName: "krishnan",
+  //     aasignedArea: "Area-004",
+  //     phoneNumber: "778899665",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "005",
+  //     bdaName: "ajith",
+  //     aasignedArea: "Area-005",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "006",
+  //     bdaName: "anu",
+  //     aasignedArea: "Area-006",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "007",
+  //     bdaName: "minnu",
+  //     aasignedArea: "Area-007",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "008",
+  //     bdaName: "subi",
+  //     aasignedArea: "Area-001",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "009",
+  //     bdaName: "subi",
+  //     aasignedArea: "Area-001",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "010",
+  //     bdaName: "subi",
+  //     aasignedArea: "Area-001",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "011",
+  //     bdaName: "subi",
+  //     aasignedArea: "Area-001",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  //   {
+  //     employeeID: "012",
+  //     bdaName: "subi",
+  //     aasignedArea: "Area-001",
+  //     phoneNumber: "333999777",
+  //     dateOfJoining: "21-07-2022",
+  //   },
+  // ];
   // Define the columns with strict keys
-  const columns: { key:any; label: string }[] = [
+  const columns: { key: any; label: string }[] = [
     { key: "employeeId", label: "Employee ID" },
-    { key: "bdaName", label: "BDA Name" },
-    { key: "aasignedArea", label: "Assigned Area" },
+    { key: "userName", label: "BDA Name" },
+    { key: "areaName", label: "Assigned Area" },
     { key: "phoneNo", label: "Phone Number" },
-    { key: "teamData.bdas?.dateOfJoining", label: "Date Of Joining" },
+    { key: "dateOfJoining", label: "Date Of Joining" },
   ];
 
 
@@ -347,7 +355,7 @@ const RegionTeamView = ({}: Props) => {
 
   return (
     <div>
-      
+
       <div className="bg-white p-3 mt-5 rounded-lg w-full">
         {/* HomeCards Section */}
         <div className="flex gap-4 py-1 justify-between">
@@ -389,17 +397,23 @@ const RegionTeamView = ({}: Props) => {
           }}
         >
           <div className="flex gap-4">
-            {teamData?.areaManagers?.map((card:any, index:any) => (
+            {teamData?.areaManagers?.map((card: any, index: any) => (
               <div
                 key={index}
                 className="my-1 bg-[#F5F9FC] p-4 w-64 rounded-lg flex-shrink-0"
               >
                 <div className="flex justify-between my-1">
-                  
-                  <img className="w-10 h-10 rounded-full" src={card.user?.userImage} alt="" />
-                  <div onClick={()=>setEditId(card?._id)} className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB]">
-                  <EditIcon color="#C4A25D" size={14} />
+                  {card.user?.userImage ?
+                    <img className="w-10 h-10 rounded-full" src={card.user?.userImage} alt="" />
+                    :
+                    <p className="w-10 h-10 bg-black rounded-full flex justify-center items-center">
+                      <UserIcon color="white" size={22} />
+                    </p>
+                  }
+                  <div onClick={() => setEditId(card?._id)} className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB] cursor-pointer">
+                    <EditIcon color="#C4A25D" size={14} />
                   </div>
+
                 </div>
                 <div className="flex justify-between items-center">
                   <h1 className="font-bold text-sm">{card.user?.userName}</h1>
@@ -408,9 +422,9 @@ const RegionTeamView = ({}: Props) => {
                   </h1>
                 </div>
                 <div className="flex gap-1 my-3">
-                <p className="font-medium text-xs">{card.user?.email}</p>
-                <div className="w-1 h-1 rounded-full bg-[#F9A51A] mt-1"></div>
-                <p className="font-medium text-xs">{card.user?.phoneNo}</p>
+                  <p className="font-medium text-xs">{card.user?.email}</p>
+                  <div className="w-1 h-1 rounded-full bg-[#F9A51A] mt-1"></div>
+                  <p className="font-medium text-xs">{card.user?.phoneNo}</p>
 
                 </div>
                 <Button
@@ -426,162 +440,162 @@ const RegionTeamView = ({}: Props) => {
         </div>
       </div>
 
-        {/* Table Section */}
-        <div className="w-full">
-          <Table<TeamData>
-            data={data}
-            columns={columns}
-            headerContents={{
-              title: "BDA,s",
-              search: { placeholder: "Search BDA By NAme" },
-              sort: [
-                {
-                  sortHead: "Filter By Area",
-                  sortList: [
-                    {
-                      label: "Sort by supervisorCode",
-                      icon: <UserIcon size={14} color="#4B5C79" />,
-                    },
-                    {
-                      label: "Sort by Age",
-                      icon: <RegionIcon size={14} color="#4B5C79" />,
-                    },
-                    {
-                      label: "Sort by supervisorCode",
-                      icon: <AreaManagerIcon size={14} color="#4B5C79" />,
-                    },
-                    {
-                      label: "Sort by Age",
-                      icon: <CalenderDays size={14} color="#4B5C79" />,
-                    },
-                  ],
-                },
-              ],
-            }}
-            noAction
-            noPagination
-            maxHeight="500px"
-          />
-        </div>
+      {/* Table Section */}
+      <div className="w-full">
+        <Table<TeamData>
+          data={teamData.transformedBdas}
+          columns={columns}
+          headerContents={{
+            title: "BDA,s",
+            search: { placeholder: "Search BDA By NAme" },
+            sort: [
+              {
+                sortHead: "Filter By Area",
+                sortList: [
+                  {
+                    label: "Sort by supervisorCode",
+                    icon: <UserIcon size={14} color="#4B5C79" />,
+                  },
+                  {
+                    label: "Sort by Age",
+                    icon: <RegionIcon size={14} color="#4B5C79" />,
+                  },
+                  {
+                    label: "Sort by supervisorCode",
+                    icon: <AreaManagerIcon size={14} color="#4B5C79" />,
+                  },
+                  {
+                    label: "Sort by Age",
+                    icon: <CalenderDays size={14} color="#4B5C79" />,
+                  },
+                ],
+              },
+            ],
+          }}
+          noAction
+          noPagination
+          maxHeight="500px"
+        />
+      </div>
       <div className="grid-cols-2 grid my-3 w-fit gap-2">
         <div className="w-fit h-fit p-4 bg-white rounded-lg">
-            <p className="text-[#303F58] text-lg font-bold p-3">
-              Top performing Area Managers
-            </p>
-            <p className="text-[#4B5C79] text-xs font-normal p-3">
-              Based on lead Conversion Performance Metric
-            </p>
+          <p className="text-[#303F58] text-lg font-bold p-3">
+            Top performing Area Managers
+          </p>
+          <p className="text-[#4B5C79] text-xs font-normal p-3">
+            Based on lead Conversion Performance Metric
+          </p>
 
-            <div className="relative">
-              <BarChart
-                className="h-fit"
-                barGap={54}
-                barCategoryGap="40%"
-                width={500}
-                height={300}
-                data={normalizedData}
+          <div className="relative">
+            <BarChart
+              className="h-fit"
+              barGap={54}
+              barCategoryGap="40%"
+              width={500}
+              height={300}
+              data={normalizedData}
+            >
+              {/* Cartesian Grid */}
+              <CartesianGrid
+                horizontal={true}
+                vertical={false}
+                strokeDasharray="3 3"
+                stroke="#e0e0e0"
+              />
+
+              {/* Y-Axis */}
+              <YAxis
+                tickFormatter={(tick) => `${tick}%`}
+                domain={[0, 100]}
+                ticks={[0, 20, 40, 60, 80, 100]}
+                axisLine={false}
+                tickLine={false}
+              />
+
+              {/* Bar with custom curved shape */}
+              <Bar
+                dataKey="uv"
+                fill="#B9E3CF"
+                barSize={8}
+                shape={<CustomBarWithCurve />}
               >
-                {/* Cartesian Grid */}
-                <CartesianGrid
-                  horizontal={true}
-                  vertical={false}
-                  strokeDasharray="3 3"
-                  stroke="#e0e0e0"
-                />
-
-                {/* Y-Axis */}
-                <YAxis
-                  tickFormatter={(tick) => `${tick}%`}
-                  domain={[0, 100]}
-                  ticks={[0, 20, 40, 60, 80, 100]}
-                  axisLine={false}
-                  tickLine={false}
-                />
-
-                {/* Bar with custom curved shape */}
-                <Bar
+                {/* Add bubbles at the top */}
+                <LabelList
                   dataKey="uv"
-                  fill="#B9E3CF"
-                  barSize={8}
-                  shape={<CustomBarWithCurve />}
-                >
-                  {/* Add bubbles at the top */}
-                  <LabelList
-                    dataKey="uv"
-                    content={(props) => <CustomBubble {...props} />}
-                  />
-                </Bar>
-              </BarChart>
-              <div className="flex ms-20 gap-[34px] -mt-2">
-                {ChartData.map((chart) => (
-                  <img
-                    className="w-5 h-5 rounded-full"
-                    src={chart.avatar}
-                    alt=""
-                  />
-                ))}
-              </div>
-            </div>
-        </div>
-        <div className="w-fit h-fit p-4 bg-white rounded-lg">
-            <p className="text-[#303F58] text-lg font-bold p-3">
-              Top performing BDA's
-            </p>
-            <p className="text-[#4B5C79] text-xs font-normal p-3">
-              Based on lead Conversion Performance Metric
-            </p>
-
-            <div className="relative">
-              <BarChart
-                className="h-fit"
-                barGap={54}
-                barCategoryGap="40%"
-                width={500}
-                height={300}
-                data={normalizedData}
-              >
-                {/* Cartesian Grid */}
-                <CartesianGrid
-                  horizontal={true}
-                  vertical={false}
-                  strokeDasharray="3 3"
-                  stroke="#e0e0e0"
+                  content={(props) => <CustomBubble {...props} />}
                 />
-
-                {/* Y-Axis */}
-                <YAxis
-                  tickFormatter={(tick) => `${tick}%`}
-                  domain={[0, 100]}
-                  ticks={[0, 20, 40, 60, 80, 100]}
-                  axisLine={false}
-                  tickLine={false}
+              </Bar>
+            </BarChart>
+            <div className="flex ms-20 gap-[34px] -mt-2">
+              {ChartData.map((chart) => (
+                <img
+                  className="w-5 h-5 rounded-full"
+                  src={chart.avatar}
+                  alt=""
                 />
-
-                {/* Bar with custom curved shape */}
-                <Bar
-                  dataKey="uv"
-                  fill="#B9E3CF"
-                  barSize={8}
-                  shape={<CustomBarWithCurve />}
-                >
-                  {/* Add bubbles at the top */}
-                  <LabelList
-                    dataKey="uv"
-                    content={(props) => <CustomBubble {...props} />}
-                  />
-                </Bar>
-              </BarChart>
-              <div className="flex gap-[34px] ms-20 -mt-2">
-                {ChartData.map((chart) => (
-                  <img
-                    className="w-5 h-5 rounded-full"
-                    src={chart.avatar}
-                    alt=""
-                  />
-                ))}
-              </div>
+              ))}
             </div>
           </div>
+        </div>
+        <div className="w-fit h-fit p-4 bg-white rounded-lg">
+          <p className="text-[#303F58] text-lg font-bold p-3">
+            Top performing BDA's
+          </p>
+          <p className="text-[#4B5C79] text-xs font-normal p-3">
+            Based on lead Conversion Performance Metric
+          </p>
+
+          <div className="relative">
+            <BarChart
+              className="h-fit"
+              barGap={54}
+              barCategoryGap="40%"
+              width={500}
+              height={300}
+              data={normalizedData}
+            >
+              {/* Cartesian Grid */}
+              <CartesianGrid
+                horizontal={true}
+                vertical={false}
+                strokeDasharray="3 3"
+                stroke="#e0e0e0"
+              />
+
+              {/* Y-Axis */}
+              <YAxis
+                tickFormatter={(tick) => `${tick}%`}
+                domain={[0, 100]}
+                ticks={[0, 20, 40, 60, 80, 100]}
+                axisLine={false}
+                tickLine={false}
+              />
+
+              {/* Bar with custom curved shape */}
+              <Bar
+                dataKey="uv"
+                fill="#B9E3CF"
+                barSize={8}
+                shape={<CustomBarWithCurve />}
+              >
+                {/* Add bubbles at the top */}
+                <LabelList
+                  dataKey="uv"
+                  content={(props) => <CustomBubble {...props} />}
+                />
+              </Bar>
+            </BarChart>
+            <div className="flex gap-[34px] ms-20 -mt-2">
+              {ChartData.map((chart) => (
+                <img
+                  className="w-5 h-5 rounded-full"
+                  src={chart.avatar}
+                  alt=""
+                />
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
       <Modal className="" open={isModalOpen} onClose={handleModalToggle}>
         <AMForm editId={editId} onClose={handleModalToggle} />
