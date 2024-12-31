@@ -1,57 +1,31 @@
 import { useState } from "react"
-import Button from "../../../components/ui/Button"
-import idCardImage from '../../../assets/image/Business-card-front.png'
-import idCardBack from '../../../assets/image/Business-card-back.png'
-import Chevronleft from "../../../assets/icons/Chevronleft"
-import coastRestaurant from '../../../assets/image/coastRestaurant.png'
-import MCompanyImage from '../../../assets/image/MCompany.png'
-import AcompanyImage from '../../../assets/image/ACompany.png'
-import noticeImage from '../../../assets/image/Notice.png'
-import johnWilliamImage from '../../../assets/image/JohnWilliamFounder.png'
-import financeImage from '../../../assets/image/FinanceGroup.png'
-import mezoanikoImage from '../../../assets/image/Mezoaniko.png'
-import Input from "../../../components/form/Input"
-import Polygon from "../../../assets/icons/Polygon"
-import ArrowPolygon from "../../../assets/icons/ArrowPolygon"
-import Polygon8 from "../../../assets/icons/Polygon8"
-import cygnozImage from '../../../assets/image/Cygnoz.png'
-import profileImage from '../../../assets/image/AvatarImg.png'
-
+import Button from "../../components/ui/Button"
+import idCardImage from '../../assets/image/Business-card-front.png'
+import idCardBack from '../../assets/image/Business-card-back.png'
+import Chevronleft from "../../assets/icons/Chevronleft"
+import coastRestaurant from '../../assets/image/coastRestaurant.png'
+import MCompanyImage from '../../assets/image/MCompany.png'
+import AcompanyImage from '../../assets/image/ACompany.png'
+import noticeImage from '../../assets/image/Notice.png'
+import johnWilliamImage from '../../assets/image/JohnWilliamFounder.png'
+import financeImage from '../../assets/image/FinanceGroup.png'
+import mezoanikoImage from '../../assets/image/Mezoaniko.png'
+import Input from "../../components/form/Input"
+import Polygon from "../../assets/icons/Polygon"
+import ArrowPolygon from "../../assets/icons/ArrowPolygon"
+import Polygon8 from "../../assets/icons/Polygon8"
+import cygnozImage from '../../assets/image/Cygnoz.png'
+import profileImage from '../../assets/image/AvatarImg.png'
 type Props = {}
 
-const SettingsHome = ({ }: Props) => {
-
+function BusinessCard({}: Props) {
     const tabs = ["Layout", "Design", "Content"]
     const [activeTab, setActiveTab] = useState<string>("Layout");
-
+   
     const [isToggled, setIsToggled] = useState(false);
-
-
-    return (
-        <div>
-            <div className="grid grid-cols-12">
-
-                <div className="col-span-2">
-                    <div className="bg-white w-60 h-[1080px] p-6">
-                        <div className="mb-2">
-                            <Button variant="secondary" size="sm">
-                                <Chevronleft size={10} />
-                                <p className="text-[#565148] text-sm font-medium">Back</p>
-                            </Button>
-                        </div>
-                        <p className="text-[#303F58] text-lg font-bold mb-3">Settings</p>
-                        <div className="flex items-center border border-[#1C1C140A] bg-[#1C1C140A] rounded-lg h-[40px] px-3 my-4">
-                            <input
-                                type="text"
-                                placeholder="Search"
-                                className="flex-grow outline-none text-sm bg-[#fafaf60a]"
-                            />
-                        </div>
-                        <p className="text-[#820000] text-sm font-semibold ms-2">Business card</p>
-                    </div>
-                </div>
-
-                <div className="col-span-10 ms-10 p-4">
+  return (
+    <>
+  
                     <div className="mb-4">
                         <p className="text-[#303F58] text-lg font-bold">Business Card</p>
                     </div>
@@ -362,11 +336,9 @@ const SettingsHome = ({ }: Props) => {
 
                     </div>
 
-                </div>
-
-            </div>
-        </div>
-    )
+               
+    </>
+  )
 }
 
-export default SettingsHome
+export default BusinessCard

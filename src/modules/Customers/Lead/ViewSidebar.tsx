@@ -391,6 +391,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
       >
         <ConfirmModal
           action={handleDelete}
+          prompt="Are you sure want to delete this lead?"
           onClose={() => handleModalToggle()}
         />
       </Modal>
