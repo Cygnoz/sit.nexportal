@@ -199,7 +199,7 @@ const BDAView = ({}: Props) => {
                        <h1 className='text-2xl font-medium'>567</h1>
                
                        <div className='-ms-7 mt-2'>
-                       <BarChart width={700} height={360} data={leadConversionData}>
+                       <BarChart width={650} height={360} data={leadConversionData}>
                        <CartesianGrid   strokeDasharray="3 3" vertical={false}/>
                    
                    {/* Hide axis lines but keep labels visible */}

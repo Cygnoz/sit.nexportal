@@ -202,14 +202,15 @@ const [selectedMonth,setSelectedMonth]=useState()
   ];
 
   return (
-    <div className="flex flex-col gap-2 mt-5">
-      <div className="p-3 bg-white space-y-2 rounded-lg">
+   <div>
+     <div className="flex flex-col gap-2 mt-5 w-full">
+      <div className="p-3 bg-white space-y-2 rounded-lg w-full">
                 <h2 className='font-bold'>Lead Conversion Rate Per Area</h2>
                 <h3 className='text-xs'>Area 9</h3>
                 <h1 className='text-2xl font-medium'>80 Percentage</h1>
         
-                <div className='-ms-7 mt-2'>
-                <BarChart width={1050} height={280} data={leadConversionData}>
+                <div >
+                <BarChart width={1000} height={280} data={leadConversionData}>
                 <CartesianGrid   strokeDasharray="3 3" vertical={false}/>
             
             {/* Hide axis lines but keep labels visible */}
@@ -230,7 +231,7 @@ const [selectedMonth,setSelectedMonth]=useState()
                 </div>
             
                 </div>
-      <div className="bg-white">
+      <div className="bg-white w-full">
                  <div className="py-1 ms-2 flex justify-between">
                    <h2 className="font-bold">License Over Time By Area</h2>
                    <div className="">
@@ -252,7 +253,7 @@ const [selectedMonth,setSelectedMonth]=useState()
                  </div>
                  <div className="mt-5">
                    <LineChart
-                     width={1050}
+                     width={1000}
                      height={400}
                      data={datas}
                      margin={{
@@ -306,6 +307,7 @@ const [selectedMonth,setSelectedMonth]=useState()
                  </div>
                </div>
     </div>
+   </div>
   )
 }
 

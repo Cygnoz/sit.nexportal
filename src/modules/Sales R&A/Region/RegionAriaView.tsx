@@ -293,9 +293,9 @@ const RegionAriaView = ({regionData}: Props) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-2  mt-5">
-        <div className="col-span-8 mb-4">
-        <div className="bg-white rounded-lg w-full ">
+      <div className="grid grid-cols-12 gap-2 mt-5">
+        <div className="col-span-8">
+        <div className="bg-white rounded-lg w-full">
             <div className="p-4 space-y-2">
               <h1 className="text-lg font-bold">Revenue By Area</h1>
               <h2 className="text-md">Area 0234</h2>
@@ -303,7 +303,7 @@ const RegionAriaView = ({regionData}: Props) => {
             </div>
             <div className="ms-1">
           <BarChart
-                          width={750}
+                          width={670}
                           height={400}
                           data={AreaRevData}
                           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}

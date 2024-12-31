@@ -244,7 +244,7 @@ const GraphTable = ({}: Props) => {
                       </div>
                       <div className="mt-5">
                         <LineChart
-                          width={580}
+                          width={510}
                           height={330}
                           data={datas}
                           margin={{

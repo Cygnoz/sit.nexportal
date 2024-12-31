@@ -442,7 +442,7 @@ const RMViewBDAandGraph = ({}: Props) => {
             </div>
             <div className="mt-5">
               <LineChart
-                width={800}
+                width={720}
                 height={400}
                 data={datas}
                 margin={{
@@ -498,15 +498,15 @@ const RMViewBDAandGraph = ({}: Props) => {
         </div>
         <div className="col-span-5">
         <div className='w-full h-fit p-4 bg-white rounded-lg'>
-      <p className="text-[#303F58] text-lg font-bold p-3">Top performing Area Managers</p>
-      <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
+      <p className="text-[#303F58] text-lg font-bold p-2">Top performing Area Managers</p>
+      <p className='text-[#4B5C79] text-xs font-normal p-2'>Based on lead Conversion Performance Metric</p>
 
       <div className="relative">
       <BarChart
   className="h-fit"
-  barGap={54}
+  barGap={44}
   barCategoryGap="40%"
-  width={560}
+  width={500}
   height={350}
   data={normalizedData}
 >
@@ -535,7 +535,7 @@ const RMViewBDAandGraph = ({}: Props) => {
 </Bar>
 
 </BarChart>
-<div className='flex ms-20 gap-[29px] -mt-2'>
+<div className='flex ms-20 gap-[23px] -mt-2'>
 {ChartData.map((chart)=>(
   <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
 )) 
