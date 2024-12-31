@@ -19,28 +19,45 @@ import { useEffect, useState } from "react";
 import LicenserForm from "../LicenserForm";
 import useApi from "../../../../Hooks/useApi";
 import { endPoints } from "../../../../services/apiEndpoints";
+import Trash from "../../../../assets/icons/Trash";
+ import ConfirmModal from "../../../../components/modal/ConfirmModal";
+import toast from "react-hot-toast";
 
 type Props = {
 
 };
 
 function LicenserView({ }: Props) {
-
-  const [isModalOpen, setIsModalOpen] = useState({
-    editLicenser: false,
-    viewLicenser: false
-  });
-  const handleModalToggle = (editLicenser = false, viewLicenser = false) => {
-    setIsModalOpen((prevState: any) => ({
-      ...prevState,
-      editLicenser: editLicenser,
-      viewLicenser: viewLicenser
-    }));
-  }
+  const { request: deleteLicenser } = useApi("delete", 3001);
 
   const {request: getaLicenser}=useApi('get',3001)
   const { id } = useParams();
   const [licenseData, setLicenseData] = useState<any>()
+
+  const [isModalOpen, setIsModalOpen] = useState({
+    editLicenser: false,
+    viewLicenser: false,
+    confirm: false,
+    
+  });
+  const handleModalToggle = (
+
+    editLicenser = false,
+    viewLicenser= false,
+    confirm = false,
+    
+    
+  ) => {
+    setIsModalOpen((prevState) => ({
+      ...prevState,
+      editLicenser,
+      viewLicenser,
+      confirm,
+    }));
+  
+   // if (getLead) getLead(); // Safeguard
+  };
+   
 
      const getOneLicenser = async () => {
           try {
@@ -64,6 +81,22 @@ function LicenserView({ }: Props) {
         }, [id]);
 
         console.log(licenseData);
+
+
+        const handleDelete = async () => {
+          try {
+            const { response, error } = await deleteLicenser(`${endPoints.LEAD}/${id}`);
+            if (response) {
+              toast.success(response.data.message);
+              navigate("/licenser");
+            } else {
+              toast.error(error?.response?.data?.message || "An error occurred");
+            }
+          } catch (err) {
+            console.error("Delete error:", err);
+            toast.error("Failed to delete the licenser.");
+          }
+        };
         
 
   // Function to toggle modal visibility
@@ -172,7 +205,7 @@ function LicenserView({ }: Props) {
 
 
                 <div className="flex flex-col items-center space-y-2">
-                  <div onClick={() => handleModalToggle(true, false)} className="w-6 h-6 mb-2 rounded-full border-white" >
+                  <div onClick={() => handleModalToggle(true, false, false)} className="w-6 h-6 mb-2 rounded-full border-white" >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <EditIcon size={18} color="#F0D5A0" />
@@ -184,7 +217,7 @@ function LicenserView({ }: Props) {
                 </div>
 
                 <div className="flex flex-col  items-center space-y-2 ">
-                  <div onClick={() => handleModalToggle(false, true)}
+                  <div onClick={() => handleModalToggle(false, true,false)}
                     className="w-6 h-6 mb-2 rounded-full">
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -200,7 +233,7 @@ function LicenserView({ }: Props) {
 
 
                 <div className="flex flex-col  items-center space-y-2">
-                  <div className="w-6 h-6 mb-2 rounded-full">
+                  <div  className="w-6 h-6 mb-2 rounded-full">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <DeActivateIcon size={18} color="#D52B1E4D" />
@@ -211,6 +244,20 @@ function LicenserView({ }: Props) {
                   <p className="text-center font-medium  text-white text-[10px] ms-3">DeActivate</p>
 
                 </div>
+
+                <div className="flex flex-col  items-center space-y-2">
+                  <div onClick={() => handleModalToggle(false,false,true)} className="w-6 h-6 mb-2 rounded-full">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                    <Trash size={18} color="red" />
+                  </div>
+                    </div>
+                    
+                  </div>
+                  <p className="text-center font-medium  text-white text-[10px] ms-3">Delete</p>
+
+                </div>
+
 
               </div>
             </div>
@@ -238,6 +285,9 @@ function LicenserView({ }: Props) {
    <Modal open={isModalOpen.editLicenser} onClose={() => handleModalToggle()} className="w-[60%]">
      <LicenserForm editId={id} onClose={() => handleModalToggle()} />
    </Modal>
+   <Modal open={isModalOpen.confirm} align="center" onClose={() => handleModalToggle()} className="w-[30%]">
+        <ConfirmModal action={handleDelete} onClose={() => handleModalToggle()} />
+      </Modal>
     </>
   );
 }

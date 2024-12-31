@@ -263,49 +263,44 @@ const RegionAriaView = ({ regionData, regionAreaData }: Props) => {
         </div>
       </div>
 
-      <div className="grid grid-cols-12 gap-2  mt-5">
-        <div className="col-span-8 mb-4">
-          <div className="bg-white rounded-lg w-full ">
+      <div className="grid grid-cols-12 gap-2 mt-5">
+        <div className="col-span-8">
+        <div className="bg-white rounded-lg w-full">
             <div className="p-4 space-y-2">
               <h1 className="text-lg font-bold">Revenue By Area</h1>
               <h2 className="text-md">Area 0234</h2>
               <h2 className="text-md font-medium text-2xl">₹ 76,789,87</h2>
             </div>
             <div className="ms-1">
-              <BarChart
-                width={750}
-                height={400}
-                data={AreaRevData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                layout="vertical"
-              >
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  tick={<CustomizedAxisTick />}
-                  tickLine={false}
-                  axisLine={{ stroke: "#000" }} // Y axis line
-                />
-                <XAxis
-                  type="number"
-                  tick={{ fontSize: 10 }}
-                  axisLine={{ stroke: "transparent" }} // Remove X axis line
-                  tickLine={false} // Remove ticks on the X axis
-                />
-                <Tooltip />
-                <Bar
-                  dataKey="pv"
-                  radius={[5, 5, 5, 5]}
-                  barSize={20}
-                  label={<CustomLabel />}
-                >
-                  {AreaRevData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry?.color} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </div>
-          </div>
+          <BarChart
+                          width={670}
+                          height={400}
+                          data={AreaRevData}
+                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                          layout="vertical"
+                        >
+                          <YAxis
+                            type="category"
+                            dataKey="name"
+                            tick={<CustomizedAxisTick />}
+                            tickLine={false}
+                            axisLine={{ stroke: '#000' }} // Y axis line
+                          />
+                          <XAxis
+                            type="number"
+                            tick={{ fontSize: 10 }}
+                            axisLine={{ stroke: 'transparent' }} // Remove X axis line
+                            tickLine={false} // Remove ticks on the X axis
+                          />
+                          <Tooltip />
+                          <Bar dataKey="pv" radius={[5, 5, 5, 5]} barSize={20} label={<CustomLabel />}>
+                            {AreaRevData.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry?.color} />
+                            ))}
+                          </Bar>
+                        </BarChart>
+                        </div>
+                        </div>
         </div>
 
         <div className="col-span-4 mb-4">

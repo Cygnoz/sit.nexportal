@@ -670,7 +670,7 @@ const AMView = ({ }: Props) => {
             </div>
             <div className="mt-5 w-full">
               <LineChart
-                width={1200}
+                width={1250}
                 height={400}
                 data={datas}
                 margin={{
