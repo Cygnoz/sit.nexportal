@@ -411,6 +411,7 @@ function RegionView({}: Props) {
       >
         <ConfirmModal
           action={handleDelete}
+          prompt="Are you sure want to delete this region?"
           onClose={() => handleModalToggle()}
         />
       </Modal>       

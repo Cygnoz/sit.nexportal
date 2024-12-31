@@ -800,6 +800,7 @@ const TrialView = ({ }: Props) => {
       >
         <ConfirmModal
           action={handleDelete}
+          prompt="Are you sure want to delete this trial?"
           onClose={() => handleModalToggle()}
         />
       </Modal>

@@ -4,9 +4,10 @@ import Button from "../ui/Button";
 type Props = {
   onClose: () => void;
   action: () => void;
+  prompt?:string
 };
 
-function ConfirmModal({ onClose, action }: Props) {
+function ConfirmModal({ onClose, action,prompt }: Props) {
   const handleConfirm = () => {
     action();
     onClose();
@@ -17,7 +18,7 @@ function ConfirmModal({ onClose, action }: Props) {
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
         <Warning size={20}/>
-        <p className="font-medium">Are you sure you want to proceed?</p>
+        <p className="font-medium">{prompt?prompt:'Are you sure you want to proceed?'}</p>
         </div>
         <p onClick={onClose} className="text-xl font-bold cursor-pointer">
           &times;
