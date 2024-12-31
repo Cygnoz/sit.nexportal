@@ -306,9 +306,9 @@ const RegionTeamView = ({ }: Props) => {
       </div>
 
       {/* Table Section */}
-      <div className="w-full">
+      <div>
         <Table<TeamData>
-          data={teamData.transformedBdas}
+          data={teamData?.transformedBdas ?? []}
           columns={columns}
           headerContents={{
             title: "BDA,s",
@@ -339,7 +339,8 @@ const RegionTeamView = ({ }: Props) => {
           }}
           noAction
           noPagination
-          maxHeight="500px"
+          maxHeight="350px"
+          skeltonCount={9}
         />
       </div>
       <div className="grid-cols-2 grid my-3 w-fit gap-2">
