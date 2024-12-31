@@ -9,7 +9,7 @@ import { endPoints } from '../../../services/apiEndpoints'
 import No_Data_found from "../../../assets/image/NO_DATA.png";
 type Props = {}
 
-function UserLogLogHome({}: Props) {
+function UserLogHome({}: Props) {
   const [sortMethods,setSortMethods]=useState({
     startingDate:'',
     endingDate:'',
@@ -390,4 +390,4 @@ function UserLogLogHome({}: Props) {
   )
 }
 
-export default UserLogLogHome
+export default UserLogHome

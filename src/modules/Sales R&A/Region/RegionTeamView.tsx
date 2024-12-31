@@ -20,7 +20,7 @@ import SearchBar from "../../../components/ui/SearchBar";
 import Table from "../../../components/ui/Table";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Modal from "../../../components/modal/Modal";
 import AMForm from "../../SalesTeams/AreaManager/AMForm";
 // import { RegionData } from "../../../Interfaces/Region";
@@ -54,8 +54,10 @@ const RegionTeamView = ({ }: Props) => {
   // const {totalCounts}=useRegularApi()
 
 
-  const handleModalToggle = () => {
+  const handleModalToggle = (editId?:any) => {
+    setEditId(editId)
     setIsModalOpen((prev) => !prev);
+    getAllTeam()
   };
 
   const { id } = useParams();
@@ -97,8 +99,8 @@ const RegionTeamView = ({ }: Props) => {
     getAllTeam();
   }, []);
 
-  console.log(teamData);
-
+  // console.log(teamData);
+  const navigate=useNavigate()
 
 
   const homeCardData = [
@@ -135,145 +137,7 @@ const RegionTeamView = ({ }: Props) => {
   ];
 
 
-  // const areaManager: AreaData[] = [
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: 'kerala',
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  //   {
-  //     image: person,
-  //     name: "David",
-  //     state: "Kerala",
-  //     mail: "Davide@gmail.com",
-  //     phone: "1122334455",
-  //   },
-  // ];
-
-  // Data for the table
-  // const data: TeamData[] = [
-  //   {
-  //     employeeID: "001",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "002",
-  //     bdaName: "sanu",
-  //     aasignedArea: "Area-002",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "003",
-  //     bdaName: "kuttu",
-  //     aasignedArea: "Area-003",
-  //     phoneNumber: "111222777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "004",
-  //     bdaName: "krishnan",
-  //     aasignedArea: "Area-004",
-  //     phoneNumber: "778899665",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "005",
-  //     bdaName: "ajith",
-  //     aasignedArea: "Area-005",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "006",
-  //     bdaName: "anu",
-  //     aasignedArea: "Area-006",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "007",
-  //     bdaName: "minnu",
-  //     aasignedArea: "Area-007",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "008",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "009",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "010",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "011",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  //   {
-  //     employeeID: "012",
-  //     bdaName: "subi",
-  //     aasignedArea: "Area-001",
-  //     phoneNumber: "333999777",
-  //     dateOfJoining: "21-07-2022",
-  //   },
-  // ];
+ 
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
     { key: "employeeId", label: "Employee ID" },
@@ -410,7 +274,7 @@ const RegionTeamView = ({ }: Props) => {
                       <UserIcon color="white" size={22} />
                     </p>
                   }
-                  <div onClick={() => setEditId(card?._id)} className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB] cursor-pointer">
+                  <div onClick={() => handleModalToggle(card?._id)} className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB] cursor-pointer">
                     <EditIcon color="#C4A25D" size={14} />
                   </div>
 
@@ -431,6 +295,7 @@ const RegionTeamView = ({ }: Props) => {
                   variant="tertiary"
                   className="font-medium text-xs"
                   size="sm"
+                  onClick={()=>navigate(`/area-manager/${card._id}`)}
                 >
                   View Details
                 </Button>
