@@ -20,7 +20,7 @@ import SearchBar from "../../../components/ui/SearchBar";
 import Table from "../../../components/ui/Table";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Modal from "../../../components/modal/Modal";
 import AMForm from "../../SalesTeams/AreaManager/AMForm";
 // import { RegionData } from "../../../Interfaces/Region";
@@ -54,8 +54,10 @@ const RegionTeamView = ({ }: Props) => {
   // const {totalCounts}=useRegularApi()
 
 
-  const handleModalToggle = () => {
+  const handleModalToggle = (editId?:any) => {
+    setEditId(editId)
     setIsModalOpen((prev) => !prev);
+    getAllTeam()
   };
 
   const { id } = useParams();
@@ -97,8 +99,8 @@ const RegionTeamView = ({ }: Props) => {
     getAllTeam();
   }, []);
 
-  console.log(teamData);
-
+  // console.log(teamData);
+  const navigate=useNavigate()
 
 
   const homeCardData = [
@@ -135,6 +137,7 @@ const RegionTeamView = ({ }: Props) => {
   ];
 
 
+ 
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
     { key: "employeeId", label: "Employee ID" },
@@ -271,7 +274,7 @@ const RegionTeamView = ({ }: Props) => {
                       <UserIcon color="white" size={22} />
                     </p>
                   }
-                  <div onClick={() => setEditId(card?._id)} className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB] cursor-pointer">
+                  <div onClick={() => handleModalToggle(card?._id)} className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB] cursor-pointer">
                     <EditIcon color="#C4A25D" size={14} />
                   </div>
 
@@ -292,6 +295,7 @@ const RegionTeamView = ({ }: Props) => {
                   variant="tertiary"
                   className="font-medium text-xs"
                   size="sm"
+                  onClick={()=>navigate(`/area-manager/${card._id}`)}
                 >
                   View Details
                 </Button>
