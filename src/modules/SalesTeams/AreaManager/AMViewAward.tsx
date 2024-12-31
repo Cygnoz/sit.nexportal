@@ -45,12 +45,12 @@ const AMViewAward = ({ getData  , onClose}: Props) => {
     return (
         <div>
             <div className="p-3 bg-[#FFFFFF] gap-4 mt-3 rounded-lg">
-            <div className='flex justify-between'>
+            <div className='flex justify-between items-center'>
                <p className="text-[#303F58] font-semibold text-base">Achievements and Awards</p>
                 <button
           type="button"
           onClick={onClose}
-          className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
+          className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900 -mt-2"
         >
           &times;
         </button>

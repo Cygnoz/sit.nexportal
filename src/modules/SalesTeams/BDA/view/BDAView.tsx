@@ -236,7 +236,9 @@ const BDAView = ({}: Props) => {
         </div>
           <p className="text-[#FFFEFB] text-2xl font-normal p-4">{data.bdaData?.user?.userName}</p>
             </div>
-            <div className="flex -mt-4 ms-20 mb-6">
+           <div className=" flex flex-col  mt-6 p-3 h-full">
+            <div>
+            <div className="flex   mb-6 ms-auto">
             <div className="border-r">
           <p className="mx-4 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
           <p className="mx-4 text-[#FFFFFF] text-sm font-medium">{data.bdaData?.user?.phoneNo}</p>
@@ -246,7 +248,8 @@ const BDAView = ({}: Props) => {
           <p className="text-[#FFFFFF] text-sm font-medium mx-4">{data.bdaData?.user?.email}</p>
         </div>
             </div>
-            <div className="flex ms-20">
+
+            <div className="flex -mt-4 ms-auto mb-6">
             <div className="border-r">
           <p className="mx-4 text-[#D4D4D4] text-xs font-medium">Region</p>
           <p onClick={()=>navigate(`/regionView/${data.bdaData?.region?._id}`)} className="mx-4 underline cursor-pointer text-[#FFFFFF] text-sm font-normal">{data.bdaData?.region?.regionCode?data.bdaData?.region?.regionCode:'N/A'}</p>
@@ -256,6 +259,9 @@ const BDAView = ({}: Props) => {
           <p onClick={()=>navigate(`/areaView/${data.bdaData?.area?._id}`)} className="mx-4 underline cursor-pointer text-[#FFFFFF] text-sm font-normal">{data.bdaData?.area?.areaCode?data.bdaData?.area?.areaCode:'N/A'}</p>
         </div>
             </div>
+            </div>
+
+
             <div className="flex gap-8 ms-6 my-12 space-x-8">
               <div>
                 <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Role</p>
@@ -271,7 +277,8 @@ const BDAView = ({}: Props) => {
                 <p className="text-[#FFFFFF] text-sm font-medium">{new Date(data.bdaData.dateOfJoining).toLocaleDateString("en-GB")}</p>
               </div>
             </div>
-            <div className="flex gap-1 space-x-6">
+            
+            <div className="flex space-x-6 bottom-0  mt-10 ">
             <div onClick={()=>handleModalToggle(true,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
               <div className="w-8 h-8 mb-2  rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -317,6 +324,7 @@ const BDAView = ({}: Props) => {
             </div>
 
         </div>
+           </div>
           </div>
         </div>
       </div>

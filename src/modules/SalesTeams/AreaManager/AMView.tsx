@@ -426,7 +426,7 @@ const AMView = ({ }: Props) => {
             }
           </div>
         </div>
-        <div className='justify-between'>
+        <div className='justify-between  w-full'>
           <div>
           <h1 className="ms-7 text-[#FFFEFB] text-2xl font-normal">{getData.amData?.user?.userName ? getData.amData?.user?.userName : 'N/A'}</h1>
           </div>
@@ -459,7 +459,7 @@ const AMView = ({ }: Props) => {
               <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.dateOfJoining ? new Date(getData.amData?.dateOfJoining).toLocaleDateString() : 'N/A'}</p>
             </div>
            </div>
-            <div className="flex -mt-6 ms-40">
+            <div className="flex ms-auto -mt-6 ">
               <div className="flex flex-col items-center space-y-1 ">
                 <div onClick={()=>handleModalToggle(true,false,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
