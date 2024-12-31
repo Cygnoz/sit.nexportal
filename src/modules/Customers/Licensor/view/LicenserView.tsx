@@ -286,7 +286,7 @@ function LicenserView({ }: Props) {
      <LicenserForm editId={id} onClose={() => handleModalToggle()} />
    </Modal>
    <Modal open={isModalOpen.confirm} align="center" onClose={() => handleModalToggle()} className="w-[30%]">
-        <ConfirmModal action={handleDelete} onClose={() => handleModalToggle()} />
+        <ConfirmModal prompt="Are you sure want to delete this licenser?"  action={handleDelete} onClose={() => handleModalToggle()} />
       </Modal>
     </>
   );
