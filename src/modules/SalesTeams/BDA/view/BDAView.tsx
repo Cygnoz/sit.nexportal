@@ -89,6 +89,9 @@ const BDAView = ({}: Props) => {
     }));
     getOneBDA();
   };
+  const handleView=(id:any)=>{
+    console.log(id);
+   }
 
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
@@ -351,11 +354,16 @@ const BDAView = ({}: Props) => {
 
         {/* Licenser Card */}
         <div>
-        <LicensersTable<Licencer> data={LicencerData} columns={licenserColumns} headerContents={{
-          title:'Licensers handled by BDA',
-          search:{placeholder:'Search License by Name or Holder Name'},
-        }}
-         />
+        <LicensersTable<Licencer>
+          data={LicencerData}
+          columns={licenserColumns}
+          headerContents={{
+            title: 'Licensers',
+            search: { placeholder: 'Search License by Name or Holder Name' },
+          }}
+          handleView={handleView}
+        />
+        
       </div>
 
 

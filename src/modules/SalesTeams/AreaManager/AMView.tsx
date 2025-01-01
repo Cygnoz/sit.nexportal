@@ -89,13 +89,9 @@ const topRef = useRef<HTMLDivElement>(null);
     getAAM()
   }
 
-  // Function to toggle modal visibility
-  // const handleModalToggle = () => {
-  //   setIsModalOpen((prev) => !prev);
-  // };
-  // const AwardhandleToggle = () => {
-  //   setIsAwardOpen((prev) => !prev);
-  // };
+ const handleView=(id:any)=>{
+  console.log(id);
+ }
 
   const data: AMData[] = [
     { name: "Devid Billie", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
@@ -117,38 +113,6 @@ const topRef = useRef<HTMLDivElement>(null);
   ];
 
 
-  // const [searchValue, setSearchValue] = useState<string>("");
-  // const renderHeader = () => (
-  //   <div
-  //     className={`flex  ${
-  //       headerContents.search && !headerContents.title 
-  //         ? "justify-start"
-  //         : "justify-between"
-  //     } items-center mb-4`}
-  //   >
-  //     {headerContents.title && (
-  //       <h2 className="text-lg font-bold">{headerContents.title}</h2>
-  //     )}
-  //     {headerContents.search && (
-  //       <div className={`w-[440px] ${headerContents.title && "ms-auto me-2"}`}>
-  //         <SearchBar
-  //           searchValue={searchValue}
-  //           onSearchChange={setSearchValue}
-  //           placeholder={headerContents.search.placeholder}
-  //         />
-  //       </div>
-  //     )}
-
-  //   </div>
-  // );
-
-  // const LicencerData = [
-  //   { plan: "1", name: "John Doe", startDate: "2024-01-01", endDate: "2024-12-31", status: "Active", buttonValue: "Renew" },
-  //   { plan: "2", name: "Jane Smith", startDate: "2023-06-15", endDate: "2024-06-14", status: "Expired", buttonValue: "Renew" },
-  //   { plan: "1", name: "Robert Brown", startDate: "2024-03-01", endDate: "2025-02-28", status: "Active", buttonValue: "Renew" },
-  //   { plan: "3", name: "Emily Clark", startDate: "2023-11-20", endDate: "2024-11-19", status: "Pending Renewal", buttonValue: "Upgrade" },
-  //   { plan: "2", name: "Jessica Davis", startDate: "2023-08-05", endDate: "2024-08-04", status: "Expired", buttonValue: "Renew" }
-  // ];
 
   const roles = [
     // { name: 'New', count: 50, color: '#1B6C75' }, // Updated color
@@ -611,33 +575,16 @@ const topRef = useRef<HTMLDivElement>(null);
 
         </div>
       </div>
-      {/* Licensers handled by BDA */}
-      {/* <div className="">
-        <Licensers headerContents={{
-          title: 'Licensers handled by BDA',
-          search: { placeholder: 'Search License by Name or Holder Name' }
-        }}
-          cardContents={LicencerData}
-        />
-        
-      </div> */}
-      {/* <div className="w-full  bg-white rounded-lg p-4">
-      {renderHeader()}
-      </div> */}
+    
       <div>
-        <LicensersTable<AMData>
+      <LicensersTable<AMData>
           data={data}
           columns={columns}
           headerContents={{
-            title: 'Licensers handled by BDA',
+            title: 'Licensers',
             search: { placeholder: 'Search License by Name or Holder Name' },
           }}
-          getButtonName={(row) => {
-            if (row.status === "Expired" || row.status === "Upcoming Renewal") {
-              return "Upgrade";
-            }
-            return "Renew";
-          }}
+          handleView={handleView}
         />
       </div>
       {/* Graph */}
