@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
@@ -15,6 +15,12 @@ import useApi from "../../../Hooks/useApi";
 type Props = {};
 
 const SupportAgentView = ({}: Props) => {
+  const topRef = useRef<HTMLDivElement>(null);
+    
+      useEffect(() => {
+        // Scroll to the top of the referenced element
+        topRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, []);
   // Data for HomeCards
   const viewCardData = [
     {
@@ -77,7 +83,7 @@ const SupportAgentView = ({}: Props) => {
   const navigate=useNavigate()
 
   return (
-    <div>
+    <div ref={topRef}>
       <div className="flex items-center text-[16px] my-2 space-x-2">
         <p onClick={()=>navigate('/support-agent')}  className="font-bold cursor-pointer text-[#820000] ">Support Agent</p>
         <ChevronRight color="#4B5C79" size={18} />

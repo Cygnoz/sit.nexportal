@@ -228,7 +228,7 @@ const Table = <T extends object>({
 
   const renderSkeletonLoader = () => (
     <tr>
-      <td colSpan={columns.length + 2}>
+      <td colSpan={noAction?columns?.length+1:columns?.length + 2}>
         <div className="flex flex-col   gap-2 mt-2">
           {Array.from({ length: skeltonCount }).map((_, index) => (
             <div key={index} className="flex gap-2 animate-pulse">
@@ -275,7 +275,7 @@ const Table = <T extends object>({
           }`}
         >
           <thead
-            className={` bg-[#F6F9FC]  ${maxHeight && "z-40 sticky top-0"}`}
+            className={` bg-[#F6F9FC] w-full  ${maxHeight && "z-40 sticky top-0"}`}
           >
             <tr>
               <th className="border border-[#e7e6e6] p-4 text-sm  text-[#303F58] font-medium">
@@ -305,7 +305,7 @@ const Table = <T extends object>({
             {noDataFound ? (
               <tr>
                 <td
-                  colSpan={columns?.length + 2}
+                  colSpan={noAction?columns?.length+1:columns?.length + 2}
                   className="text-center py-4 text-gray-500"
                 >
                   <div className="flex justify-center flex-col items-center">
@@ -318,85 +318,89 @@ const Table = <T extends object>({
               renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
-                <tr onClick={() => actionList?.find((data) => data.label === "view")?.function(row?._id)}  key={rowIndex} className="hover:bg-gray-50 z-10 cursor-pointer">
-                  <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
-                    {(currentPage - 1) * rowsPerPage + rowIndex + 1}
-                  </td>
-                  {columns.map((col: any) => (
-                    <td
-                      key={col.key}
-                      className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
+                <tr
+                onClick={() =>
+                  actionList?.find((data) => data.label === "view")?.function(row?._id)
+                }
+                key={rowIndex}
+                className="hover:bg-gray-50 z-10 cursor-pointer"
+              >
+                <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
+                  {(currentPage - 1) * rowsPerPage + rowIndex + 1}
+                </td>
+                {columns.map((col: any) => (
+                  <td
+                    key={col.key}
+                    className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
+                  >
+                    <div
+                      className={`flex ${
+                        col.key.toLowerCase().includes("status") || col?.key == "convert"
+                          ? "justify-center"
+                          : "justify-start"
+                      } items-center gap-2`}
                     >
-                      <div
-                        className={`flex ${
-                          col.key.toLowerCase().includes("status") ||
-                          col?.key == "convert"
-                            ? "justify-center"
-                            : "justify-start"
-                        } items-center gap-2`}
-                      >
-                        {col.key === "country" ? (
-                          countryLogo(getNestedValue(row, col.key))
-                        ) : [
-                            "userName",
-                            "user.userName",
-                            "leadName",
-                            "firstName",
-                          ].includes(col.key) ? (
-                          renderImageAndLabel(row)
-                        ) : col.key.toLowerCase().includes("status") ? (
-                          <p className={getStatusClass(row[col.key])}>
-                            {row[col.key]}
-                          </p>
-                        ) : col?.key == "convert" ? (
-                          row["leadStatus"] == "Won" ? (
-                            <Button
-                              onClick={() => col.label(row._id)}
-                              variant="tertiary"
-                              className="h-8 text-sm  text-[#565148]  border border-[#565148] rounded-xl"
-                              // size="lg"
-                            >
-                              Convert to Trial
-                              <ArrowRight />
-                            </Button>
-                          ) : (
-                            ""
-                          )
+                      {col.key === "country" ? (
+                        countryLogo(getNestedValue(row, col.key))
+                      ) : ["userName", "user.userName", "leadName", "firstName"].includes(
+                          col.key
+                        ) ? (
+                        renderImageAndLabel(row)
+                      ) : col.key.toLowerCase().includes("status") ? (
+                        <p className={getStatusClass(row[col.key])}>{row[col.key]}</p>
+                      ) : col?.key == "convert" ? (
+                        row["leadStatus"] == "Won" ? (
+                          <Button
+                            onClick={() => col.label(row._id)}
+                            variant="tertiary"
+                            className="h-8 text-sm  text-[#565148]  border border-[#565148] rounded-xl"
+                          >
+                            Convert to Trial
+                            <ArrowRight />
+                          </Button>
                         ) : (
-                          getNestedValue(row, col.key) || "N/A"
-                        )}
-                      </div>
-                    </td>
-                  ))}
-                  {!noAction && (
-                    <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
-                      <div className="flex justify-center gap-2">
-                        {actionList?.map((action, index) => {
-                          if (
-                            ["edit", "view", "delete"].includes(action.label)
-                          ) {
-                            return (
-                              <p
-                                key={index}
-                                className="cursor-pointer"
-                                onClick={() => action.function(row?._id)}
-                              >
-                                {action.label === "edit" ? (
-                                  <PencilLine color="#4B5C79" size={16} />
-                                ) : action.label === "view" ? (
-                                  <Eye color="#4B5C79" size={16} />
-                                ) : (
-                                  <Trash color="#4B5C79" size={16} />
-                                )}
-                              </p>
-                            );
-                          }
-                          return null;
-                        })}
-                      </div>
-                    </td>
-                  )}
-                </tr>
+                          ""
+                        )
+                      ) : (
+                        getNestedValue(row, col.key) || "N/A"
+                      )}
+                    </div>
+                  </td>
+                ))}
+                {!noAction && (
+                  <td
+                    className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
+                    onClick={(e) => e.stopPropagation()} // Stop propagation for action cells
+                  >
+                    <div className="flex justify-center gap-2">
+                      {actionList?.map((action, index) => {
+                        if (["edit", "view", "delete"].includes(action.label)) {
+                          return (
+                            <p
+                              key={index}
+                              className="cursor-pointer"
+                              onClick={(e) => {
+                                e.stopPropagation(); // Prevent triggering the `tr` onClick
+                                action.function(row?._id);
+                              }}
+                            >
+                              {action.label === "edit" ? (
+                                <PencilLine color="#4B5C79" size={16} />
+                              ) : action.label === "view" ? (
+                                <Eye color="#4B5C79" size={16} />
+                              ) : (
+                                <Trash color="#4B5C79" size={16} />
+                              )}
+                            </p>
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
+                  </td>
+                )}
+              </tr>
+              
               ))
             ) : null}
           </tbody>

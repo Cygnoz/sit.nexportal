@@ -1,31 +1,24 @@
 // import Licensers from "../../../components/ui/Licensers";
-import BackgroundView from '../../../assets/image/AMView.png'
-import ChevronRight from "../../../assets/icons/ChevronRight";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import EditIcon from "../../../assets/icons/EditIcon";
-import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
-import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
+import { Bar, BarChart, CartesianGrid, LabelList, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
+import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory';
 import AwardIcon from "../../../assets/icons/AwardIcon";
-import { useEffect, useState } from "react";
-import AMViewForm from "./AMViewForm";
+import ChevronRight from "../../../assets/icons/ChevronRight";
+import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
+import EditIcon from "../../../assets/icons/EditIcon";
+import UserIcon from '../../../assets/icons/UserIcon';
+import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
+import BackgroundView from '../../../assets/image/AMView.png';
+import profileImage from '../../../assets/image/AvatarImg.png';
 import Modal from "../../../components/modal/Modal";
-import AMViewCardandTable from "./AMViewCardandTable";
 import LicensersTable from '../../../components/ui/LicensersTable';
-import AMViewAward from './AMViewAward';
 import useApi from '../../../Hooks/useApi';
 import { endPoints } from '../../../services/apiEndpoints';
-import UserIcon from '../../../assets/icons/UserIcon';
 import AMForm from './AMForm';
-import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory';
-import { BarChart, Bar, CartesianGrid, YAxis, LabelList } from 'recharts';
-import profileImage from '../../../assets/image/AvatarImg.png'
-import {
-  LineChart,
-  Line,
-  XAxis,
-  Tooltip,
-  Legend,
-} from "recharts";
+import AMViewAward from './AMViewAward';
+import AMViewCardandTable from "./AMViewCardandTable";
+import AMViewForm from "./AMViewForm";
 
 
 // import AMViewAward from './AMViewAward';
@@ -42,7 +35,12 @@ interface AMData {
 type Props = {}
 
 const AMView = ({ }: Props) => {
-
+const topRef = useRef<HTMLDivElement>(null);
+  
+    useEffect(() => {
+      // Scroll to the top of the referenced element
+      topRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, []);
   // const [isModalOpen, setIsModalOpen] = useState(false);
   // const [isAwardOpen, setIsAwardOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState({
@@ -401,7 +399,7 @@ const AMView = ({ }: Props) => {
 
             
   return (
-    <div >
+    <div ref={topRef}>
       <div className="flex items-center text-[16px] my-2 space-x-2">
         <p onClick={()=>navigate('/area-manager')}  className="font-bold cursor-pointer text-[#820000] ">AM</p>
         <ChevronRight color="#4B5C79" size={18} />

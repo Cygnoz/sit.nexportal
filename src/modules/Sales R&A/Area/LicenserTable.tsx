@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import LicensersTable from '../../../components/ui/LicensersTable';
 interface LicenserData {
     name: string;
@@ -7,27 +8,20 @@ interface LicenserData {
     endDate: string;
   }
   
-type Props = {}
+type Props = {
+  licensor?:any
+}
 
-const LicenserTable = ({
-
-}: Props) => {
-
-    const data: LicenserData[] = [
-        { name: "Devid Billie", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
-        { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-        { name: "Kathryn Murphy", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: "2/12/2024" },
-        { name: "Darrell Steward", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-        { name: "Ronald Richards", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: " 2/12/2024" },
-        { name: "Jane Cooper", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
-        { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-      ];
+const LicenserTable = ({licensor}: Props) => {
+  const navigate=useNavigate()
+  const handleView=(id:any)=>{
+    navigate(`/licenser/${id}`)
+  }
       // Define the columns with strict keys
     
       const columns: { key: any; label: string }[] = [
-        { key: "name", label: "Name" },
-        { key: "plan", label: "Plan" },
-        { key: "status", label: "Phone No" },
+        { key: "firstName", label: "Name" },
+        { key: "licensorStatus", label: "Phone No" },
         { key: "startDate", label: "Start Date" },
         { key: "endDate", label: "End Date" },
       ];
@@ -36,18 +30,13 @@ const LicenserTable = ({
     <div>
          <div>
         <LicensersTable<LicenserData>
-          data={data}
+          data={licensor}
           columns={columns}
           headerContents={{
             title: 'Licensers',
             search: { placeholder: 'Search License by Name or Holder Name' },
           }}
-          getButtonName={(row) => {
-            if (row.status === "Expired" || row.status === "Upcoming Renewal") {
-              return "Upgrade";
-            }
-            return "Renew";
-          }}
+          handleView={handleView}
         />
       </div>
       </div>

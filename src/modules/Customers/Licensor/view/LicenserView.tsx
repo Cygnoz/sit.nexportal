@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import CalenderClock from "../../../../assets/icons/CalenderClock";
 import ChevronRight from "../../../../assets/icons/ChevronRight";
@@ -6,28 +8,32 @@ import EditIcon from "../../../../assets/icons/EditIcon";
 import RegionIcon from "../../../../assets/icons/RegionIcon";
 import RupeeIcon from "../../../../assets/icons/RupeeIcon";
 import TicketCheck from "../../../../assets/icons/TicketCheck";
+import Trash from "../../../../assets/icons/Trash";
+import UserIcon from "../../../../assets/icons/UserIcon";
 import ViewRoundIcon from "../../../../assets/icons/ViewRoundIcon";
-import profileImage from '../../../../assets/image/AvatarImg.png';
 import licenserImg from '../../../../assets/image/LicenserView.jpeg';
+import ConfirmModal from "../../../../components/modal/ConfirmModal";
+import Modal from "../../../../components/modal/Modal";
 import HomeCard from "../../../../components/ui/HomeCards";
+import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
+import LicenserForm from "../LicenserForm";
+import LicenserViewForm from "./LicenserViewForm";
 import PaymentTable from "./PaymentTable";
 import RecentActivityView from "./RecenetActivity";
 import SupportTicketTable from "./SupportTicketTable";
-import Modal from "../../../../components/modal/Modal";
-import LicenserViewForm from "./LicenserViewForm";
-import { useEffect, useState } from "react";
-import LicenserForm from "../LicenserForm";
-import useApi from "../../../../Hooks/useApi";
-import { endPoints } from "../../../../services/apiEndpoints";
-import Trash from "../../../../assets/icons/Trash";
- import ConfirmModal from "../../../../components/modal/ConfirmModal";
-import toast from "react-hot-toast";
 
 type Props = {
 
 };
 
 function LicenserView({ }: Props) {
+  const topRef = useRef<HTMLDivElement>(null);
+  
+    useEffect(() => {
+      // Scroll to the top of the referenced element
+      topRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, []);
   const { request: deleteLicenser } = useApi("delete", 3001);
 
   const {request: getaLicenser}=useApi('get',3001)
@@ -152,7 +158,7 @@ function LicenserView({ }: Props) {
   const navigate=useNavigate()
   return (
     <>
-    <div className="text-[#4B5C79] space-y-2 mb-5">
+    <div ref={topRef} className="text-[#4B5C79] space-y-2 mb-5">
       <div className="flex items-center text-[16px]  space-x-2 mb-4">
         <p onClick={()=>navigate('/licenser')} className="font-bold cursor-pointer text-[#820000]">Licenser</p>
         <ChevronRight color="#4B5C79" size={18} />
@@ -199,13 +205,17 @@ function LicenserView({ }: Props) {
         </div>
         <div className="w-[86%] space-y-3">
           <div className="h-[130px] relative flex flex-col  bg-white rounded-lg">
-            <img src={profileImage} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>
-            <div className="h-[65px] bg-cover rounded-t-lg w-full flex justify-end" style={{ backgroundImage: `url(${licenserImg})` }}>
-              <div className="flex py-1 me-3">
+           {licenseData?.image? <img src={licenseData?.image} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>:
+              <p className="rounded-full absolute top-8 left-5 border-2 flex items-center justify-center border-white bg-black w-[61px] h-[61px]"  >
+              <UserIcon color="white" size={35} />
+            </p>
+           }
+            <div className="h-[70px] bg-cover rounded-t-lg w-full flex justify-end" style={{ backgroundImage: `url(${licenserImg})` }}>
+              <div className="flex pt-2 me-3">
 
 
                 <div className="flex flex-col items-center space-y-2">
-                  <div onClick={() => handleModalToggle(true, false, false)} className="w-6 h-6 mb-2 rounded-full border-white" >
+                  <div onClick={() => handleModalToggle(true, false, false)} className="w-6 h-6 mb-2 cursor-pointer rounded-full border-white" >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <EditIcon size={18} color="#F0D5A0" />
@@ -218,7 +228,7 @@ function LicenserView({ }: Props) {
 
                 <div className="flex flex-col  items-center space-y-2 ">
                   <div onClick={() => handleModalToggle(false, true,false)}
-                    className="w-6 h-6 mb-2 rounded-full">
+                    className="w-6 h-6 mb-2 rounded-full cursor-pointer">
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <ViewRoundIcon size={18} color="#B6D6FF" />
@@ -233,7 +243,7 @@ function LicenserView({ }: Props) {
 
 
                 <div className="flex flex-col  items-center space-y-2">
-                  <div  className="w-6 h-6 mb-2 rounded-full">
+                  <div  className="w-6 h-6 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <DeActivateIcon size={18} color="#D52B1E4D" />
@@ -246,7 +256,7 @@ function LicenserView({ }: Props) {
                 </div>
 
                 <div className="flex flex-col  items-center space-y-2">
-                  <div onClick={() => handleModalToggle(false,false,true)} className="w-6 h-6 mb-2 rounded-full">
+                  <div onClick={() => handleModalToggle(false,false,true)} className="w-6 h-6 mb-2 cursor-pointer rounded-full">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
                     <Trash size={18} color="red" />
@@ -262,9 +272,9 @@ function LicenserView({ }: Props) {
               </div>
             </div>
             <div className="h-[65px] py-3 bg-white rounded-b-lg">
-              <div className="ms-32 space-x-10 flex">
+              <div className="ms-44 space-x-10 flex">
                 {licenser.map((data) => (
-                  <div className="text-sm">
+                  <div className="text-[12px]">
                     <p className="text-[#8F99A9] ">{data.label}</p>
                     <p className="text-[#303F58] font-medium ">{data.key}</p>
                   </div>

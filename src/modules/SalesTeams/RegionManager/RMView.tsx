@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
@@ -28,6 +28,12 @@ interface AreaData {
 }
 
 const RMView = () => {
+  const topRef = useRef<HTMLDivElement>(null);
+    
+      useEffect(() => {
+        // Scroll to the top of the referenced element
+        topRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, []);
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
     editRM: false,
@@ -182,7 +188,7 @@ const RMView = () => {
 
   return (
     <>
-      <div>
+      <div ref={topRef}>
         <div className="flex items-center text-[16px] my-2 space-x-2">
           <p
             onClick={() => navigate("/region-manager")}
