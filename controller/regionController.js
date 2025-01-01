@@ -219,6 +219,41 @@ exports.deleteRegion = async (req, res, next) => {
   }
 };
 
+   // Deactivate a region and its associated areas
+   exports.deactivateRegion = async (req, res) => {
+    try {
+      const { regionId } = req.params;
+  
+      // Find the region by ID and update its status to "Deactivate"
+      const updatedRegion = await Region.findByIdAndUpdate(
+        regionId,
+        { status: "Deactivate" },
+        { new: true } // Return the updated document
+      );
+  
+      // If the region does not exist
+      if (!updatedRegion) {
+        return res.status(404).json({ message: "Region not found" });
+      }
+  
+      // Deactivate all areas referencing this region
+      const updatedAreas = await Area.updateMany(
+        { region: regionId }, // Find all areas linked to the region
+        { status: "Deactivate" } // Update their status to "Deactivate"
+      );
+  
+      res.status(200).json({
+        message: "Region and associated areas deactivated successfully",
+        region: updatedRegion,
+        affectedAreas: updatedAreas.modifiedCount, // Number of areas updated
+      });
+    } catch (error) {
+      console.error("Error deactivating region and areas:", error.message || error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
+
 exports.getAreasByRegion = async (req, res) => {
   try {
     const { id: regionId } = req.params;
@@ -285,7 +320,7 @@ exports.getAreasByRegion = async (req, res) => {
     // Fetch Licensers with specified fields
     const licensers = await Leads.find(
       { customerStatus: "Licenser", regionId },
-      { customerId: 1, firstName: 1, trialStatus: 1 }
+      { customerId: 1, firstName: 1, trialStatus: 1, image:1 }
     );
 
     // Get the current month's start and end dates

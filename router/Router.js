@@ -53,6 +53,11 @@ router.put("/area/:areaId",verifyToken,checkPermission('Edit Area'), areaControl
 
 router.delete("/area/:areaId",verifyToken,checkPermission('Delete Area'), areaController.deleteArea,ActivityLogGeneration('Delete Area'));
 
+router.get("/areas/:id/overview",verifyToken,checkPermission('View Region'), areaController.getAreaDetails);
+
+router.get("/areas/:id/lead",verifyToken,checkPermission('View Region'), areaController.getAreaLeadDetails);
+
+
 // commission
 router.post('/commissions', verifyToken,checkPermission('Add Commission'), commissionController.addCommission,ActivityLogGeneration('Add Commission'));
 

@@ -5,9 +5,9 @@ const { Schema } = mongoose;
 
 const leadSchema = new Schema({
 
-  regionId:{ type: String },
-  areaId:{ type: String },
-  bdaId:{ type: String },
+  regionId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
+    areaId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Area'},
+    bdaId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Bda'},
   customerId:{type:String},
   image:{ type: String },
   salutation :{ type: String },
