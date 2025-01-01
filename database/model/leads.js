@@ -7,7 +7,7 @@ const leadSchema = new Schema({
 
   regionId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
   areaId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Area'},
-  bdaId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Area'},
+  bdaId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Bda'},
   customerId:{type:String},
   image:{ type: String },
   salutation :{ type: String },
