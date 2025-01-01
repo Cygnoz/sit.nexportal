@@ -635,6 +635,7 @@ exports.convertTrialToLicenser = async (req, res) => {
     const updatedTrial = await Leads.findByIdAndUpdate(
       trialId,
       { customerStatus: "Licenser",
+        licensorStatus:"Active",
         startDate,
         endDate
        },
