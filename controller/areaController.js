@@ -398,12 +398,13 @@ exports.getAreaLeadDetails = async (req, res) => {
         select: "user",
         populate: {
           path: "user",
-          select: "userName",
+          select: "userName userImage",
         },
       });
 
     // Map leads array to format bdaId as bdaName
     const formattedLeads = leads.map((lead) => ({
+      _id:lead._id,
       customerId: lead.customerId,
       image: lead.image,
       firstName: lead.firstName,
@@ -418,7 +419,7 @@ exports.getAreaLeadDetails = async (req, res) => {
     const licensors = await Leads.find({
       areaId: id,
       customerStatus: "Licenser",
-    }).select("firstName licensorStatus startDate endDate");
+    }).select("firstName image licensorStatus startDate endDate");
 
     // Send the response
     res.status(200).json({
