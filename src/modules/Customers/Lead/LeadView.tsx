@@ -24,6 +24,12 @@ import { useResponse } from "../../../context/ResponseContext";
 type Props = {}
 
 function LeadView({}: Props) {
+  const topRef = useRef<HTMLDivElement>(null);
+  
+    useEffect(() => {
+      // Scroll to the top of the referenced element
+      topRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, []);
     const {id}=useParams()
     const {request:getLead}=useApi('get',3001)
     const [leadData,setLeadData]=useState<LeadData>()
@@ -87,7 +93,7 @@ function LeadView({}: Props) {
   
     
   return (
-    <div >
+    <div ref={topRef}>
       <div className="flex items-center text-[16px] space-x-2">
        <p onClick={()=>navigate('/lead')} className="font-bold cursor-pointer text-[#820000] ">Lead</p>
         <ChevronRight color="#4B5C79" size={18}/>

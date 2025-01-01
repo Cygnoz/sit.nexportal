@@ -65,12 +65,9 @@ const SettingsHome = () => {
 
                 {/* Main Content */}
                 <div className="col-span-10 ps-[14px] ">
-                    {currentPage === "Target" && <div>Target</div>}
                     {currentPage === "User" && <UserHome/>}
                     {currentPage === "UserLog" && <UserLogHome/>}
                     {currentPage === "Target" && <Target/>}
-                    {currentPage === "User" && <div>Users</div>}
-                    {currentPage === "UserLog" && <div>User Log</div>}
                     {currentPage === "Business Card" && <BusinessCard />}
                     {currentPage === "Worker Commission" && <WCommisionHome/>}
                 </div>

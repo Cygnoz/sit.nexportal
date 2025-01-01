@@ -4,13 +4,27 @@ import LicenserCardIcon from "../../../assets/icons/LicenserCardIcon";
 // import PhoneIcon from "../../../assets/icons/PhoneIcon";
 import RupeeIcon from "../../../assets/icons/RupeeIcon";
 // import Trophy from "../../../assets/icons/Trophy";
-import UserIcon from "../../../assets/icons/UserIcon";
+import { useEffect, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  LabelList,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import Boxes from "../../../assets/icons/Boxes";
+import profileImage from "../../../assets/image/AvatarImg.png";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import profileImage from "../../../assets/image/AvatarImg.png";
-import { Bar, BarChart, CartesianGrid, Cell, LabelList, Tooltip, XAxis, YAxis } from "recharts";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
 
-type Props = {};
+type Props = {
+  id: any;
+};
 
 interface AreaData {
   employeeId: string;
@@ -22,7 +36,9 @@ interface AreaData {
   leadsclosed: String;
 }
 
-const TeamOverview = ({}: Props) => {
+const TeamOverview = ({ id }: Props) => {
+  const { request: getTeamData } = useApi("get", 3003);
+  const [teamData, setTeamData] = useState<any>();
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
       // navigate(`/areaView/${viewId}`)
@@ -37,29 +53,29 @@ const TeamOverview = ({}: Props) => {
   // Data for HomeCards
   const homeCardData = [
     {
-      icon: <UserIcon size={24} />,
-      number: "167",
-      title: "Total AM Manager",
-      iconFrameColor: "#1A9CF9",
-      iconFrameBorderColor: "#B3F0D3CC",
-    },
-    {
       icon: <AreaManagerIcon size={24} />,
-      number: "86",
+      number: teamData ? teamData.statistics?.totalBdas : 0,
       title: "Total  BDA'S",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#BBD8EDCC",
     },
     {
       icon: <LeadsCardIcon size={40} />,
-      number: "498",
+      number: teamData ? teamData.statistics?.totalLeads : 0,
       title: "Total Lead's",
       iconFrameColor: "#DD9F86",
       iconFrameBorderColor: "#FADDFCCC",
     },
     {
+      icon: <Boxes />,
+      number: teamData ? teamData.statistics?.totalLicensor : 0,
+      title: "Total Licenser",
+      iconFrameColor: "#51BFDA",
+      iconFrameBorderColor: "#C1E7F1CC",
+    },
+    {
       icon: <LicenserCardIcon />,
-      number: "2898",
+      number: teamData ? teamData.statistics?.activeLicensor : 0,
       title: "Active License Count",
       iconFrameColor: "#8695DD",
       iconFrameBorderColor: "#CAD1F1CC",
@@ -72,136 +88,16 @@ const TeamOverview = ({}: Props) => {
       iconFrameBorderColor: "#FDE3BB",
     },
   ];
-
-  // Data for the table
-  const data: AreaData[] = [
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-    {
-      employeeId: "AA-23344",
-      bdaName: "Subi",
-      phoneNumber: "14785258",
-      emailAddress: "dudu@gmail.com",
-      dateOfJoining: "2022-05-10",
-      totalLeads: "30",
-      leadsclosed: "44",
-    },
-  ];
+  
   // Define the columns with strict keys
-  const columns: { key: keyof AreaData; label: string }[] = [
+  const columns: { key: any; label: string }[] = [
     { key: "employeeId", label: "Employee ID" },
-    { key: "bdaName", label: "BDA Name" },
-    { key: "phoneNumber", label: "Phone Number" },
-    { key: "emailAddress", label: "Email Address" },
+    { key: "userName", label: "BDA Name" },
+    { key: "phoneNo", label: "Phone Number" },
+    { key: "email", label: "Email Address" },
     { key: "dateOfJoining", label: "Date Of Joining" },
     { key: "totalLeads", label: "Total leads" },
-    { key: "leadsclosed", label: "Leads Closed" },
+    { key: "leadsClosed", label: "Leads Closed" },
   ];
 
   const AreaRevData = [
@@ -236,74 +132,105 @@ const TeamOverview = ({}: Props) => {
     </text>
   );
 
-    // Chart Data
-    const ChartData = [
-      { name: "Page A", uv: 3900, avatar: profileImage },
-      { name: "Page B", uv: 3000, avatar: profileImage },
-      { name: "Page C", uv: 2000, avatar: profileImage },
-      { name: "Page D", uv: 2780, avatar: profileImage },
-      { name: "Page E", uv: 1890, avatar: profileImage },
-      { name: "Page F", uv: 2390, avatar: profileImage },
-      { name: "Page G", uv: 3490, avatar: profileImage },
-      { name: "Page H", uv: 4000, avatar: profileImage }
-    ];
-  
-    // Normalize the data
-    const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
-    const normalizedData = ChartData.map((entry) => ({
-      ...entry,
-      uv: (entry?.uv / maxValue) * 100,
-    }));
-  
-    // Custom Bubble Component
-    const CustomBubble = (props: any) => {
-      const { x, y } = props;
-  
-      if (x == null || y == null) return null;
-      return (
-        <div
-          style={{
-            position: "absolute",
-            left: `${x - 4}px`,
-            top: `${y - 8}px`,
-            width: "8px",
-            height: "8px",
-            backgroundColor: "#30B777",
-            borderRadius: "50%",
-          }}
+  // Chart Data
+  const ChartData = [
+    { name: "Page A", uv: 3900, avatar: profileImage },
+    { name: "Page B", uv: 3000, avatar: profileImage },
+    { name: "Page C", uv: 2000, avatar: profileImage },
+    { name: "Page D", uv: 2780, avatar: profileImage },
+    { name: "Page E", uv: 1890, avatar: profileImage },
+    { name: "Page F", uv: 2390, avatar: profileImage },
+    { name: "Page G", uv: 3490, avatar: profileImage },
+    { name: "Page H", uv: 4000, avatar: profileImage },
+  ];
+
+  // Normalize the data
+  const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
+  const normalizedData = ChartData.map((entry) => ({
+    ...entry,
+    uv: (entry?.uv / maxValue) * 100,
+  }));
+
+  // Custom Bubble Component
+  const CustomBubble = (props: any) => {
+    const { x, y } = props;
+
+    if (x == null || y == null) return null;
+    return (
+      <div
+        style={{
+          position: "absolute",
+          left: `${x - 4}px`,
+          top: `${y - 8}px`,
+          width: "8px",
+          height: "8px",
+          backgroundColor: "#30B777",
+          borderRadius: "50%",
+        }}
+      />
+    );
+  };
+
+  // Custom Bar Shape with Curved Top
+  const CustomBarWithCurve = (props: any) => {
+    const { x, y, width, height, fill } = props;
+
+    if (!x || !y || !width || !height) return null;
+
+    const radius = width / 2;
+    const gap = 2;
+
+    return (
+      <>
+        <rect
+          x={x}
+          y={y + gap}
+          width={width}
+          height={height - radius - gap}
+          fill={fill}
+          rx={radius}
+          ry={radius}
         />
+        <circle
+          cx={x + radius}
+          cy={y - radius + gap}
+          r={radius}
+          fill="#30B777"
+        />
+      </>
+    );
+  };
+
+  const getTeamDetails = async () => {
+    try {
+      const { response, error } = await getTeamData(
+        `${endPoints.GET_AREAS}/${id}/overview`
       );
-    };
+      if (response && !error) {
+        console.log(response.data);
+        const {bdas,statistics}=response.data
+        const filteredBdas=bdas.map((bda:any)=>({
+          ...bda,
+          dateOfJoining: bda.dateOfJoining
+              ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
+              : "N/A"
+        }))
+        const team={filteredBdas,statistics}
+        setTeamData(team)
+      } else {
+        console.log(error.response.data);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getTeamDetails();
+  }, [id]);
+
+  console.log(teamData);
   
-    // Custom Bar Shape with Curved Top
-    const CustomBarWithCurve = (props: any) => {
-      const { x, y, width, height, fill } = props;
-  
-      if (!x || !y || !width || !height) return null;
-  
-      const radius = width / 2;
-      const gap = 2;
-  
-      return (
-        <>
-          <rect
-            x={x}
-            y={y + gap}
-            width={width}
-            height={height - radius - gap}
-            fill={fill}
-            rx={radius}
-            ry={radius}
-          />
-          <circle
-            cx={x + radius}
-            cy={y - radius + gap}
-            r={radius}
-            fill="#30B777"
-          />
-        </>
-      );
-    };
 
   return (
     <div>
@@ -324,7 +251,7 @@ const TeamOverview = ({}: Props) => {
       {/* Table Section */}
       <div>
         <Table<AreaData>
-          data={data}
+          data={teamData?.filteredBdas}
           columns={columns}
           headerContents={{
             title: "BDA,s",
@@ -393,64 +320,64 @@ const TeamOverview = ({}: Props) => {
         </div>
         <div className="col-span-5 ">
           <div className="w-full h-fit p-4 bg-white rounded-lg">
-                     <p className="text-[#303F58] text-lg font-bold p-3">
-                       Top performing BDA's
-                     </p>
-                     <p className="text-[#4B5C79] text-xs font-normal p-3">
-                       Based on lead Conversion Performance Metric
-                     </p>
-         
-                     <div className="relative">
-                       <BarChart
-                         className="h-fit"
-                         barGap={54}
-                         barCategoryGap="40%"
-                         width={500}
-                         height={295}
-                         data={normalizedData}
-                       >
-                         {/* Cartesian Grid */}
-                         <CartesianGrid
-                           horizontal={true}
-                           vertical={false}
-                           strokeDasharray="3 3"
-                           stroke="#e0e0e0"
-                         />
-         
-                         {/* Y-Axis */}
-                         <YAxis
-                           tickFormatter={(tick) => `${tick}%`}
-                           domain={[0, 100]}
-                           ticks={[0, 20, 40, 60, 80, 100]}
-                           axisLine={false}
-                           tickLine={false}
-                         />
-         
-                         {/* Bar with custom curved shape */}
-                         <Bar
-                           dataKey="uv"
-                           fill="#B9E3CF"
-                           barSize={8}
-                           shape={<CustomBarWithCurve />}
-                         >
-                           {/* Add bubbles at the top */}
-                           <LabelList
-                             dataKey="uv"
-                             content={(props) => <CustomBubble {...props} />}
-                           />
-                         </Bar>
-                       </BarChart>
-                       <div className="flex ms-20 gap-[34px] -mt-2">
-                         {ChartData.map((chart) => (
-                           <img
-                             className="w-5 h-5 rounded-full"
-                             src={chart.avatar}
-                             alt=""
-                           />
-                         ))}
-                       </div>
-                     </div>
-                   </div>
+            <p className="text-[#303F58] text-lg font-bold p-3">
+              Top performing BDA's
+            </p>
+            <p className="text-[#4B5C79] text-xs font-normal p-3">
+              Based on lead Conversion Performance Metric
+            </p>
+
+            <div className="relative">
+              <BarChart
+                className="h-fit"
+                barGap={54}
+                barCategoryGap="40%"
+                width={500}
+                height={295}
+                data={normalizedData}
+              >
+                {/* Cartesian Grid */}
+                <CartesianGrid
+                  horizontal={true}
+                  vertical={false}
+                  strokeDasharray="3 3"
+                  stroke="#e0e0e0"
+                />
+
+                {/* Y-Axis */}
+                <YAxis
+                  tickFormatter={(tick) => `${tick}%`}
+                  domain={[0, 100]}
+                  ticks={[0, 20, 40, 60, 80, 100]}
+                  axisLine={false}
+                  tickLine={false}
+                />
+
+                {/* Bar with custom curved shape */}
+                <Bar
+                  dataKey="uv"
+                  fill="#B9E3CF"
+                  barSize={8}
+                  shape={<CustomBarWithCurve />}
+                >
+                  {/* Add bubbles at the top */}
+                  <LabelList
+                    dataKey="uv"
+                    content={(props) => <CustomBubble {...props} />}
+                  />
+                </Bar>
+              </BarChart>
+              <div className="flex ms-20 gap-[34px] -mt-2">
+                {ChartData.map((chart) => (
+                  <img
+                    className="w-5 h-5 rounded-full"
+                    src={chart.avatar}
+                    alt=""
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

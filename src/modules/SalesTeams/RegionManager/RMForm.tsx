@@ -282,7 +282,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   }, [editId]); // Trigger the effect when editId changes
 
   return (
-    <div className="p-5 bg-white rounded shadow-md  hide-scrollbar">
+    <div className="p-5 bg-white rounded shadow-md   hide-scrollbar">
       <div className="flex justify-between items-center mb-4">
         <div>
 
