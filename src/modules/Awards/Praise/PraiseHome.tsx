@@ -30,6 +30,8 @@ const PraiseHome = ({ }: Props) => {
     try {
       const { response, error } = await getAllPraise(url)
       if (response && !error) {
+        console.log("prises",response.data.praises);
+        
         setAllPraise(response.data.praises.reverse())
 
       } else {

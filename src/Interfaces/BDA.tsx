@@ -28,8 +28,8 @@ interface Address {
     city?: string;
     state?: string;
     country?:string
-    region?: string;
-    area?: string;
+    region: string;
+    area: string;
     commission?:string;
     bankDetails?: BankDetails;
     userImage?: string;  
