@@ -30,7 +30,7 @@ export interface RMData {
     confirmPassword?:string;
     workEmail?: string;
     workPhone?: string;
-    region?: string;
+    region: string;
     commission?: string; // Use number for percentage values
     bankDetails?: BankDetails;
 }

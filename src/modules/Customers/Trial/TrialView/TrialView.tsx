@@ -540,7 +540,7 @@ const TrialView = ({ }: Props) => {
                   <img src={profileImage} alt="" />
                 </div>
                 <p className="text-[#FFFFFF] text-xs font-bold py-2 px-1">
-                  Ronald J
+                  {customerData?.bdaDetails?.bdaName?customerData?.bdaDetails?.bdaName :'N/A'}
                 </p>
               </div>
             </div>

@@ -21,4 +21,7 @@ export interface LeadData {
     endDate?:string
     assignedBDA?:string
     trialStatus?:string
+    age?:string;
+    address?:string;
+    regionDetails?:{regionName:string};
   }

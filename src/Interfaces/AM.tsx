@@ -30,8 +30,8 @@ interface Address {
     confirmPassword?:string;
     workEmail?: string;
     workPhone?: string;
-    region?: string;
-    area?: string;
+    region: string;
+    area: string;
     commission?: string;
     bankDetails?: BankDetails;
   }
