@@ -375,12 +375,46 @@ Best regards,
 // Support: notify@cygnonex.com
 
 
+
 exports.getRegionManagerDetails = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Fetch the regionManager using the provided id
+    const regionManager = await RegionManager.findById(id);
+    if (!regionManager) {
+      return res.status(404).json({ message: "Region Manager not found" });
+    }
+
+    // Extract the region ID from the fetched regionManager
+    const regionId = regionManager.region;
+
     // Fetch areas managed by the region
-    const totalAreaManaged = await Area.find({ region: id });
+    const totalAreaManaged = await Area.find({ region: regionId });
+
+    // Map through the areas to fetch the required details
+    const areaDetails = await Promise.all(totalAreaManaged.map(async (area) => {
+      // Fetch the area manager for the area
+      const areaManager = await AreaManager.findOne({ area: area._id });
+
+      if (!areaManager) {
+        return {
+          areaCode: area.areaCode,
+          areaName: area.areaName,
+          areaManagerName: null, // In case no area manager is found
+        };
+      }
+
+      // Fetch the user (area manager's name)
+      const user = await User.findById(areaManager.user);
+
+      return {
+        _id:area._id,
+        areaCode: area.areaCode,
+        areaName: area.areaName,
+        areaManagerName: user ? user.userName : null, // If user is found, return their username
+      };
+    }));
 
     // Get area IDs from the fetched areas
     const areaIds = totalAreaManaged.map((area) => area._id);
@@ -396,7 +430,7 @@ exports.getRegionManagerDetails = async (req, res) => {
 
     // Send the response
     res.status(200).json({
-      totalAreaManaged,
+      totalAreaManaged: areaDetails,
       totalAreaManagers,
       totalBdas,
     });
@@ -405,3 +439,4 @@ exports.getRegionManagerDetails = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
