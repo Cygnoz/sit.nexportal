@@ -31,9 +31,9 @@ const Sidebar: React.FC = () => {
       </div>
 
       <Link to="/dashboard">
-        <div className="mt-4 pl-4">
+        <div className="mt-4 pl-1">
           <div
-            className={`w-[180px] px-3 py-2 rounded-3xl items-center flex gap-3 ${
+            className={`w-[190px] px-3 py-2 rounded-3xl items-center flex gap-3 ${
               isActiveRoute('/dashboard') ? 'bg-[#5A0000]' : ''
             }`}
           >
@@ -45,7 +45,7 @@ const Sidebar: React.FC = () => {
 
       {Object.entries(sidebarOptions).map(([category, options]) =>
         options.length > 0 ? (
-          <div key={category} className="sidebar-category pl-7">
+          <div key={category} className="sidebar-category pl-4">
             <h3 className="text-[#d8cab6] text-xs mb-2 mt-3 cursor-default">
               {category}
             </h3>
@@ -57,7 +57,7 @@ const Sidebar: React.FC = () => {
                   <li
                     key={option}
                     onClick={() => navigate(route)}
-                    className={`text-secondary text-sm my-2 cursor-pointer -ml-3 w-[180px] font-medium px-3 py-2 rounded-3xl items-center flex ${
+                    className={`text-secondary text-sm my-2 cursor-pointer -ml-3 w-[190px] font-medium px-3 py-2 rounded-3xl items-center flex ${
                       isActiveRoute(route) ? 'bg-[#5A0000]' : ''
                     }`}
                   >
@@ -75,7 +75,7 @@ const Sidebar: React.FC = () => {
 
       <Link to="/settings">
         <div
-          className={`w-[180px] px-3 py-2 rounded-3xl ml-4 items-center flex gap-3 ${
+          className={`w-[190px] px-3 py-2 rounded-3xl ml-1 items-center flex gap-3 ${
             isActiveRoute('/settings') ? 'bg-[#5A0000]' : ''
           }`}
         >

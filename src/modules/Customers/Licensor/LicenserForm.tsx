@@ -103,11 +103,7 @@ function LicenserForm({ onClose ,editId}: Props) {
   
 
 
-  const leadSource = [
-    { label: "Active", value: "Active" },
-    { label: "Pending", value: "Pending" },
-    { label: "Expired", value: "Expired" },
-  ];
+
 
   const salutation = [
     { value: "Mr.", label: "Mr." },
@@ -389,14 +385,7 @@ function LicenserForm({ onClose ,editId}: Props) {
               {...register("companyName")}
             />
           </div>
-        <div className="grid grid-cols-3 gap-4 my-4">
-        <Select
-              label="Licenser Status"
-              placeholder="Select Licenser status"
-              options={leadSource}
-              error={errors.licensorStatus?.message}
-              {...register("licensorStatus")}
-            />
+        <div className="grid grid-cols-2 gap-4 my-4">
             <Input
               required
               label="Start Date"

@@ -91,7 +91,7 @@ const WCommisionHome = () => {
   const columns: { key: keyof WCData; label: string }[] = [
     { key: "profileName", label: "ProfileName" },
     { key: "commissionPercentage", label: "Percentage" },
-    { key: "thresholdAmount", label: "Thrushold Amt" },
+    { key: "thresholdAmount", label: "Threshold Amt" },
     { key: "createdAt", label: "Created Date" },
   ];
 

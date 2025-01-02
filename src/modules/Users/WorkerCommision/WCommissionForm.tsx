@@ -105,8 +105,8 @@ function WCommissionForm({ onClose , editId }: Props) {
           <h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Commission Profile</h3>
           <p className="text-[11px] text-[#8F99A9] mt-1">
             {editId
-              ? "Edit the details of the existing region."
-              : "Fill in the details to create a new region."}
+              ? "Edit the details of the existing Commission Profile"
+              : "Fill in the details to create a Commission Profile"}
           </p>
         </div>
         <p onClick={onClose} className="text-3xl cursor-pointer">
@@ -131,6 +131,7 @@ function WCommissionForm({ onClose , editId }: Props) {
                 required
                 label="Commission Percentage"
                 type="number"
+                step="any"
                 placeholder="Enter Percentage"
                 error={errors.commissionPercentage?.message}
                 {...register("commissionPercentage")}
@@ -140,6 +141,7 @@ function WCommissionForm({ onClose , editId }: Props) {
                 required
                 label="Threshold Amount"
                 type="number"
+                step="any"
                 placeholder="Enter Amount"
                 error={errors.thresholdAmount?.message}
                 {...register("thresholdAmount")}

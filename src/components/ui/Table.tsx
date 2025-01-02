@@ -351,7 +351,10 @@ const Table = <T extends object>({
                       ) : col?.key == "convert" ? (
                         row["leadStatus"] == "Won" ? (
                           <Button
-                            onClick={() => col.label(row._id)}
+                            onClick={(e) =>{
+                              e.stopPropagation()
+                               col.label(row._id)
+                            }}
                             variant="tertiary"
                             className="h-8 text-sm  text-[#565148]  border border-[#565148] rounded-xl"
                           >
