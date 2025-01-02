@@ -23,7 +23,7 @@ const leadSchema = new Schema({
   address: { type: String },
   city:{ type: String },
   state: { type: String },
-
+  country : {type : String},
   licenseType: { type: String },
   startDate: { type: String },
   endDate:{ type: String },
