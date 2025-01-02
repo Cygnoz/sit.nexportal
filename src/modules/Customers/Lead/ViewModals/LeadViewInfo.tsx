@@ -50,7 +50,7 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
 
                             <div className="flex">
                                 <CalenderDays size={18} color="#4B5C79" />
-                                <p className="text-sm font-semibold ms-2 ">30</p>
+                                <p className="text-sm font-semibold ms-2 ">{leadData?.age? leadData?.age:'N/A'}</p>
 
                             </div>
 
@@ -58,7 +58,7 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
                             <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Lead ID</h3>
                             <div className="flex">
                                 <Boxes color="#4B5C79" size={18} />
-                                <p className="text-sm font-semibold ms-2">LD-001</p>
+                                <p className="text-sm font-semibold ms-2">{leadData?.customerId ? leadData?.customerId:'N/A'}</p>
 
                             </div>
 
@@ -71,7 +71,7 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
                             <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Address</h3>
                             <div className="flex">
                                 <LocationIcon size={16} />
-                                <p className="text-sm font-semibold ms-2">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
+                                <p className="text-sm font-semibold ms-2">{leadData?.address ?leadData?.address :'N/A'}</p>
 
                             </div>
 
@@ -139,14 +139,14 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
                             </div>
 
                             <hr />
-                            <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Work Mail</h3>
+                            <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Company Name</h3>
                             <div className="flex">
                                 <EmailIcon size={16} />
-                                <p className="text-sm font-semibold ms-2">alma.lawson@example.com</p>
+                                <p className="text-sm font-semibold ms-2">{leadData?.companyName? leadData?.companyName:'N/A'}</p>
 
                             </div>
                             <hr />
-                            <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Work Phone</h3>
+                            <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Company Phone</h3>
                             <div className="flex">
                                 <PhoneIcon size={16} />
                                 <p className="text-sm font-semibold ms-2">{leadData?.companyPhone?leadData.companyPhone:'N/A'}</p>
@@ -164,7 +164,7 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
                             <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Region</h3>
                             <div className="flex">
                                 <Boxes color="#4B5C79" size={18} />
-                                <p className="text-sm font-semibold ms-2">REG-0001</p>
+                                <p className="text-sm font-semibold ms-2">{leadData?.regionDetails?.regionName?leadData?.regionDetails?.regionName:'N/A'}</p>
 
                             </div>
 

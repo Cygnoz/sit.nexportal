@@ -43,6 +43,7 @@ const baseSchema = {
     .transform((value, originalValue) =>
       originalValue === "" ? null : value
     ),
+    region:Yup.string().required("Region is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -128,27 +129,23 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     }
   };
   
-
+ 
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
-
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
-    } else if (!editId&& tab === "Company Information") {
-      fieldsToValidate = ["email", "password",  "confirmPassword"];
+    } else if (tab === "Company Information") {
+      fieldsToValidate = [!editId&&"email", !editId&&"password", !editId&&"confirmPassword","region",];
     }
-
     const isValid = fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
-
     if (isValid && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
     }
   };
-
   const handleBack = () => {
     const currentIndex = tabs.indexOf(activeTab);
     if (currentIndex > 0) {
@@ -513,7 +510,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
               </div>
               <div className="grid grid-cols-2 gap-4 my-4">
                 <Select
-                
+                  required
                   placeholder="Select Region"
                   label="Select Region"
                   value={watch("region")}

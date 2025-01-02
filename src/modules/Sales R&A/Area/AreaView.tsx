@@ -96,7 +96,7 @@ Props) => {
     <>
     <div ref={topRef}>
       <div className="flex items-center text-[16px] my-2 space-x-2">
-        <p onClick={()=>navigate('/areas')}  className="font-bold cursor-pointer  text-[#820000] ">Aria</p>
+        <p onClick={()=>navigate('/areas')}  className="font-bold cursor-pointer  text-[#820000] ">Area</p>
         <ChevronRight color="#4B5C79" size={18} />
         <p className="font-bold text-[#303F58] ">{area?.areaName}</p>
       </div>
