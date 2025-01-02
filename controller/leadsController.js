@@ -538,50 +538,50 @@ exports.convertLeadToTrial = async (req, res) => {
 
 exports.getAllTrials = async (req, res) => {
   try {
+    // Fetch all trials
     const trials = await Leads.find({ customerStatus: "Trial" });
-
+ 
     if (!trials || trials.length === 0) {
       return res.status(404).json({ message: "No trials found." });
     }
-
-    const enrichedTrials = await Promise.all(
-      trials.map(async (trial) => {
-        const { startDate, endDate, regionId, areaId, bdaId } = trial;
-        const currentDate = moment();
-        const StartDate = moment(startDate, "YYYY-MM-DD");
-        const EndDate = moment(endDate, "YYYY-MM-DD");
-
-        // Calculate trialStatus dynamically (Only In Progress or Expired)
-        let trialStatus = "Expired";
-        if (currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)) {
-          trialStatus = "In Progress";
-        }
-
-        // Fetch related details using dataExist
-        const { regionExists, areaExists, bdaExists, bdaName } = await dataExist(regionId, areaId, bdaId);
-
-        return {
-          ...trial.toObject(),
-          trialStatus, // Add dynamically calculated status
-          regionDetails: regionExists?.[0] || null,
-          areaDetails: areaExists?.[0] || null,
-          bdaDetails: {
-            bdaId: bdaExists?.[0]?._id || null,
-            bdaName: bdaName || null,
-          },
-        };
-      })
-    );
-
-    // ActivityLog(req, "Success - Trials fetched successfully");
+ 
+    // Iterate through trials to check and update trialStatus
+    const currentDate = moment();
+    const updatePromises = trials.map(async (trial) => {
+      const { _id, startDate, endDate, trialStatus } = trial;
+      const StartDate = moment(startDate, "YYYY-MM-DD");
+      const EndDate = moment(endDate, "YYYY-MM-DD");
+ 
+      // Determine the current status
+      const calculatedStatus =
+        currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)
+          ? "In Progress"
+          : "Expired";
+ 
+      // Update database if status differs
+      if (trialStatus !== calculatedStatus) {
+        await Leads.findByIdAndUpdate(
+          _id,
+          { trialStatus: calculatedStatus },
+          { new: true }
+        );
+      }
+ 
+      return {
+        ...trial.toObject(),
+        trialStatus: calculatedStatus, // Include updated status for the response
+      };
+    });
+ 
+    // Resolve all updates and prepare enriched response
+    const enrichedTrials = await Promise.all(updatePromises);
+ 
     res.status(200).json({ trials: enrichedTrials });
   } catch (error) {
     console.error("Error fetching trials:", error);
-    // ActivityLog(req, "Failed - Error fetching trials");
     res.status(500).json({ message: "Internal server error." });
   }
 };
-
 
 exports.getClientDetails = async (req, res) => {
   try {

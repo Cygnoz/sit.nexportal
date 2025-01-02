@@ -43,7 +43,7 @@ router.post("/trial/:trialId", leadController.extendTrialDuration);
 //add licenser
 router.post('/licenser',verifyToken,checkPermission('Add Licenser'),licenserController.addLicenser,ActivityLogGeneration('Add Licenser'))
 
-router.get('/licenser',verifyToken,checkPermission('View Licenser'),licenserController.getAllLicesner) 
+router.get('/licenser',verifyToken,checkPermission('View Licenser'),licenserController.getAllLicenser) 
 
 router.get('/licenser/:licenserId',verifyToken,checkPermission('View Licenser'),licenserController.getLicenser)
 
