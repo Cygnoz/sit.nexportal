@@ -24,10 +24,18 @@ import HomeCard from "../components/ui/HomeCards";
 import RatingStar from '../components/ui/RatingStar';
 import TicketsBar from '../components/ui/TicketsBar';
 import { useRegularApi } from "../context/ApiContext";
+import RegionIcon from '../assets/icons/RegionIcon';
 
 const DashboardPage = () => {
   const {totalCounts}=useRegularApi()
   const homeCardData = [
+    {
+      icon: <RegionIcon size={24} />,
+      number: totalCounts?.totalUsers,
+      title: "Total Users",
+      iconFrameColor: "#F9A51A",
+      iconFrameBorderColor: "#FFF2DDCC",
+    },
     { 
       icon: <RowsIcon size={24} />, 
       number: totalCounts?.totalRegion, 

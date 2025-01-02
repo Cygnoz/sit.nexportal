@@ -21,8 +21,8 @@ const BDAViewForm: React.FC<Props> = ({ onClose,bdaData }) => {
         <div className="flex justify-between items-center">
         <div className="px-2 ">
       <h1 className="font-bold text-sm">BDA Info</h1>
-        <p className="text-xs mt-2 font-normal text-[#8F99A9]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore quisquam pos</p>
-       
+      <p className="text-xs mt-2 font-normal text-[#8F99A9]"> Growth is the only constant, let's chase it together</p>
+
       </div>
       <button
                     type="button"

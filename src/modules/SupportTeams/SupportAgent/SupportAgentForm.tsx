@@ -393,12 +393,18 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                   }}
                 />
                 <div className="flex gap-4 w-full">
-                  <Input
-                    placeholder="Enter Age"
-                    label="Age"
-                    type="number"
-                    {...register("age")}
-                  />
+                <Input
+  placeholder="Enter Age"
+  label="Age"
+  type="number"
+  min="0" // Minimum age
+  max="120" // Maximum age
+  step="1" // Restricts input to integers
+  error={errors.age?.message}
+  {...register("age", {
+    valueAsNumber: true, // Parses input as a number
+  })}
+/>
                   <Input
                     label="Blood Group"
                     placeholder="Enter Blood Group"

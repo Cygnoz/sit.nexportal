@@ -56,7 +56,7 @@ const SAViewForm = ({ onClose }: Props) => {
                 <div className="flex justify-between items-center">
                     <div className="px-2 ">
                         <h1 className="font-bold text-sm">Support Agent Info</h1>
-                        <p className="text-xs mt-2 font-normal text-[#8F99A9]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore quisquam pos</p>
+                        <p className="text-xs mt-2 font-normal text-[#8F99A9]">Surround yourself with people who support you</p>
 
                     </div>
                     <button

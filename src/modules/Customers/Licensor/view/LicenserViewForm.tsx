@@ -54,7 +54,8 @@ const LicenserViewForm = ({onClose}: Props) => {
         <div className="flex justify-between items-center">
         <div className="px-2 ">
       <h1 className="font-bold text-sm">Licenser Info</h1>
-        <p className="text-xs mt-2 font-normal text-[#8F99A9]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore quisquam pos</p>
+        <p className="text-xs mt-2 font-normal text-[#8F99A9]">Purchasing power is a license to purchase power.
+        Raoul Vaneigem</p>
        
       </div>
       <button
@@ -72,7 +73,7 @@ const LicenserViewForm = ({onClose}: Props) => {
         <div className="grid grid-cols-12 gap-2 p-2">
           {/* Table Section */}
           <div className="col-span-5 my-2 ">
-            <div className="p-4  mx-1 bg-[#F3EEE7] h-60">
+            <div className="p-4  mx-1 bg-[#F3EEE7] h-80">
               <h1 className="text-sm font-semibold my-2">Basic Details</h1>
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >First Name</h3>
               <div className="flex">
@@ -92,13 +93,37 @@ const LicenserViewForm = ({onClose}: Props) => {
               </div>
              
               <hr />
+              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >City</h3>
+              <div className="flex">
+                <UserIcon color="#4B5C79"/>
+                <p className="text-sm font-semibold ms-2">{data?.city ? data?.city : 'N/A'}</p>
+
+              </div>
+             
+              <hr />
+              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Country</h3>
+              <div className="flex">
+                <UserIcon color="#4B5C79"/>
+                <p className="text-sm font-semibold ms-2">{data?.country ? data?.country : 'N/A'}</p>
+
+              </div>
+             
+              <hr />
+              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >State</h3>
+              <div className="flex">
+                <UserIcon color="#4B5C79"/>
+                <p className="text-sm font-semibold ms-2">{data?.state ? data?.state : 'N/A'}</p>
+
+              </div>
+             
+              <hr />
             
               
             </div>
 
           </div>
           <div className="col-span-7 my-2 ">
-            <div className="p-4  mx-1 bg-[#F3EEE7] h-60">
+            <div className="p-4  mx-1 bg-[#F3EEE7] h-80">
               <h1 className="text-sm font-semibold my-2">Contact Information</h1>
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Address</h3>
               <div className="flex">
@@ -133,7 +158,7 @@ const LicenserViewForm = ({onClose}: Props) => {
         <div className="grid grid-cols-12 gap-2">
           {/* Table Section */}
           <div className="col-span-5 my-2 ">
-            <div className="p-4  mx-1 bg-[#F3EEE7] h-[342px]">
+            <div className="p-4  mx-1 bg-[#F3EEE7] h-60">
               <h1 className="text-sm font-semibold my-2">Company Information</h1>
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Company ID</h3>
               <div className="flex">
@@ -158,7 +183,7 @@ const LicenserViewForm = ({onClose}: Props) => {
 
           </div>
           <div className="col-span-7 my-1 ">
-            <div className="p-4 mx-1 bg-[#F3EEE7] h-[342px]">
+            <div className="p-4 mx-1 bg-[#F3EEE7] h-60">
               <h1 className="text-sm font-semibold my-2">License Info</h1>
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Licenser Status</h3>
               <div className="flex">
