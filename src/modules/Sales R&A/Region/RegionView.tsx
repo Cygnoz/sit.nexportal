@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
@@ -25,6 +25,7 @@ import UserIcon from "../../../assets/icons/UserIcon";
 import Trash from "../../../assets/icons/Trash";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import type{ RegionView } from "../../../Interfaces/RegionView";
+import AMForm from "../../SalesTeams/AreaManager/AMForm";
 
 type Props = {};
 const initialRegionAreaData: RegionView = {
@@ -43,11 +44,19 @@ const initialRegionAreaData: RegionView = {
 };
 
 function RegionView({}: Props) {
+  const topRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to the top of the referenced element
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
   const { request: getRM } = useApi("get", 3002);
   const { request: deleteRegion } = useApi("delete", 3003);
   const {request:getAreaDetails}=useApi('get',3003)
   const [dropDown, setDropDown] = useState([]);
   const navigate=useNavigate()
+  const [teamData, setTeamData] = useState<any>({})
+  const { request: getTeam } = useApi('get', 3003)
   // Function to toggle dropdown state
   const handleDropdownToggle = (index: number) => {
     setDropDown((prev) => {
@@ -56,12 +65,18 @@ function RegionView({}: Props) {
       return newState;
     });
   };
+  // const handleModalToggle = (editId?:any) => {
+  //   setEditId(editId)
+  //   setIsModalOpen((prev) => !prev);
+  //   getAllTeam()
+  // };
   const { id } = useParams();
   const { request: getRegion } = useApi("get", 3003);
   const [data, setData] = useState<{
     regionData: any;
-    regionAreaData:RegionView
-  }>({ regionData: [], regionAreaData:initialRegionAreaData });
+    regionAreaData:RegionView,
+    amEditId:string
+  }>({ regionData: [], regionAreaData:initialRegionAreaData,amEditId:'' });
 
   const countyLogo = [
     { countryName: "India", countryLogo: IndiaLogo },
@@ -95,18 +110,21 @@ function RegionView({}: Props) {
   const [isModalOpen, setIsModalOpen] = useState({
     editRegion: false,
     addArea: false,
-    deleteRegion:false
+    deleteRegion:false,
+    editAm:false
   });
 
   // Function to toggle modal visibility
-  const handleModalToggle = (editRegion = false, addArea = false,deleteRegion=false) => {
+  const handleModalToggle = (editRegion = false, addArea = false,deleteRegion=false,editAm=false) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editRegion,
       addArea,
-      deleteRegion
+      deleteRegion,
+      editAm
     }));
     getARegion();
+    getAllTeam()
   };
 
   const countryLogoObject = countyLogo.find(
@@ -161,16 +179,45 @@ function RegionView({}: Props) {
       
     }
   }
+ 
+  const getAllTeam = async () => {
+    try {
+      const { response, error } = await getTeam(`${endPoints.GET_REGIONS}/${id}/details`);
 
-  console.log("regionAreaData",data.regionAreaData);
+      if (response && !error) {
+        console.log(response.data);
+
+        const { bdas = [], areaManagers = [], ...restData } = response?.data || {};
+
+        const transformedBdas = bdas.map((team: any) => ({
+          ...team,
+          dateOfJoining: team.user?.dateOfJoining
+            ? new Date(team.user?.dateOfJoining).toLocaleDateString("en-GB")
+            : "N/A",
+          phoneNo: team?.user?.PhoneNo,
+          userName: team?.user?.userName,
+          userImage: team?.user?.userImage,
+          areaName: team?.area?.areaName,
+          employeeId: team?.user?.employeeId,
+        }));
+
+        const transformedData = { transformedBdas, areaManagers, ...restData };
+        console.log(transformedData);
+        setTeamData(transformedData);
+      } else {
+        console.log(error?.response?.data?.message || "Unknown error occurred");
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   
-
-
-
   useEffect(() => {
     getRMs();
     getARegion();
     getRegionAreaData();
+    getAllTeam();
   }, [id]);
 
 
@@ -192,7 +239,7 @@ function RegionView({}: Props) {
 
   return (
     <>
-      <div className="h-full flex">
+      <div ref={topRef}  className="h-full flex">
         {/* Sidebar */}
         <div className="w-1/6 fixed h-full pe-2">
           <div className="flex items-center text-[16px] space-x-2 mb-4">
@@ -234,7 +281,7 @@ function RegionView({}: Props) {
               <div className="flex justify-evenly items-center w-full text-[10px]">
                 <div className="flex flex-col items-center space-y-1">
                   <div
-                    onClick={() => handleModalToggle(true, false,false)}
+                    onClick={() => handleModalToggle(true, false,false,false)}
                     className="cursor-pointer w-8 h-8 mb-2 rounded-full"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -248,7 +295,7 @@ function RegionView({}: Props) {
 
                 <div className="flex flex-col  items-center space-y-1">
                   <div
-                    onClick={() => handleModalToggle(false, true,false)}
+                    onClick={() => handleModalToggle(false, true,false,false)}
                     className="cursor-pointer w-8 h-8 mb-2 rounded-full"
                   >
                     <PlusCircleIcon size={35} color="#D52B1E4D" />
@@ -271,7 +318,7 @@ function RegionView({}: Props) {
                   </p>
                 </div>
 
-                <div onClick={() => handleModalToggle(false,false,true)}  className="cursor-pointer">
+                <div onClick={() => handleModalToggle(false,false,true,false)}  className="cursor-pointer">
                 <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
                   <div className="ms-2 mt-2 ">
                     <Trash size={18} color="#BC3126" />
@@ -360,8 +407,8 @@ function RegionView({}: Props) {
         </div>
 
         {/* Main Content */}
-        <div className="w-[80%] relative ml-auto overflow-y-auto hide-scrollbar mb-4 mt-10 overflow-x-hidden">
-          <div className="flex gap-8 sticky top-0 z-30 bg-[#F6F6F6] text-base font-bold border-b w-full border-gray-200">
+        <div className="w-[80%] relative ml-auto    overflow-y-auto hide-scrollbar mb-4 mt-10 overflow-x-hidden">
+          <div style={{zIndex:5}} className="flex gap-8 sticky top-0    bg-[#F6F6F6] text-base font-bold border-b w-full border-gray-200">
             {tabs.map((tab) => (
               <div
                 key={tab}
@@ -377,9 +424,9 @@ function RegionView({}: Props) {
             ))}
           </div>
 
-          <div className="absolute z-10">
+          <div style={{zIndex:2}}  className="absolute">
             {activeTab === "Area" && <RegionAriaView regionAreaData={data.regionAreaData}  regionData={data.regionData} />}
-            {activeTab === "Team" && <RegionTeamView />}
+            {activeTab === "Team" && <RegionTeamView teamData={teamData} handleModalToggle={handleModalToggle} setData={setData}  />}
             {activeTab === "Performance Analytics" && <RegionPerformanceView />}
           </div>
         </div>
@@ -398,7 +445,7 @@ function RegionView({}: Props) {
       <Modal
         open={isModalOpen.addArea}
         onClose={() => handleModalToggle()}
-        className="w-[35%]"
+        className="w-[35%] "
       >
         <AreaForm onClose={() => handleModalToggle()} />
       </Modal>
@@ -416,6 +463,9 @@ function RegionView({}: Props) {
         />
       </Modal>       
 
+      <Modal   open={isModalOpen.editAm} onClose={() => handleModalToggle()}>
+     <AMForm editId={data.amEditId}  onClose={() => handleModalToggle()} />
+   </Modal>       
     </>
   );
 }

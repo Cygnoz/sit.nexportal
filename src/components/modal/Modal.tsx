@@ -53,7 +53,8 @@ const Modal = ({
     <>
       {open && (
         <div
-          className={`fixed inset-0 z-[100] flex ${getPositionStyles} bg-black/20  transition-opacity duration-300`}
+          className={`fixed  inset-0   flex ${getPositionStyles} bg-black/20  transition-opacity duration-300`}
+          style={{zIndex:999}}
           onClick={onClose}
           aria-modal="true"
           role="dialog"
