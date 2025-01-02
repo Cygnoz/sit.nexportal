@@ -2,16 +2,15 @@ import React, { useMemo, useState } from "react";
 import NextIcon from "../../assets/icons/NextIcon";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
 import SearchBar from "./SearchBar";
-import IndiaLogo from "../../assets/image/IndiaLogo.png";
-import SaudhiLogo from "../../assets/image/SaudiLogo.png";
-import UAELogo from "../../assets/image/UAELogo.webp";
+import No_Data_found from "../../assets/image/NO_DATA.png";
 import UserIcon from "../../assets/icons/UserIcon";
 import Button from "./Button";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
-  { key: "rmName", imageKey: "rmImage" },
-  { key: '', imageKey: '' }
+  { key: "user.userName", imageKey: "user.userImage" },
+  { key: "leadName", imageKey: "image" },
+  { key: "firstName", imageKey: "image" },
 ];
 
 interface TableProps<T> {
@@ -22,15 +21,14 @@ interface TableProps<T> {
     search?: { placeholder: string };
   };
   maxHeight?: string;
-  getButtonName?: (row: T) => string; // Function to determine button name
+  handleView:(id:any)=>void 
 }
 const LicensersTable = <T extends object>({
   data,
   columns,
   headerContents,
   maxHeight,
-  getButtonName,
-
+  handleView
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -38,20 +36,23 @@ const LicensersTable = <T extends object>({
 
   // Filter data based on the search value
   const filteredData = useMemo(() => {
-    return data.filter((row) =>
+    return data?.filter((row) =>
       Object.values(row).some((value) =>
         String(value).toLowerCase().includes(searchValue.toLowerCase())
       )
     );
   }, [data, searchValue]);
 
+  console.log("xz",data);
+  
+
   // Paginate the filtered data
   const paginatedData = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return filteredData.reverse().slice(start, start + rowsPerPage);
+    return filteredData?.reverse().slice(start, start + rowsPerPage);
   }, [filteredData, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredData?.length / rowsPerPage);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -62,31 +63,47 @@ const LicensersTable = <T extends object>({
   const getStatusClass = (status: string | undefined) => {
     switch (status) {
       case "New":
-        return "bg-red-500 text-white py-2  px-2 w-fit rounded-lg";
+        return "bg-blue-500 text-center text-white py-1 px-2 w-fit rounded-lg";
       case "Contacted":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        return "bg-cyan-800 text-center text-white py-1 px-2 rounded-lg";
+      case "In progress":
+        return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
+      case "In Progress":
+        return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
+      case "Proposal":
+        return "bg-violet-300 text-center text-black py-1 px-2 rounded-lg";
+      case "Lost":
+        return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
       case "Closed":
-        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
+        return "bg-gray-400 text-center text-white py-1 px-2 rounded-lg";
       case "Active":
-        return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
+        return "bg-green-500 text-center text-white py-1 px-2 w-fit rounded-lg";
       case "Converted":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        return "bg-purple-500 text-center text-white py-1 px-2 rounded-lg";
       case "Expired":
-        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
+        return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
+      case "Not Started":
+        return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
+      case "Extended":
+        return "bg-violet-500 text-center text-white py-1 px-2 rounded-lg";
       case "Pending Renewal":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
-      case "Upcoming Renewal":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
       case "Open":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        return "bg-green-400 text-center text-white py-1 px-2 rounded-lg";
       case "Pending":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        return "bg-yellow-400 text-center text-black py-1 px-2 rounded-lg";
       case "High":
-        return "bg-red-500 text-white py-2 px-2 w-fit rounded-lg";
+        return "bg-red-500 text-center text-white py-1 px-2 w-fit rounded-lg";
       case "Medium":
-        return "bg-green-400 text-white py-2 px-2 rounded-lg";
+        return "bg-orange-300 text-center text-white py-1 px-2 rounded-lg";
       case "Low":
-        return "bg-blue-300 text-white py-2 px-2 rounded-lg";
+        return "bg-green-300 text-center text-white py-1 px-2 rounded-lg";
+      case "Won":
+        return "bg-green-500 text-center text-white  py-1 px-2 w-fit rounded-lg";
+      case "Resolved":
+        return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
+      case "Paid":
+        return "bg-purple-200 text-center text-black py-1 px-2 rounded-lg";
       default:
         return "";
     }
@@ -101,30 +118,7 @@ const LicensersTable = <T extends object>({
     return path.split(".").reduce((acc, part) => acc?.[part], obj);
   }
 
-  const countryLogo = (key: string) => {
-    if (key == "India") {
-      return (
-        <>
-          <img src={IndiaLogo} alt="India" className="w-5 h-5 rounded-full" />
-          <p>India</p>
-        </>
-      );
-    } else if (key == "United Arab Emirates") {
-      return (
-        <>
-          <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full" />
-          <p>UAE</p>
-        </>
-      );
-    } else {
-      return (
-        <>
-          <img src={SaudhiLogo} alt="Saudi Arabia" className="w-5 h-5 rounded-full" />
-          <p>Saudi</p>
-        </>
-      );
-    }
-  };
+ 
 
   // Render table header
   const renderHeader = () => (
@@ -151,26 +145,33 @@ const LicensersTable = <T extends object>({
 
   const renderImageAndLabel = (data: any) => {
     for (const { key, imageKey } of ImageAndLabel) {
-      if (data[key] && data[imageKey]) {
-        return (
-          <>
-            {data[imageKey].length > 500 ? (
+      const keyValue = getNestedValue(data, key);
+      const imageValue = getNestedValue(data, imageKey);
+      if (keyValue) {
+        if (imageValue && imageValue.length > 500) {
+          return (
+            <>
               <img
-                src={`${data[imageKey]}`}
-                alt={data[key]}
-                className="w-5 h-5 rounded-full"
+                src={`${imageValue}`}
+                alt={keyValue}
+                className="w-6 h-6 rounded-full bg"
               />
-            ) :
-              <p className="w-5 h-5 border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
-                <UserIcon color="#768294" size={15} />
+              <p>{keyValue}</p>
+            </>
+          );
+        } else {
+          return (
+            <>
+              <p className="w-6 h-6  bg-black rounded-full flex justify-center items-center">
+                <UserIcon color="white" size={15} />
               </p>
-            }
-            <p>{data[key]}</p>
-          </>
-        );
+              <p>{keyValue}</p>
+            </>
+          );
+        }
       }
     }
-    return "Null" // Return null if no match is found
+    return "N/A";
   };
 
   return (
@@ -208,8 +209,8 @@ const LicensersTable = <T extends object>({
             </tr>
           </thead> */}
           <tbody>
-            {paginatedData.length > 0 ? (
-              paginatedData.map((row: any, rowIndex: number) => (
+            {paginatedData?.length > 0 ? (
+              paginatedData?.map((row: any, rowIndex: number) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 z-10">
                   <td className="p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE] rounded-lg">
                     {(currentPage - 1) * rowsPerPage + rowIndex + 1}
@@ -219,7 +220,7 @@ const LicensersTable = <T extends object>({
                       key={String(col.key)}
                       className="p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE]"
                     >
-                      <div className={`flex justify-start items-center gap-2 ${col.key === 'status' ? 'justify-center' : 'justify-start'}`}>
+                      <div className={`flex justify-start items-center gap-2 ${col.key.toLowerCase().includes("status") ? 'justify-center' : 'justify-start'}`}>
                         {col.key === "plan" ? (
                           <p className="text-[#4B5C79] text-sm font-bold">
                             {getNestedValue(row, col.key) || "Null"}
@@ -240,12 +241,16 @@ const LicensersTable = <T extends object>({
                             <div className="h-1 w-1 rounded-full bg-orange-400"></div>
                             {getNestedValue(row, col.key) || "Null"}
                           </span>
-                        ) : col.key === "country" ? (
-                          countryLogo(getNestedValue(row, col.key))
-                        ) : ["userName", "rmName", "amName"].includes(col.key) ? (
+                        ) 
+                         :[
+                          "userName",
+                          "user.userName",
+                          "leadName",
+                          "firstName",
+                        ].includes(col.key) ? (
                           renderImageAndLabel(row)
-                        ) : col.key === "status" ? (
-                          <p className={getStatusClass(row[col.key])}>
+                        ) : col.key.toLowerCase().includes("status") ? (
+                          <p  className={getStatusClass(row[col.key])}>
                             {row[col.key]}
                           </p>
                         ) : (
@@ -257,8 +262,8 @@ const LicensersTable = <T extends object>({
 
                   <td className="p-4 border-b-8 border-y-white bg-[#F7FBFE] rounded-lg">
                     <div className="flex justify-center gap-2">
-                      <Button variant="tertiary" className="rounded-lg w-20 h-8 border-[#585953]">
-                        <p className="text-[#585953] text-xs font-medium  px-1"> {getButtonName ? getButtonName(row) : "Default"}</p>
+                      <Button variant="tertiary" className="rounded-lg  h-8 border-[#585953]">
+                        <p onClick={()=>handleView(row._id )}  className="text-[#585953] text-xs font-medium  px-1">View</p>
                       </Button>
                     </div>
                   </td>
@@ -266,13 +271,16 @@ const LicensersTable = <T extends object>({
               ))
             ) : (
               <tr>
-                <td
-                  colSpan={columns.length + 2}
-                  className="text-center py-4 text-gray-500"
-                >
-                  No results found.
-                </td>
-              </tr>
+              <td
+                colSpan={columns?.length + 2}
+                className="text-center py-4 text-gray-500"
+              >
+                <div className="flex justify-center flex-col items-center">
+                  <img width={70} src={No_Data_found} alt="No Data Found" />
+                  <p className="font-bold text-red-700">No Records Found!</p>
+                </div>
+              </td>
+            </tr>
             )}
           </tbody>
         </table>

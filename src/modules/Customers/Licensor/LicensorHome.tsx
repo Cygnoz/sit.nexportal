@@ -60,8 +60,7 @@ const LicensorHome = () => {
                 endDate: license.endDate
                 ? new Date(license.endDate).toLocaleDateString("en-GB")
                 : "N/A",
-                licenserId:license.customerId,
-                licensorStatus:'Active'
+                licenserId:license.customerId
                
               })) || [];
              setAllLicenser(transformLicense)
@@ -97,7 +96,7 @@ const LicensorHome = () => {
           { key: "licensorStatus", label: "Status" },
          ];
       
-
+ 
   return (
     <>
     <div className="space-y-3">
@@ -151,14 +150,6 @@ const LicensorHome = () => {
                       { label: "Enterprise", icon: <CalenderDays size={14} color="#4B5C79"/> }
                     ]
                   },
-                  {
-                    sortHead: "Plan",
-                    sortList: [
-                      { label: "All", icon: <UserIcon size={14} color="#4B5C79"/> },
-                      { label: "Monthly", icon: <RegionIcon size={14} color="#4B5C79"/> },
-                      { label: "Yearly", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-                    ]
-                  }
           ]
         }}
         actionList={[

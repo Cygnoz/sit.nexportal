@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 //import CalenderDays from "../../../assets/icons/CalenderDays";
 //import RegionIcon from "../../../assets/icons/RegionIcon";
 import { useNavigate, useParams } from "react-router-dom";
@@ -26,6 +26,12 @@ const AreaView = ({}: // status,
 //areaCode,region
 Props) => {
   const {request:deleteArea}=useApi('delete',3003)
+  const topRef = useRef<HTMLDivElement>(null);
+    
+      useEffect(() => {
+        // Scroll to the top of the referenced element
+        topRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, []);
   const { id } = useParams();
   const navigate=useNavigate()
   const {request:getArea}=useApi('get',3003)
@@ -88,7 +94,7 @@ Props) => {
 
   return (
     <>
-    <div>
+    <div ref={topRef}>
       <div className="flex items-center text-[16px] my-2 space-x-2">
         <p onClick={()=>navigate('/areas')}  className="font-bold cursor-pointer  text-[#820000] ">Aria</p>
         <ChevronRight color="#4B5C79" size={18} />
@@ -191,9 +197,9 @@ Props) => {
         ))}
       </div>
 
-      {activeTab === "Team Overview" && <TeamOverview />}
+      {activeTab === "Team Overview" && <TeamOverview id={id}/>}
 
-      {activeTab === "Lead and License Data" && <LeadAndLisence />}
+      {activeTab === "Lead and License Data" && <LeadAndLisence id={id}/>}
 
       {activeTab === "Recend Activity Feed" && <ResendActivity />}
     </div>

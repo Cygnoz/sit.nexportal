@@ -1,7 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-
 import CalenderRound from "../../../../assets/icons/CalenderRound";
-
 import ChevronRight from "../../../../assets/icons/ChevronRight";
 import EditIcon from "../../../../assets/icons/EditIcon";
 import EmailIcon from "../../../../assets/icons/EmailIcon";

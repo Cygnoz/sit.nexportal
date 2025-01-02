@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Bar,
   BarChart,
@@ -14,25 +14,12 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import profileImage from "../../../assets/image/AvatarImg.png";
 // import person from "../../../assets/image/Ellipse 14 (3).png";
+import { useNavigate } from "react-router-dom";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import SearchBar from "../../../components/ui/SearchBar";
 import Table from "../../../components/ui/Table";
-import useApi from "../../../Hooks/useApi";
-import { endPoints } from "../../../services/apiEndpoints";
-import { useParams } from "react-router-dom";
-import Modal from "../../../components/modal/Modal";
-import AMForm from "../../SalesTeams/AreaManager/AMForm";
-// import { RegionData } from "../../../Interfaces/Region";
-// import SearchBar from "../../../components/ui/SearchBar";
 
-// interface AreaData {
-//   image: string;
-//   name: string;
-//   state: string;
-//   mail: string;
-//   phone: string;
-// }
 interface TeamData {
   employeeID: string;
   bdaName: string;
@@ -41,64 +28,18 @@ interface TeamData {
   dateOfJoining: string;
 }
 
-type Props = {};
+type Props = {
+  teamData?:any
+  handleModalToggle:(editRegion:boolean, addArea:boolean,deleteRegion:boolean,editAm:boolean)=>void
+  setData?:any
+};
 // Data for HomeCards
 
-const RegionTeamView = ({ }: Props) => {
+const RegionTeamView = ({teamData,handleModalToggle,setData}: Props) => {
   const [searchValue, setSearchValue] = useState<string>("");
-  const [teamData, setTeamData] = useState<any>({})
-  const { request: getTeam } = useApi('get', 3003)
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editId, setEditId] = useState('')
-
-  // const {totalCounts}=useRegularApi()
-
-
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
-  };
-
-  const { id } = useParams();
-
-
-  const getAllTeam = async () => {
-    try {
-      const { response, error } = await getTeam(`${endPoints.GET_REGIONS}/${id}/details`);
-
-      if (response && !error) {
-        console.log(response.data);
-
-        const { bdas = [], areaManagers = [], ...restData } = response?.data || {};
-
-        const transformedBdas = bdas.map((team: any) => ({
-          ...team,
-          dateOfJoining: team.user?.dateOfJoining
-            ? new Date(team.user?.dateOfJoining).toLocaleDateString("en-GB")
-            : "N/A",
-          phoneNo: team?.user?.PhoneNo,
-          userName: team?.user?.userName,
-          userImage: team?.user?.userImage,
-          areaName: team?.area?.areaName,
-          employeeId: team?.user?.employeeId,
-        }));
-
-        const transformedData = { transformedBdas, areaManagers, ...restData };
-        console.log(transformedData);
-        setTeamData(transformedData);
-      } else {
-        console.log(error?.response?.data?.message || "Unknown error occurred");
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  useEffect(() => {
-    getAllTeam();
-  }, []);
-
-  console.log(teamData);
-
+ 
+ 
+  const navigate=useNavigate()
 
 
   const homeCardData = [
@@ -135,6 +76,7 @@ const RegionTeamView = ({ }: Props) => {
   ];
 
 
+ 
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
     { key: "employeeId", label: "Employee ID" },
@@ -144,6 +86,8 @@ const RegionTeamView = ({ }: Props) => {
     { key: "dateOfJoining", label: "Date Of Joining" },
   ];
 
+  
+  
 
   // Chart Data
   const ChartData = [
@@ -215,7 +159,8 @@ const RegionTeamView = ({ }: Props) => {
   };
 
   return (
-    <div>
+  
+    <>
 
       <div className="bg-white p-3 mt-5 rounded-lg w-full">
         {/* HomeCards Section */}
@@ -271,7 +216,10 @@ const RegionTeamView = ({ }: Props) => {
                       <UserIcon color="white" size={22} />
                     </p>
                   }
-                  <div onClick={() => setEditId(card?._id)} className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB] cursor-pointer">
+                  <div onClick={() =>{
+                    handleModalToggle(false,false,false,true)
+                    setData((prev:any)=>({...prev,amEditId:card._id}))
+                  } } className="bg-[#FFFFFF] w-6 h-6 rounded-lg p-1 border border-[#E7E8EB] cursor-pointer">
                     <EditIcon color="#C4A25D" size={14} />
                   </div>
 
@@ -292,6 +240,7 @@ const RegionTeamView = ({ }: Props) => {
                   variant="tertiary"
                   className="font-medium text-xs"
                   size="sm"
+                  onClick={()=>navigate(`/area-manager/${card._id}`)}
                 >
                   View Details
                 </Button>
@@ -459,11 +408,7 @@ const RegionTeamView = ({ }: Props) => {
           </div>
         </div>
       </div>
-      <Modal className="" open={isModalOpen} onClose={handleModalToggle}>
-        <AMForm editId={editId} onClose={handleModalToggle} />
-      </Modal>
-
-    </div>
+   </>
   );
 };
 

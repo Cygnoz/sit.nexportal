@@ -1,7 +1,7 @@
 import LeadsCardIcon from "../../../../assets/icons/LeadsCardIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
 // import Button from "../../../components/ui/Button";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../../../Hooks/useApi";
 import AwardIcon from "../../../../assets/icons/AwardIcon";
@@ -51,6 +51,12 @@ interface Licencer {
 type Props = {}
 
 const BDAView = ({}: Props) => {
+  const topRef = useRef<HTMLDivElement>(null);
+    
+      useEffect(() => {
+        // Scroll to the top of the referenced element
+        topRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, []);
   const navigate=useNavigate()
   const {id}=useParams()
   const {request:getBDA}=useApi('get',3002);
@@ -83,6 +89,9 @@ const BDAView = ({}: Props) => {
     }));
     getOneBDA();
   };
+  const handleView=(id:any)=>{
+    console.log(id);
+   }
 
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
@@ -168,7 +177,7 @@ const BDAView = ({}: Props) => {
 
   return (
     <>
-    <div>
+    <div ref={topRef}>
        <div className="flex items-center text-[16px] my-2 space-x-2">
        <p onClick={()=>navigate('/bda')} className="font-bold cursor-pointer text-[#820000] ">BDA</p>
         <ChevronRight color="#4B5C79" size={18}/>
@@ -345,11 +354,16 @@ const BDAView = ({}: Props) => {
 
         {/* Licenser Card */}
         <div>
-        <LicensersTable<Licencer> data={LicencerData} columns={licenserColumns} headerContents={{
-          title:'Licensers handled by BDA',
-          search:{placeholder:'Search License by Name or Holder Name'},
-        }}
-         />
+        <LicensersTable<Licencer>
+          data={LicencerData}
+          columns={licenserColumns}
+          headerContents={{
+            title: 'Licensers',
+            search: { placeholder: 'Search License by Name or Holder Name' },
+          }}
+          handleView={handleView}
+        />
+        
       </div>
 
 

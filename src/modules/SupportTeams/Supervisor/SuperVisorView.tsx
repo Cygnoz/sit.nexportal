@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
@@ -41,6 +41,12 @@ interface SupervisorData {
 type Props = {};
 
 const SuperVisorView = ({}: Props) => {
+  const topRef = useRef<HTMLDivElement>(null);
+    
+      useEffect(() => {
+        // Scroll to the top of the referenced element
+        topRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, []);
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
     editSV: false,
@@ -232,7 +238,7 @@ const SuperVisorView = ({}: Props) => {
 
   return (
     <>
-      <div>
+      <div ref={topRef}>
         <div className="flex items-center text-[16px] my-2 space-x-2">
           <p onClick={()=>navigate('/supervisor')}  className="font-bold cursor-pointer  text-[#820000] ">SuperVisor</p>
           <ChevronRight color="#4B5C79" size={18} />
