@@ -258,7 +258,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
           </div>
           {leadData?.leadStatus === "Won" && (
             <div
-              className="rounded-lg cursor-pointer  w-80 bg-[#820000] h-12 py-3 px-3 mb-4"
+              className="rounded-lg cursor-pointer w-full bg-[#820000] h-12 py-3 px-3 mb-4"
               onClick={covertModalToggle}
             >
               <p className="text-center text-[#FEFDF9] text-base font-medium">
