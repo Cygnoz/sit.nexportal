@@ -135,7 +135,6 @@ function WCommissionForm({ onClose , editId }: Props) {
                 placeholder="Enter Percentage"
                 error={errors.commissionPercentage?.message}
                 {...register("commissionPercentage")}
-
               />
               <Input
                 required

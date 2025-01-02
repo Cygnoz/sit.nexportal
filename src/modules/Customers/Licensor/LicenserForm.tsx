@@ -48,7 +48,7 @@ function LicenserForm({ onClose ,editId}: Props) {
       country: { label: string; value: string }[];
       state: { label: string; value: string }[]
 
-    }>({ regions: [], areas: [],bdas:[],state: [] ,country:[]});
+    }>({ regions:[], areas: [],bdas:[],state:[] ,country:[]});
     
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
