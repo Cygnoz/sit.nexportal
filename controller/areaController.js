@@ -276,7 +276,7 @@ exports.getAreaDetails = async (req, res) => {
       getBdaDetails(id), // Call the new function to fetch BDA details
       Promise.all([
         Bda.countDocuments({ area: id }),
-        Leads.countDocuments({ areaId: id}),
+        Leads.countDocuments({ areaId: id, customerStatus: "Lead"}),
         Leads.countDocuments({ areaId: id, customerStatus: "Licenser" }),
         Leads.countDocuments({ areaId: id, customerStatus: "Licenser", licensorStatus: "Active" }),
       ]),

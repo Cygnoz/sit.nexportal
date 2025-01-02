@@ -416,6 +416,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // Trial
+      { action: "Add Trial", note: "Add Trial" },
+      { action: "View Trial", note: "View Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Delete Trial", note: "Delete Trial" },
+
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
       { action: "View Licenser", note: "View Licenser" },
@@ -427,6 +433,13 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+       // Praise
+       { action: "Add Praise", note: "Add Praise" },
+       { action: "View Praise", note: "View Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+ 
     ],
   },
   {
@@ -495,6 +508,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // Trial
+      { action: "Add Trial", note: "Add Trial" },
+      { action: "View Trial", note: "View Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Delete Trial", note: "Delete Trial" },
+
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
       { action: "View Licenser", note: "View Licenser" },
@@ -506,6 +525,13 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+       // Praise
+       { action: "Add Praise", note: "Add Praise" },
+       { action: "View Praise", note: "View Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+ 
     ],
   },
   {
@@ -574,6 +600,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // Trial
+      { action: "Add Trial", note: "Add Trial" },
+      { action: "View Trial", note: "View Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Delete Trial", note: "Delete Trial" },
+
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
       { action: "View Licenser", note: "View Licenser" },
@@ -585,6 +617,13 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+       // Praise
+       { action: "Add Praise", note: "Add Praise" },
+       { action: "View Praise", note: "View Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+ 
     ],
   },
   {
@@ -653,6 +692,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // Trial
+      { action: "Add Trial", note: "Add Trial" },
+      { action: "View Trial", note: "View Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Delete Trial", note: "Delete Trial" },
+
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
       { action: "View Licenser", note: "View Licenser" },
@@ -664,10 +709,17 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+       // Praise
+       { action: "Add Praise", note: "Add Praise" },
+       { action: "View Praise", note: "View Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+ 
     ],
   },
   {
-    roleName: 'BDAs',
+    roleName: 'BDA',
     permissions: [
       // User
       { action: "Add User", note: "Add User" },
@@ -732,6 +784,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // Trial
+      { action: "Add Trial", note: "Add Trial" },
+      { action: "View Trial", note: "View Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Delete Trial", note: "Delete Trial" },
+
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
       { action: "View Licenser", note: "View Licenser" },
@@ -743,6 +801,13 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+       // Praise
+       { action: "Add Praise", note: "Add Praise" },
+       { action: "View Praise", note: "View Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+ 
     ],
   },
   {
@@ -811,6 +876,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // Trial
+      { action: "Add Trial", note: "Add Trial" },
+      { action: "View Trial", note: "View Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Delete Trial", note: "Delete Trial" },
+
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
       { action: "View Licenser", note: "View Licenser" },
@@ -822,6 +893,13 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+       // Praise
+       { action: "Add Praise", note: "Add Praise" },
+       { action: "View Praise", note: "View Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+ 
     ],
   },
   {
@@ -890,6 +968,12 @@ const roles = [
       { action: "Edit Lead", note: "Edit Lead" },
       { action: "Delete Lead", note: "Delete Lead" },
 
+      // Trial
+      { action: "Add Trial", note: "Add Trial" },
+      { action: "View Trial", note: "View Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Delete Trial", note: "Delete Trial" },
+
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
       { action: "View Licenser", note: "View Licenser" },
@@ -901,6 +985,13 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+
+       // Praise
+       { action: "Add Praise", note: "Add Praise" },
+       { action: "View Praise", note: "View Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+       { action: "Edit Praise", note: "Edit Praise" },
+ 
     ],
   }
 ];
@@ -922,7 +1013,7 @@ exports.getCountriesData = (req, res) => {
           },
           {
             name: "Saudi Arabia",
-            states: ["Asir","Al Bahah", "Al Jawf", "Al Madinah", "Al-Qassim", "Eastern Province", "Hail", "Jazan", "Makkah","Medina", "Najran", "Northern Borders", "Riyadh", "Tabuk"],
+            states: ["Asir","Al Bahah", "Al Jawf", "Al-Qassim", "Eastern Province", "Hail", "Jazan", "Makkah","Medina", "Najran", "Northern Borders", "Riyadh", "Tabuk"],
             // phoneNumberCode: "+966",
             // flag:"https://flagicons.lipis.dev/flags/1x1/sa.svg",
             // phoneNumberLimit:9,
