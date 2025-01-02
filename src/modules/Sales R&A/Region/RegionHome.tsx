@@ -71,8 +71,8 @@ const RegionHome = () => {
   const homeCardData = [
     {
       icon: <RegionIcon size={24} />,
-      number: totalCounts?.totalUsers,
-      title: "Total Users",
+      number: totalCounts?.totalRegion,
+      title: "Total Region",
       iconFrameColor: "#F9A51A",
       iconFrameBorderColor: "#FFF2DDCC",
     },

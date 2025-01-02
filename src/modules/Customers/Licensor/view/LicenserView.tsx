@@ -148,8 +148,14 @@ function LicenserView({ }: Props) {
   const licenser: { key: any; label: string }[] = [
     { key: licenseData?.firstName, label: "Licenser Name" },
     { key: licenseData?.phone, label: "Phone" },
-    { key: licenseData?.startDate, label: "Starting Date" },
-    { key: licenseData?.endDate, label: "Ending Date" },
+    { 
+      key: licenseData?.startDate ? new Date(licenseData.startDate).toLocaleDateString('en-GB') : null, 
+      label: "Starting Date" 
+  },
+  { 
+      key: licenseData?.endDate ? new Date(licenseData.endDate).toLocaleDateString('en-GB') : null, 
+      label: "Ending Date" 
+  },
     { key: licenseData?.bdaDetails?.bdaName , label: "BDA" },
     { key: licenseData?.regionDetails?.regionName, label: "Region" },
     { key: licenseData?.areaDetails?.areaName, label: "Area" },
@@ -198,7 +204,13 @@ function LicenserView({ }: Props) {
                 <p>License Expiry Alert</p>
                 <p>license for <u> Plan 2 </u>  will expire on</p>
               </div>
-              <p className="text-[#E04F52] text-[16px] font-semibold">25 Nov 24</p>
+              <p className="text-[#E04F52] text-[16px] font-semibold">
+    {licenseData?.endDate ? new Date(licenseData.endDate).toLocaleDateString('en-GB') : null}
+</p>
+<p className="text-[#4B5C79] text-[14px] font-normal">
+    {licenseData?.endDate ? `${Math.ceil((new Date(licenseData.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left` : 'No end date available'}
+</p>
+
             </div>
           </div>
           <RecentActivityView />
@@ -272,7 +284,7 @@ function LicenserView({ }: Props) {
               </div>
             </div>
             <div className="h-[65px] py-3 bg-white rounded-b-lg">
-              <div className="ms-44 space-x-10 flex">
+              <div className="ms-28 space-x-6 flex">
                 {licenser.map((data) => (
                   <div className="text-[12px]">
                     <p className="text-[#8F99A9] ">{data.label}</p>
@@ -289,7 +301,7 @@ function LicenserView({ }: Props) {
      
     </div>
      {/* Modal controlled by state */}
-     <Modal open={isModalOpen.viewLicenser} onClose={() => handleModalToggle()} className="w-[35%]">
+     <Modal open={isModalOpen.viewLicenser} onClose={() => handleModalToggle()} className="w-[45%]">
      <LicenserViewForm onClose={() => handleModalToggle()} />
    </Modal>
    <Modal open={isModalOpen.editLicenser} onClose={() => handleModalToggle()} className="w-[60%]">
