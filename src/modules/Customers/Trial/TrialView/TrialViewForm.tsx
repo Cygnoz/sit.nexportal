@@ -19,8 +19,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
           <div className="px-2 ">
             <h1 className="font-bold text-sm">Trial Info</h1>
             <p className="text-xs mt-2 font-normal text-[#8F99A9]">
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore
-              quisquam pos
+            A true test is not without challenges.
             </p>
           </div>
           <button
