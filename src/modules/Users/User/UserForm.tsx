@@ -250,14 +250,14 @@ const editValidationSchema = Yup.object({
                 <>
                   <InputPasswordEye
                     label={editId?"New Password":"Password"}
-                    required
+                    required={editId?false:true}
                     placeholder="Enter your password"
                     error={errors.password?.message}
                     {...register("password")}
                   />
                   <InputPasswordEye
                     label="Confirm Password"
-                    required
+                    required={editId?false:true}
                     placeholder="Confirm your password"
                     error={errors.confirmPassword?.message}
                     {...register("confirmPassword")}

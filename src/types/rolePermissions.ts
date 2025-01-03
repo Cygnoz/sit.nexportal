@@ -42,7 +42,7 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
     "Tickets": TicketCheck,
     "User": UserIcon,
     "User Log": UserIcon,
-    "Work Commission":UserIcon,
+    "Worker Commission":UserIcon,
     "Prise":Trophy,
 
   };
@@ -62,7 +62,7 @@ const sidebarRoutes: { [key: string]: string } = {
     "Tickets": "/ticket",
     "User": "/users",
     "User Log": "/user-log",
-    "Work Commission":'/worker-commission',
+    "Worker Commission":'/worker-commission',
     "Prise":'/prises',
     
     
@@ -84,7 +84,7 @@ const rolePermissions: RolePermissions = {
     "Tickets",
     "User",
     "User Log",
-    "Work Commission",
+    "Worker Commission",
     "Prise",
   ],
   'Sales Admin': [
@@ -96,7 +96,7 @@ const rolePermissions: RolePermissions = {
     "Lead",
     "Trial",
     "Licenser",
-    "Work Commission",
+    "Worker Commission",
     "Prise",
   ],
   'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets","Prise"],

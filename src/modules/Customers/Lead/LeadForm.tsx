@@ -161,7 +161,11 @@ const salutation = [
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredBDA:any = allBDA?.map((bda: any) => ({
+    console.log("dds",allBDA);
+    const filteredBDA = allBDA?.filter(
+      (bda: any) => bda.area?._id === watch("areaId")
+    );
+    const transformedBda:any = filteredBDA?.map((bda: any) => ({
       value: String(bda?._id),
       label: bda?.bdaName,
     }));
@@ -169,9 +173,9 @@ const salutation = [
     // Update the state without using previous `data` state
     setData((prevData:any) => ({
       ...prevData,
-      bdas: filteredBDA,
+      bdas: transformedBda,
     }));
-  }, [allBDA]);
+  }, [allBDA,watch("areaId")]);
 
   
    
@@ -337,7 +341,7 @@ const salutation = [
             <Select
               required
               label="Assign BDA"
-              placeholder="Select BDA"
+              placeholder={data.bdas.length==0?'Select Area':"Select BDA"}
               error={errors.bdaId?.message}
               options={data.bdas}
               {...register("bdaId")}

@@ -30,6 +30,8 @@ const PraiseHome = ({ }: Props) => {
     try {
       const { response, error } = await getAllPraise(url)
       if (response && !error) {
+        console.log("prises",response.data.praises);
+        
         setAllPraise(response.data.praises.reverse())
 
       } else {
@@ -166,7 +168,7 @@ const PraiseHome = ({ }: Props) => {
                 } rounded-lg justify-between w-full h-52`}
             >
                 <div className="flex justify-between">
-                    <div className="bg-[#F3F3F3] rounded-2xl w-72 h-12 p-3 ms-4 mt-4 flex gap-2">
+                    <div className="bg-[#F3F3F3] rounded-2xl w-fit h-12 p-3 ms-4 mt-4 flex gap-2">
                         <div className="bg-[#EDE7FB] rounded-full w-8 h-8 -mt-1">
                             <div className="p-[6px] ms-[2px]">
                                 {achievements.find((achievement) => achievement.name === praise.achievement)?.icon || ''}
@@ -179,15 +181,16 @@ const PraiseHome = ({ }: Props) => {
                         </div>
                     </div>
                     <div className="">
-                        <img className="w-[490px] h-[180px] -mt-36 -rotate-90" src={comfetti} alt="Confetti" />
+                        <img className="w-full h-48 -rotate-90" src={comfetti} alt="Confetti" />
+                       
                     </div>
-                    <div className="p-5">
+                    <div className="p-8">
                         <p className="text-[#000000] text-sm font-normal my-1">{praise.achievement}</p>
                         <p className="text-[#000000] text-sm font-semibold mb-1">{praise.userDetails[0]?.userName}</p>
                         <p className="text-[#000000] text-sm font-normal mb-1">{praise.notes}</p>
                     </div>
                 </div>
-                <div className="flex justify-between px-5">
+                <div className="flex justify-between px-8 -mt-4">
                     <p className="text-[#000000] text-sm font-normal">
                         {praise.openingDate
                             ? new Date(praise?.openingDate).toLocaleDateString()

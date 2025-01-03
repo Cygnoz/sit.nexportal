@@ -63,33 +63,48 @@ function UserLogHome({}: Props) {
   };
   
   const filteredLogs = useMemo(() => {
-   
     return allUserLog.filter((log) => {
       // Convert the log date (DD/MM/YY) to a Date object
       const logDateParts:any = log.date.split("/"); // Split the date into [DD, MM, YY]
-      const filteresDate:any=`20${logDateParts[2]}`
-      const logDate:any = new Date(filteresDate, logDateParts[1] - 1, logDateParts[0]); // Convert to YYYY-MM-DD format
+      const filteredYear:any = `20${logDateParts[2]}`; // Ensure full year format
+      const logDate = new Date(filteredYear, logDateParts[1] - 1, logDateParts[0]); // Convert to YYYY-MM-DD format
   
       // Convert starting and ending dates to Date objects for comparison
       const startingDate = sortMethods.startingDate
-        ? new Date(sortMethods.startingDate) // Assuming sortMethods.startingDate is in 'YYYY-MM-DD' format
+        ? new Date(sortMethods.startingDate)
         : null;
       const endingDate = sortMethods.endingDate
-        ? new Date(sortMethods.endingDate) // Assuming sortMethods.endingDate is in 'YYYY-MM-DD' format
+        ? new Date(sortMethods.endingDate)
         : null;
   
-        
-      // Check if the log date is within the range of starting and ending dates
-      const isStartDateValid = startingDate ? startingDate <= logDate : true;
-      const isEndDateValid = endingDate ? endingDate >= logDate : true;
+      let isDateValid = true;
   
+      // Handle date comparison
+      if (startingDate && endingDate) {
+        if (startingDate.getTime() === endingDate.getTime()) {
+          // Match logs exactly on the given date
+          isDateValid = logDate.toDateString() === startingDate.toDateString();
+        } else {
+          // Match logs within the range
+          isDateValid = startingDate <= logDate && endingDate >= logDate;
+        }
+      } else if (startingDate) {
+        isDateValid = logDate >= startingDate;
+      } else if (endingDate) {
+        isDateValid = logDate <= endingDate;
+      }
+  
+      // Filter by user, screen, and action
       const isUserValid = sortMethods.user ? log.userId?.role === sortMethods.user : true;
       const isScreenValid = sortMethods.screen ? log.screen === sortMethods.screen : true;
       const isActionValid = sortMethods.action ? log.action === sortMethods.action : true;
   
-      return isStartDateValid && isEndDateValid && isUserValid && isScreenValid && isActionValid;
+      return isDateValid && isUserValid && isScreenValid && isActionValid;
     });
   }, [allUserLog, sortMethods]);
+  
+  
+  
   
 
   
@@ -206,7 +221,7 @@ function UserLogHome({}: Props) {
   return (
     <div className="text-[#303F58] space-y-4">
     <h1 className="text-[#303F58] text-xl font-bold">User Log</h1>
-    <p className='text-xs'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque natus iusto maiores ducimus optio</p>
+    <p className='text-xs'>Efficiently manage and sort UseLog tables with seamless screen compatibility, ensuring a smooth and productive experience across all devices.</p>
     <div className="w-full bg-white rounded-lg p-4">
        <div  className='flex  items-center gap-2'>
        

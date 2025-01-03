@@ -123,9 +123,10 @@ function Login({}: Props) {
                       className="focus:outline-none mt-1"
                     >
                       {showPassword ? (
-                       <Eye color='#4B5C79'/>
+                        <EyeOffIcon color='#4B5C79'/>
                       ) : (
-                       <EyeOffIcon color='#4B5C79'/>
+                        <Eye color='#4B5C79'/>
+                      
                       )}
                     </button>
                   </div>

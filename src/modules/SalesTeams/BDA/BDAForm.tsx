@@ -40,6 +40,8 @@ const baseSchema = {
     .transform((value, originalValue) =>
       originalValue === "" ?null : value
     ),
+    region:Yup.string().required("Region is required"),
+    area:Yup.string().required("Area is required")  
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -131,8 +133,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
 
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
-    } else if (!editId&&tab === "Company Information") {
-      fieldsToValidate = ["email", "password", "confirmPassword"];
+    } else if (tab === "Company Information") {
+      fieldsToValidate = [!editId&&"email", !editId&&"password", !editId&&"confirmPassword","region","area"];
     }
 
     const isValid = fieldsToValidate.length
@@ -534,6 +536,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   }}
                 />
                 <Select
+                  required
                   label="Select Region"
                   placeholder="Choose Region"
                   value={watch("region")}
@@ -542,6 +545,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   {...register("region")}
                 />
                 <Select
+                  required
                   label="Select Area"
                   placeholder={data.areas.length==0?'Select Region':"Select Area"}
                   value={watch('area')}

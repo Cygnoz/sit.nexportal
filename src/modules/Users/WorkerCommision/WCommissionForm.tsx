@@ -105,8 +105,8 @@ function WCommissionForm({ onClose , editId }: Props) {
           <h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Commission Profile</h3>
           <p className="text-[11px] text-[#8F99A9] mt-1">
             {editId
-              ? "Edit the details of the existing region."
-              : "Fill in the details to create a new region."}
+              ? "Edit the details of the existing Commission Profile"
+              : "Fill in the details to create a Commission Profile"}
           </p>
         </div>
         <p onClick={onClose} className="text-3xl cursor-pointer">
@@ -127,25 +127,20 @@ function WCommissionForm({ onClose , editId }: Props) {
                 {...register("profileName")}
                 // onChange={() => handleInputChange("profileName")}
               />
-             <Input
-  required
-  label="Commission Percentage"
-  type="number"
-  placeholder="Enter Percentage"
-  step="0.01" // Allows decimal values with two decimal places
-  min="0" // Optional: Set a minimum value
-  max="100" // Optional: Set a maximum value
-  error={errors.commissionPercentage?.message}
-  {...register("commissionPercentage", {
-    valueAsNumber: true, // Ensures the value is parsed as a number
-    validate: value => value >= 0 && value <= 100 || "Value must be between 0 and 100", // Validation example
-  })}
-/>
-
+              <Input
+                required
+                label="Commission Percentage"
+                type="number"
+                step="any"
+                placeholder="Enter Percentage"
+                error={errors.commissionPercentage?.message}
+                {...register("commissionPercentage")}
+              />
               <Input
                 required
                 label="Threshold Amount"
                 type="number"
+                step="any"
                 placeholder="Enter Amount"
                 error={errors.thresholdAmount?.message}
                 {...register("thresholdAmount")}

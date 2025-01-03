@@ -7,7 +7,7 @@ const teamCategories = {
     "SUPPORT TEAM": ["Supervisor", "Support Agent"],
     CUSTOMERS: ["Lead", "Trial", "Licenser"],
     TICKETS: ["Tickets"],
-    USERS:["User","User Log","Work Commission"],
+    USERS:["User","User Log","Worker Commission"],
     AWARDS:['Prise']
 };
 

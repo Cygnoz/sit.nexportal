@@ -38,6 +38,7 @@ const baseSchema = {
   age: Yup.number()
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
+    region:Yup.string().required("Region is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -133,11 +134,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
     } else if (!editId&&tab === "Company Information") {
-      fieldsToValidate = [
-        "email",
-         "password",
-         "confirmPassword",
-      ];
+      fieldsToValidate = [!editId&&"email", !editId&&"password", !editId&&"confirmPassword","region"];
     }
 
     const iSAalid = fieldsToValidate.length
@@ -531,6 +528,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                   }}
                 />
                 <Select
+                  required
                   label="Select Region"
                   placeholder="Choose Region"
                   value={watch("region")}
