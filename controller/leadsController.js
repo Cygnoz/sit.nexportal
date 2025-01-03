@@ -2,12 +2,14 @@ const Leads = require("../database/model/leads")
 const Region = require('../database/model/region')
 const Area = require('../database/model/area')
 const mongoose = require('mongoose');
-const Bda = require('../database/model/bda')
 const User = require("../database/model/user");
 const axios = require('axios');
 const nodemailer = require('nodemailer');
 const moment = require("moment"); 
 const Ticket = require("../database/model/ticket");
+const AreaManager = require("../database/model/areaManager");
+const RegionManager = require("../database/model/regionManager");
+const Bda = require('../database/model/bda')
 
 
 
@@ -37,54 +39,65 @@ const dataExist = async (regionId, areaId, bdaId) => {
 
 
 
-
 exports.addLead = async (req, res , next ) => {
   try {
     const { id: userId, userName } = req.user;
-    
-    
+   
+   
     const cleanedData = cleanLeadData(req.body);
-    
+   
     const { firstName, email, phone, regionId, areaId , bdaId } = cleanedData;
-
-
-
-    
-    // // Check if a lead with the same email already exists
-    // const existingLead = await Leads.findOne({ email });
-    // if (existingLead) {
-    //   return res.status(400).json({ message: "A lead with this email already exists" });
-    // }
-
-    // Extract the user field (ObjectId)
-
+ 
+ 
+ 
    // Check for duplicate user details
    const duplicateCheck = await checkDuplicateUser(firstName, email, phone);
    if (duplicateCheck) {
      return res.status(400).json({ message: `Conflict: ${duplicateCheck}` }); // Return a success response with conflict details
    }
-
-
+ 
+ 
     const { regionExists, areaExists , bdaExists } = await dataExist( regionId, areaId , bdaId);
-
+ 
     if (!validateRegionAndArea( regionExists, areaExists, bdaExists ,res )) return;
-
+ 
     if (!validateInputs( cleanedData, regionExists, areaExists, bdaExists ,res)) return;
-  
-
-    // const newLead = await createLead(cleanedData)
-    
+ 
+ 
+    const regionManager = await RegionManager.findOne({ region: regionId });
+    const areaManager = await AreaManager.findOne({ area: areaId });
+ 
+    // If the regionManager or areaManager is not found, return an error
+    if (!regionManager || !areaManager) {
+      return res.status(404).json({
+        message: "Region Manager or Area Manager not found for the provided regionId or areaId."
+      });
+    }
+ 
+   
     // const savedLeads = await createNewLeads(cleanedData, regionId, areaId, bdaId , userId, userName );
-
-    const savedLeads = await createLead(cleanedData, regionId, areaId, bdaId, userId, userName);
-
-
+ 
+ 
+    // Create the new lead data with ObjectId references for regionManager and areaManager
+    const newLeadData = {
+      ...cleanedData,
+      regionManager: regionManager._id, // Store the userName of the regionManager
+      areaManager: areaManager._id,
+      regionId,
+      areaId,
+    };
+   
+ 
+    // Save the new lead
+    const savedLeads = await createLead(newLeadData, regionId, areaId, bdaId, userId, userName);
+ 
+ 
     res.status(201).json({ message: "Lead added successfully", savedLeads });
-
+ 
   // Pass operation details to middleware
   ActivityLog(req, "successfully", savedLeads._id);
   next();
-
+ 
   } catch (error) {
     console.error("Error adding lead:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -134,41 +147,71 @@ exports.getLead = async (req, res) => {
 // Get All Leads without validation
 exports.getAllLeads = async (req, res) => {
   try {
-    // Fetch all leads from the database
-    const leads = await Leads.find({ customerStatus: "Lead" });
+    const userId = req.user.id;
+    console.log(userId);
+    console.log(req.user.userName);
+
+    // Fetch user role
+    const user = await User.findById(userId).select("role");
+    if (!user) {
+      return res.status(404).json({ message: "User not found." });
+    }
+
+    const { role } = user;
+    const query = { customerStatus: "Lead" };
+
+    // Role-based filtering using a mapping function
+    const roleMapping = {
+      "Region Manager": async () => {
+        const regionManager = await RegionManager.findOne({ user:userId }).select("_id");
+        if (regionManager) query.regionManager = regionManager._id;
+      },
+      "Area Manager": async () => {
+        const areaManager = await AreaManager.findOne({ user:userId }).select("_id");
+        if (areaManager) query.areaManager = areaManager._id;
+        console.log(areaManager._id);
+      },
+      "BDA": async () => {
+        const bda = await Bda.findOne({ user:userId }).select("_id");
+        console.log(bda._id);
+        
+        if (bda) query.bdaId = bda._id;
+      },
+    };
+
+    if (roleMapping[role]) {
+      await roleMapping[role]();
+      if (!query.regionManager && !query.areaManager && !query.bdaId) {
+        return res.status(404).json({ message: `${role} not found.` });
+      }
+    } else if (!["Super Admin", "Sales Admin"].includes(role)) {
+      return res.status(403).json({ message: "Unauthorized role." });
+    }
+
+    // Fetch leads with populated fields
+    const leads = await Leads.find(query)
+      .populate({ path: "regionId", select: "_id regionName" })
+      .populate({ path: "areaId", select: "_id areaName" })
+      .populate({
+        path: "bdaId",
+        select: "_id user",
+        populate: { path: "user", select: "userName" },
+      });
 
     // Check if leads exist
-    if (!leads || leads.length === 0) {
+    if (!leads.length) {
       return res.status(404).json({ message: "No leads found." });
     }
 
-    // Enrich data for each lead
-    const enrichedLeads = await Promise.all(
-      leads.map(async (lead) => {
-        const { regionId, areaId, bdaId } = lead;
-
-        // Fetch related details using dataExist
-        const { regionExists, areaExists, bdaExists , bdaName} = await dataExist(regionId, areaId, bdaId);
-
-        return {
-          ...lead.toObject(),
-          regionDetails: regionExists?.[0] || null, // Assuming regionExists is an array
-          areaDetails: areaExists?.[0] || null,    // Assuming areaExists is an array
-          bdaDetails:{
-            bdaId: bdaExists[0]?._id || null,
-            bdaName: bdaName || null,
-          },    // Assuming bdaExists is an array
-        };
-      })
-    );
-
-    // Respond with the enriched leads data
-    res.status(200).json({ leads: enrichedLeads });
+    // Respond with leads
+    res.status(200).json({ leads });
   } catch (error) {
     console.error("Error fetching leads:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
 
 
 
@@ -536,52 +579,142 @@ exports.convertLeadToTrial = async (req, res) => {
 
 // Get All Trials without validation
 
+// exports.getAllTrials = async (req, res) => {
+//   try {
+//     // Fetch all trials
+//     const trials = await Leads.find({ customerStatus: "Trial" });
+ 
+//     if (!trials || trials.length === 0) {
+//       return res.status(404).json({ message: "No trials found." });
+//     }
+ 
+//     // Iterate through trials to check and update trialStatus
+//     const currentDate = moment();
+//     const updatePromises = trials.map(async (trial) => {
+//       const { _id, startDate, endDate, trialStatus } = trial;
+//       const StartDate = moment(startDate, "YYYY-MM-DD");
+//       const EndDate = moment(endDate, "YYYY-MM-DD");
+ 
+//       let calculatedStatus;
+ 
+//       // Preserve "Extended" status explicitly
+//       if (trialStatus === "Extended") {
+//         calculatedStatus = "Extended";
+//       } else {
+//         // Determine the current status based on date range
+//         calculatedStatus =
+//           currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)
+//             ? "In Progress"
+//             : "Expired";
+//       }
+ 
+//       // Update database if status differs
+//       if (trialStatus !== calculatedStatus) {
+//         await Leads.findByIdAndUpdate(
+//           _id,
+//           { trialStatus: calculatedStatus },
+//           { new: true }
+//         );
+//       }
+ 
+//       return {
+//         ...trial.toObject(),
+//         trialStatus: calculatedStatus, // Include updated status for the response
+//       };
+//     });
+ 
+//     // Resolve all updates and prepare enriched response
+//     const enrichedTrials = await Promise.all(updatePromises);
+ 
+//     res.status(200).json({ trials: enrichedTrials });
+//   } catch (error) {
+//     console.error("Error fetching trials:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//   }
+// };
+
+
+
 exports.getAllTrials = async (req, res) => {
   try {
-    // Fetch all trials
-    const trials = await Leads.find({ customerStatus: "Trial" });
- 
-    if (!trials || trials.length === 0) {
-      return res.status(404).json({ message: "No trials found." });
+    const userId = req.user.id;
+
+    // Fetch user role and map query accordingly
+    const user = await User.findById(userId).select("role");
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    const { role } = user;
+    const query = { customerStatus: "Trial" };
+
+    // Role-based query mapping
+    switch (role) {
+      case "Region Manager": {
+        const regionManager = await RegionManager.findOne({ user: userId }).select("_id");
+        if (!regionManager) return res.status(404).json({ message: "Region Manager not found." });
+        query.regionManager = regionManager._id;
+        break;
+      }
+      case "Area Manager": {
+        const areaManager = await AreaManager.findOne({ user: userId }).select("_id");
+        if (!areaManager) return res.status(404).json({ message: "Area Manager not found." });
+        query.areaManager = areaManager._id;
+        break;
+      }
+      case "BDA": {
+        const bda = await Bda.findOne({ user: userId }).select("_id");
+        if (!bda) return res.status(404).json({ message: "BDA not found." });
+        query.bdaId = bda._id;
+        break;
+      }
+      default:
+        if (!["Super Admin", "Sales Admin"].includes(role)) {
+          return res.status(403).json({ message: "Unauthorized role." });
+        }
     }
- 
-    // Iterate through trials to check and update trialStatus
+
+    // Fetch trials with populated fields
+    const trials = await Leads.find(query)
+      .populate({ path: "regionId", select: "_id regionName" })
+      .populate({ path: "areaId", select: "_id areaName" })
+      .populate({
+        path: "bdaId",
+        select: "_id user",
+        populate: { path: "user", select: "userName" },
+      });
+
+    if (!trials.length) return res.status(404).json({ message: "No trials found." });
+
+    // Calculate trial status and update only when needed
     const currentDate = moment();
-    const updatePromises = trials.map(async (trial) => {
+    const enrichedTrials = [];
+
+    for (const trial of trials) {
       const { _id, startDate, endDate, trialStatus } = trial;
       const StartDate = moment(startDate, "YYYY-MM-DD");
       const EndDate = moment(endDate, "YYYY-MM-DD");
- 
-      // Determine the current status
-      const calculatedStatus =
-        currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)
+
+      let calculatedStatus = trialStatus;
+      if (trialStatus !== "Extended") {
+        calculatedStatus = currentDate.isBetween(StartDate, EndDate, undefined, "[]")
           ? "In Progress"
           : "Expired";
- 
-      // Update database if status differs
-      if (trialStatus !== calculatedStatus) {
-        await Leads.findByIdAndUpdate(
-          _id,
-          { trialStatus: calculatedStatus },
-          { new: true }
-        );
       }
- 
-      return {
-        ...trial.toObject(),
-        trialStatus: calculatedStatus, // Include updated status for the response
-      };
-    });
- 
-    // Resolve all updates and prepare enriched response
-    const enrichedTrials = await Promise.all(updatePromises);
- 
+
+      if (trialStatus !== calculatedStatus) {
+        await Leads.findByIdAndUpdate(_id, { trialStatus: calculatedStatus });
+      }
+
+      enrichedTrials.push({ ...trial.toObject(), trialStatus: calculatedStatus });
+    }
+
     res.status(200).json({ trials: enrichedTrials });
   } catch (error) {
     console.error("Error fetching trials:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
 
 exports.getClientDetails = async (req, res) => {
   try {
@@ -987,47 +1120,60 @@ The BillBizz Team`;
 
 
 
-exports.extendTrialDuration = async (req, res) => {
+exports.extendTrialDuration = async (req, res, next) => {
   try {
     const { trialId } = req.params;
     const { duration } = req.body;
-
+ 
     // Validate request body
     if (!duration || isNaN(duration)) {
       return res.status(400).json({ message: "Valid duration is required." });
     }
-
+ 
     // Find the lead by ID
     const lead = await Leads.findById(trialId);
     if (!lead) {
       return res.status(404).json({ message: "Lead not found." });
     }
-
-    // Parse the current endDate from the database in YYYY-MM-DD format
+ 
+    // Parse the current endDate from the database
     const currentEndDate = moment(lead.endDate, "YYYY-MM-DD");
     if (!currentEndDate.isValid()) {
       return res.status(400).json({ message: "Invalid end date in the database." });
     }
-
+ 
     // Calculate the new endDate
     const newEndDate = currentEndDate.add(parseInt(duration, 10), "days");
-
-    // Update the lead
-    lead.endDate = newEndDate.format("YYYY-MM-DD"); // Save in YYYY-MM-DD format
-    lead.trialStatus = "Extended";
-    lead.duration = duration; // Save the duration if needed
-
-    // Save the updated lead
-    await lead.save();
-
-    ActivityLog(req, `Success - Trial duration extended for lead ID ${trialId} by ${duration} days.`);
-    res.status(200).json({
-      message: "Trial duration extended successfully.",
-      lead,
-    });
+ 
+    // Update the lead's details
+    const updatedLead = await Leads.findByIdAndUpdate(
+      trialId,
+      {
+        endDate: newEndDate.format("YYYY-MM-DD"), // Update endDate
+        trialStatus: "Extended", // Set status as Extended
+        duration, // Save the extension duration
+      },
+      { new: true } // Return the updated document
+    );
+ 
+    if (!updatedLead) {
+      return res.status(500).json({ message: "Failed to update trial." });
+    }
+ 
+    // Log the activity
+    ActivityLog(
+      req,`Success - Trial duration extended for lead ID ${trialId} by ${duration} days.`,updatedLead._id
+    );
+ 
+    // Send the response
+    res.status(200).json({ message: "Trial duration extended successfully.", lead: updatedLead, });
+ 
+    next();
   } catch (error) {
     console.error("Error extending trial duration:", error.message || error);
-    ActivityLog(req, "Failed - Error extending trial duration.");
+ 
     res.status(500).json({ message: "Internal server error." });
+    ActivityLog(req, "Failed - Error extending trial duration.");
+    next();
   }
 };

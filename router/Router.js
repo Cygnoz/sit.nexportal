@@ -33,12 +33,11 @@ router.get('/client/:id',leadController.getClientDetails)
 //Trial
 router.put('/trial/:leadId',leadController.convertLeadToTrial)
 
-router.get('/trial',leadController.getAllTrials)
+router.get('/trial',verifyToken,checkPermission('View Trial'),leadController.getAllTrials)
 
 router.put('/trials/:trialId',leadController.convertTrialToLicenser)
 
-router.post("/trial/:trialId", leadController.extendTrialDuration);
-
+router.post("/trial/:trialId",verifyToken,checkPermission('Extend Trial'),leadController.extendTrialDuration, ActivityLogGeneration('Extend Trial'));
 
 //add licenser
 router.post('/licenser',verifyToken,checkPermission('Add Licenser'),licenserController.addLicenser,ActivityLogGeneration('Add Licenser'))
