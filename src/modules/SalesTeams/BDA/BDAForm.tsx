@@ -22,10 +22,11 @@ import { BDAData } from "../../../Interfaces/BDA";
 import { endPoints } from "../../../services/apiEndpoints";
 import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
+import { StaffTabsList } from "../../../components/list/StaffTabsList";
 
 interface BDAProps {
   onClose: () => void; // Prop for handling modal close
-  editId?:string
+  editId?: string;
 }
 
 const baseSchema = {
@@ -37,20 +38,15 @@ const baseSchema = {
   personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
-    .transform((value, originalValue) =>
-      originalValue === "" ?null : value
-    ),
-    region:Yup.string().required("Region is required"),
-    area:Yup.string().required("Area is required")  
+    .transform((value, originalValue) => (originalValue === "" ? null : value)),
+  region: Yup.string().required("Region is required"),
+  area: Yup.string().required("Area is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
   ...baseSchema,
-  email: Yup.string()
-    .required("Email required")
-    .email("Invalid email"),
-  password: Yup.string()
-    .required("Password is required"),
+  email: Yup.string().required("Email required").email("Invalid email"),
+  password: Yup.string().required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
@@ -60,11 +56,11 @@ const editValidationSchema = Yup.object().shape({
   ...baseSchema,
 });
 
-const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
+const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
   const { allAreas, allRegions, allWc, allCountries } = useRegularApi();
   const { request: addBDA } = useApi("post", 3002);
   const { request: editBDA } = useApi("put", 3002);
-  const {request:getBDA}=useApi('get',3002);
+  const { request: getBDA } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -83,16 +79,16 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     clearErrors,
     formState: { errors },
   } = useForm<BDAData>({
-    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
   const onSubmit: SubmitHandler<BDAData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
-    if(submit){
+    if (submit) {
       try {
         const fun = editId ? editBDA : addBDA; // Select the appropriate function based on editId
         let response, error;
-    
+
         if (editId) {
           // Call editBDA if editId exists
           ({ response, error } = await fun(`${endPoints.BDA}/${editId}`, data));
@@ -100,10 +96,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
           // Call addBDA if editId does not exist
           ({ response, error } = await fun(endPoints.BDA, data));
         }
-    
+
         console.log("Response:", response);
         console.log("Error:", error);
-    
+
         if (response && !error) {
           toast.success(response.data.message); // Show success toast
           onClose(); // Close the form/modal
@@ -116,7 +112,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
       }
     }
   };
-  
 
   const tabs = [
     "Personal Information",
@@ -134,7 +129,13 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
     } else if (tab === "Company Information") {
-      fieldsToValidate = [!editId&&"email", !editId&&"password", !editId&&"confirmPassword","region","area"];
+      fieldsToValidate = [
+        !editId && "email",
+        !editId && "password",
+        !editId && "confirmPassword",
+        "region",
+        "area",
+      ];
     }
 
     const isValid = fieldsToValidate.length
@@ -164,7 +165,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
       label: region.regionName,
     }));
     // Update the state without using previous `data` state
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       regions: filteredRegions,
     }));
@@ -181,7 +182,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     }));
 
     // Update areas
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       areas: transformedAreas,
     }));
@@ -195,7 +196,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     }));
 
     // Update wc
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       wc: filteredCommission,
     }));
@@ -209,7 +210,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     }));
 
     // Update country
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       country: filteredCountry,
     }));
@@ -226,13 +227,11 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     }));
 
     // Update areas
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       state: transformedState,
     }));
   }, [watch("country")]);
-
-  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -252,7 +251,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     // Clear the leadImage value
     setValue("userImage", "");
   };
-  
+
   const setFormValues = (data: BDAData) => {
     Object.keys(data).forEach((key) => {
       setValue(key as keyof BDAData, data[key as keyof BDAData]);
@@ -265,38 +264,65 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
       if (response && !error) {
         const BDA = response.data; // Return the fetched data
         console.log("Fetched BDA data:", BDA);
-  
-        const { user,_id, ...bda } = BDA;
-  
-        const transformedBDA = BDA ? {
-          ...bda,
-          dateOfJoining: new Date(BDA.dateOfJoining).toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
-          userName: user?.userName,
-          phoneNo: user?.phoneNo,
-          email: user?.email,
-          userImage: user?.userImage,
-          region: BDA.region?._id,
-          area: BDA.area?._id,
-          commission: BDA.commission?._id
-        } : null;
-  
+
+        const { user, _id, ...bda } = BDA;
+
+        const transformedBDA = BDA
+          ? {
+              ...bda,
+              dateOfJoining: new Date(BDA.dateOfJoining)
+                .toISOString()
+                .split("T")[0], // Format as 'YYYY-MM-DD'
+              userName: user?.userName,
+              phoneNo: user?.phoneNo,
+              email: user?.email,
+              userImage: user?.userImage,
+              region: BDA.region?._id,
+              area: BDA.area?._id,
+              commission: BDA.commission?._id,
+            }
+          : null;
+
         console.log("Transformed BDA data:", transformedBDA);
-  
+
         setFormValues(transformedBDA);
       } else {
         // Handle the error case if needed (for example, log the error)
-        console.error('Error fetching BDA data:', error);
+        console.error("Error fetching BDA data:", error);
       }
     } catch (err) {
-      console.error('Error fetching BDA data:', err);
+      console.error("Error fetching BDA data:", err);
     }
   };
-  
-  
+
   useEffect(() => {
-    getOneBDA()
+    getOneBDA();
   }, [editId]); // Trigger the effect when editId changes
+
+  useEffect(() => {
+    if (errors && Object.keys(errors).length > 0 && activeTab=="ID & Business Card") {
+      // Get the first error field
+      const firstErrorField = Object.keys(errors)[0];
   
+      // Find the tab containing this field
+      const tabIndex:any = StaffTabsList.findIndex((tab) =>
+        tab.validationField.includes(firstErrorField)
+      );
+  
+      // If a matching tab is found, switch to it
+      if (tabIndex >= 0) {
+        setActiveTab(tabs[tabIndex]);
+      }
+     const errorrs:any=errors
+      // Log all errors
+      Object.keys(errorrs).forEach((field) => {
+        console.log(`${field}: ${errorrs[field]?.message}`);
+      });
+  
+      // Show the first error message in a toast
+      toast.error(errorrs[firstErrorField]?.message);
+    }
+  }, [errors]);
 
   return (
     <div className="p-5 bg-white rounded shadow-md">
@@ -304,10 +330,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-lg font-bold text-deepStateBlue ">
-            {editId?'Edit':'Create'} BDA
+            {editId ? "Edit" : "Create"} BDA
           </h1>
           <p className="text-ashGray text-sm">
-          {`Use this form to ${
+            {`Use this form to ${
               editId ? "edit an existing BDA" : "add a new BDA"
             } details. Please fill in the required information`}
           </p>
@@ -325,6 +351,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
         {tabs.map((tab, index) => (
           <div
             key={tab}
+            onClick={()=>setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${
               activeTab === tab
                 ? "text-deepStateBlue border-b-2 border-secondary2"
@@ -402,19 +429,15 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}
                 />
-                <div className="flex gap-4 w-full">
-                <Input
-  placeholder="Enter Age"
-  label="Age"
-  type="number"
-  min="0" // Minimum age
-  max="120" // Maximum age
-  step="1" // Restricts input to integers
-  error={errors.age?.message}
-  {...register("age", {
-    valueAsNumber: true, // Parses input as a number
-  })}
-/>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    placeholder="Enter Age"
+                    label="Age"
+                    type="number"
+                    error={errors.age?.message}
+                    {...register("age")}
+                  />
+
                   <Input
                     label="Blood Group"
                     placeholder="Enter Blood Group"
@@ -444,8 +467,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 />
                 <Select
                   label="State"
-                  value={watch('state')}
-                  placeholder={data.state.length==0?"Choose Country":"Select State"}
+                  value={watch("state")}
+                  placeholder={
+                    data.state.length == 0 ? "Choose Country" : "Select State"
+                  }
                   error={errors.state?.message}
                   options={data.state}
                   {...register("state")}
@@ -475,7 +500,11 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   label="Date of Joining"
                   error={errors.dateOfJoining?.message}
                   {...register("dateOfJoining")}
-                  value={watch('dateOfJoining')?watch('dateOfJoining'):new Date().toISOString().split("T")[0]} // Sets current date as default
+                  value={
+                    watch("dateOfJoining")
+                      ? watch("dateOfJoining")
+                      : new Date().toISOString().split("T")[0]
+                  } // Sets current date as default
                 />
               </div>
             </div>
@@ -483,39 +512,40 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
 
           {activeTab === "Company Information" && (
             <div>
-            {!editId&&<>
-              <p className="my-4 text-[#303F58] text-sm font-semibold">
-                {editId?'Edit':'Set'} Login Credential
-              </p>
-              <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
-                <Input
-                  required
-                  type="email"
-                  placeholder="Enter Email"
-                  label="Email"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-            
-               <>
-               <InputPasswordEye
-                    label={editId?"New Password":"Password"}
-                    required
-                    placeholder="Enter your password"
-                    error={errors.password?.message}
-                    {...register("password")}
-                  />
-                  <InputPasswordEye
-                    label="Confirm Password"
-                    required
-                    placeholder="Confirm your password"
-                    error={errors.confirmPassword?.message}
-                    {...register("confirmPassword")}
-                  />
-               </>
-               
-              </div>
-              </>}
+              {!editId && (
+                <>
+                  <p className="my-4 text-[#303F58] text-sm font-semibold">
+                    {editId ? "Edit" : "Set"} Login Credential
+                  </p>
+                  <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
+                    <Input
+                      required
+                      type="email"
+                      placeholder="Enter Email"
+                      label="Email"
+                      error={errors.email?.message}
+                      {...register("email")}
+                    />
+
+                    <>
+                      <InputPasswordEye
+                        label={editId ? "New Password" : "Password"}
+                        required
+                        placeholder="Enter your password"
+                        error={errors.password?.message}
+                        {...register("password")}
+                      />
+                      <InputPasswordEye
+                        label="Confirm Password"
+                        required
+                        placeholder="Confirm your password"
+                        error={errors.confirmPassword?.message}
+                        {...register("confirmPassword")}
+                      />
+                    </>
+                  </div>
+                </>
+              )}
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <Input
@@ -547,8 +577,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 <Select
                   required
                   label="Select Area"
-                  placeholder={data.areas.length==0?'Select Region':"Select Area"}
-                  value={watch('area')}
+                  placeholder={
+                    data.areas.length == 0 ? "Select Region" : "Select Area"
+                  }
+                  value={watch("area")}
                   error={errors.area?.message}
                   options={data.areas}
                   {...register("area")}
@@ -556,7 +588,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 <Select
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
-                  value={watch('commission')}
+                  value={watch("commission")}
                   error={errors.commission?.message}
                   options={data.wc}
                   {...register("commission")}
@@ -653,7 +685,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
             </div>
           )}
 
-{activeTab === "ID & Business Card" && (
+          {activeTab === "ID & Business Card" && (
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                 <p className="text-[#303F58] text-base font-bold">
@@ -701,7 +733,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
             </div>
           )}
         </div>
- 
+
         <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
           {tabs.indexOf(activeTab) > 0 ? (
             <Button

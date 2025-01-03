@@ -23,6 +23,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
 import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
+import { StaffTabsList } from "../../../components/list/StaffTabsList";
 
 
 interface AddAreaManagerProps {
@@ -166,6 +167,8 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
     setSubmit(false);
   };
 
+  
+  
 
   useEffect(() => {
     // Map the regions into the required format for regions data
@@ -286,6 +289,31 @@ label: area.areaName,
   }
 
   useEffect(() => {
+    if (errors && Object.keys(errors).length > 0 && activeTab=="ID & Business Card") {
+      // Get the first error field
+      const firstErrorField = Object.keys(errors)[0];
+  
+      // Find the tab containing this field
+      const tabIndex:any = StaffTabsList.findIndex((tab) =>
+        tab.validationField.includes(firstErrorField)
+      );
+  
+      // If a matching tab is found, switch to it
+      if (tabIndex >= 0) {
+        setActiveTab(tabs[tabIndex]);
+      }
+     const errorrs:any=errors
+      // Log all errors
+      Object.keys(errorrs).forEach((field) => {
+        console.log(`${field}: ${errorrs[field]?.message}`);
+      });
+  
+      // Show the first error message in a toast
+      toast.error(errorrs[firstErrorField]?.message);
+    }
+  }, [errors]);
+
+  useEffect(() => {
        getOneAM()
    }, [editId]); // Trigger the effect when editId changes
 
@@ -317,6 +345,7 @@ label: area.areaName,
         {tabs.map((tab, index) => (
           <div
             key={tab}
+            onClick={()=>setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${
               activeTab === tab
                 ? "text-deepStateBlue border-b-2 border-secondary2"
@@ -392,18 +421,13 @@ label: area.areaName,
                     handleInputChange("phoneNo");
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}/>
-                <div className="flex gap-4 w-full">
+                <div className="grid grid-cols-2 gap-2">
                  <Input
   placeholder="Enter Age"
   label="Age"
   type="number"
-  min="0" // Minimum age
-  max="120" // Maximum age
-  step="1" // Restricts input to integers
   error={errors.age?.message}
-  {...register("age", {
-    valueAsNumber: true, // Parses input as a number
-  })}
+  {...register("age")}
 />
 
                   <Input
@@ -412,7 +436,7 @@ label: area.areaName,
                     error={errors.bloodGroup?.message}
                     {...register("bloodGroup")}
                   />
-                </div>
+              </div>
                 <Input
                   label="Address"
                   placeholder="Street 1"

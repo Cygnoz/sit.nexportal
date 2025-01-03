@@ -23,13 +23,11 @@ import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
-
-
-
+import { StaffTabsList } from "../../../components/list/StaffTabsList";
 
 interface RMProps {
   onClose: () => void;
-  editId?: string
+  editId?: string;
 }
 const baseSchema = {
   userName: Yup.string().required("Full name is required"),
@@ -40,19 +38,14 @@ const baseSchema = {
   personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
-    .transform((value, originalValue) =>
-      originalValue === "" ? null : value
-    ),
-    region:Yup.string().required("Region is required"),
+    .transform((value, originalValue) => (originalValue === "" ? null : value)),
+  region: Yup.string().required("Region is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
   ...baseSchema,
-  email: Yup.string()
-    .required("Email required")
-    .email("Invalid email"),
-  password: Yup.string()
-    .required("Password is required"),
+  email: Yup.string().required("Email required").email("Invalid email"),
+  password: Yup.string().required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
@@ -63,17 +56,18 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
+  
   const { request: addRM } = useApi("post", 3002);
-  const { allRegions, allWc, allCountries } = useRegularApi()
+  const { allRegions, allWc, allCountries } = useRegularApi();
   const { request: editRM } = useApi("put", 3002);
-  const { request: getRM } = useApi('get', 3002);
+  const { request: getRM } = useApi("get", 3002);
 
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     wc: { label: string; value: string }[];
     country: { label: string; value: string }[];
-    state: { label: string; value: string }[]
+    state: { label: string; value: string }[];
   }>({ wc: [], country: [], state: [], regions: [] });
 
   const tabs = [
@@ -99,20 +93,19 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
   const onSubmit: SubmitHandler<RMData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
-  
+
     if (!submit) {
       console.warn("Submit flag is not set. Skipping submission.");
       return;
     }
-  
+
     try {
       const endpoint = editId
         ? `${endPoints.GET_ALL_RM}/${editId}`
         : endPoints.RM; // Determine endpoint based on editId
       const fun = editId ? editRM : addRM; // Determine function based on editId
-  
+
       const { response, error } = await fun(endpoint, data);
-  
       if (response && !error) {
         console.log("Response:", response);
         toast.success(response.data.message); // Show success toast
@@ -128,15 +121,46 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       toast.error("An unexpected error occurred."); // Handle unexpected errors
     }
   };
+
+  console.log(errors);
   
- 
+  useEffect(() => {
+    if (errors && Object.keys(errors).length > 0 && activeTab=="ID & Business Card") {
+      // Get the first error field
+      const firstErrorField = Object.keys(errors)[0];
+  
+      // Find the tab containing this field
+      const tabIndex:any = StaffTabsList.findIndex((tab) =>
+        tab.validationField.includes(firstErrorField)
+      );
+  
+      // If a matching tab is found, switch to it
+      if (tabIndex >= 0) {
+        setActiveTab(tabs[tabIndex]);
+      }
+     const errorrs:any=errors
+      // Log all errors
+      Object.keys(errorrs).forEach((field) => {
+        console.log(`${field}: ${errorrs[field]?.message}`);
+      });
+  
+      // Show the first error message in a toast
+      toast.error(errorrs[firstErrorField]?.message);
+    }
+  }, [errors]);
+
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
     } else if (tab === "Company Information") {
-      fieldsToValidate = [!editId&&"email", !editId&&"password", !editId&&"confirmPassword","region",];
+      fieldsToValidate = [
+        !editId && "email",
+        !editId && "password",
+        !editId && "confirmPassword",
+        "region",
+      ];
     }
     const isValid = fieldsToValidate.length
       ? await trigger(fieldsToValidate)
@@ -158,7 +182,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-
   // UseEffect for updating regions
   useEffect(() => {
     const filteredRegions = allRegions?.map((region: any) => ({
@@ -171,8 +194,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       regions: filteredRegions,
     }));
   }, [allRegions]);
-
-
 
   // UseEffect for updating wc
   useEffect(() => {
@@ -194,7 +215,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       value: String(items.name), // Ensure `value` is a string
     }));
     setData((prevData: any) => ({ ...prevData, country: filteredCountries }));
-  }, [allCountries])
+  }, [allCountries]);
 
   // // Effect to fetch and populate states based on selected country
   useEffect(() => {
@@ -213,8 +234,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       setData((prevData: any) => ({ ...prevData, state: transformedStates }));
     }
   }, [watch("country"), allCountries]);
-
-
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -241,49 +260,53 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     });
   };
 
-
-
   const getOneRM = async () => {
     try {
-      const { response, error } = await getRM(`${endPoints.GET_ALL_RM}/${editId}`);
+      const { response, error } = await getRM(
+        `${endPoints.GET_ALL_RM}/${editId}`
+      );
       if (response && !error) {
         const RM: any = response.data; // Return the fetched data
         console.log("Fetched RM data:", RM);
         const { user, _id, ...rm } = RM;
-        const transformedRM = RM ? {
-          ...rm,
-          dateOfJoining: new Date(RM.dateOfJoining).toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
-          userName: user?.userName,
-          phoneNo: user?.phoneNo,
-          email: user?.email,
-          userImage: user?.userImage,
-          region: RM.region?._id,
-          commission: RM.commission?._id
-        } : null;
+        const transformedRM = RM
+          ? {
+              ...rm,
+              dateOfJoining: new Date(RM?.dateOfJoining)
+                ?.toISOString()
+                ?.split("T")[0], // Format as 'YYYY-MM-DD'
+              userName: user?.userName,
+              phoneNo: user?.phoneNo,
+              email: user?.email,
+              userImage: user?.userImage,
+              region: RM.region?._id,
+              commission: RM.commission?._id,
+            }
+          : null;
 
         console.log("Transformed RM data:", transformedRM);
 
-
-        setFormValues(transformedRM)
+        setFormValues(transformedRM);
       } else {
         // Handle the error case if needed (for example, log the error)
-        console.error('Error fetching RM data:', error);
+        console.error("Error fetching RM data:", error);
       }
     } catch (err) {
-      console.error('Error fetching RM data:', err);
+      console.error("Error fetching RM data:", err);
     }
   };
 
   useEffect(() => {
-    getOneRM()
+    getOneRM();
   }, [editId]); // Trigger the effect when editId changes
 
   return (
     <div className="p-5 bg-white rounded shadow-md   hide-scrollbar">
       <div className="flex justify-between items-center mb-4">
         <div>
-
-          <h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Region Manager</h3>
+          <h3 className="text-[#303F58] font-bold text-lg">
+            {editId ? "Edit" : "Create"} Region Manager
+          </h3>
           <p className="text-[11px] text-[#8F99A9] mt-1">
             {editId
               ? "Edit the details of the region manager."
@@ -303,11 +326,12 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         {tabs.map((tab, index) => (
           <div
             key={tab}
-            // onClick={()=>setActiveTab(tab)}
-            className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
-              ? "text-deepStateBlue border-b-2 border-secondary2"
-              : "text-gray-600"
-              }`}
+            onClick={()=>setActiveTab(tab)}
+            className={`cursor-pointer py-3 px-[16px] ${
+              activeTab === tab
+                ? "text-deepStateBlue border-b-2 border-secondary2"
+                : "text-gray-600"
+            }`}
           >
             <p>
               {index < tabs.indexOf(activeTab) ? (
@@ -339,7 +363,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     type="file"
                     className="hidden"
                     onChange={handleFileChange}
-                  //   onChange={(e) => handleFileUpload(e)}
+                    //   onChange={(e) => handleFileUpload(e)}
                   />
                   <ImagePlaceHolder uploadedImage={watch("userImage")} />
                 </label>
@@ -379,21 +403,17 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     handleInputChange("phoneNo");
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}
-                // Watch phone field for changes
+                  // Watch phone field for changes
                 />
-                <div className="flex gap-4 w-full">
-                <Input
-  placeholder="Enter Age"
-  label="Age"
-  type="number"
-  min="0" // Minimum age
-  max="120" // Maximum age
-  step="1" // Restricts input to integers
-  error={errors.age?.message}
-  {...register("age", {
-    valueAsNumber: true, // Parses input as a number
-  })}
-/>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    placeholder="Enter Age"
+                    label="Age"
+                    type="number"
+                    error={errors.age?.message}
+                    {...register("age")}
+                  />
+
                   <Input
                     label="Blood Group"
                     placeholder="Enter Blood Group"
@@ -423,7 +443,9 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   {...register("country")}
                 />
                 <Select
-                  placeholder={data.state.length==0?"Choose Country":"Select State"}
+                  placeholder={
+                    data.state.length == 0 ? "Choose Country" : "Select State"
+                  }
                   label="State"
                   error={errors.state?.message}
                   options={data.state}
@@ -454,7 +476,11 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   label="Date of Joining"
                   error={errors.dateOfJoining?.message}
                   {...register("dateOfJoining")}
-                  value={watch('dateOfJoining') ? watch('dateOfJoining') : new Date().toISOString().split("T")[0]} // Sets current date as default
+                  value={
+                    watch("dateOfJoining")
+                      ? watch("dateOfJoining")
+                      : new Date().toISOString().split("T")[0]
+                  } // Sets current date as default
                 />
               </div>
             </div>
@@ -462,32 +488,36 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
           {activeTab === "Company Information" && (
             <>
-             {!editId&&<>
-              <h1 className="text-xs font-semibold">Set Login Credentials</h1>
-              <div className="grid grid-cols-3 gap-4 my-4">
-                <Input
-                  required
-                  placeholder="Enter Email"
-                  label="Email"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-                   <InputPasswordEye
-                    label={editId?"New Password":"Password"}
-                    required
-                    placeholder="Enter your password"
-                    error={errors.password?.message}
-                    {...register("password")}
-                  />
-                  <InputPasswordEye
-                    label="Confirm Password"
-                    required
-                    placeholder="Confirm your password"
-                    error={errors.confirmPassword?.message}
-                    {...register("confirmPassword")}
-                  />
-              </div>
-             </>}
+              {!editId && (
+                <>
+                  <h1 className="text-xs font-semibold">
+                    Set Login Credentials
+                  </h1>
+                  <div className="grid grid-cols-3 gap-4 my-4">
+                    <Input
+                      required
+                      placeholder="Enter Email"
+                      label="Email"
+                      error={errors.email?.message}
+                      {...register("email")}
+                    />
+                    <InputPasswordEye
+                      label={editId ? "New Password" : "Password"}
+                      required
+                      placeholder="Enter your password"
+                      error={errors.password?.message}
+                      {...register("password")}
+                    />
+                    <InputPasswordEye
+                      label="Confirm Password"
+                      required
+                      placeholder="Confirm your password"
+                      error={errors.confirmPassword?.message}
+                      {...register("confirmPassword")}
+                    />
+                  </div>
+                </>
+              )}
 
               <div>
                 <hr />
@@ -504,13 +534,12 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   label="Work phone"
                   error={errors.workPhone?.message}
                   value={watch("workPhone")} // Watch phone field for changes
-              
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("workPhone");
                     setValue("workPhone", value); // Update the value of the phone field in React Hook Form
                   }}
-                // Watch phone field for changes
+                  // Watch phone field for changes
                 />
               </div>
               <div className="grid grid-cols-2 gap-4 my-4">
@@ -524,10 +553,9 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   {...register("region")}
                 />
                 <Select
-              
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
-                  value={watch('commission')}
+                  value={watch("commission")}
                   error={errors.commission?.message}
                   options={data.wc}
                   {...register("commission")}
@@ -623,7 +651,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
             </div>
           )}
 
-{activeTab === "ID & Business Card" && (
+          {activeTab === "ID & Business Card" && (
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                 <p className="text-[#303F58] text-base font-bold">
