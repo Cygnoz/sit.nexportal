@@ -329,6 +329,7 @@ const roles = [
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -421,6 +422,7 @@ const roles = [
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -513,6 +515,7 @@ const roles = [
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -617,6 +620,7 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+      { action: "Extend Trial", note: "Extend Trial" },
 
        // Praise
        { action: "Add Praise", note: "Add Praise" },
@@ -697,6 +701,7 @@ const roles = [
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -789,6 +794,7 @@ const roles = [
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -881,6 +887,7 @@ const roles = [
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
+      { action: "Extend Trial", note: "Extend Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -985,6 +992,7 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
+      { action: "Extend Trial", note: "Extend Trial" },
 
        // Praise
        { action: "Add Praise", note: "Add Praise" },

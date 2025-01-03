@@ -18,7 +18,8 @@ const leadSchema = new Schema({
   phone: { type: String },
   website: { type: String },
   leadSource: { type: String },
-
+  regionManager: { type: mongoose.Schema.Types.ObjectId, ref: "RegionManager" },
+  areaManager: { type: mongoose.Schema.Types.ObjectId, ref: "AreaManager" },
 
   address: { type: String },
   city:{ type: String },
