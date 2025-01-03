@@ -52,7 +52,7 @@ const TrialHome = () => {
         { key: "firstName", label: "Customer Name" },
         { key: "startDate", label: "Trial Start Date" },
         { key: "endDate", label: "Trial End Date" },
-        { key: "bdaDetails.bdaName", label: "Assigned BDA" },
+        { key: "bdaName", label: "Assigned BDA" },
       ];
             
   const getTrials=async()=>{
@@ -67,7 +67,8 @@ const TrialHome = () => {
           : "N/A",
           endDate: trial.endDate
           ? new Date(trial.endDate).toLocaleDateString("en-GB")
-          : "N/A", 
+          : "N/A",
+          bdaName:trial?.bdaId?.user?.userName 
         })) || [];
        setAllTrials(transformLicense)
       }else{

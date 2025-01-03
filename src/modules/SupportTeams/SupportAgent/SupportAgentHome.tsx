@@ -143,6 +143,7 @@ const SupportAgentHome = () => {
   };
 
   return (
+    <>
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -204,10 +205,12 @@ const SupportAgentHome = () => {
       </div>
 
       {/* Modal Section */}
-      <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <SupportAgentForm  editId={editId} onClose={handleModalToggle} />
-      </Modal>
+     
     </div>
+     <Modal open={isModalOpen} onClose={handleModalToggle}>
+     <SupportAgentForm  editId={editId} onClose={handleModalToggle} />
+   </Modal>
+    </>
   )
 }
 
