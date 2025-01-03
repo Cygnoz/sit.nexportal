@@ -11,9 +11,7 @@ interface TargetData {
   bda: string;
 }
 
-type Props = {
-   
-};
+type Props = {};
 
 const Target = ({}: Props) => {
   const tabs = ["RM", "AM"] as const;
@@ -23,7 +21,7 @@ const Target = ({}: Props) => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [modalType, setModalType] = useState<TabType>("RM");
-  //const [editData, setEditData] = useState<TargetData | null>(null);
+  const [editModalType, setEditModalType] = useState<TabType>("RM");
 
   const handleCreateTarget = () => {
     setModalType(activeTab);
@@ -31,7 +29,7 @@ const Target = ({}: Props) => {
   };
 
   const handleEdit = () => {
-    //setEditData(data);
+    setEditModalType(activeTab);
     setIsEditModalOpen(true);
   };
 
@@ -132,7 +130,7 @@ const Target = ({}: Props) => {
       >
         <TargetEditForm
           onClose={() => setIsEditModalOpen(false)}
-          
+          type={editModalType}
         />
       </Modal>
     </>
