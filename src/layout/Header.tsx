@@ -5,7 +5,7 @@ import UserIcon from "../assets/icons/UserIcon";
 import SearchBar from "../components/ui/SearchBar";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import { NavList } from "../components/list/navList";
+import { NavList} from "../components/list/NavLists";
 
 interface HeaderProps {
   searchValue: string;
