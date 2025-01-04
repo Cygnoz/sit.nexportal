@@ -3,6 +3,7 @@ const User = require("../database/model/user");
 const Region = require("../database/model/region");
 const Commission = require("../database/model/commission");
 const SupportAgent = require("../database/model/supportAgent");
+const Ticket = require("../database/model/ticket");
 const bcrypt = require("bcryptjs");
 const crypto = require('crypto');
 const { ObjectId } = require('mongoose').Types;
@@ -317,7 +318,61 @@ const logOperation = (req, status, operationId = null) => {
       }
     };
     
-    
+    exports.deleteSupportAgent = async (req, res, next) => {
+      try {
+        const { id } = req.params;
+   
+        // Find the support agent
+        const supportAgent = await SupportAgent.findById(id);
+        if (!supportAgent) {
+          return res.status(404).json({ message: "Support agent not found" });
+        }
+   
+        // Check if the support agent is used in the Ticket collection
+        const dependentTickets = await Ticket.find({ supportAgentId : id });
+        if (dependentTickets.length > 0) {
+          return res.status(400).json({
+            message: "Cannot delete support agent: They are associated with existing tickets.",
+            tickets: dependentTickets.map(ticket => ({
+              id: ticket._id,
+              subject: ticket.subject,
+              status: ticket.status,
+            })),
+          });
+        }
+   
+        // Retrieve the associated user ID
+        const userId = supportAgent.user;
+   
+        // Delete the support agent
+        const deletedSupportAgent = await SupportAgent.findByIdAndDelete(id);
+        if (!deletedSupportAgent) {
+          return res.status(404).json({ message: "Support agent not found or already deleted." });
+        }
+   
+        // Delete the associated user
+        const deletedUser = await User.findByIdAndDelete(userId);
+        if (!deletedUser) {
+          return res.status(404).json({ message: "Associated user not found or already deleted." });
+        }
+   
+        // Log operation and send success response
+        logOperation(req, "Successfully", deletedSupportAgent._id);
+        next()
+        return res.status(200).json({
+          message: "Support agent and associated user deleted successfully",
+        });
+   
+      } catch (error) {
+        console.error("Error deleting support agent:", error);
+   
+        // Log failure and respond with an error
+        logOperation(req, "Failed");
+        next()
+        return res.status(500).json({ message: "Internal server error" });
+      }
+    };
+
 
 
 // Create a reusable transporter object using AWS SES

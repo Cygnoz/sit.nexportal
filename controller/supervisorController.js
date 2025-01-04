@@ -311,6 +311,59 @@ exports.editSupervisor = async (req, res, next) => {
   }
 };
 
+
+exports.deleteSupervisor = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+ 
+    // Find the supervisor to get the region
+    const supervisor = await Supervisor.findById(id);
+    if (!supervisor) {
+      return res.status(404).json({ message: "Supervisor not found" });
+    }
+ 
+    const supervisorRegion = supervisor.region;
+    const userId = supervisor.user; // The associated user ID
+ 
+ 
+    // Check if there are any support agents in the same region
+    const dependentAgents = await SupportAgent.find({ region: supervisorRegion });
+    if (dependentAgents.length > 0) {
+      return res.status(400).json({
+        message: "Cannot delete supervisor: There are support agents associated with the same region.",
+        supportAgents: dependentAgents.map(agent => ({
+          id: agent._id,
+          name: agent.userName,
+          email: agent.personalEmail,
+        })),
+      });
+    }
+ 
+    // Delete the supervisor
+    const deletedSupervisor = await Supervisor.findByIdAndDelete(id);
+    if (!deletedSupervisor) {
+      return res.status(404).json({ message: "Supervisor not found or already deleted." });
+    }
+ 
+    // Delete the associated user
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({ message: "Associated user not found or already deleted." });
+    }
+   
+    logOperation(req, "successfully", deletedSupervisor._id);
+    next();
+    return res.status(200).json({ message: "Supervisor deleted successfully" });
+ 
+  } catch (error) {
+    console.error("Error deleting supervisor:", error);
+    logOperation(req, "Failed");
+    next()
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+ 
+
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
