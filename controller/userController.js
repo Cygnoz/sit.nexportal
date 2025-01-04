@@ -325,11 +325,11 @@ const roles = [
       { action: "Delete Lead", note: "Delete Lead" },
 
       // Trial
-      { action: "Add Trial", note: "Add Trial" },
+      { action: "Convert Trial", note: "Convert Trial" },
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
-      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Convert Licenser", note: "Convert Licenser" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
