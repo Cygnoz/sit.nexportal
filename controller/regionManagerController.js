@@ -1,4 +1,5 @@
 const User = require("../database/model/user");
+const Leads = require("../database/model/leads")
 const Region = require("../database/model/region");
 const Area = require("../database/model/area");
 const AreaManager = require("../database/model/areaManager");
@@ -316,6 +317,55 @@ exports.editRegionManager = async (req, res, next) => {
     console.error("Error editing Region Manager:", error);
     res.status(500).json({ message: "Internal server error" });
     logOperation(req, "Failed");
+    next();
+  }
+};
+
+exports.deleteRegionManager = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+ 
+ 
+    // Check if the Region Manager exists
+    const regionManager = await RegionManager.findById(id);
+    if (!regionManager) {
+      return res.status(404).json({ message: "Region Manager not found." });
+    }
+ 
+    // Check if the Region Manager is referenced in the Leads collection
+    const lead = await Leads.findOne({ regionManager: id });
+    if (lead) {
+      return res.status(400).json({
+        message: "Cannot delete Region Manager because it is referenced in Leads.",
+      });
+    }
+ 
+    // Delete the associated User
+    const userId = regionManager.user;
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({
+        message: "Associated User not found or already deleted.",
+      });
+    }
+ 
+    // Delete the Region Manager
+    const deletedRegionManager = await RegionManager.findByIdAndDelete(id);
+    if (!deletedRegionManager) {
+      return res.status(404).json({ message: "Region Manager not found or already deleted." });
+    }
+ 
+    // Log success and return response
+    res.status(200).json({
+      message: "Region Manager and associated User deleted successfully.",
+    });
+    logOperation(req, "Successfull", deletedRegionManager._id);
+    next();
+ 
+  } catch (error) {
+    console.error("Error deleting Region Manager:", error.message || error);
+    res.status(500).json({ message: "Internal server error." });
+    logOperation(req, "Failed ");
     next();
   }
 };

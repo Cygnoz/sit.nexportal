@@ -1,4 +1,5 @@
 const User = require("../database/model/user");
+const Leads = require("../database/model/leads")
 const Region = require("../database/model/region");
 const Area = require("../database/model/area");
 const Commission = require("../database/model/commission");
@@ -309,6 +310,54 @@ exports.editAreaManager = async (req, res, next) => {
   } catch (error) {
     console.error("Error editing Area Manager:", error);
     res.status(500).json({ message: "Internal server error" });
+    logOperation(req, "Failed");
+    next();
+  }
+};
+
+exports.deleteAreaManager = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Check if the Area Manager exists
+    const areaManager = await AreaManager.findById(id);
+    if (!areaManager) {
+      return res.status(404).json({ message: "Area Manager not found." });
+    }
+ 
+    // Check if the Area Manager is referenced in the Leads collection
+    const lead = await Leads.findOne({ areaManager: id });
+    if (lead) {
+      return res.status(400).json({
+        message: "Cannot delete Area Manager because it is referenced in Leads.",
+      });
+    }
+ 
+    // Delete the associated User
+    const userId = areaManager.user;
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({
+        message: "Associated User not found or already deleted.",
+      });
+    }
+ 
+    // Delete the Area Manager
+    const deletedAreaManager = await AreaManager.findByIdAndDelete(id);
+    if (!deletedAreaManager) {
+      return res.status(404).json({ message: "Area Manager not found or already deleted." });
+    }
+ 
+    // Log success and return response
+    res.status(200).json({
+      message: "Area Manager and associated User deleted successfully.",
+    });
+    logOperation(req, "Successfull", deletedAreaManager._id);
+    next();
+ 
+  } catch (error) {
+    console.error("Error deleting Area Manager:", error.message || error);
+    res.status(500).json({ message: "Internal server error." });
     logOperation(req, "Failed");
     next();
   }
