@@ -91,12 +91,13 @@ exports.addLead = async (req, res , next ) => {
     // Save the new lead
     const savedLeads = await createLead(newLeadData, regionId, areaId, bdaId, userId, userName);
  
- 
+      // Pass operation details to middleware
+  
+      
     res.status(201).json({ message: "Lead added successfully", savedLeads });
- 
-  // Pass operation details to middleware
-  ActivityLog(req, "successfully", savedLeads._id);
-  next();
+    ActivityLog(req, "successfully", savedLeads._id);
+      next();
+
  
   } catch (error) {
     console.error("Error adding lead:", error);
@@ -256,100 +257,6 @@ if (!existingLead) {
 
 
 
-
-
-// exports.deleteLead = async (req, res, next) => {
-//   try {
-//     const { leadId } = req.params;
-
-//     // Delete the lead
-//     const deletedLead = await Leads.findByIdAndDelete(leadId);
-
-//     if (!deletedLead) {
-//       return res.status(404).json({ message: "Lead not found" });
-//     }
-
-//     res.status(200).json({ message: "Lead deleted successfully" });
-
-//     // Pass operation details to middleware
-//     ActivityLog(req, "successfully");
-//     next();
-//   } catch (error) {
-//     console.error("Error deleting lead:", error);
-//     res.status(500).json({ message: "Internal server error" });
-
-//     // Log the failure
-//     ActivityLog(req, "Failed");
-//     next();
-//   }
-// };
-
-// exports.convertLeadToTrial = async (req, res) => {
-//   try {
-//     const { leadId } = req.params; // Get the lead ID from request parameters
-
-//     // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
-//     const updatedLead = await Leads.findByIdAndUpdate(
-//       leadId,
-//       { customerStatus: "Trial" },
-//       {new: true } // Return the updated document
-//     );
-
-//     // Check if the lead was found and updated
-//     if (!updatedLead) {
-//       return res.status(404).json({ message: "Lead not found or unable to convert." });
-//     }
-
-//     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
-//   } catch (error) {
-//     console.error("Error converting lead to Trial:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
-
-
-
-// exports.deleteLead = async (req, res) => {
-//   try {
-//     const { leadId } = req.params;
-
-//     // Validate if leadId is a valid ObjectId
-//     if (!mongoose.Types.ObjectId.isValid(leadId)) {
-//       return res.status(400).json({ message: "Invalid lead ID." });
-//     }
-
-//     // Check if the lead exists
-//     const lead = await Leads.findById(leadId);
-//     if (!lead) {
-//       return res.status(404).json({ message: "Lead not found." });
-//     }
-
-//     // Check if leadId is referenced in other collections (Tickets and Praise)
-//     const referenceChecks = await Promise.all([
-//       Ticket.exists({ customerId : leadId  }),         // Check if leadId exists in Tickets collection
-//     ]);
-
-
-    
-//     // If any of the reference checks are true, block deletion
-//     if (referenceChecks.includes(true)) {
-//       return res.status(400).json({
-//         message: "Cannot delete lead because it is referenced in Tickets collections.",
-//       });
-//     }
-    
-//     // Delete the lead
-//     await Leads.findByIdAndDelete(leadId);
-
-//     res.status(200).json({ message: "Lead deleted successfully." });
-//   } catch (error) {
-//     console.error("Error deleting lead:", error.message || error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
-
-
-
 exports.deleteLead = async (req, res) => {
   try {
     const { leadId } = req.params;
@@ -376,17 +283,14 @@ exports.deleteLead = async (req, res) => {
     // Delete the lead
     const deletedLead = await Leads.findByIdAndDelete(leadId);
 
-    if (!deletedLead) {
-      ActivityLog(req, "Failed - Lead deletion failed");
-      return res.status(404).json({ message: "Lead not found or already deleted." });
-    }
-
-    ActivityLog(req, "Success - Lead deleted successfully", leadId);
     res.status(200).json({ message: "Lead deleted successfully." });
+    ActivityLog(req, "Successfully", updatedLead._id);
+    next()
   } catch (error) {
     console.error("Error deleting lead:", error.message || error);
-    ActivityLog(req, "Failed - Internal server error");
     res.status(500).json({ message: "Internal server error." });
+    ActivityLog(req, "Failed");
+   next();
   }
 };
 
@@ -451,7 +355,8 @@ exports.convertLeadToTrial = async (req, res) => {
 
 
     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
-        
+    ActivityLog(req, "Successfully", updatedLead._id);
+    next()  
 
   } catch (error) {
     console.error("Error during client creation:", error.message || error);
@@ -473,165 +378,6 @@ exports.convertLeadToTrial = async (req, res) => {
   }
 };
 
-
-// exports.convertLeadToTrial = async (req, res) => {
-//   try {
-
-//     const { leadId } = req.params; // Get the lead ID from request parameters
-//     const { organizationName, contactName, contactNum, email, password ,startDate,endDate} = req.body;
-
-
-//     // Validate request body
-//     if (!organizationName || !contactName || !contactNum || !email || !password) {
-//       return res.status(400).json({ message: "All fields are required" });
-//     }
-
-//     // Configure the request with timeout
-//     const axiosConfig = {
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       timeout: 5000, // 5 seconds timeout
-//     };
-
-//     // Body for the POST request
-//     const requestBody = {
-//       organizationName,
-//       contactName,
-//       contactNum,
-//       email,
-//       password,
-//     };
-
-//     // Send POST request to external API
-//     const response = await axios.post(
-//       'https://dev.billbizz.cloud:5004/create-client',
-//       requestBody,
-//       axiosConfig
-//     );
-//     const organizationId = response.data.organizationId;
-//     console.log("response",organizationId)
-
-
-        
-//         // Find the lead by ID and update its customerStatus to "Trial" and set the customerId
-//         const updatedLead = await Leads.findByIdAndUpdate(
-//           leadId,
-//           {
-//             customerStatus: "Trial",
-//             trialStatus: "In Progress",
-//             startDate, // Save formatted date
-//             endDate,    // Save formatted date
-//             organizationId,
-//           },
-//           { new: true } // Return the updated document
-//         );
-    
-        
-//     // Check if the lead was found and updated
-//     if (!updatedLead) {
-//       ActivityLog(req, "Failed - Lead not found or unable to convert");
-//       return res.status(404).json({ message: "Lead not found or unable to convert." });
-//     }
-
-//     ActivityLog(req, "Success - Lead converted to Trial", leadId);
-//     res.status(200).json({ message: "Lead converted to Trial successfully.", lead: updatedLead });
-//   } catch (error) {
-//     console.error("Error during client creation:", error.message || error);
-
-//     // Handle specific error cases
-//     if (error.response) {
-//       ActivityLog(req, `Failed`);
-//       return res.status(error.response.status).json({
-//         message: `Client creation failed with status code: ${error.response.status}`,
-//         error: error.response.data,
-//       });
-//     } else if (error.request) {
-//       ActivityLog(req, "Failed - No response from client creation service");
-//       return res.status(504).json({ message: "No response from client creation service" });
-//     } else {
-//       ActivityLog(req, "Failed - Internal server error");
-//       return res.status(500).json({ message: "Internal server error" });
-//     }
-//   }
-// };
-
-
-
-// exports.getAllTrials = async (req, res) => {
-//   try {
-//     // Fetch all records with customerStatus as "Trial"
-//     const trials = await Leads.find({ customerStatus: "Trial" });
-
-//     // Check if trials exist
-//     if (!trials || trials.length === 0) {
-//       return res.status(404).json({ message: "No trials found." });
-//     }
-
-//     // Respond with the trials
-//     res.status(200).json({ trials });
-    
-//   } catch (error) {
-//     console.error("Error fetching trials:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
-
-// Get All Trials without validation
-
-// exports.getAllTrials = async (req, res) => {
-//   try {
-//     // Fetch all trials
-//     const trials = await Leads.find({ customerStatus: "Trial" });
- 
-//     if (!trials || trials.length === 0) {
-//       return res.status(404).json({ message: "No trials found." });
-//     }
- 
-//     // Iterate through trials to check and update trialStatus
-//     const currentDate = moment();
-//     const updatePromises = trials.map(async (trial) => {
-//       const { _id, startDate, endDate, trialStatus } = trial;
-//       const StartDate = moment(startDate, "YYYY-MM-DD");
-//       const EndDate = moment(endDate, "YYYY-MM-DD");
- 
-//       let calculatedStatus;
- 
-//       // Preserve "Extended" status explicitly
-//       if (trialStatus === "Extended") {
-//         calculatedStatus = "Extended";
-//       } else {
-//         // Determine the current status based on date range
-//         calculatedStatus =
-//           currentDate.isSameOrAfter(StartDate) && currentDate.isSameOrBefore(EndDate)
-//             ? "In Progress"
-//             : "Expired";
-//       }
- 
-//       // Update database if status differs
-//       if (trialStatus !== calculatedStatus) {
-//         await Leads.findByIdAndUpdate(
-//           _id,
-//           { trialStatus: calculatedStatus },
-//           { new: true }
-//         );
-//       }
- 
-//       return {
-//         ...trial.toObject(),
-//         trialStatus: calculatedStatus, // Include updated status for the response
-//       };
-//     });
- 
-//     // Resolve all updates and prepare enriched response
-//     const enrichedTrials = await Promise.all(updatePromises);
- 
-//     res.status(200).json({ trials: enrichedTrials });
-//   } catch (error) {
-//     console.error("Error fetching trials:", error);
-//     res.status(500).json({ message: "Internal server error." });
-//   }
-// };
 
 
 
@@ -788,9 +534,13 @@ exports.convertTrialToLicenser = async (req, res) => {
     }
 
     res.status(200).json({ message: "Trial converted to Licenser successfully.", trial: updatedTrial });
+    ActivityLog(req, "Successfully", updatedLead._id);
+    next()
   } catch (error) {
     console.error("Error converting Trial to Licenser:", error);
     res.status(500).json({ message: "Internal server error." });
+    ActivityLog(req, "Failed");
+   next();
   }
 };
 
@@ -1160,20 +910,18 @@ exports.extendTrialDuration = async (req, res, next) => {
       return res.status(500).json({ message: "Failed to update trial." });
     }
  
-    // Log the activity
-    ActivityLog(
-      req,`Success - Trial duration extended for lead ID ${trialId} by ${duration} days.`,updatedLead._id
-    );
- 
+    
+    
     // Send the response
     res.status(200).json({ message: "Trial duration extended successfully.", lead: updatedLead, });
  
-    next();
+    ActivityLog(req, "Successfully", updatedLead._id);
+    next()
   } catch (error) {
     console.error("Error extending trial duration:", error.message || error);
  
     res.status(500).json({ message: "Internal server error." });
-    ActivityLog(req, "Failed - Error extending trial duration.");
+    ActivityLog(req, "Failed");
     next();
   }
 };
