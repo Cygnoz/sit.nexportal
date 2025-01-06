@@ -578,7 +578,11 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                   required
                   label="Select Area"
                   placeholder={
-                    data.areas.length == 0 ? "Select Region" : "Select Area"
+                    data.areas.length === 0
+                      ? watch("region")?.length > 0
+                        ? "No Area Found"
+                        : "Select Region"
+                      : "Select Area"
                   }
                   value={watch("area")}
                   error={errors.area?.message}

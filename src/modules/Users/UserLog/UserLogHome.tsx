@@ -65,9 +65,10 @@ function UserLogHome({}: Props) {
   const filteredLogs = useMemo(() => {
     return allUserLog.filter((log) => {
       // Convert the log date (DD/MM/YY) to a Date object
-      const logDateParts:any = log.date.split("/"); // Split the date into [DD, MM, YY]
-      const filteredYear:any = `20${logDateParts[2]}`; // Ensure full year format
+      const logDateParts: any = log.date.split("/"); // Split the date into [DD, MM, YY]
+      const filteredYear: any = `20${logDateParts[2]}`; // Ensure full year format
       const logDate = new Date(filteredYear, logDateParts[1] - 1, logDateParts[0]); // Convert to YYYY-MM-DD format
+      logDate.setHours(0, 0, 0, 0); // Normalize time to midnight
   
       // Convert starting and ending dates to Date objects for comparison
       const startingDate = sortMethods.startingDate
@@ -77,20 +78,20 @@ function UserLogHome({}: Props) {
         ? new Date(sortMethods.endingDate)
         : null;
   
+      if (startingDate) startingDate.setHours(0, 0, 0, 0); // Normalize time
+      if (endingDate) endingDate.setHours(0, 0, 0, 0); // Normalize time
+  
       let isDateValid = true;
   
-      // Handle date comparison
+      // Handle date comparison for range and single dates
       if (startingDate && endingDate) {
-        if (startingDate.getTime() === endingDate.getTime()) {
-          // Match logs exactly on the given date
-          isDateValid = logDate.toDateString() === startingDate.toDateString();
-        } else {
-          // Match logs within the range
-          isDateValid = startingDate <= logDate && endingDate >= logDate;
-        }
+        // Inclusive range: Match logs from starting date to ending date (inclusive)
+        isDateValid = logDate >= startingDate && logDate <= endingDate;
       } else if (startingDate) {
+        // If only starting date is selected, include logs on or after this date
         isDateValid = logDate >= startingDate;
       } else if (endingDate) {
+        // If only ending date is selected, include logs on or before this date
         isDateValid = logDate <= endingDate;
       }
   
@@ -102,6 +103,9 @@ function UserLogHome({}: Props) {
       return isDateValid && isUserValid && isScreenValid && isActionValid;
     });
   }, [allUserLog, sortMethods]);
+  
+  
+  
   
   
   

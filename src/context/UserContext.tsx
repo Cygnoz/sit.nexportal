@@ -7,6 +7,7 @@ interface User {
   userName:string
   userImage:string
   empId:string
+  employeeId:string
   id:string
 }
 

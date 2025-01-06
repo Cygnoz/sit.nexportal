@@ -15,6 +15,7 @@ import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
+import { useUser } from "../../../context/UserContext";
 
 type Props = {
   onClose: () => void;
@@ -37,6 +38,7 @@ const validationSchema = Yup.object({
 });
 
 function LicenserForm({ onClose ,editId}: Props) {
+  const {user}=useUser()
   const {request:addLicenser}=useApi('post',3001)
   const {request:editLicenser}=useApi('put',3001)
  const {request:getLicenser}=useApi('get',3001)
@@ -138,7 +140,7 @@ function LicenserForm({ onClose ,editId}: Props) {
     }
   };
 
-   // UseEffect for updating regions
+    // UseEffect for updating regions
     useEffect(() => {
       const filteredRegions = allRegions?.map((region: any) => ({
         value: String(region._id),
@@ -170,18 +172,36 @@ function LicenserForm({ onClose ,editId}: Props) {
   
     // UseEffect for updating regions
     useEffect(() => {
-      const filteredBDA:any = allBDA?.map((bda: any) => ({
+      const filteredBDA = allBDA?.filter(
+        (bda: any) => bda.area?._id === watch("areaId")
+      );
+      const transformedBda:any = filteredBDA?.map((bda: any) => ({
         value: String(bda?._id),
         label: bda?.bdaName,
       }));
-      // setValue("bdaId",filteredBDA?.value)
+      
       // Update the state without using previous `data` state
       setData((prevData:any) => ({
         ...prevData,
-        bdas: filteredBDA,
+        bdas: transformedBda,
       }));
-    }, [allBDA]);
+    }, [allBDA,watch("areaId")]);
 
+    useEffect(()=>{
+      console.log("allBDA",allBDA);
+      
+      if(user?.role=="BDA"){
+        const filteredBDA:any = allBDA?.find(
+          (bda: any) => bda?.user?.employeeId === user?.employeeId
+        );
+  
+        console.log("Filtered BDA:", filteredBDA?._id);
+        setValue("areaId", filteredBDA?.area?._id || "");
+          setValue("regionId", filteredBDA?.region?._id || "");
+          setValue("bdaId", filteredBDA?._id || "");
+          
+      }
+    },[user,allBDA])
     
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
@@ -402,7 +422,9 @@ function LicenserForm({ onClose ,editId}: Props) {
             error={errors.endDate?.message}
             {...register("endDate")}
           />
-          <Select
+         <div className="col-span-2 gap-3 grid grid-cols-3">
+         <Select
+         readOnly={user?.role=="BDA"?true:false}
           required
               label="Region"
               placeholder="Select Region"
@@ -411,21 +433,36 @@ function LicenserForm({ onClose ,editId}: Props) {
               {...register("regionId")}
             />
             <Select
+            readOnly={user?.role=="BDA"?true:false}
             required
             label="Area"
-            placeholder={data.areas.length==0?'Select Region':"Select Area"}
+            placeholder={
+              data.areas.length === 0
+                ? watch("regionId")?.length > 0
+                  ? "No Area Found"
+                  : "Select Region"
+                : "Select Area"
+            }
               error={errors.areaId?.message}
               options={data.areas}
             {...register("areaId")}
           />
           <Select
+          readOnly={user?.role=="BDA"?true:false}
           required
           label="Assign BDA"
           error={errors.bdaId?.message}
-          placeholder="Select BDA"
+          placeholder={
+            data.bdas.length === 0
+              ? watch("areaId")?.length > 0
+                ? "No BDA Found"
+                : "Select Area"
+              : "Select BDA"
+          }
           options={data.bdas}
           {...register("bdaId")}
         />
+         </div>
         </div>
         <div className="bottom-0 left-0 w-full p-2 bg-white flex gap-2 justify-end">
           <Button
