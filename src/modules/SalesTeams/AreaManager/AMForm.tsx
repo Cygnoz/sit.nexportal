@@ -25,10 +25,9 @@ import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 
-
 interface AddAreaManagerProps {
   onClose: () => void; // Prop for handling modal close
-  editId?:string
+  editId?: string;
 }
 
 const baseSchema = {
@@ -36,24 +35,19 @@ const baseSchema = {
   phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-    workEmail: Yup.string().email("Invalid work email"),
-    personalEmail: Yup.string().email("Invalid personal email"),
+  workEmail: Yup.string().email("Invalid work email"),
+  personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
-    .transform((value, originalValue) =>
-      originalValue === "" ? null : value
-    ),
-    region:Yup.string().required("Region is required"),
-    area:Yup.string().required("Area is required")  
+    .transform((value, originalValue) => (originalValue === "" ? null : value)),
+  region: Yup.string().required("Region is required"),
+  area: Yup.string().required("Area is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
   ...baseSchema,
-  email: Yup.string()
-  .required("Email required")
-  .email("Invalid email"),
-  password: Yup.string()
-    .required("Password is required"),
+  email: Yup.string().required("Email required").email("Invalid email"),
+  password: Yup.string().required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
@@ -63,9 +57,7 @@ const editValidationSchema = Yup.object().shape({
   ...baseSchema,
 });
 
-
-
-const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
+const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   const {
     register,
     handleSubmit,
@@ -75,60 +67,59 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
     setValue,
     formState: { errors },
   } = useForm<AMData>({
-    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
   const { request: addAM } = useApi("post", 3002);
   const { request: editAM } = useApi("put", 3002);
-  const {request:getAM}=useApi('get',3002);
+  const { request: getAM } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
-  const {allAreas,allRegions, allCountries, allWc}=useRegularApi()
+  const { allAreas, allRegions, allCountries, allWc } = useRegularApi();
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     areas: { label: string; value: string }[];
-    workerCommission:{label: string; value: string}[];
-    country:{label: string; value: string}[];
-    state:{label: string; value: string}[]
-    
-  }>({ regions: [], areas: [], workerCommission:[],country:[],state:[] });
-
+    workerCommission: { label: string; value: string }[];
+    country: { label: string; value: string }[];
+    state: { label: string; value: string }[];
+  }>({ regions: [], areas: [], workerCommission: [], country: [], state: [] });
 
   const onSubmit: SubmitHandler<AMData> = async (data) => {
     console.log("dewdew");
-    
+
     console.log(data);
 
-    if(submit){
-      try{
-  const fun = editId ? editAM : addAM; // Select the appropriate function based on editId
+    if (submit) {
+      try {
+        const fun = editId ? editAM : addAM; // Select the appropriate function based on editId
         let response, error;
-    
+
         if (editId) {
           // Call editBDA if editId exists
-          ({ response, error } = await fun(`${endPoints.GET_ALL_AM}/${editId}`, data));
+          ({ response, error } = await fun(
+            `${endPoints.GET_ALL_AM}/${editId}`,
+            data
+          ));
         } else {
           // Call addBDA if editId does not exist
           ({ response, error } = await fun(endPoints.AM, data));
         }
-    
+
         console.log("Response:", response);
         console.log("Error:", error);
-    
+
         if (response && !error) {
           toast.success(response.data.message); // Show success toast
           onClose(); // Close the form/modal
         } else {
           toast.error(error.response.data.message); // Show error toast
         }
-      }
-      catch(err){
+      } catch (err) {
         console.error("Error submitting AM data:", err);
-         toast.error("An unexpected error occurred."); // Handle unexpected errors
+        toast.error("An unexpected error occurred."); // Handle unexpected errors
       }
     }
   };
-  
 
   const tabs = [
     "Personal Information",
@@ -146,7 +137,13 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo"];
     } else if (tab === "Company Information") {
-      fieldsToValidate = [!editId&&"email", !editId&&"password", !editId&&"confirmPassword","region","area"];
+      fieldsToValidate = [
+        !editId && "email",
+        !editId && "password",
+        !editId && "confirmPassword",
+        "region",
+        "area",
+      ];
     }
 
     const isValid = fieldsToValidate.length
@@ -158,7 +155,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
       clearErrors();
     }
   };
-  
+
   const handleBack = () => {
     const currentIndex = tabs.indexOf(activeTab);
     if (currentIndex > 0) {
@@ -167,32 +164,31 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
     setSubmit(false);
   };
 
-  
-  
-
   useEffect(() => {
     // Map the regions into the required format for regions data
-    const filteredRegions = allRegions?.map((region:any) => ({
+    const filteredRegions = allRegions?.map((region: any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
- 
+
     // Set the data object with updated regions
-    setData((prevData:any) => ({ ...prevData, regions: filteredRegions }));
+    setData((prevData: any) => ({ ...prevData, regions: filteredRegions }));
   }, [allRegions]);
- 
+
   useEffect(() => {
     // Filter areas based on the selected region
-    const filteredAreas = allAreas?.filter((area:any) => area.region?._id === watch("region"));
- 
+    const filteredAreas = allAreas?.filter(
+      (area: any) => area.region?._id === watch("region")
+    );
+
     // Map the filtered areas to the required format
-    const transformedAreas = filteredAreas?.map((area:any) => ({
-label: area.areaName,
+    const transformedAreas = filteredAreas?.map((area: any) => ({
+      label: area.areaName,
       value: String(area._id), // Ensure `value` is a string
     }));
- 
+
     // Set the data object with updated areas
-    setData((prevData:any) => ({ ...prevData, areas: transformedAreas }));
+    setData((prevData: any) => ({ ...prevData, areas: transformedAreas }));
   }, [watch("region"), allAreas]); // Re-run when either selected region or allAreas changes
 
   useEffect(() => {
@@ -200,18 +196,18 @@ label: area.areaName,
       label: items.name,
       value: String(items.name), // Ensure `value` is a string
     }));
-    setData((prevData:any) => ({ ...prevData, country: filteredCountries }));
-  }, [allCountries])
+    setData((prevData: any) => ({ ...prevData, country: filteredCountries }));
+  }, [allCountries]);
 
   useEffect(() => {
     const selectedCountry = watch("country");
     if (selectedCountry) {
       const filteredAreas = allCountries.filter(
-        (country:any) => country.name === selectedCountry
+        (country: any) => country.name === selectedCountry
       );
- 
-      const transformedState = filteredAreas.flatMap((country:any) =>
-        country.states.map((state:any) => ({
+
+      const transformedState = filteredAreas.flatMap((country: any) =>
+        country.states.map((state: any) => ({
           label: state,
           value: state,
         }))
@@ -224,10 +220,11 @@ label: area.areaName,
       label: commission.profileName,
       value: String(commission._id), // Ensure `value` is a string
     }));
-    setData((prevData:any) => ({ ...prevData, workerCommission: filteredCommissions }));
-
-  }, [allWc])
-
+    setData((prevData: any) => ({
+      ...prevData,
+      workerCommission: filteredCommissions,
+    }));
+  }, [allWc]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -257,66 +254,73 @@ label: area.areaName,
     });
   };
 
+  const getOneAM = async () => {
+    try {
+      const { response, error } = await getAM(
+        `${endPoints.GET_ALL_AM}/${editId}`
+      );
+      if (response && !error) {
+        const AM: any = response.data; // Return the fetched data
+        console.log("cdsds", AM);
 
-  const getOneAM = async()=>{
-    try{
-      const { response, error } = await getAM(`${endPoints.GET_ALL_AM}/${editId}`);
-          if (response && !error) {
-            const AM:any= response.data; // Return the fetched data
-            console.log("cdsds",AM);
-            
-            const { user,_id, ...am } = AM;
-            const transformedAM = AM ? {
+        const { user, _id, ...am } = AM;
+        const transformedAM = AM
+          ? {
               ...am,
-              dateOfJoining: new Date(AM.dateOfJoining).toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
-              userName:user?.userName,
-              phoneNo:user?.phoneNo,
-              email:user?.email,
-              userImage:user?.userImage,
-              region:AM.region?._id,
-              area:AM.area?._id,
-              commission:AM.commission?._id
-            } : null;
-            setFormValues(transformedAM)
-          } else {
-            // Handle the error case if needed (for example, log the error)
-            console.error('Error fetching data:', error);
-          }
+              dateOfJoining: new Date(AM.dateOfJoining)
+                .toISOString()
+                .split("T")[0], // Format as 'YYYY-MM-DD'
+              userName: user?.userName,
+              phoneNo: user?.phoneNo,
+              email: user?.email,
+              userImage: user?.userImage,
+              region: AM.region?._id,
+              area: AM.area?._id,
+              commission: AM.commission?._id,
+            }
+          : null;
+        setFormValues(transformedAM);
+      } else {
+        // Handle the error case if needed (for example, log the error)
+        console.error("Error fetching data:", error);
+      }
+    } catch (err) {
+      console.error("Error fetching areas:", err);
     }
-    catch(err){
-      console.error('Error fetching areas:', err);      
-    }
-  }
+  };
 
   useEffect(() => {
-    if (errors && Object.keys(errors).length > 0 && activeTab=="ID & Business Card") {
+    if (
+      errors &&
+      Object.keys(errors).length > 0 &&
+      activeTab == "ID & Business Card"
+    ) {
       // Get the first error field
       const firstErrorField = Object.keys(errors)[0];
-  
+
       // Find the tab containing this field
-      const tabIndex:any = StaffTabsList.findIndex((tab) =>
+      const tabIndex: any = StaffTabsList.findIndex((tab) =>
         tab.validationField.includes(firstErrorField)
       );
-  
+
       // If a matching tab is found, switch to it
       if (tabIndex >= 0) {
         setActiveTab(tabs[tabIndex]);
       }
-     const errorrs:any=errors
+      const errorrs: any = errors;
       // Log all errors
       Object.keys(errorrs).forEach((field) => {
         console.log(`${field}: ${errorrs[field]?.message}`);
       });
-  
+
       // Show the first error message in a toast
       toast.error(errorrs[firstErrorField]?.message);
     }
   }, [errors]);
 
   useEffect(() => {
-       getOneAM()
-   }, [editId]); // Trigger the effect when editId changes
-
+    getOneAM();
+  }, [editId]); // Trigger the effect when editId changes
 
   return (
     <div className="p-5 bg-white rounded shadow-md">
@@ -324,10 +328,10 @@ label: area.areaName,
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-lg font-bold text-deepStateBlue ">
-          {editId?'Edit':'Create'} Area Manager
+            {editId ? "Edit" : "Create"} Area Manager
           </h1>
           <p className="text-ashGray text-sm">
-          {`Use this form to ${
+            {`Use this form to ${
               editId ? "edit an existing AM" : "add a new AM"
             } details. Please fill in the required information`}
           </p>
@@ -345,7 +349,7 @@ label: area.areaName,
         {tabs.map((tab, index) => (
           <div
             key={tab}
-            onClick={()=>setActiveTab(tab)}
+            onClick={() => setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${
               activeTab === tab
                 ? "text-deepStateBlue border-b-2 border-secondary2"
@@ -411,24 +415,25 @@ label: area.areaName,
                   error={errors.personalEmail?.message}
                   {...register("personalEmail")}
                 />
-               <CustomPhoneInput
+                <CustomPhoneInput
                   label="Phone Number"
                   required
                   error={errors.phoneNo?.message}
-                  value={watch("phoneNo")} 
+                  value={watch("phoneNo")}
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("phoneNo");
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
-                  }}/>
+                  }}
+                />
                 <div className="grid grid-cols-2 gap-2">
-                 <Input
-  placeholder="Enter Age"
-  label="Age"
-  type="number"
-  error={errors.age?.message}
-  {...register("age")}
-/>
+                  <Input
+                    placeholder="Enter Age"
+                    label="Age"
+                    type="number"
+                    error={errors.age?.message}
+                    {...register("age")}
+                  />
 
                   <Input
                     label="Blood Group"
@@ -436,7 +441,7 @@ label: area.areaName,
                     error={errors.bloodGroup?.message}
                     {...register("bloodGroup")}
                   />
-              </div>
+                </div>
                 <Input
                   label="Address"
                   placeholder="Street 1"
@@ -449,7 +454,7 @@ label: area.areaName,
                   error={errors.address?.street2?.message}
                   {...register("address.street2")}
                 />
-               <Select
+                <Select
                   label="Country"
                   placeholder="Select Country"
                   error={errors.country?.message}
@@ -458,12 +463,14 @@ label: area.areaName,
                 />
                 <Select
                   label="State"
-                  placeholder={data.state.length==0?"Choose Country":"Select State"}
+                  placeholder={
+                    data.state.length == 0 ? "Choose Country" : "Select State"
+                  }
                   error={errors.state?.message}
                   options={data.state}
                   {...register("state")}
                 />
-                  <Input
+                <Input
                   label="City"
                   placeholder="Enter City"
                   error={errors.city?.message}
@@ -488,7 +495,11 @@ label: area.areaName,
                   label="Date of Joining"
                   error={errors.dateOfJoining?.message}
                   {...register("dateOfJoining")}
-                  value={watch('dateOfJoining')?watch('dateOfJoining'):new Date().toISOString().split("T")[0]} // Sets current date as defau
+                  value={
+                    watch("dateOfJoining")
+                      ? watch("dateOfJoining")
+                      : new Date().toISOString().split("T")[0]
+                  } // Sets current date as defau
                 />
               </div>
             </div>
@@ -496,41 +507,39 @@ label: area.areaName,
 
           {activeTab === "Company Information" && (
             <div>
-              {!editId&& 
-              <>
-              <p className="my-4 text-[#303F58] text-sm font-semibold">
-                Set Login Credential
-              </p>
-              <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
-                <Input
-                  required
-                  placeholder="Enter Email"
-                  label="Email"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-               
-               <>
-               <InputPasswordEye
-                    label={editId?"New Password":"Password"}
-                    required
-                    placeholder="Enter your password"
-                    error={errors.password?.message}
-                    {...register("password")}
-                  />
-                  <InputPasswordEye
-                    label="Confirm Password"
-                    required
-                    placeholder="Confirm your password"
-                    error={errors.confirmPassword?.message}
-                    {...register("confirmPassword")}
-                  />
-               </>
-              
-                
-              </div>
-              </>
-               }
+              {!editId && (
+                <>
+                  <p className="my-4 text-[#303F58] text-sm font-semibold">
+                    Set Login Credential
+                  </p>
+                  <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
+                    <Input
+                      required
+                      placeholder="Enter Email"
+                      label="Email"
+                      error={errors.email?.message}
+                      {...register("email")}
+                    />
+
+                    <>
+                      <InputPasswordEye
+                        label={editId ? "New Password" : "Password"}
+                        required
+                        placeholder="Enter your password"
+                        error={errors.password?.message}
+                        {...register("password")}
+                      />
+                      <InputPasswordEye
+                        label="Confirm Password"
+                        required
+                        placeholder="Confirm your password"
+                        error={errors.confirmPassword?.message}
+                        {...register("confirmPassword")}
+                      />
+                    </>
+                  </div>
+                </>
+              )}
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <Input
@@ -539,7 +548,7 @@ label: area.areaName,
                   error={errors.workEmail?.message}
                   {...register("workEmail")}
                 />
-                 <CustomPhoneInput
+                <CustomPhoneInput
                   label="Work Phone"
                   error={errors.workPhone?.message}
                   placeholder="Enter phone number"
@@ -547,7 +556,8 @@ label: area.areaName,
                   onChange={(value) => {
                     handleInputChange("workPhone");
                     setValue("workPhone", value); // Update the value of the phone field in React Hook Form
-                  }}/>
+                  }}
+                />
                 <Select
                   required
                   label="Select Region"
@@ -560,7 +570,13 @@ label: area.areaName,
                 <Select
                   required
                   label="Select Area"
-                  placeholder={data.areas.length==0?'Select Region':"Select Area"}
+                  placeholder={
+                    data.areas.length === 0
+                      ? watch("region")?.length > 0
+                        ? "No Area Found"
+                        : "Select Region"
+                      : "Select Area"
+                  }
                   value={watch("area")}
                   error={errors.area?.message}
                   options={data.areas}
@@ -664,7 +680,7 @@ label: area.areaName,
               </div>
             </div>
           )}
-        {activeTab === "ID & Business Card" && (
+          {activeTab === "ID & Business Card" && (
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                 <p className="text-[#303F58] text-base font-bold">
