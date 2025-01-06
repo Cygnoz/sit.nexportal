@@ -62,8 +62,7 @@ router.get("/bda/:id",verifyToken,checkPermission('View BDA'), bdaController.get
 
 router.put("/bda/:id",verifyToken,checkPermission('Edit BDA'), bdaController.editBda,ActivityLogGeneration('Edit BDA'));
 
-// router.delete("/user/:userId",verifyToken,checkPermission('Delete BDA'), bdaController.deleteUser,ActivityLogGeneration('Delete BDA'));
-
+router.delete("/bda/:id",verifyToken,checkPermission('Delete BDA'), bdaController.deleteBda,ActivityLogGeneration('Delete BDA'));
 
 router.get('/get-activity-logs',verifyToken,checkPermission('View logs'),userController.getAllActivityLogs)
 

@@ -309,6 +309,56 @@ exports.editBda = async (req, res, next) => {
   }
 };
 
+exports.deleteBda = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+ 
+ 
+    // Check if the BDA exists
+    const bda = await Bda.findById(id);
+    if (!bda) {
+      return res.status(404).json({ message: "BDA not found." });
+    }
+ 
+    // Check if the BDA is referenced in the Leads collection
+    const lead = await Leads.findOne({ bdaId: id });
+    if (lead) {
+      return res.status(400).json({
+        message: "Cannot delete BDA because it is referenced in Leads.",
+      });
+    }
+ 
+    // Delete the associated User
+    const userId = bda.user;
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).json({
+        message: "Associated User not found or already deleted.",
+      });
+    }
+ 
+    // Delete the BDA
+    const deletedBda = await Bda.findByIdAndDelete(id);
+    if (!deletedBda) {
+      return res.status(404).json({ message: "BDA not found or already deleted." });
+    }
+ 
+    // Log success and return response
+    res.status(200).json({
+      message: "BDA and associated User deleted successfully.",
+    });
+    logOperation(req, "Successfully", deletedBda._id);
+    next();
+ 
+  } catch (error) {
+    console.error("Error deleting BDA:", error.message || error);
+    res.status(500).json({ message: "Internal server error." });
+    logOperation(req, "Failed");
+    next();
+  }
+};
+
+
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
