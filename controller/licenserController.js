@@ -107,58 +107,83 @@ exports.getLicenser = async (req, res) => {
  
  
  
- 
-exports.getAllLicenser = async (req, res) => {
+exports.getAllLicensers = async (req, res) => {
   try {
-    // Fetch all Licensers
-    const licensers = await Leads.find({ customerStatus: "Licenser" });
- 
-    // Check if Licensers exist
-    if (!licensers || licensers.length === 0) {
-      return res.status(404).json({ message: "No Licensers found." });
+    const userId = req.user.id;
+
+    // Fetch user role and map query accordingly
+    const user = await User.findById(userId).select("role");
+    if (!user) return res.status(404).json({ message: "User not found." });
+
+    const { role } = user;
+    const query = { customerStatus: "Licenser" };
+
+    // Role-based query mapping
+    switch (role) {
+      case "Region Manager": {
+        const regionManager = await RegionManager.findOne({ user: userId }).select("_id");
+        if (!regionManager) return res.status(404).json({ message: "Region Manager not found." });
+        query.regionManager = regionManager._id;
+        break;
+      }
+      case "Area Manager": {
+        const areaManager = await AreaManager.findOne({ user: userId }).select("_id");
+        if (!areaManager) return res.status(404).json({ message: "Area Manager not found." });
+        query.areaManager = areaManager._id;
+        break;
+      }
+      case "BDA": {
+        const bda = await Bda.findOne({ user: userId }).select("_id");
+        if (!bda) return res.status(404).json({ message: "BDA not found." });
+        query.bdaId = bda._id;
+        break;
+      }
+      default:
+        if (!["Super Admin", "Sales Admin"].includes(role)) {
+          return res.status(403).json({ message: "Unauthorized role." });
+        }
     }
- 
+
+    // Fetch licensers with populated fields
+    const licensers = await Leads.find(query)
+      .populate({ path: "regionId", select: "_id regionName" })
+      .populate({ path: "areaId", select: "_id areaName" })
+      .populate({
+        path: "bdaId",
+        select: "_id user",
+        populate: { path: "user", select: "userName" },
+      });
+
+    if (!licensers.length) return res.status(404).json({ message: "No Licensers found." });
+
     const currentDate = moment().startOf("day");
- 
-    // Iterate and validate/enrich Licenser data
-    const enrichedLicensers = await Promise.all(
-      licensers.map(async (licenser) => {
-        const { _id, endDate } = licenser;
- 
-        // Determine new status
-        let licensorStatus = "Expired"; // Default to expired
-        if (endDate) {
-          const endDateMoment = moment(endDate, "YYYY-MM-DD").startOf("day");
- 
-          if (endDateMoment.isSameOrAfter(currentDate)) {
-            if (endDateMoment.diff(currentDate, "days") <= 7) {
-              licensorStatus = "Pending Renewal";
-            } else {
-              licensorStatus = "Active";
-            }
-          }
-        }
- 
-        // Update the database only if the status has changed
-        if (licenser.licensorStatus !== licensorStatus) {
-          await Leads.findByIdAndUpdate(_id, { licensorStatus }, { new: true });
-        }
- 
-        // Return the updated/enriched Licenser data
-        return {
-          ...licenser.toObject(),
-          licensorStatus, // Include updated status
-        };
-      })
-    );
- 
-    // Respond with enriched Licenser data
+
+    // Calculate licenser status and update only when needed
+    const enrichedLicensers = [];
+
+    for (const licenser of licensers) {
+      const { _id, endDate, licensorStatus } = licenser;
+      const EndDate = moment(endDate, "YYYY-MM-DD").startOf("day");
+
+      let calculatedStatus = "Expired";
+      if (EndDate.isSameOrAfter(currentDate)) {
+        calculatedStatus = EndDate.diff(currentDate, "days") <= 7 ? "Pending Renewal" : "Active";
+      }
+
+      if (licensorStatus !== calculatedStatus) {
+        await Leads.findByIdAndUpdate(_id, { licensorStatus: calculatedStatus });
+      }
+
+      enrichedLicensers.push({ ...licenser.toObject(), licensorStatus: calculatedStatus });
+    }
+
     res.status(200).json({ licensers: enrichedLicensers });
   } catch (error) {
     console.error("Error fetching Licensers:", error);
     res.status(500).json({ message: "Internal server error." });
   }
 };
+
  
  
  
