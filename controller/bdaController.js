@@ -2,6 +2,7 @@ const User = require("../database/model/user");
 const Bda = require("../database/model/bda");
 const Region = require("../database/model/region");
 const Area = require("../database/model/area");
+const Leads = require("../database/model/leads")
 const Commission = require("../database/model/commission");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
