@@ -35,6 +35,9 @@ import AMView from './modules/SalesTeams/AreaManager/AMView';
 import PraiseHome from './modules/Awards/Praise/PraiseHome';
 import TicketsView from './modules/Tickets/TicketsView';
 import SettingsHome from './modules/Settings/SettingsHome';
+import PayrollHome from './modules/Expense/Payroll/PayrollHome';
+import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';
+import PayrollView from './modules/Expense/Payroll/PayrollView';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -83,6 +86,9 @@ const App: React.FC = () => {
             <Route path='prises' element={<PraiseHome/>} />
             {/* <Route path='' elementement={<SettingsHome/>} /> */}
             <Route path='settings' element={<SettingsHome/>}/>
+            <Route path='payroll' element={<PayrollHome/>}/>
+            <Route path='payroll-slip' element={<PayrollSlip/>}/>
+            <Route path='payroll-view' element={<PayrollView/>}/>
             
             {/* Add more authenticated routes as needed */}
           </Route>

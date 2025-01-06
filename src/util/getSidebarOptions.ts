@@ -8,7 +8,9 @@ const teamCategories = {
     CUSTOMERS: ["Lead", "Trial", "Licenser"],
     TICKETS: ["Tickets"],
     USERS:["User","User Log","Worker Commission"],
-    AWARDS:['Prise']
+    EXPENSE:["Expense","Payroll"],
+    AWARDS:['Prise'],
+    
 };
 
 // Define the function to get categorized sidebar options for a given role
@@ -23,6 +25,7 @@ export function getSidebarOptions(role: Role): Record<string, string[]> {
         CUSTOMERS: [],
         TICKETS: [],
         USERS:[],
+        EXPENSE:[],
         AWARDS:[]
     };
 
