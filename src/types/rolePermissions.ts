@@ -29,7 +29,7 @@ interface RolePermissions {
 
 // Define the icons for each sidebar option
 const sidebarIcons: { [key: string]: React.ComponentType } = {
-    "Regions": RegionIcon,
+    "Region": RegionIcon,
     "Area": AreaIcon,
     "Region Manager": UserIcon,
     "Area Manager": AreaManagerIcon,
@@ -49,7 +49,7 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
 
 // Define routes for each sidebar option
 const sidebarRoutes: { [key: string]: string } = {
-    "Regions": "/regions",
+    "Region": "/regions",
     "Area": "/areas",
     "Region Manager": "/region-manager",
     "Area Manager": "/area-manager",
@@ -71,7 +71,7 @@ const sidebarRoutes: { [key: string]: string } = {
 // Define permissions for each role based on the new categorization
 const rolePermissions: RolePermissions = {
   'Super Admin': [
-    "Regions",
+    "Region",
     "Area",
     "Region Manager",
     "Area Manager",
@@ -88,7 +88,7 @@ const rolePermissions: RolePermissions = {
     "Prise",
   ],
   'Sales Admin': [
-    "Regions",
+    "Region",
     "Area",
     "Region Manager",
     "Area Manager",
