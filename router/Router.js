@@ -38,6 +38,8 @@ router.get('/trial',verifyToken,checkPermission('View Trial'),leadController.get
 router.put('/trials/:trialId',verifyToken,checkPermission('Convert Licenser'),leadController.convertTrialToLicenser,ActivityLogGeneration('Convert Licenser'))
  
 router.post("/trial/:trialId",verifyToken,checkPermission('Extend Trial'),leadController.extendTrialDuration, ActivityLogGeneration('Extend Trial'));
+
+router.get("/customer/statistics",verifyToken,leadController.getStatistics)
  
 //add licenser
 router.post('/licenser',verifyToken,checkPermission('Add Licenser'),licenserController.addLicenser,ActivityLogGeneration('Add Licenser'))

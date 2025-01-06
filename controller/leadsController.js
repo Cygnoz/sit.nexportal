@@ -10,6 +10,7 @@ const Ticket = require("../database/model/ticket");
 const AreaManager = require("../database/model/areaManager");
 const RegionManager = require("../database/model/regionManager");
 const Bda = require('../database/model/bda')
+const filterByRole = require("../services/filterByRole");
 
 
 
@@ -145,51 +146,16 @@ exports.getLead = async (req, res) => {
 };
 
 
-// Get All Leads without validation
+
 exports.getAllLeads = async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log(userId);
-    console.log(req.user.userName);
+    const query = await filterByRole(userId);
 
-    // Fetch user role
-    const user = await User.findById(userId).select("role");
-    if (!user) {
-      return res.status(404).json({ message: "User not found." });
-    }
+    // Add customerStatus filter
+    query.customerStatus = "Lead";
 
-    const { role } = user;
-    const query = { customerStatus: "Lead" };
-
-    // Role-based filtering using a mapping function
-    const roleMapping = {
-      "Region Manager": async () => {
-        const regionManager = await RegionManager.findOne({ user:userId }).select("_id");
-        if (regionManager) query.regionManager = regionManager._id;
-      },
-      "Area Manager": async () => {
-        const areaManager = await AreaManager.findOne({ user:userId }).select("_id");
-        if (areaManager) query.areaManager = areaManager._id;
-        console.log(areaManager._id);
-      },
-      "BDA": async () => {
-        const bda = await Bda.findOne({ user:userId }).select("_id");
-        console.log(bda._id);
-        
-        if (bda) query.bdaId = bda._id;
-      },
-    };
-
-    if (roleMapping[role]) {
-      await roleMapping[role]();
-      if (!query.regionManager && !query.areaManager && !query.bdaId) {
-        return res.status(404).json({ message: `${role} not found.` });
-      }
-    } else if (!["Super Admin", "Sales Admin"].includes(role)) {
-      return res.status(403).json({ message: "Unauthorized role." });
-    }
-
-    // Fetch leads with populated fields
+    // Fetch Licensers
     const leads = await Leads.find(query)
       .populate({ path: "regionId", select: "_id regionName" })
       .populate({ path: "areaId", select: "_id areaName" })
@@ -199,16 +165,13 @@ exports.getAllLeads = async (req, res) => {
         populate: { path: "user", select: "userName" },
       });
 
-    // Check if leads exist
-    if (!leads.length) {
-      return res.status(404).json({ message: "No leads found." });
-    }
+    if (!leads.length) return res.status(404).json({ message: "No Leads found." });
 
-    // Respond with leads
+    // Return response
     res.status(200).json({ leads });
   } catch (error) {
-    console.error("Error fetching leads:", error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error fetching Licensers:", error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -384,42 +347,13 @@ exports.convertLeadToTrial = async (req, res) => {
 exports.getAllTrials = async (req, res) => {
   try {
     const userId = req.user.id;
+    const query = await filterByRole(userId);
 
-    // Fetch user role and map query accordingly
-    const user = await User.findById(userId).select("role");
-    if (!user) return res.status(404).json({ message: "User not found." });
+    // Add customerStatus filter
+    query.customerStatus = "Trial";
 
-    const { role } = user;
-    const query = { customerStatus: "Trial" };
-
-    // Role-based query mapping
-    switch (role) {
-      case "Region Manager": {
-        const regionManager = await RegionManager.findOne({ user: userId }).select("_id");
-        if (!regionManager) return res.status(404).json({ message: "Region Manager not found." });
-        query.regionManager = regionManager._id;
-        break;
-      }
-      case "Area Manager": {
-        const areaManager = await AreaManager.findOne({ user: userId }).select("_id");
-        if (!areaManager) return res.status(404).json({ message: "Area Manager not found." });
-        query.areaManager = areaManager._id;
-        break;
-      }
-      case "BDA": {
-        const bda = await Bda.findOne({ user: userId }).select("_id");
-        if (!bda) return res.status(404).json({ message: "BDA not found." });
-        query.bdaId = bda._id;
-        break;
-      }
-      default:
-        if (!["Super Admin", "Sales Admin"].includes(role)) {
-          return res.status(403).json({ message: "Unauthorized role." });
-        }
-    }
-
-    // Fetch trials with populated fields
-    const trials = await Leads.find(query)
+    // Fetch Licensers
+    const trial = await Leads.find(query)
       .populate({ path: "regionId", select: "_id regionName" })
       .populate({ path: "areaId", select: "_id areaName" })
       .populate({
@@ -428,35 +362,13 @@ exports.getAllTrials = async (req, res) => {
         populate: { path: "user", select: "userName" },
       });
 
-    if (!trials.length) return res.status(404).json({ message: "No trials found." });
+    if (!trial.length) return res.status(404).json({ message: "No Trial found." });
 
-    // Calculate trial status and update only when needed
-    const currentDate = moment();
-    const enrichedTrials = [];
-
-    for (const trial of trials) {
-      const { _id, startDate, endDate, trialStatus } = trial;
-      const StartDate = moment(startDate, "YYYY-MM-DD");
-      const EndDate = moment(endDate, "YYYY-MM-DD");
-
-      let calculatedStatus = trialStatus;
-      if (trialStatus !== "Extended") {
-        calculatedStatus = currentDate.isBetween(StartDate, EndDate, undefined, "[]")
-          ? "In Progress"
-          : "Expired";
-      }
-
-      if (trialStatus !== calculatedStatus) {
-        await Leads.findByIdAndUpdate(_id, { trialStatus: calculatedStatus });
-      }
-
-      enrichedTrials.push({ ...trial.toObject(), trialStatus: calculatedStatus });
-    }
-
-    res.status(200).json({ trials: enrichedTrials });
+    // Return response
+    res.status(200).json({ trial });
   } catch (error) {
-    console.error("Error fetching trials:", error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error fetching Licensers:", error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -923,5 +835,75 @@ exports.extendTrialDuration = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error." });
     ActivityLog(req, "Failed");
     next();
+  }
+};
+
+
+
+exports.getStatistics = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const query = await filterByRole(userId);
+
+    // Fetch all leads that match the query
+    const leads = await Leads.find(query);
+
+    // Get the current date in the required format
+    const currentDate = moment().format("YYYY-MM-DD");
+
+    // Calculate statistics
+    const totalLeads = leads.filter(lead => lead.customerStatus === "Lead").length;
+    const leadsToday = leads.filter(
+      lead => lead.customerStatus === "Lead" && moment(lead.createdAt).format("YYYY-MM-DD") === currentDate
+    ).length;
+    const convertedLeads = leads.filter(
+      lead => lead.customerStatus !== "Lead"
+    ).length;
+    const leadsLost = leads.filter(
+      lead => lead.customerStatus === "Lead" && lead.leadStatus === "Lost"
+    ).length;
+
+    const activeTrials = leads.filter(
+      lead => lead.customerStatus === "Trial" && lead.trialStatus === "In Progress"
+    ).length;
+    const extendedTrials = leads.filter(
+      lead => lead.customerStatus === "Trial" && lead.trialStatus === "Extended"
+    ).length;
+    const convertedTrials = leads.filter(
+      lead => lead.customerStatus === "Trial" && lead.trialStatus !== undefined
+    ).length;
+    const expiredTrials = leads.filter(
+      lead => lead.customerStatus === "Trial" && lead.trialStatus === "Expired"
+    ).length;
+
+    const totalLicensers = leads.filter(lead => lead.customerStatus === "Licenser").length;
+    const licensersToday = leads.filter(
+      lead => lead.customerStatus === "Licenser" && moment(lead.createdAt).format("YYYY-MM-DD") === currentDate
+    ).length;
+    const activeLicensers = leads.filter(
+      lead => lead.customerStatus === "Licenser" && lead.licensorStatus === "Active"
+    ).length;
+    const expiredLicensers = leads.filter(
+      lead => lead.customerStatus === "Licenser" && lead.licensorStatus === "Expired"
+    ).length;
+
+    // Return the statistics as a response
+    res.status(200).json({
+      totalLeads,
+      leadsToday,
+      convertedLeads,
+      leadsLost,
+      activeTrials,
+      extendedTrials,
+      convertedTrials,
+      expiredTrials,
+      totalLicensers,
+      licensersToday,
+      activeLicensers,
+      expiredLicensers,
+    });
+  } catch (error) {
+    console.error("Error fetching statistics:", error.message);
+    res.status(500).json({ message: error.message });
   }
 };

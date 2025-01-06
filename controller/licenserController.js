@@ -6,7 +6,9 @@ const Bda = require('../database/model/bda')
 const User = require("../database/model/user");
 const moment = require("moment");
 const Lead = require("../database/model/leads");
+const filterByRole = require("../services/filterByRole");
  
+
  
 const dataExist = async (regionId, areaId, bdaId) => {
   const [regionExists, areaExists, bdaExists] = await Promise.all([
@@ -106,45 +108,16 @@ exports.getLicenser = async (req, res) => {
 };
  
  
- 
+
 exports.getAllLicensers = async (req, res) => {
   try {
     const userId = req.user.id;
+    const query = await filterByRole(userId);
 
-    // Fetch user role and map query accordingly
-    const user = await User.findById(userId).select("role");
-    if (!user) return res.status(404).json({ message: "User not found." });
+    // Add customerStatus filter
+    query.customerStatus = "Licenser";
 
-    const { role } = user;
-    const query = { customerStatus: "Licenser" };
-
-    // Role-based query mapping
-    switch (role) {
-      case "Region Manager": {
-        const regionManager = await RegionManager.findOne({ user: userId }).select("_id");
-        if (!regionManager) return res.status(404).json({ message: "Region Manager not found." });
-        query.regionManager = regionManager._id;
-        break;
-      }
-      case "Area Manager": {
-        const areaManager = await AreaManager.findOne({ user: userId }).select("_id");
-        if (!areaManager) return res.status(404).json({ message: "Area Manager not found." });
-        query.areaManager = areaManager._id;
-        break;
-      }
-      case "BDA": {
-        const bda = await Bda.findOne({ user: userId }).select("_id");
-        if (!bda) return res.status(404).json({ message: "BDA not found." });
-        query.bdaId = bda._id;
-        break;
-      }
-      default:
-        if (!["Super Admin", "Sales Admin"].includes(role)) {
-          return res.status(403).json({ message: "Unauthorized role." });
-        }
-    }
-
-    // Fetch licensers with populated fields
+    // Fetch Licensers
     const licensers = await Leads.find(query)
       .populate({ path: "regionId", select: "_id regionName" })
       .populate({ path: "areaId", select: "_id areaName" })
@@ -156,37 +129,14 @@ exports.getAllLicensers = async (req, res) => {
 
     if (!licensers.length) return res.status(404).json({ message: "No Licensers found." });
 
-    const currentDate = moment().startOf("day");
-
-    // Calculate licenser status and update only when needed
-    const enrichedLicensers = [];
-
-    for (const licenser of licensers) {
-      const { _id, endDate, licensorStatus } = licenser;
-      const EndDate = moment(endDate, "YYYY-MM-DD").startOf("day");
-
-      let calculatedStatus = "Expired";
-      if (EndDate.isSameOrAfter(currentDate)) {
-        calculatedStatus = EndDate.diff(currentDate, "days") <= 7 ? "Pending Renewal" : "Active";
-      }
-
-      if (licensorStatus !== calculatedStatus) {
-        await Leads.findByIdAndUpdate(_id, { licensorStatus: calculatedStatus });
-      }
-
-      enrichedLicensers.push({ ...licenser.toObject(), licensorStatus: calculatedStatus });
-    }
-
-    res.status(200).json({ licensers: enrichedLicensers });
+    // Return response
+    res.status(200).json({ licensers });
   } catch (error) {
-    console.error("Error fetching Licensers:", error);
-    res.status(500).json({ message: "Internal server error." });
+    console.error("Error fetching Licensers:", error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 
- 
- 
- 
  
 exports.editLicenser = async (req, res, next) => {
   try {
