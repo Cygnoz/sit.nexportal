@@ -19,6 +19,7 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import RMForm from "./RMForm";
 import RMViewAward from "./RMViewAward";
+import Trash from "../../../assets/icons/Trash";
 
 interface AreaData {
   areaCode: string;
@@ -211,7 +212,7 @@ const RMView = () => {
               backgroundImage: `url(${BackgroundImage})`, // Use the imported image
             }}
           >
-            <div className="col-span-6 ">
+            <div className="col-span-6">
               <div>
                 {/* Left Section: Area Icon and Details */}
 
@@ -279,12 +280,12 @@ const RMView = () => {
               </div>
             </div>
 
-            <div className="col-span-6 m-3">
+            <div className="col-span-6  m-2">
               <div>
-                <div className="flex gap-4 ms-auto text-[10px] py-2  text-white">
+                <div className="flex   gap-4 -ms-14  text-[10px] py-2  text-white">
                   {/* Right Section: Managers and Actions */}
 
-                  <div className="flex -ms-3 mt-2">
+                  <div className="flex -me-2  mt-2">
                     {/* Sales Managers */}
                     <div className=" text-end w-48">
                       <p className="text-xs text-[#D4D4D4] py-2">Role</p>
@@ -365,6 +366,17 @@ const RMView = () => {
                       </div>
                     </div>
                     <p className="text-center ms-3">DeActivate</p>
+                  </div>
+
+                  <div className="flex flex-col -ms-2 items-center space-y-1">
+                    <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                    <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
+                  <div className="ms-2 mt-2 ">
+                    <Trash size={18} color="#BC3126" />
+                  </div>
+                </div>
+                    </div>
+                    <p className="text-center ms-3">Delete</p>
                   </div>
                 </div>
                 {/* HomeCards Section */}

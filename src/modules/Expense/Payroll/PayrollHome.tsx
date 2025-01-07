@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 interface TargetData {
   task: string;
   dueDate: string;
-  bda: string;
+  status: string;
   salary:string;
 }
 
@@ -26,36 +26,36 @@ const PayrollHome = ({}: Props) => {
   };
 
   const datas: TargetData[] = [
-    { task: "BDA12345", dueDate: "Anjela John", bda: "(406) 555-0120" ,salary:"100000" },
-    { task: "BDA12345", dueDate: "Kristin Watson", bda: "(480) 555-0103" ,salary:"100000"},
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112",salary:"100000" },
-    { task: "BDA12345", dueDate: "Wade Warren", bda: "(702) 555-0122" ,salary:"100000"},
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112",salary:"100000" },
+    { task: "BDA12345", dueDate: "Anjela John", status: "Approval Granted" ,salary:"100000" },
+    { task: "BDA12345", dueDate: "Kristin Watson", status: "Pending Generation" ,salary:"100000"},
+    { task: "BDA12345", dueDate: "Jacob Jones", status: "Draft Created",salary:"100000" },
+    { task: "BDA12345", dueDate: "Wade Warren", status: "Awaiting Approval" ,salary:"100000"},
+    { task: "BDA12345", dueDate: "Jacob Jones", status: "Paid",salary:"100000" },
   ];
 
   const Allcolumns: { key: keyof TargetData; label: string }[] = [
     { key: "task", label: "Name" },
     { key: "dueDate", label: "Role" },
-    { key: "bda", label: "Payslip Status" },
+    { key: "status", label: "Payslip Status" },
     { key: "salary", label: "Total Salary" },
   ];
   const RMcolumns: { key: keyof TargetData; label: string }[] = [
     { key: "task", label: "Name" },
     { key: "dueDate", label: "Role" },
-    { key: "bda", label: "Payslip Status" },
+    { key: "status", label: "Payslip Status" },
     { key: "salary", label: "Total Salary" },
   ];
   const AMcolumns: { key: keyof TargetData; label: string }[] = [
     { key: "task", label: "Name" },
     { key: "dueDate", label: "Role" },
-    { key: "bda", label: "Payslip Status" },
+    { key: "status", label: "Payslip Status" },
     { key: "salary", label: "Total Salary" },
   ];
 
   const BDAcolumns: { key: keyof TargetData; label: string }[] = [
     { key: "task", label: "Name" },
     { key: "dueDate", label: "Role" },
-    { key: "bda", label: "Payslip Status" },
+    { key: "status", label: "Payslip Status" },
     { key: "salary", label: "Total Salary" },
   ];
 

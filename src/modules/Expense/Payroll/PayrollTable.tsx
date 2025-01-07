@@ -98,14 +98,6 @@ const PayrollTable = <T extends object>({
   const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
   const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
 
-
-  
-
-
-
-
-
-
   // Paginate the filtered data
   const paginatedData: any = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
@@ -123,15 +115,15 @@ const PayrollTable = <T extends object>({
   const getStatusClass = (status: string | undefined) => {
     switch (status) {
       case "Approval Granted":
-        return "bg-[#45A6FF] text-center text-white py-1 px-2 w-fit rounded-lg";
+        return "bg-[#45A6FF] text-center text-white py-2 px-2 w-fit rounded-lg ";
       case "Pending Generation":
-        return "bg-[#C4A25D] text-center text-white py-1 px-2 rounded-lg";
+        return "bg-[#C4A25D] text-center text-white py-2 px-2 rounded-lg";
       case "Draft Created":
-        return "bg-[#F1AB82] text-center text-black py-1 px-2 rounded-lg";
+        return "bg-[#F1AB82] text-center text-black py-2 px-2 rounded-lg";
       case "Awaiting Approval":
-        return "bg-[#8FA4B4] text-center text-black py-1 px-2 rounded-lg";
+        return "bg-[#8FA4B4] text-center text-black py-2 px-2 rounded-lg";
       case "Paid":
-        return "bg-[#30B777] text-center text-black py-1 px-2 rounded-lg";
+        return "bg-[#30B777] text-center text-black py-2 px-2 rounded-lg";
       case "Lost":
         return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
       case "Closed":
@@ -162,8 +154,7 @@ const PayrollTable = <T extends object>({
         return "bg-green-500 text-center text-white  py-1 px-2 w-fit rounded-lg";
       case "Resolved":
         return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
-      case "Paid":
-        return "bg-purple-200 text-center text-black py-1 px-2 rounded-lg";
+     
       default:
         return "";
     }
@@ -180,14 +171,14 @@ const PayrollTable = <T extends object>({
     if (key == "India") {
       return (
         <>
-          <img src={IndiaLogo} alt="India" className="w-5 h-5 rounded-full " />
+          <img src={IndiaLogo} alt="India" className="w-5 h-5 rounded-full"/>
           <p>India</p>
         </>
       );
     } else if (key == "United Arab Emirates") {
       return (
         <>
-          <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full " />
+          <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full"/>
           <p>UAE</p>
         </>
       );

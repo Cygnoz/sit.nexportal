@@ -1,6 +1,4 @@
 import { useState } from "react"
-import idCardBack from '../../assets/image/Business-card-back.png'
-import idCardImage from '../../assets/image/Business-card-front.png'
 import Button from "../../components/ui/Button"
 import UserIcon from "../../assets/icons/UserIcon"
 import EmailIcon from "../../assets/icons/EmailIcon"
@@ -16,10 +14,11 @@ import cygnoz from '../../assets/image/cygnoz.com.png'
 import profile from '../../assets/image/AvatarImg.png'
 import PhoneIcon from "../../assets/icons/PhoneIcon"
 import LocationIcon from "../../assets/icons/LocationIcon"
-// import cygnozC from '../../assets/image/cygnoz c png.png'
+import cygnozC from '../../assets/image/cygnoz c png.png'
 import busniessIcon from '../../assets/image/businesscardLogo.png'
 import c from '../../assets/image/card-c.png'
-// import polygon from '../../assets/image/polygon.png'
+import polygon from '../../assets/image/polygon.png'
+import dotsImage from '../../assets/image/BCardDots.png'
 
 type Props = {}
 
@@ -27,7 +26,7 @@ function BusinessCard({ }: Props) {
     const tabs = ["Layout", "Content"]
     const [activeTab, setActiveTab] = useState<string>("Layout");
 
-    const [isToggled, setIsToggled] = useState(false);
+    const [isToggled, setIsToggled] = useState(true);
     return (
         <>
 
@@ -67,8 +66,8 @@ function BusinessCard({ }: Props) {
                                 </div>
 
                                 <div className="grid grid-cols-2 gap-2 p-2">
-                                    <div className="bg-[#184D81] rounded-lg w-full">
-                                        <div className="flex gap-4 p-3">
+                                    <div className="bg-[#184D81] rounded-lg w-full h-fit overflow-hidden">
+                                        <div className="flex gap-1 p-3">
                                             <div>
                                                 <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
                                             </div>
@@ -80,12 +79,13 @@ function BusinessCard({ }: Props) {
                                                 <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
                                                 <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
                                             </div>
-                                            <div className="-mt-3">
-                                                <img src={c} alt="" />
-                                            </div>
+                                        </div>
+                                        <div className="justify-end">
+                                            <img className="w-20 h-[72px] ml-auto me-6 -mt-14" src={c} alt="" />
                                         </div>
 
-                                        <div className="flex py-3">
+
+                                        <div className="flex">
                                             <div className="bg-[#2795FB] w-56 h-fit p-1 rounded-e-full">
                                                 <div className="flex justify-between px-2">
                                                     <div>
@@ -103,7 +103,7 @@ function BusinessCard({ }: Props) {
                                         </div>
 
                                         <div className="px-3">
-                                            <p className="text-[#FFFFFF] font-light text-[10px] my-1">Personal Address & Mail</p>
+                                            <p className="text-[#FFFFFF] font-light text-[10px] my-2">Personal Address & Mail</p>
                                             <div className="grid grid-cols-2 gap-1">
                                                 <div className="flex gap-2">
                                                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
@@ -136,22 +136,16 @@ function BusinessCard({ }: Props) {
                                             </div>
                                         </div>
 
-                                        <div className="flex justify-between p-3">
+                                        <div className="flex justify-between p-2 relative">
                                             <img src={cygnoz} className="w-14 h-5" alt="" />
                                             <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
                                         </div>
-                                        <div >
-                                            <img className="w-40 h-40 -mt-40 rounded-b-lg ml-auto" src={busniessIcon} alt="" />
+                                        <div>
+                                            <img className="w-32 h-32 -mt-32 rounded-b-lg ml-auto" src={busniessIcon} alt="" />
                                         </div>
-
-                                        {/* <div className="-mt-32 ms-52">
-                                        <div className="w-60 h-7 -rotate-45 rounded-s-full bg-[#2795FB]"></div>
-                                        <div className="w-60 h-7 -rotate-45 mt-3 bg-[#63B9F5]"></div>
-                                        <div className="w-60 h-7 -rotate-45 mt-3 bg-[#2795FB]"></div>
-                                        </div> */}
                                     </div>
 
-                                    <div className="bg-[#184D81] rounded-lg w-full">
+                                    <div className="bg-[#184D81] rounded-lg w-full h-fit overflow-hidden">
                                         <div className="flex gap-4 p-3">
                                             <div>
                                                 <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
@@ -164,9 +158,13 @@ function BusinessCard({ }: Props) {
                                                 <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
                                                 <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
                                             </div>
+
+                                        </div>
+                                        <div className="justify-end">
+                                            <img className="w-14 h-[72px] ml-auto -mt-14" src={c} alt="" />
                                         </div>
 
-                                        <div className="flex p-3 justify-between">
+                                        <div className="flex p-2 justify-between">
                                             <div className="bg-[#2795FB] w-fit h-6 p-1 rounded-xl">
                                                 <div className="flex gap-3 px-1">
                                                     <p className="text-[#FFFFFF] font-light text-xs">Employee ID</p>
@@ -216,13 +214,16 @@ function BusinessCard({ }: Props) {
                                         </div>
 
                                         <div className="flex justify-between p-3">
-                                            <img src={cygnoz} className="w-16 h-6" alt="" />
-                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-2">Engineering your business for the world</p>
+                                            <img src={cygnoz} className="w-14 h-5" alt="" />
+                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-1 z-10">Engineering your business for the world</p>
+                                        </div>
+                                        <div className="relative">
+                                            <img className="w-48 h-48 -bottom-20 -right-14 absolute" src={polygon} alt="" />
                                         </div>
 
                                     </div>
 
-                                    <div className="bg-[#184D81] rounded-lg w-full">
+                                    <div className="bg-[#184D81] rounded-lg w-full overflow-hidden">
                                         <div className="flex gap-2 p-3 justify-between">
                                             <div className="flex gap-1">
                                                 <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
@@ -244,62 +245,13 @@ function BusinessCard({ }: Props) {
                                             <p className="text-[#FFFFFF] font-semibold text-xs">Ernakulam</p>
                                         </div>
 
-                                            {/* <div className="justify-center">
-                                                <img className="-rotate-45" src={cygnozIcon} alt="" />
-                                                <div className="flex gap-1 justify-end">
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
+                                        <div className="flex justify-end gap-4 -mt-2">
+                                            <img className="w-24 h-28 -mt-2" style={{ transform: 'rotate(-30deg)' }} src={cygnozC} alt="" />
+                                            <img className="w-16 h-[70px] mt-2" src={dotsImage} alt="" />
+                                        </div>
 
-
-                                            </div>
-
-                                            <div className="flex gap-1 justify-end mt-1">
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-
-
-                                            </div>
-                                            <div className="flex gap-1 justify-end mt-1">
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            </div>
-                                            <div className="flex gap-1 justify-end mt-1">
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            </div>
-                                            <div className="flex gap-1 justify-end mt-1">
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                                <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            </div>
-                                            </div> */}
-
-                                        <div className="px-3 mt-6">
-                                            <p className="text-[#FFFFFF] font-light text-[10px] my-1">Personal Address & Mail</p>
+                                        <div className="px-3 -mt-14">
+                                            {/* <p className="text-[#FFFFFF] font-light text-[10px] my-1">Personal Address & Mail</p> */}
                                             <div className="gap-1">
                                                 <div className="flex gap-2">
                                                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
@@ -319,27 +271,22 @@ function BusinessCard({ }: Props) {
                                                     <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
 
                                                 </div>
-                                                <div className="flex py-1">
-                                                <div className="flex gap-2">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                        <LocationIcon size={12} color="#FFFFFF" />
+                                                <div className="flex py-1 gap-5">
+                                                    <div className="flex gap-2">
+                                                        <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                                                            <LocationIcon size={12} color="#FFFFFF" />
+
+                                                        </div>
+                                                        <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
 
                                                     </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
-
-                                                </div>   
-                                                <div>
-                                                <img src={cygnoz} className="w-16 h-6" alt="" />
-                                                <p className="text-[#FFFFFF] font-light text-[8px]">Engineering your business for the world</p>
+                                                    <div>
+                                                        <img src={cygnoz} className="w-16 h-6 ml-auto" alt="" />
+                                                        <p className="text-[#FFFFFF] font-light text-[8px]">Engineering your business for the world</p>
+                                                    </div>
                                                 </div>
-                                                </div>
-                                           </div>
+                                            </div>
                                         </div>
-
-                                        {/* <div className="flex justify-between p-3">
-                                            <img src={cygnoz} className="w-16 h-6" alt="" />
-                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-2">Engineering your business for the world</p>
-                                        </div> */}
 
                                     </div>
 
@@ -347,124 +294,6 @@ function BusinessCard({ }: Props) {
                             </div>
 
                         )}
-
-                        {/* {activeTab === "Design" && (
-                            <div>
-                                <div className="flex justify-between mt-4">
-                                    <p className="my-2 text-[#303F58] text-base font-bold">Select Color</p>
-                                    <div className="flex items-center border bg-[#FFFFFF] rounded-lg w-80 h-9 px-3 my-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Search Color"
-                                            className="flex-grow outline-none text-sm text-[#FFFFFF]"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-6 my-8">
-                                    <div className="bg-[#FF3E3E] w-14 h-9 rounded-md"></div>
-                                    <div className="bg-[#184D81] w-14 h-9 rounded-md"></div>
-                                    <div className="bg-[#6DCB5A] w-14 h-9 rounded-md"></div>
-                                    <div className="bg-[#3F44A4] w-14 h-9 rounded-md"></div>
-                                    <div className="bg-[#6C2285] w-14 h-9 rounded-md"></div>
-                                    <div className="bg-[#DFB93A] w-14 h-9 rounded-md"></div>
-                                    <div className="bg-[#FB8D10] w-14 h-9 rounded-md"></div>
-                                    <div className="bg-[#000000] w-14 h-9 rounded-md"></div>
-
-                                </div>
-
-                                <div className="flex justify-between mt-4">
-                                    <p className="my-2 text-[#303F58] text-base font-bold">Select Background Element</p>
-                                    <div className="flex items-center border bg-[#FFFFFF] rounded-lg w-80 h-9 px-3 my-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Search Element"
-                                            className="flex-grow outline-none text-sm text-[#FFFFFF]"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-3 gap-8 mb-6 mt-2 p-2">
-                                    <div className="bg-[#184D81] w-44 h-24 rounded-lg">
-
-                                    </div>
-                                    <div className="bg-[#184D81] w-44 h-24 rounded-lg">
-                                        <div className="bg-[#2795FB] rounded-full w-8 h-8 mt-6 ms-20"></div>
-                                        <div className="bg-[#57B1F2] rounded-full w-20 h-20 ms-24 -mt-4"></div>
-                                    </div>
-                                    <div className="bg-[#184D81] w-44 h-24 rounded-lg">
-                                        <div className="ms-20 p-1 mt-[17px]">
-                                            <Polygon size={80} />
-                                        </div>
-                                    </div>
-                                    <div className="bg-[#184D81] w-44 h-24 rounded-lg">
-                                        <div className="bg-[#57B1F2] w-16 h-3 my-1 rotate-45 ms-28 mt-[58px]"></div>
-                                        <div className="bg-[#57B1F2] w-16 h-3 my-1 -rotate-45 ms-28 -mt-4"></div>
-                                        <div className="bg-[#57B1F2] w-16 h-3 my-1 rotate-90 ms-28 -mt-4"></div>
-                                    </div>
-                                    <div className="bg-[#184D81] w-44 h-24 rounded-lg">
-                                        <div className="ms-[104px] mt-1">
-                                            <ArrowPolygon size={60} />
-                                            <div className="-mt-7">
-                                                <Polygon8 size={60} />
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                    <div className="bg-[#184D81] w-44 h-24 rounded-lg">
-                                        <div className="flex gap-1 justify-end mt-10">
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-
-
-                                        </div>
-                                        <div className="flex gap-1 justify-end mt-1">
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-
-
-                                        </div>
-                                        <div className="flex gap-1 justify-end mt-1">
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                        </div>
-                                        <div className="flex gap-1 justify-end mt-1">
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                        </div>
-                                        <div className="flex gap-1 justify-end mt-1">
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                            <div className="w-2 h-2 bg-[#57B1F2] rounded-full"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )} */}
 
                         {activeTab === "Content" && (
                             <div>
@@ -764,10 +593,174 @@ function BusinessCard({ }: Props) {
                     <div className="p-4 bg-[#F5F9FC] rounded-lg mt-4">
                         <p className="my-2 text-[#000000] text-base font-medium">Preview</p>
                         <div className="my-4">
-                            <img src={idCardImage} alt="" />
+                            {/* <img src={idCardImage} alt="" /> */}
+                            <div className="bg-[#184D81] rounded-lg w-full h-fit">
+
+                                <div className="flex gap-1 p-3">
+                                    {isToggled && (
+                                        <div>
+                                            <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
+                                        </div>
+                                    )}
+
+                                  
+                                        <div className="border-r">
+                                            <p className="text-[#FFFFFF] font-light text-[10px] mx-2">Name</p>
+                                            <p className="text-[#FFFFFF] font-semibold text-xs mx-2">John Doe</p>
+                                        </div>
+                                
+                                    <div>
+                                        <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
+                                        <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
+                                    </div>
+                                </div>
+
+                                <div className="justify-end">
+                                    <img className="w-20 h-[72px] ml-auto me-6 -mt-14" src={c} alt="" />
+                                </div>
+
+
+                                <div className="flex">
+                                    <div className="bg-[#2795FB] w-56 h-fit p-1 rounded-e-full">
+                                        <div className="flex justify-between px-2">
+                                            <div>
+                                                <p className="text-[#FFFFFF] font-light text-[10px]">Employee ID</p>
+                                                <p className="text-[#FFFFFF] font-medium text-xs">RM-210215</p>
+                                            </div>
+                                            <div className="me-6">
+                                                <p className="text-[#FFFFFF] font-light text-[10px]">Region</p>
+                                                <p className="text-[#FFFFFF] font-medium text-xs">Ernakulam</p>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div className="px-3">
+                                    <p className="text-[#FFFFFF] font-light text-[10px] my-2">Personal Address & Mail</p>
+                                    <div className="grid grid-cols-2 gap-1">
+                                        <div className="flex gap-2">
+                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
+                                                <div className="p-1">
+                                                    <EmailIcon size={11} color="#FFFFFF" />
+                                                </div>
+
+                                            </div>
+                                            <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
+
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                                                <PhoneIcon size={11} color="#FFFFFF" />
+
+                                            </div>
+                                            <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
+
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                                                <LocationIcon size={12} color="#FFFFFF" />
+
+                                            </div>
+                                            <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+                                <div className="flex justify-between p-2 relative">
+                                    <img src={cygnoz} className="w-14 h-5" alt="" />
+                                    <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
+                                </div>
+                                <div>
+                                    <img className="w-32 h-32 -mt-32 rounded-b-lg ml-auto" src={busniessIcon} alt="" />
+                                </div>
+                            </div>
                         </div>
                         <div className="my-2">
-                            <img src={idCardBack} alt="" />
+                            {/* <img src={idCardBack} alt="" /> */}
+                            <div className="bg-[#184D81] rounded-lg w-full h-fit">
+                                <div className="flex gap-1 p-3">
+                                    <div>
+                                        <img className="w-32 h-10" src={cygnoz} alt="abc" />
+                                        <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
+                                    </div>
+                                    {/* <div className="border-r">
+                                                <p className="text-[#FFFFFF] font-light text-[10px] mx-2">Name</p>
+                                                <p className="text-[#FFFFFF] font-semibold text-xs mx-2">John Doe</p>
+                                            </div>
+                                            <div>
+                                                <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
+                                                <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
+                                            </div> */}
+                                </div>
+                                <div className="justify-end">
+                                    <img className="w-32 h-[72px] ml-auto me-6 -mt-[84px]" src={c} alt="" />
+                                </div>
+
+
+                                {/* <div className="flex">
+                                            <div className="bg-[#2795FB] w-56 h-fit p-1 rounded-e-full">
+                                                <div className="flex justify-between px-2">
+                                                    <div>
+                                                        <p className="text-[#FFFFFF] font-light text-[10px]">Employee ID</p>
+                                                        <p className="text-[#FFFFFF] font-medium text-xs">RM-210215</p>
+                                                    </div>
+                                                    <div className="me-6">
+                                                        <p className="text-[#FFFFFF] font-light text-[10px]">Region</p>
+                                                        <p className="text-[#FFFFFF] font-medium text-xs">Ernakulam</p>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+                                        </div> */}
+
+                                <div className="px-3 mt-10">
+                                    <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
+                                    <div className="grid grid-cols-2 gap-1">
+                                        <div className="flex gap-2">
+                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
+                                                <div className="p-1">
+                                                    <EmailIcon size={11} color="#FFFFFF" />
+                                                </div>
+
+                                            </div>
+                                            <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
+
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                                                <PhoneIcon size={11} color="#FFFFFF" />
+
+                                            </div>
+                                            <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
+
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                                                <LocationIcon size={12} color="#FFFFFF" />
+
+                                            </div>
+                                            <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
+
+                                        </div>
+
+
+                                    </div>
+                                </div>
+
+                                {/* <div className="flex justify-between p-2 relative">
+                                            <img src={cygnoz} className="w-14 h-5" alt="" />
+                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
+                                        </div> */}
+                                <div>
+                                    <img className="w-32 h-32 -mt-24 rounded-b-lg ml-auto" src={busniessIcon} alt="" />
+                                </div>
+                            </div>
                         </div>
 
                         <div className="flex gap-2 my-4 justify-between">

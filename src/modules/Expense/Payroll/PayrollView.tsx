@@ -35,8 +35,9 @@ const PayrollView = ({ }: Props) => {
 
             <div className="flex items-center justify-between rounded-xl ">
                 <div
-                    className="grid grid-cols-12 gap-3 bg-cover rounded-xl w-full"
+                    className="grid grid-cols-12 gap-3 rounded-xl w-full bg-no-repeat"
                     style={{
+                        
                         backgroundImage: `url(${bg})`, // Use the imported image
                     }}
                 >
@@ -59,7 +60,7 @@ const PayrollView = ({ }: Props) => {
                                 <div className="mt-10 flex ms-32 gap-6">
                                     <div className="">
                                         <p className="text-xs font-medium text-[#4B5C79] py-2  flex">
-                                           <UserIcon/>
+                                           <UserIcon color="#768294"/>
                                             Role
                                         </p>
 
@@ -70,7 +71,7 @@ const PayrollView = ({ }: Props) => {
                                     <div className="border-r border-[#DADADA] h-14 me-4 ms-3"></div>
                                     <div className="">
                                         <p className="text-xs font-medium text-[#4B5C79] py-2 whitespace-nowrap flex">
-                                          <CalenderDays size={16}/>
+                                          <CalenderDays color="#768294" size={16}/>
                                            Date Of Joining
                                         </p>
                                         <p className="text-sm font-bold text-[#303F58]">
@@ -80,7 +81,7 @@ const PayrollView = ({ }: Props) => {
                                     <div className="border-r border-[#DADADA] h-14 me-4 ms-3 "></div>
                                     <div className="cursor-pointer">
                                         <p className="text-xs font-medium text-[#4B5C79] py-2 whitespace-nowrap flex">
-                                            <Timer/>
+                                            <Timer color="#768294"/>
                                             Working Days
                                         </p>
                                         <p className="text-sm font-bold text-[#303F58]">
@@ -90,7 +91,7 @@ const PayrollView = ({ }: Props) => {
                                     <div className="border-r border-[#DADADA] h-14 me-4 ms-3"></div>
                                     <div className="">
                                         <p className="text-xs font-medium text-[#4B5C79] py-2 whitespace-nowrap flex">
-                                        <Timer/>
+                                        <Timer color="#768294"/>
                                         Present days 
                                         </p>
                                         <p className="text-sm font-medium text-[#303F58]">
@@ -100,7 +101,7 @@ const PayrollView = ({ }: Props) => {
                                     <div className="border-r border-[#DADADA] h-14 me-4 ms-3"></div>
                                     <div className="">
                                         <p className="text-xs font-medium text-[#4B5C79] py-2 whitespace-nowrap flex">
-                                        <Timer/>
+                                        <Timer color="#768294"/>
                                           Leave Days
                                         </p>
                                         <p className="text-sm font-medium text-[#303F58]">
@@ -132,7 +133,7 @@ const PayrollView = ({ }: Props) => {
 
                 </div>
                 <div className="my-2">
-                <h1>Total Earning Details</h1>
+                <h1 className="text-base font-bold text-[#303F58]">Total Earning Details</h1>
             </div>
 
 <div  className="bg-white p-3 rounded-lg">
@@ -200,44 +201,24 @@ const PayrollView = ({ }: Props) => {
     </div>
 </div>
           
-<div className="bg-white font-bold text-base mt-2">
+<div className="bg-white font-bold text-base mt-2 rounded-lg">
       <h1 className="p-2">Payroll Details</h1>
       <div className="p-4 gap-2">
-        <div className=" items-center gap-2 grid grid-cols-2">
+        <div className={`items-center gap-2 grid ${isEditing ? "grid-cols-2" : "grid-cols-1"}`}>
           <Input label="Basic Salary" placeholder="₹45,000" disabled={!isEditing} />
-          {isEditing && (
-            <Input
-              label="Reason*"
-              placeholder="Provide a reason for changes"
-            />
-          )}
+          {isEditing && <Input label="Reason" placeholder="Provide a reason for changes" />}
         </div>
-        <div className=" items-center gap-2 grid grid-cols-2">
+        <div className={`items-center gap-2 grid ${isEditing ? "grid-cols-2" : "grid-cols-1"}`}>
           <Input label="New License Earnings" placeholder="₹10,000" disabled={!isEditing} />
-          {isEditing && (
-            <Input
-              label="Reason*"
-              placeholder="Provide a reason for changes"
-            />
-          )}
+          {isEditing && <Input label="Reason" placeholder="Provide a reason for changes" />}
         </div>
-        <div className=" items-center gap-2 grid grid-cols-2">
+        <div className={`items-center gap-2 grid ${isEditing ? "grid-cols-2" : "grid-cols-1"}`}>
           <Input label="Recurring Amount" placeholder="₹2,000" disabled={!isEditing} />
-          {isEditing && (
-            <Input
-              label="Reason*"
-              placeholder="Provide a reason for changes"
-            />
-          )}
+          {isEditing && <Input label="Reason" placeholder="Provide a reason for changes" />}
         </div>
-        <div className=" items-center gap-2 grid grid-cols-2">
+        <div className={`items-center gap-2 grid ${isEditing ? "grid-cols-2" : "grid-cols-1"}`}>
           <Input label="Travel Elevance" placeholder="₹3,000" disabled={!isEditing} />
-          {isEditing && (
-            <Input
-              label="Reason*"
-              placeholder="Provide a reason for changes"
-            />
-          )}
+          {isEditing && <Input label="Reason" placeholder="Provide a reason for changes" />}
         </div>
       </div>
 
@@ -265,16 +246,13 @@ const PayrollView = ({ }: Props) => {
         )}
       </div>
 
-      
-<div className="p-4 rounded-lg">
-<div className="flex justify-end p-4 bg-[#FDF8F0]">
-   <p> Total amount </p>
-   <RupeeIcon size={24} color="#303F58"/> 
-   <p>10000</p>
-  </div>
-</div>
-
-
+      <div className="p-4 rounded-lg">
+        <div className="flex justify-end p-4 bg-[#FDF8F0]">
+          <p>Total amount</p>
+          <RupeeIcon size={24} color="#303F58" />
+          <p>10000</p>
+        </div>
+      </div>
     </div>
           <div className="flex justify-end gap-2 mt-3 pb-2 h-64">
                  <Button

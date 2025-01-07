@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Boxes from "../../../assets/icons/Boxes";
 import CalenderDays from "../../../assets/icons/CalenderDays";
-import Package from "../../../assets/icons/Package";
 import PackageCheck from "../../../assets/icons/PackageCheck";
 import PackageMinus from "../../../assets/icons/PackageMinus";
 import ConvertModal from "../../../components/modal/ConvertionModal/CovertLicenser";
@@ -21,7 +20,8 @@ import { useResponse } from "../../../context/ResponseContext";
 type Props = {}
 
 function LeadHome({}: Props) {
-  const {totalCounts}=useRegularApi()
+
+  const {customersCounts}=useRegularApi()
   const {request:getAllLeads}=useApi('get',3001)
   const {setCustomerData}=useResponse()
   const [allLead, setAllLead] = useState<LeadData[]>([]);
@@ -83,11 +83,10 @@ function LeadHome({}: Props) {
   },[])
 
    const homeCardData = [
-    { icon: <Boxes />, number: totalCounts?.totalLead, title: "Total Leads",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
-    { icon: <CalenderDays  />, number: "110", title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-    { icon: <Package/>, number: "56", title: "Closed Leads",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
-    { icon: <PackageCheck />, number: "100", title: "Converted Leads",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
-    { icon: <PackageMinus  />, number: "147", title: "Leads Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
+    { icon: <Boxes />, number: customersCounts?.totalLeads, title: "Total Leads",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
+    { icon: <CalenderDays  />, number: customersCounts?.leadsToday, title: "Leads Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
+    { icon: <PackageCheck />, number:  customersCounts?.convertedLeads, title: "Converted Leads",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
+    { icon: <PackageMinus  />, number: customersCounts?.leadsLost, title: "Leads Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
   const handleConvert=async(id:any)=>{

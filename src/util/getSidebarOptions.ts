@@ -2,14 +2,14 @@ import { Role, rolePermissions } from '../types/rolePermissions';
 
 // Define categories for sidebar options based on teams
 const teamCategories = {
-    "SALES R & A":["Regions", "Area"],
+    "SALES R & A":["Region", "Area"],
     "SALES TEAM": [ "Region Manager", "Area Manager", "BDA"],
     "SUPPORT TEAM": ["Supervisor", "Support Agent"],
     CUSTOMERS: ["Lead", "Trial", "Licenser"],
     TICKETS: ["Tickets"],
     USERS:["User","User Log","Worker Commission"],
     EXPENSE:["Expense","Payroll"],
-    AWARDS:['Prise'],
+    AWARDS:['Praise'],
     
 };
 

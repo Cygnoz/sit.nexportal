@@ -9,19 +9,20 @@ import Table from "../../../components/ui/Table";
 import CalenderDays from "../../../assets/icons/CalenderDays";
 import Boxes from "../../../assets/icons/Boxes";
 import PackageMinus from "../../../assets/icons/PackageMinus";
-import CalenderClock from "../../../assets/icons/CalenderClock";
 import CalenderMultiple from "../../../assets/icons/CalenderMultiple";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import { useEffect, useState } from "react";
 import { LeadData } from "../../../Interfaces/Lead";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 
 
   
 const TrialHome = () => {
+  const {customersCounts}=useRegularApi()
 
   const {request:getAllTrial}=useApi('get',3001)
   const [allTrials,setAllTrials]=useState<LeadData[]>([])
@@ -35,11 +36,10 @@ const TrialHome = () => {
 
       // Data for HomeCards
   const homeCardData = [
-    { icon: <CalenderDays />, number: "78", title: "Active Trials",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-    { icon: <CalenderMultiple size={40} />, number: "56", title: "Expired Trials",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
-    { icon: <CalenderClock size={24}/>, number: "50", title: "Upcoming Expiration",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
-    { icon: <Boxes />, number: "526", title: "Converted Trails",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
-    { icon: <PackageMinus />, number: "30", title: "Exit Trails",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
+    { icon: <CalenderDays />, number: customersCounts?.activeTrials, title: "Active Trials",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
+    { icon: <CalenderMultiple size={40} />, number: customersCounts?.extendedTrials, title: "Extended Trials",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
+    { icon: <Boxes />, number: customersCounts?.convertedTrials, title: "Converted Trails",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
+    { icon: <PackageMinus />, number: customersCounts?.expiredTrials, title: "Expired Trails",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
    
@@ -52,7 +52,7 @@ const TrialHome = () => {
         { key: "firstName", label: "Customer Name" },
         { key: "startDate", label: "Trial Start Date" },
         { key: "endDate", label: "Trial End Date" },
-        { key: "bdaDetails.bdaName", label: "Assigned BDA" },
+        { key: "bdaName", label: "Assigned BDA" },
       ];
             
   const getTrials=async()=>{
@@ -67,7 +67,8 @@ const TrialHome = () => {
           : "N/A",
           endDate: trial.endDate
           ? new Date(trial.endDate).toLocaleDateString("en-GB")
-          : "N/A", 
+          : "N/A",
+          bdaName:trial?.bdaId?.user?.userName 
         })) || [];
        setAllTrials(transformLicense)
       }else{

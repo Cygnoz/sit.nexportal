@@ -38,69 +38,67 @@ import SettingsHome from './modules/Settings/SettingsHome';
 import PayrollHome from './modules/Expense/Payroll/PayrollHome';
 import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';
 import PayrollView from './modules/Expense/Payroll/PayrollView';
+import PayrollView2 from './modules/Expense/Payroll/PayrollView2';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
+  const parentRoutes = [
+    { path: "dashboard", element: <DashboardPage /> },
+    { path: "regions", element: <RegionHome /> },
+    { path: "regions/:id", element: <RegionView /> },
+    { path: "lead/:id", element: <LeadView /> },
+    { path: "areas/:id", element: <AreaView /> },
+    { path: "lead", element: <LeadHome /> },
+    { path: "areas", element: <AreaHome /> },
+    { path: "support-agent", element: <SupportagentHome /> },
+    { path: "support-agent/:id", element: <SupportAgentView /> },
+    { path: "area-manager", element: <AMHome /> },
+    { path: "area-manager/:id", element: <AMView /> },
+    { path: "bda", element: <BDAHome /> },
+    { path: "bda/:id", element: <BDAView /> },
+    { path: "supervisor", element: <SupervisorHome /> },
+    { path: "supervisor/:id", element: <SuperVisorView /> },
+    { path: "trial", element: <TrialHome /> },
+    { path: "trial/:id", element: <TrialView /> },
+    { path: "licenser", element: <LicensorHome /> },
+    { path: "licenser/:id", element: <LicenserView /> },
+    { path: "region-manager", element: <RMHome /> },
+    { path: "region-manager/:id", element: <RMView /> },
+    { path: "users", element: <UserHome /> },
+    { path: "worker-commission", element: <WCommisionHome /> },
+    { path: "ticket", element: <TicketsHome /> },
+    { path: "ticket/:id", element: <TicketsView /> },
+    { path: "user-log", element: <UserLogHome /> },
+    { path: "prises", element: <PraiseHome /> },
+    { path: "settings", element: <SettingsHome /> },
+    { path: "payroll", element: <PayrollHome /> },
+    { path: "payroll-slip", element: <PayrollSlip /> },
+    { path: "payroll-view", element: <PayrollView /> },
+    { path: "payroll-view2", element: <PayrollView2 /> },
+  
+  ];
+  
   const {user}=useUser()
 
   return (
-    <>
-    <Router>
-      <Routes>
-        <Route path='/' element={<Login/>}/>
-        <Route path='/otp' element={<Otp/>}/>
-        {sessionStorage.getItem('authToken') || user ? (
-          // If role exists, show the layout with nested routes
-          <Route path="/*" element={<Layout />}>
-            {/* Define authenticated routes inside Layout */}
-            <Route path="dashboard" element={<DashboardPage />} />
-            <Route path="regions" element={<RegionHome />} />
-            <Route path="regions/:id" element={<RegionView />} />
-            <Route path="lead/:id" element={<LeadView />} />
-            <Route path="areas/:id" element={<AreaView/>} />
-            <Route path="lead" element={<LeadHome />} />
-            <Route path="areas" element={<AreaHome />} />
-            {/* Support Agent */}
-            <Route path="support-agent" element={<SupportagentHome />} />
-            <Route path='support-agent/:id' element={<SupportAgentView />} />
-            <Route path="lead" element={<LeadHome />} />
-            {/* Area Manager */}
-            <Route path="area-manager" element={<AMHome />} />
-            <Route path="area-manager/:id" element={<AMView/>} />
-            {/* BDA */}
-            <Route path="bda" element={<BDAHome />} />
-            <Route path="bda/:id" element={<BDAView />} />
-            <Route path="supervisor" element={<SupervisorHome />} />
-            <Route path="supervisor/:id" element={<SuperVisorView />} />
-            <Route path="trial" element={<TrialHome />} />
-            <Route path="trial/:id" element={<TrialView/>} />
-            <Route path="licenser" element={<LicensorHome />} />
-            <Route path="licenser/:id" element={<LicenserView />} />
-            <Route path="region-manager" element={<RMHome />} />
-            <Route path="region-manager/:id" element={<RMView />} />
-            <Route path="users" element={<UserHome/>} />
-            <Route path="worker-commission" element={<WCommisionHome/>} />
-            <Route path="ticket" element={<TicketsHome/>} />
-            <Route path="ticket/:id" element={<TicketsView/>} />
-            <Route path="user-log" element={<UserLogHome/>} />
-            <Route path='prises' element={<PraiseHome/>} />
-            {/* <Route path='' elementement={<SettingsHome/>} /> */}
-            <Route path='settings' element={<SettingsHome/>}/>
-            <Route path='payroll' element={<PayrollHome/>}/>
-            <Route path='payroll-slip' element={<PayrollSlip/>}/>
-            <Route path='payroll-view' element={<PayrollView/>}/>
-            
-            {/* Add more authenticated routes as needed */}
-          </Route>
-        ) : ( 
-           // If not authenticated, show the login page 
-          <Route path="*" element={<NoAccess />} />
-        )} 
-      </Routes>
-       
-    </Router>
-    <Toaster reverseOrder={false}/>
-    </>
+<>
+  <Router>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/otp" element={<Otp />} />
+      {sessionStorage.getItem("authToken") || user ? (
+        <Route path="/*" element={<Layout />}>
+          {parentRoutes.map(({ path, element }, index) => (
+            <Route key={index} path={path} element={element} />
+          ))}
+        </Route>
+      ) : (
+        <Route path="*" element={<NoAccess />} />
+      )}
+    </Routes>
+  </Router>
+  <Toaster reverseOrder={false} />
+</>
   );
 };
 
