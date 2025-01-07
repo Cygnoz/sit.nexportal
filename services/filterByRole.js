@@ -29,8 +29,20 @@ const filterByRole = async (userId) => {
       query.bdaId = bda._id;
       break;
     }
+    case "Supervisor": {
+        const bda = await Bda.findOne({ user: userId }).select("_id");
+        if (!bda) throw new Error("Supervisor not found.");
+        query.bdaId = bda._id;
+        break;
+      }
+      case "Support Agent": {
+        const bda = await Bda.findOne({ user: userId }).select("_id");
+        if (!bda) throw new Error("Support Agent not found.");
+        query.bdaId = bda._id;
+        break;
+      }
     default:
-      if (!["Super Admin", "Sales Admin"].includes(role)) {
+      if (!["Super Admin", "Sales Admin","Support Admin"].includes(role)) {
         throw new Error("Unauthorized role.");
       }
   }
