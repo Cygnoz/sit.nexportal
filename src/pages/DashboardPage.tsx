@@ -25,6 +25,10 @@ import RatingStar from '../components/ui/RatingStar';
 import TicketsBar from '../components/ui/TicketsBar';
 import { useRegularApi } from "../context/ApiContext";
 import RegionIcon from '../assets/icons/RegionIcon';
+import useApi from '../Hooks/useApi';
+import { endPoints } from '../services/apiEndpoints';
+import { useEffect, useState } from 'react';
+import ChevronDown from '../assets/icons/ChevronDown';
 
 const DashboardPage = () => {
   const {totalCounts}=useRegularApi()
@@ -190,7 +194,80 @@ const DashboardPage = () => {
   
 
   const maxTicketCount = Math.max(...regions.map((region) => region.ticketCount));
+
+  const {request:getConertionRate}=useApi('get',3003)
+  const {allRegions}=useRegularApi()
+  const [getRegion, setGetRegion]=useState<{
+    regions: {label: string; value:string}[];
+    areas:{label: string; value:string}[];
+  }>({regions:[], areas:[]})
+
+  console.log("region",getRegion.regions);
   
+  
+  
+  const getConvertion= async()=>{
+    try{
+      const endPoint=selectedRegion?`${endPoints.CONVERSION_RATE}/${selectedRegion.value}`:endPoints.CONVERSION_RATE
+      const {response, error}= await getConertionRate(endPoint)
+      console.log(response);
+      console.log(error);
+       
+      if(response && !error){
+        console.log(response.data);        
+      }
+      else{
+        console.log(error.data);
+        
+      }
+    }
+    catch(err){
+      console.log(err);
+      
+    }
+  }
+  useEffect(()=>{
+    getConvertion()
+  },[])
+
+  const [selectedRegion, setSelectedRegion] = useState<any>(); // Store selected region
+  const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState(false); // Toggle dropdown visibility
+
+  const handleFetchRegions = () => {
+      if (!isRegionDropdownOpen) {
+          const filteredRegions = allRegions?.map((region: any) => ({
+              value: String(region._id),
+              label: region.regionName,
+          }));
+          setGetRegion((prevData:any) => ({
+            ...prevData,
+            regions: filteredRegions,
+          }));
+      }
+      setIsRegionDropdownOpen(!isRegionDropdownOpen); // Toggle dropdown visibility
+  };
+
+  const handleRegionSelect = (region:any) => {
+      setSelectedRegion(region); // Set selected region
+      setIsRegionDropdownOpen(false); // Close dropdown after selection
+  };
+
+  // useEffect(() => {
+  //   const filteredAreas = allAreas?.filter(
+  //     (area: any) => area.region?._id === watch("endPoint")
+  //   );
+  //   const transformedAreas = filteredAreas?.map((area: any) => ({
+  //     label: area.areaName,
+  //     value: String(area._id),
+  //   }));
+
+  //   // Update areas
+  //   setGetRegion((prevData:any) => ({
+  //     ...prevData,
+  //     areas: transformedAreas,
+  //   }));
+  // }, [watch("endPoint"), allAreas]);
+
 
   return (
     <div className="text-[#303F58] mb-3">
@@ -325,7 +402,35 @@ const DashboardPage = () => {
           <div className="p-3 bg-white w-full space-y-2 rounded-lg">
           <h2 className='font-bold'>Lead Conversion Rate per Region</h2>
           <h3 className='text-xs'>India</h3>
+          <div className="flex justify-between">
           <h1 className='text-2xl font-medium'>80 Percentage</h1>
+          <div className="relative">
+            <button
+                className="flex items-center px-4 py-2 border rounded-xl bg-[#FEFDFA] w-52"
+                onClick={handleFetchRegions}
+            >
+                {selectedRegion?.label || "Select Region"}
+                <div className='ms-auto'>
+                <ChevronDown size={20} color="#6B7280" />
+                </div>
+            </button>
+
+            {/* Dropdown to show regions */}
+            {isRegionDropdownOpen && (
+                <div className="absolute mt-2 bg-white border rounded-md shadow-lg max-h-72 custom-scrollbar overflow-y-auto z-10 w-full">
+                    {getRegion.regions.map((region) => (
+                        <div
+                            key={region.value}
+                            className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => handleRegionSelect(region)}
+                        >
+                            {region?.label}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+          </div>
   
           <div className='-ms-7 mt-2'>
           <BarChart width={950} height={280} data={leadConversionData}>
@@ -346,8 +451,7 @@ const DashboardPage = () => {
         }
       </Bar>
     </BarChart>
-          </div>
-      
+          </div>      
           </div>
         </div>
       </div>

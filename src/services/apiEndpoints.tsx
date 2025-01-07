@@ -65,6 +65,8 @@ export const endPoints = {
   GET_ALL_PRAISE:"/praises",
   GET_ONE_PRAISE:"/praises",
 
+  CONVERSION_RATE:'/conversion-rate',
+
   // Region Inside View 
   
 };
