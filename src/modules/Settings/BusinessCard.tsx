@@ -833,10 +833,10 @@ function BusinessCard({ }: Props) {
                             </div> */}
 
                         <div
-                            className="my-2 bg-cover bg-center bg-no-repeat rounded-lg"
-                            style={{ backgroundImage: `url(${previewFront})` }}
+                            className="my-2 bg-cover bg-center bg-no-repeat rounded-lg relative"
+                            style={{ backgroundImage: `url(${previewFront})`, minHeight: '200px' }}
                         >
-                            <div className="flex gap-1 p-3">
+                            <div className="relative flex gap-1 p-3">
                                 {toggleStates["Profile Photo"] && (
                                     <div>
                                         <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
@@ -925,56 +925,65 @@ function BusinessCard({ }: Props) {
                             </div>
                         </div>
 
-                        <div className="my-2 bg-cover bg-center bg-no-repeat rounded-lg" style={{ backgroundImage: `url(${previewBack})` }}>
-                        <div className="flex gap-1 p-3">
-                                    <div>
-                                        {toggleStates["Company Logo"] && (
-                                            <img className="w-32 h-10" src={cygnoz} alt="abc" />
-                                        )}
-                                        {toggleStates["Logo Title"] && (
-                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
-                                        )}
-                                    </div>
-                                </div>
+    <div
+    className="my-2 bg-cover bg-center bg-no-repeat rounded-lg relative"
+    style={{ backgroundImage: `url(${previewBack})`, minHeight: '200px' }} // Ensure consistent minimum height
+>
+    {/* Overlay for consistent background */}
+    <div className="absolute inset-0 rounded-lg"></div>
 
-                                {toggleStates["CompanyInfo"] && (
-                                    <div className="px-3 py-8">
-                                        <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
-                                        <div className="grid grid-cols-2 gap-1">
-                                            <div className="flex gap-2">
-                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
-                                                    <div className="p-1">
-                                                        <EmailIcon size={11} color="#FFFFFF" />
-                                                    </div>
+    {/* Content Section */}
+    <div className="relative flex gap-1 p-3">
+        <div>
+            {toggleStates["Company Logo"] && (
+                <img className="w-32 h-10" src={cygnoz} alt="Company Logo" />
+            )}
+            {toggleStates["Logo Title"] && (
+                <p className="text-[#FFFFFF] font-normal text-[10px] py-1">
+                    Engineering your business for the world
+                </p>
+            )}
+        </div>
+    </div>
 
-                                                </div>
-                                                <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
+    {toggleStates["CompanyInfo"] && (
+        <div className="relative px-3 py-8">
+            <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
+            <div className="grid grid-cols-2 gap-1">
+                {/* Email */}
+                <div className="flex gap-2 items-center">
+                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
+                        <EmailIcon size={11} color="#FFFFFF" />
+                    </div>
+                    <p className="text-[#FFFFFF] font-light text-[9px]">
+                        john.doe@example.com
+                    </p>
+                </div>
+                {/* Phone */}
+                <div className="flex gap-2 items-center">
+                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
+                        <PhoneIcon size={11} color="#FFFFFF" />
+                    </div>
+                    {toggleStates["phoneNo"] && (
+                        <p className="text-[#FFFFFF] font-light text-[9px]">
+                            +919633564547
+                        </p>
+                    )}
+                </div>
+                {/* Location */}
+                <div className="flex gap-2 items-center">
+                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
+                        <LocationIcon size={12} color="#FFFFFF" />
+                    </div>
+                    <p className="text-[#FFFFFF] font-light text-[9px]">
+                        2972 Westheimer Rd. Santa Ana, Illinois 85486
+                    </p>
+                </div>
+            </div>
+        </div>
+    )}
+</div>
 
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                    <PhoneIcon size={11} color="#FFFFFF" />
-
-                                                </div>
-                                                {toggleStates["phoneNo"] && (
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
-                                                )}
-
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                    <LocationIcon size={12} color="#FFFFFF" />
-
-                                                </div>
-                                                <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
-
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                                )}
-                        </div>
 
 
                         <div className="flex gap-2 my-4 justify-between">

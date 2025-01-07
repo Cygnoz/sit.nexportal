@@ -14,7 +14,8 @@ import Trash from "../../../../assets/icons/Trash";
 import PreviousIcon from "../../../../assets/icons/PreviousIcon";
 import NextIcon from "../../../../assets/icons/NextIcon";
 import TickIcon from "../../../../assets/icons/TickIcon";
-import EllipsisVerticalIcon from "../../../../assets/icons/ellipsisVerticalIcon";
+import EllipsisVerticalIcon from "../../../../assets/icons/EllipsisVerticalIcon";
+// import EllipsisVerticalIcon from "../../../../assets/icons/ellipsisVerticalIcon";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
