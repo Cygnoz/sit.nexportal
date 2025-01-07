@@ -52,7 +52,7 @@ exports.addLead = async (req, res , next ) => {
  
  
    // Check for duplicate user details
-   const duplicateCheck = await checkDuplicateUser(firstName, email, phone);
+   const duplicateCheck = await checkDuplicateUser(firstName,email, phone);
    if (duplicateCheck) {
      return res.status(400).json({ message: `Conflict: ${duplicateCheck}` }); // Return a success response with conflict details
    }
@@ -183,6 +183,7 @@ exports.editLead = async (req, res, next) => {
   try {
     const { id } = req.params;
     const data = cleanLeadData(req.body);
+    const { regionId, areaId , bdaId } = data;
 
     // Fetch the existing document to get the user field
 const existingLead = await Leads.findById(id);
@@ -197,6 +198,12 @@ if (!existingLead) {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
+    const { regionExists, areaExists , bdaExists } = await dataExist( regionId, areaId , bdaId);
+ 
+    if (!validateRegionAndArea( regionExists, areaExists, bdaExists ,res )) return;
+ 
+    if (!validateInputs( data, regionExists, areaExists, bdaExists ,res)) return;
+ 
    
     Object.assign(existingLead, data);
     const updatedLead = await existingLead.save();
@@ -665,7 +672,6 @@ validateField( typeof data.regionId === 'undefined' ,"Please select a Region", e
 validateField( typeof data.areaId === 'undefined' , "Please select a Area", errors  );
 validateField( typeof data.bdaId === 'undefined' , "Please select a BDA", errors  );
 validateField( typeof data.firstName === 'undefined', "Firstname required", errors  );
-validateField( typeof data.email === 'undefined', "email required", errors  );
 validateField( typeof data.phone === 'undefined', "Phone number required", errors  );
 
 }
