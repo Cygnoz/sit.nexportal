@@ -59,3 +59,35 @@ exports.getDocumentCounts = async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
     }
   };
+
+  exports.getTeamCounts = async (req, res) => {
+    try {
+      const { id } = req.params;
+  
+      let filter = id ? { region: id } : {};
+  
+      // Count documents based on the filter (with or without region filter)
+      const [regionManager, areaManager, bda, supervisor, supportAgent] = await Promise.all([
+        RegionManager.countDocuments(filter),
+        AreaManager.countDocuments(filter),
+        Bda.countDocuments(filter),
+        Supervisor.countDocuments(filter),
+        SupportAgent.countDocuments(filter),
+      ]);
+  
+      const totalTeam = regionManager + areaManager + bda + supervisor + supportAgent;
+  
+      // Send response
+      res.json({
+        regionId: id || "All Regions",
+        regionManager,
+        areaManager,
+        bda,
+        supervisor,
+        supportAgent,
+        totalTeam,
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  };

@@ -8,6 +8,8 @@ const AreaManager = require("../database/model/areaManager");
 const Bda = require("../database/model/bda");
 const Supervisor = require("../database/model/supervisor");
 const SupportAgent = require("../database/model/supportAgent");
+const ActivityLogg = require('../database/model/activityLog');
+
 const moment = require("moment");
 
 exports.addRegion = async (req, res, next) => {
@@ -485,3 +487,207 @@ const ActivityLog = (req, status, operationId = null) => {
 
   req.user = log;
 };
+
+
+// exports.getActivityLogByOperationId = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     // Step 1: Aggregate to fetch all logs from related collections using $lookup
+//     const logs = await ActivityLogg.aggregate([
+//       // Match logs for the provided regionId (operationId)
+//       {
+//         $match: {
+//           operationId: id
+//         }
+//       },
+//       // Lookup Area
+//       {
+//         $lookup: {
+//           from: "Area", // Assuming the collection name for areas is 'areas'
+//           localField: "operationId",
+//           foreignField: "_id",
+//           as: "areaLogs"
+//         }
+//       },
+//       // Lookup AreaManager
+//       {
+//         $lookup: {
+//           from: "areamanagers", // Assuming the collection name for AreaManagers is 'areamanagers'
+//           localField: "operationId",
+//           foreignField: "_id",
+//           as: "areaManagerLogs"
+//         }
+//       },
+//       // Lookup RegionManager
+//       {
+//         $lookup: {
+//           from: "regionmanagers", // Assuming the collection name for RegionManagers is 'regionmanagers'
+//           localField: "operationId",
+//           foreignField: "_id",
+//           as: "regionManagerLogs"
+//         }
+//       },
+//       // Lookup Bda
+//       {
+//         $lookup: {
+//           from: "bdas", // Assuming the collection name for BDA is 'bda'
+//           localField: "operationId",
+//           foreignField: "_id",
+//           as: "bdaLogs"
+//         }
+//       },
+//       // Lookup Leads
+//       {
+//         $lookup: {
+//           from: "leads", // Assuming the collection name for Leads is 'leads'
+//           localField: "operationId",
+//           foreignField: "_id",
+//           as: "leadsLogs"
+//         }
+//       },
+//       // Filter and Combine all logs into one array
+//       {
+//         $project: {
+//           combinedLogs: {
+//             $concatArrays: [
+//               "$areaLogs",
+//               "$areaManagerLogs",
+//               "$regionManagerLogs",
+//               "$bdaLogs",
+//               "$leadsLogs"
+//             ]
+//           }
+//         }
+//       },
+//       // Unwind to flatten the combined logs array
+//       {
+//         $unwind: {
+//           path: "$combinedLogs",
+//           preserveNullAndEmptyArrays: true
+//         }
+//       },
+//       // Sort by timestamp in descending order
+//       {
+//         $sort: {
+//           "combinedLogs.timestamp": -1
+//         }
+//       },
+//       // Optionally, limit the number of logs if pagination is required
+//       {
+//         $limit: 100 // Adjust the limit as necessary
+//       }
+//     ]);
+
+//     // Step 2: Check if logs are empty
+//     if (!logs.length) {
+//       return res.status(404).json({ message: "No activity logs found for the provided operation ID" });
+//     }
+
+//     // Step 3: Send the combined and sorted logs as the response
+//     res.status(200).json(logs);
+//   } catch (error) {
+//     console.error("Error fetching activity logs:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+exports.getActivityLogByOperationId = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Step 1: Find all areas where region matches the provided id
+    const areas = await Area.find({ region: id });
+
+    if (areas.length === 0) {
+      return res.status(404).json({ message: "No areas found for the provided region ID" });
+    }
+
+    // Step 2: Extract all area IDs and convert them to strings
+    const areaIds = areas.map(area => area._id.toString());
+    console.log("Area IDs:", areaIds);
+
+    // Step 3: Find activity logs for areaIds
+    const areaLogs = await ActivityLogg.find({
+      operationId: { $in: areaIds }
+    });
+
+    // Step 4: Find activity logs for region ID
+    const regionLogs = await ActivityLogg.find({
+      operationId: id
+    });
+
+    // Step 5: Query AreaManager to get documents where region matches the provided id
+    const areaManagers = await AreaManager.find({ region: id });
+
+    // Step 6: Extract AreaManager IDs
+    const areaManagerIds = areaManagers.map(manager => manager._id.toString());
+
+    // Step 7: Find activity logs where operationId matches any AreaManager ID
+    const areaManagerLogs = await ActivityLogg.find({
+      operationId: { $in: areaManagerIds }
+    });
+
+    // Step 8: Query RegionManager to get documents where region matches the provided id
+    const regionManagers = await RegionManager.find({ region: id });
+
+    // Step 9: Extract RegionManager IDs
+    const regionManagerIds = regionManagers.map(manager => manager._id.toString());
+
+    // Step 10: Find activity logs where operationId matches any RegionManager ID
+    const regionManagerLogs = await ActivityLogg.find({
+      operationId: { $in: regionManagerIds }
+    });
+
+    // Step 11: Query Bda to get documents where region matches the provided id
+    const bdaDocuments = await Bda.find({ region: id });
+
+    // Step 12: Extract Bda IDs
+    const bdaIds = bdaDocuments.map(bda => bda._id.toString());
+
+    // Step 13: Find activity logs where operationId matches any Bda ID
+    const bdaLogs = await ActivityLogg.find({
+      operationId: { $in: bdaIds }
+    });
+
+    // Step 14: Query Leads to get documents where regionId matches the provided id
+    const leadsDocuments = await Leads.find({ regionId: id });
+
+    // Step 15: Extract Leads IDs
+    const leadsIds = leadsDocuments.map(lead => lead._id.toString());
+
+    // Step 16: Find activity logs where operationId matches any Leads ID
+    const leadsLogs = await ActivityLogg.find({
+      operationId: { $in: leadsIds }
+    });
+
+    // Step 17: Combine all logs and sort by timestamp in descending order
+    const logs = [
+      ...areaLogs,
+      ...regionLogs,
+      ...areaManagerLogs,
+      ...regionManagerLogs,
+      ...bdaLogs,
+      ...leadsLogs
+    ].sort((a, b) => {
+      const dateA = new Date(a.timestamp);
+      const dateB = new Date(b.timestamp);
+      return dateB - dateA; // Sort in descending order
+    });
+
+    // Step 18: Check if logs are empty
+    if (logs.length === 0) {
+      return res.status(404).json({ message: "No activity logs found for the provided operation ID" });
+    }
+
+    // Step 19: Send the combined logs as the response
+    res.status(200).json(logs);
+  } catch (error) {
+    console.error("Error fetching activity logs:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+

@@ -89,3 +89,5 @@ const ActivityLogGeneration = (permissionAction) => {
   }
   
   module.exports = ActivityLogGeneration
+
+ 
