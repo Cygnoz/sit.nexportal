@@ -3,7 +3,7 @@ interface Props {
   size?: number;
 }
 
-const RupeeIcon = ({ color, size = 20 }: Props) => {
+const RupeeIcon = ({ color, size }: Props) => {
   return (
     <svg
       width={size}
@@ -24,7 +24,7 @@ const RupeeIcon = ({ color, size = 20 }: Props) => {
       />
       <path
         d="M12.5 10.25H21.5M12.5 14H21.5M18.875 23.75L12.5 17.75H14.75C19.7502 17.75 19.7502 10.25 14.75 10.25"
-        stroke="white"
+        stroke={color}
         strokeWidth="1.7"
         strokeLinecap="round"
         strokeLinejoin="round"

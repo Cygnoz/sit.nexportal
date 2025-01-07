@@ -35,6 +35,10 @@ import AMView from './modules/SalesTeams/AreaManager/AMView';
 import PraiseHome from './modules/Awards/Praise/PraiseHome';
 import TicketsView from './modules/Tickets/TicketsView';
 import SettingsHome from './modules/Settings/SettingsHome';
+import PayrollHome from './modules/Expense/Payroll/PayrollHome';
+import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';
+import PayrollView from './modules/Expense/Payroll/PayrollView';
+import PayrollView2 from './modules/Expense/Payroll/PayrollView2';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -67,6 +71,11 @@ const App: React.FC = () => {
     { path: "user-log", element: <UserLogHome /> },
     { path: "prises", element: <PraiseHome /> },
     { path: "settings", element: <SettingsHome /> },
+    { path: "payroll", element: <PayrollHome /> },
+    { path: "payroll-slip", element: <PayrollSlip /> },
+    { path: "payroll-view", element: <PayrollView /> },
+    { path: "payroll-view2", element: <PayrollView2 /> },
+  
   ];
   
   const {user}=useUser()

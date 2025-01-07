@@ -68,5 +68,10 @@ export const endPoints = {
   CONVERSION_RATE:'/conversion-rate',
 
   // Region Inside View 
+
+  CUSTOMERCOUNTS:"/customer/statistics",
+
+  //Region Recent Activity
+  ACTIVITIES:"activity-logs",
   
 };
