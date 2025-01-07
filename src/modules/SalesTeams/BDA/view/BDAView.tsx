@@ -27,6 +27,9 @@ import {
   Tooltip,
   XAxis, YAxis
 } from 'recharts';
+import Trash from "../../../../assets/icons/Trash";
+import ConfirmModal from "../../../../components/modal/ConfirmModal";
+import toast from "react-hot-toast";
 
 interface BDAViewData {
   leadId:string;
@@ -60,6 +63,7 @@ const BDAView = ({}: Props) => {
   const navigate=useNavigate()
   const {id}=useParams()
   const {request:getBDA}=useApi('get',3002);
+  const {request: deleteABda}=useApi('delete',3002);
   const [data, setData] = useState<{
     bdaData:any;
     regionManager:any;
@@ -76,16 +80,18 @@ const BDAView = ({}: Props) => {
   const [isModalOpen, setIsModalOpen] = useState({
     editBda: false,
     viewBda: false,
-    awards:false
+    awards:false,
+    confirm:false,
   });
 
   // Function to toggle modal visibility
-  const handleModalToggle = (editBda = false, viewBda = false,awards=false) => {
+  const handleModalToggle = (editBda = false, viewBda = false,awards=false, confirm=false,) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editBda: editBda,
       viewBda: viewBda,
-      awards:awards
+      awards:awards,
+      confirm:confirm,
     }));
     getOneBDA();
   };
@@ -139,7 +145,25 @@ const BDAView = ({}: Props) => {
     { key: "action", label: "Action" }
   ];
 
-  
+  const handleDelete = async () => {
+    try {
+      const { response, error } = await deleteABda(`${endPoints.BDA}/${id}`);
+      console.log(response);
+      console.log(error);
+            
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/bda");
+      } else {
+        console.log(error?.response?.data?.message);        
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete the BDA.");
+    }
+  };
+
 
   const getOneBDA = async () => {
     try {
@@ -164,6 +188,7 @@ const BDAView = ({}: Props) => {
   useEffect(() => {
     getOneBDA()
   }, [id]);
+
 
   const leadConversionData = [
     { name: 'Area 1', uv: 35, },
@@ -288,7 +313,7 @@ const BDAView = ({}: Props) => {
             </div>
             
             <div className="flex space-x-6 bottom-0  mt-10 ">
-            <div onClick={()=>handleModalToggle(true,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
+            <div onClick={()=>handleModalToggle(true,false,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
               <div className="w-8 h-8 mb-2  rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -299,7 +324,7 @@ const BDAView = ({}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
              </div>
 
-            <div onClick={()=>handleModalToggle(false,true,false)} className="flex flex-col  items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,true,false,false)} className="flex flex-col  items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -310,7 +335,7 @@ const BDAView = ({}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
             </div>
 
-            <div onClick={()=>handleModalToggle(false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,false,true,false)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -330,6 +355,17 @@ const BDAView = ({}: Props) => {
                     </div>
               </div>
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
+            </div>
+
+            <div onClick={()=>handleModalToggle(false,false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+              <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <Trash size={18} color="#BC3126" />
+                   </div>
+                    </div>
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Delete</p>
             </div>
 
         </div>
@@ -379,6 +415,19 @@ const BDAView = ({}: Props) => {
       <Modal open={isModalOpen.viewBda} onClose={()=>handleModalToggle()}>
         <BDAViewForm bdaData={data.bdaData} onClose={()=>handleModalToggle()} />
       </Modal>
+      <Modal
+        open={isModalOpen.confirm}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          prompt="Are you sure want to delete this BDA?"
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>       
+
 
   </>
   )
