@@ -45,6 +45,8 @@ router.get("/regions/:regionId/areas",verifyToken,checkPermission('View Region')
 
 router.get('/team-counts/:id?',verifyToken,checkPermission('View Region'), dashboardController.getTeamCounts);
 
+router.get('/conversion-rate/:id',verifyToken,checkPermission('View Region'), dashboardController.getLeadConversionRate);
+
 // area
 router.post("/area",verifyToken,checkPermission('Add Area'), areaController.addArea,ActivityLogGeneration('Add Area'));
 
