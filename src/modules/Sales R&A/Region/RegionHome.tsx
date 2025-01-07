@@ -111,7 +111,6 @@ const RegionHome = () => {
     { key: "regionCode", label: "Region Code" },
     { key: "regionName", label: "Region Name" },
     { key: "country", label: "Country" },
-    { key: "description", label: "Description" },
     { key: "createdAt", label: "Created Date" },
   ];
 

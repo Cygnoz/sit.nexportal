@@ -267,15 +267,16 @@ const editValidationSchema = Yup.object({
               {!editId&&<Select
                 required
                 label="Role"
+                value={watch("role")}
                 placeholder={!editId ? "Select Role" : undefined}
                 options={editId ? editRoles : addRoles}
                 error={errors.role?.message}
-                {...register("role")}
+                onChange={(selectedValue)=>{
+                  setValue("role",selectedValue)
+                  handleInputChange("role")
+                }}
               />}
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-end gap-2 mt-3 pb-2">
+               <div className="flex justify-end gap-2 pt-3 pb-2 ">
           <Button
             variant="tertiary"
             className="h-8 text-sm border rounded-lg"
@@ -293,6 +294,11 @@ const editValidationSchema = Yup.object({
             Submit
           </Button>
         </div>
+            </div>
+           
+          </div>
+        </div>
+        
       </form>
     </div>
   );

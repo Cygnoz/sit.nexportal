@@ -21,9 +21,11 @@ import { useNavigate } from "react-router-dom";
 
 type Props = {
   onClose: () => void;
-  type:"lead"|"trial";
+  type:"lead"|"trial"|'licenser';
   orgData?:any
-  getLeads:()=>void
+  licenserData?:any
+  licenserId?:any
+  getLeads?:()=>void
 };
 
 const validationSchema = Yup.object({
@@ -40,7 +42,7 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Start date is required"),
   endDate: Yup.string().required("End date is required"),
 });
-const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
+const OrganisationForm = ({ onClose ,type,orgData,getLeads,licenserData,licenserId}: Props) => {
    const {customerData}=useResponse()
     const {request:leadToTrial}=useApi('put',3001)
     const {request:trialToLicenser}=useApi('put',3001)
@@ -55,18 +57,18 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
   } = useForm<Conversion>({
     resolver: yupResolver(validationSchema),
   });
-
+  
   const onSubmit: SubmitHandler<Conversion> =async (data) => {
     console.log("Form Data:", data);
     try{
-        const fun=type=="lead"?leadToTrial:trialToLicenser
-        const {response,error}=await fun(`${type==="lead"?endPoints.TRIAL:endPoints.TRIALS}/${customerData._id}`,data)
-        console.log(error);
-        
+        const fun=type=="trial"?trialToLicenser:leadToTrial
+        const {response,error}=await fun(`${type==="trial"?endPoints.TRIAL:endPoints.TRIALS}/${customerData.lengh>0?customerData._id:licenserId}`,data)
+        console.log("err",error);
+        console.log("res",response);
         if(response && !error){
             toast.success(response.data.message)
             navigate(type==='lead'?'/lead':'/trial'); // Trigger navigation first
-            getLeads()
+            getLeads?.()
             onClose()
             
         }else{
@@ -87,17 +89,30 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
 
 
   
-  useEffect(()=>{
-    setValue("contactName",customerData?.firstName)
-  },[customerData])
+
 
   useEffect(()=>{
-    if(orgData){
-      setValue("organizationName",orgData?.organizationName)
-      setValue("contactNum",orgData?.primaryContactNum )
-      setValue("email",orgData?.primaryContactEmail )
+
+      setValue("contactName",customerData?.firstName)
+      setValue("organizationName",orgData?.organizationName?orgData?.organizationName:customerData?.companyName)
+      setValue("contactNum",orgData?.primaryContactNum?orgData?.primaryContactNum:customerData?.phone )
+      setValue("email",orgData?.primaryContactEmail?orgData?.primaryContactEmail:customerData?.email)
+ 
+  },[orgData,customerData])
+
+  useEffect(()=>{
+    if(type==="licenser"){
+      setValue("contactName",licenserData?.firstName)
+      setValue("organizationName",licenserData?.companyName)
+      setValue("contactNum",licenserData?.phone)
+      setValue("email",licenserData?.email)
+      setValue("startDate",licenserData?.startDate)
+      setValue("endDate",licenserData?.endDate)
     }
-  },[orgData])
+  },[type,licenserData])
+
+
+  
 
   useEffect(() => {
     if (type === 'lead' && watch("startDate")) {

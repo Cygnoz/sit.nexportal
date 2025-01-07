@@ -125,9 +125,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
-
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo"];
+      fieldsToValidate = ["userName", "phoneNo","personalEmail"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
         !editId && "email",
@@ -135,16 +134,16 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
         !editId && "confirmPassword",
         "region",
         "area",
+        "workEmail"
       ];
     }
-
     const isValid = fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
-
     if (isValid && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
+      
     }
   };
   const handleBack = () => {
@@ -388,7 +387,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                     type="file"
                     className="hidden"
                     onChange={handleFileChange}
-                    //   onChange={(e) => handleFileUpload(e)}
                   />
                   <ImagePlaceHolder uploadedImage={watch("userImage")} />
                 </label>
@@ -405,18 +403,26 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
               </div>
 
               <div className="grid grid-cols-2 gap-2 col-span-10">
-                <Input
+              <Input
                   required
                   placeholder="Enter Full Name"
+                  value={watch("userName")}
                   label="Full Name"
                   error={errors.userName?.message}
-                  {...register("userName")}
+                  onChange={(e)=>{
+                    handleInputChange("userName")
+                    setValue("userName",e.target.value)
+                  }}
                 />
-                <Input
+                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
                   error={errors.personalEmail?.message}
-                  {...register("personalEmail")}
+                  value={watch("personalEmail")}
+                  onChange={(e)=>{
+                    setValue("personalEmail",e.target.value)
+                    handleInputChange("personalEmail")
+                  }}
                 />
                 <CustomPhoneInput
                   required
@@ -458,22 +464,30 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                   {...register("address.street2")}
                 />
                 <Select
-                  label="Country"
                   placeholder="Select Country"
-                  value={watch("country")}
+                  label="Country"
                   error={errors.country?.message}
+                  value={watch("country")}
+                  onChange={(selectedValue) => {
+                    // Update the country value and clear the state when country changes
+                    setValue("country", selectedValue);
+                    handleInputChange("country");
+                    setValue("state", ""); // Reset state when country changes
+                  }}
                   options={data.country}
-                  {...register("country")}
                 />
                 <Select
-                  label="State"
-                  value={watch("state")}
                   placeholder={
-                    data.state.length == 0 ? "Choose Country" : "Select State"
+                    data.state.length === 0 ? "Choose Country" : "Select State"
                   }
+                  value={watch("state")}
+                  onChange={(selectedValue) => {
+                    setValue("state", selectedValue);
+                    handleInputChange("state");
+                  }}
+                  label="State"
                   error={errors.state?.message}
                   options={data.state}
-                  {...register("state")}
                 />
                 <Input
                   label="City"
@@ -518,42 +532,53 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                     {editId ? "Edit" : "Set"} Login Credential
                   </p>
                   <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
-                    <Input
+                  <Input
                       required
-                      type="email"
                       placeholder="Enter Email"
                       label="Email"
+                      value={watch("email")}
                       error={errors.email?.message}
-                      {...register("email")}
+                      onChange={(e)=>{
+                        handleInputChange("email")
+                        setValue("email",e.target.value)
+                      }}
                     />
-
-                    <>
-                      <InputPasswordEye
-                        label={editId ? "New Password" : "Password"}
-                        required
-                        placeholder="Enter your password"
-                        error={errors.password?.message}
-                        {...register("password")}
-                      />
-                      <InputPasswordEye
-                        label="Confirm Password"
-                        required
-                        placeholder="Confirm your password"
-                        error={errors.confirmPassword?.message}
-                        {...register("confirmPassword")}
-                      />
-                    </>
+                    <InputPasswordEye
+                      label={editId ? "New Password" : "Password"}
+                      required
+                      value={watch("password")}
+                      placeholder="Enter your password"
+                      error={errors.password?.message}
+                      onChange={(e)=>{
+                        handleInputChange("password")
+                        setValue("password",e.target.value)
+                      }}
+                    />
+                    <InputPasswordEye
+                      label="Confirm Password"
+                      required
+                      value={watch("confirmPassword")}
+                      placeholder="Confirm your password"
+                      error={errors.confirmPassword?.message}
+                      onChange={(e)=>{
+                        handleInputChange("confirmPassword")
+                        setValue("confirmPassword",e.target.value)
+                      }}
+                    />
                   </div>
                 </>
               )}
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <Input
+              <Input
                   placeholder="Enter Work Email"
-                  type="email"
                   label="Work Email"
                   error={errors.workEmail?.message}
-                  {...register("workEmail")}
+                  value={watch("workEmail")}
+                  onChange={(e)=>{
+                    setValue("workEmail",e.target.value)
+                    handleInputChange("workEmail")
+                  }}
                 />
                 <CustomPhoneInput
                   placeholder="Phone"
@@ -565,14 +590,18 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                     setValue("workPhone", value); // Update the value of the phone field in React Hook Form
                   }}
                 />
-                <Select
+               <Select
                   required
+                  placeholder="Select Region"
                   label="Select Region"
-                  placeholder="Choose Region"
                   value={watch("region")}
+                  onChange={(selectedValue) => {
+                    setValue("region", selectedValue); // Manually update the region value
+                    handleInputChange("region");
+                    setValue("area", "");
+                  }}
                   error={errors.region?.message}
                   options={data.regions}
-                  {...register("region")}
                 />
                 <Select
                   required
@@ -585,17 +614,23 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                       : "Select Area"
                   }
                   value={watch("area")}
+                  onChange={(selectedValue) => {
+                    setValue("area", selectedValue); // Manually update the region value
+                    handleInputChange("area");
+                  }}
                   error={errors.area?.message}
                   options={data.areas}
-                  {...register("area")}
                 />
                 <Select
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
                   value={watch("commission")}
+                  onChange={(selectedValue) => {
+                    setValue("commission", selectedValue); // Manually update the commission value
+                    handleInputChange("commission");
+                  }}
                   error={errors.commission?.message}
                   options={data.wc}
-                  {...register("commission")}
                 />
               </div>
             </div>
@@ -773,7 +808,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
               variant="primary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
-              type="submit"
               onClick={() => handleNext(activeTab)}
             >
               Next

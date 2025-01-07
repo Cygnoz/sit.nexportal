@@ -65,6 +65,8 @@ export const endPoints = {
   GET_ALL_PRAISE:"/praises",
   GET_ONE_PRAISE:"/praises",
 
+
   // Region Inside View 
-  
+  // Dashboard
+  TEAM_BREAK_DOWN:'/team-counts',
 };
