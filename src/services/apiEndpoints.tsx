@@ -66,5 +66,10 @@ export const endPoints = {
   GET_ONE_PRAISE:"/praises",
 
   // Region Inside View 
+
+  CUSTOMERCOUNTS:"/customer/statistics",
+
+  //Region Recent Activity
+  ACTIVITIES:"activity-logs",
   
 };

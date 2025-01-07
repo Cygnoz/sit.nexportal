@@ -31,7 +31,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        searchBarRef.current &&
+        searchBarRef.current && 
         !searchBarRef.current.contains(event.target as Node) &&
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -50,7 +50,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
     <div className="p-4 flex items-center gap-2 w-full border-b-slate-400 border-y-orange-200 header-container">
       <div className="relative w-[68%]" ref={searchBarRef}>
         <SearchBar
-          placeholder="Search for modules areas, regions, region managers, area managers, supervisors, agents, leads, trials, or tickets, etc."
+          placeholder="Search modules "
           searchValue={searchValue}
           onSearchChange={setSearchValue}
           onClick={() => {

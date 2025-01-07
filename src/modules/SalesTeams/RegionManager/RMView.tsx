@@ -212,7 +212,7 @@ const RMView = () => {
               backgroundImage: `url(${BackgroundImage})`, // Use the imported image
             }}
           >
-            <div className="col-span-6 ">
+            <div className="col-span-6">
               <div>
                 {/* Left Section: Area Icon and Details */}
 

@@ -40,10 +40,12 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
     "Trial": TrialIcon,
     "Licenser": Licensor,
     "Tickets": TicketCheck,
+    "Expense" : TicketCheck,
+    "Payroll" : TicketCheck,
     "User": UserIcon,
     "User Log": UserIcon,
     "Worker Commission":UserIcon,
-    "Prise":Trophy,
+    "Praise":Trophy,
 
   };
 
@@ -60,10 +62,12 @@ const sidebarRoutes: { [key: string]: string } = {
     "Trial": "/trial",
     "Licenser": "/licenser",
     "Tickets": "/ticket",
+    "Expense": "/expense",
+    "Payroll":"/payroll",
     "User": "/users",
     "User Log": "/user-log",
     "Worker Commission":'/worker-commission',
-    "Prise":'/prises',
+    "Praise":'/prises',
     
     
   };
@@ -82,10 +86,12 @@ const rolePermissions: RolePermissions = {
     "Trial",
     "Licenser",
     "Tickets",
+    "Expense",
+    "Payroll",
     "User",
     "User Log",
     "Worker Commission",
-    "Prise",
+    "Praise",
   ],
   'Sales Admin': [
     "Region",
@@ -97,9 +103,9 @@ const rolePermissions: RolePermissions = {
     "Trial",
     "Licenser",
     "Worker Commission",
-    "Prise",
+    "Praise",
   ],
-  'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets","Prise"],
+  'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets","Praise"],
   'Region Manager': ["Area", "Area Manager", "BDA", "Lead", "Trial", "Licenser"],
   'Area Manager': ["BDA", "Lead", "Trial", "Licenser"],
   'BDA': ["Lead", "Trial", "Licenser"],
