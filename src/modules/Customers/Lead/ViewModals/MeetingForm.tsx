@@ -14,10 +14,6 @@ const MeetingForm = ({onClose }: Props) => {
                 <div className="flex justify-between">
                     <div className="space-y-2 p-4">
                         <h3 className="text-[#303F58] font-bold text-lg">Create Meeting</h3>
-                        <p className="text-[11px] text-[#8F99A9] mt-1">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                            eiusmod tempor incididunt
-                        </p>
                     </div>
                     <p onClick={onClose} className="text-3xl p-4 cursor-pointer">&times;</p>
                 </div>
@@ -97,6 +93,7 @@ const MeetingForm = ({onClose }: Props) => {
 </div>
           <div className=" flex justify-end gap-2 px-4 my-4">
             <Button
+            onClick={onClose}
               variant="tertiary"
               className="h-8 text-sm border rounded-lg"
               size="lg"

@@ -20,6 +20,8 @@ import { endPoints } from "../../../services/apiEndpoints";
 import RMForm from "./RMForm";
 import RMViewAward from "./RMViewAward";
 import Trash from "../../../assets/icons/Trash";
+import toast from "react-hot-toast";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
 
 interface AreaData {
   areaCode: string;
@@ -40,22 +42,26 @@ const RMView = () => {
     editRM: false,
     viewRM: false,
     awardRM: false,
+    confirm:false,
   });
   const handleModalToggle = (
     editRM = false,
     viewRM = false,
-    awardRM = false
+    awardRM = false,
+    confirm=false,
   ) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editRM: editRM,
       viewRM: viewRM,
       awardRM: awardRM,
+      confirm: confirm,
     }));
     getARM();
   };
 
   const { request: getaRM } = useApi("get", 3002);
+  const {request:deleteaRM}=useApi("delete",3002)
   const { id } = useParams();
   const [getData, setGetData] = useState<{
     rmData: any;
@@ -82,6 +88,23 @@ const RMView = () => {
   console.log(getData);
 
   const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    try {
+      const { response, error } = await deleteaRM(`${endPoints.GET_ALL_RM}/${id}`);
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/region-manager");
+      } else {
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete the Region Manager.");
+    }
+  };
+  
+
 
   // Data for HomeCards
   const homeCardData = [
@@ -317,7 +340,7 @@ const RMView = () => {
 
                   <div className="flex flex-col w-fit items-center space-y-1">
                     <div
-                      onClick={() => handleModalToggle(true, false, false)}
+                      onClick={() => handleModalToggle(true, false, false, false)}
                       className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                     >
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -331,7 +354,7 @@ const RMView = () => {
 
                   <div className="flex flex-col  items-center space-y-1">
                     <div
-                      onClick={() => handleModalToggle(false, true, false)}
+                      onClick={() => handleModalToggle(false, true, false, false)}
                       className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                     >
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -345,7 +368,7 @@ const RMView = () => {
 
                   <div className="flex flex-col   items-center space-y-1">
                     <div
-                      onClick={() => handleModalToggle(false, false, true)}
+                      onClick={() => handleModalToggle(false, false, true, false)}
                       className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                     >
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -368,7 +391,7 @@ const RMView = () => {
                     <p className="text-center ms-3">DeActivate</p>
                   </div>
 
-                  <div className="flex flex-col -ms-2 items-center space-y-1">
+                  <div onClick={()=>handleModalToggle(false,false,false,true)} className="flex flex-col -ms-2 items-center space-y-1">
                     <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                     <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
                   <div className="ms-2 mt-2 ">
@@ -442,6 +465,19 @@ const RMView = () => {
       >
         <RMViewAward getData={getData} onClose={() => handleModalToggle()} />
       </Modal>
+      <Modal
+        open={isModalOpen.confirm}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          prompt="Are you sure want to delete this Region manager?"
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>       
+
     </>
   );
 };

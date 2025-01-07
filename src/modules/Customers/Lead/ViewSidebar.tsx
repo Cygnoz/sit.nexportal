@@ -155,7 +155,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
                 {leadData?.lastName && leadData?.lastName}
               </p>
               <p className="text-[#FFFFFF] text-xs font-normal">
-                Lead ID <span className="text-xs font-bold ms-3">LD-001</span>
+                Lead ID <span className="text-xs font-bold ms-3">{leadData?.customerId}</span>
               </p>
             </div>
           </div>
@@ -163,7 +163,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
           <div className="flex gap-4 my-4  ">
             <EmailIcon color="#FFFFFF" size={16} />
             <p className="text-[#FFFFFF] text-xs font-normal">
-              {leadData?.email}
+              {leadData?.email ? leadData?.email:'N/A'}
             </p>
           </div>
           <div className="flex gap-4 mb-2 ">

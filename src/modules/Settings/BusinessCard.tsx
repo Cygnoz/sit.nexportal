@@ -20,7 +20,7 @@ import c from '../../assets/image/card-c.png'
 import polygon from '../../assets/image/polygon.png'
 import dotsImage from '../../assets/image/BCardDots.png'
 import previewFront from '../../assets/image/preview-card-front.png'
-// import previewBack from '../../assets/image/preview-card-back.png'
+import previewBack from '../../assets/image/preview-card-back.png'
 // import template1 from '../../assets/image/preview-template1.png'
 // import template2 from '../../assets/image/preview-remplate2.png'
 
@@ -653,9 +653,13 @@ function BusinessCard({ }: Props) {
                 <div className="col-span-4">
                     <div className="p-4 bg-[#F5F9FC] rounded-lg mt-4">
                         <p className="my-2 text-[#000000] text-base font-medium">Preview</p>
+
                         <div className="my-4">
                             {/* <img src={idCardImage} alt="" /> */}
-                            <div className="bg-[#184D81] rounded-lg w-full h-fit">
+                            <div className="bg-[#184D81] rounded-lg w-full h-fit relative">
+                                
+                                    <img className="w-32 h-[72px] absolute left-56" src={c} alt="" />
+                                    <img className="w-32 h-32 rounded-b-lg absolute top-[88px] left-[235px]" src={busniessIcon} alt="" />
 
                                 <div className="flex gap-1 p-3">
                                     {toggleStates["Profile Photo"] && (
@@ -680,10 +684,6 @@ function BusinessCard({ }: Props) {
                                         </div>
                                     )}
 
-                                </div>
-
-                                <div className="justify-end">
-                                    <img className="w-20 h-[72px] ml-auto me-6 -mt-14" src={c} alt="" />
                                 </div>
 
 
@@ -757,11 +757,10 @@ function BusinessCard({ }: Props) {
                                         <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
                                     )}
                                 </div>
-                                <div>
-                                    <img className="w-32 h-32 -mt-32 rounded-b-lg ml-auto" src={busniessIcon} alt="" />
-                                </div>
+                               
                             </div>
                         </div>
+
                         <div className="my-2">
                             {/* <img src={idCardBack} alt="" /> */}
                             <div className="bg-[#184D81] rounded-lg w-full h-[221px]">
@@ -774,14 +773,6 @@ function BusinessCard({ }: Props) {
                                             <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
                                         )}
                                     </div>
-                                    {/* <div className="border-r">
-                                                <p className="text-[#FFFFFF] font-light text-[10px] mx-2">Name</p>
-                                                <p className="text-[#FFFFFF] font-semibold text-xs mx-2">John Doe</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
-                                                <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
-                                            </div> */}
                                 </div>
                                 <div className="justify-end">
                                     <img className="w-32 h-[72px] ml-auto me-6 -mt-[84px]" src={c} alt="" />
@@ -837,10 +828,10 @@ function BusinessCard({ }: Props) {
 
                         </div>
 
-
                         {/* <div className="my-2">
                                 <img src={previewFront} alt="" />
                             </div> */}
+
                         <div
                             className="my-2 bg-cover bg-center bg-no-repeat rounded-lg"
                             style={{ backgroundImage: `url(${previewFront})` }}
@@ -932,6 +923,57 @@ function BusinessCard({ }: Props) {
                                     <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
                                 )}
                             </div>
+                        </div>
+
+                        <div className="my-2 bg-cover bg-center bg-no-repeat rounded-lg" style={{ backgroundImage: `url(${previewBack})` }}>
+                        <div className="flex gap-1 p-3">
+                                    <div>
+                                        {toggleStates["Company Logo"] && (
+                                            <img className="w-32 h-10" src={cygnoz} alt="abc" />
+                                        )}
+                                        {toggleStates["Logo Title"] && (
+                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {toggleStates["CompanyInfo"] && (
+                                    <div className="px-3 py-8">
+                                        <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
+                                        <div className="grid grid-cols-2 gap-1">
+                                            <div className="flex gap-2">
+                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
+                                                    <div className="p-1">
+                                                        <EmailIcon size={11} color="#FFFFFF" />
+                                                    </div>
+
+                                                </div>
+                                                <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
+
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                                                    <PhoneIcon size={11} color="#FFFFFF" />
+
+                                                </div>
+                                                {toggleStates["phoneNo"] && (
+                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
+                                                )}
+
+                                            </div>
+                                            <div className="flex gap-2">
+                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                                                    <LocationIcon size={12} color="#FFFFFF" />
+
+                                                </div>
+                                                <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                )}
                         </div>
 
 
