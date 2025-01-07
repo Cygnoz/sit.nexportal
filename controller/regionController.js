@@ -606,17 +606,12 @@ exports.getActivityLogByOperationId = async (req, res) => {
 
     // Step 2: Extract all area IDs and convert them to strings
     const areaIds = areas.map(area => area._id.toString());
-    console.log("Area IDs:", areaIds);
 
     // Step 3: Find activity logs for areaIds
-    const areaLogs = await ActivityLogg.find({
-      operationId: { $in: areaIds }
-    });
+    const areaLogs = await ActivityLogg.find({ operationId: { $in: areaIds } }).populate('userId', 'userName userImage');
 
     // Step 4: Find activity logs for region ID
-    const regionLogs = await ActivityLogg.find({
-      operationId: id
-    });
+    const regionLogs = await ActivityLogg.find({ operationId: id }).populate('userId', 'userName userImage');
 
     // Step 5: Query AreaManager to get documents where region matches the provided id
     const areaManagers = await AreaManager.find({ region: id });
@@ -625,9 +620,7 @@ exports.getActivityLogByOperationId = async (req, res) => {
     const areaManagerIds = areaManagers.map(manager => manager._id.toString());
 
     // Step 7: Find activity logs where operationId matches any AreaManager ID
-    const areaManagerLogs = await ActivityLogg.find({
-      operationId: { $in: areaManagerIds }
-    });
+    const areaManagerLogs = await ActivityLogg.find({ operationId: { $in: areaManagerIds } }).populate('userId', 'userName userImage');
 
     // Step 8: Query RegionManager to get documents where region matches the provided id
     const regionManagers = await RegionManager.find({ region: id });
@@ -636,9 +629,7 @@ exports.getActivityLogByOperationId = async (req, res) => {
     const regionManagerIds = regionManagers.map(manager => manager._id.toString());
 
     // Step 10: Find activity logs where operationId matches any RegionManager ID
-    const regionManagerLogs = await ActivityLogg.find({
-      operationId: { $in: regionManagerIds }
-    });
+    const regionManagerLogs = await ActivityLogg.find({ operationId: { $in: regionManagerIds } }).populate('userId', 'userName userImage');
 
     // Step 11: Query Bda to get documents where region matches the provided id
     const bdaDocuments = await Bda.find({ region: id });
@@ -647,9 +638,7 @@ exports.getActivityLogByOperationId = async (req, res) => {
     const bdaIds = bdaDocuments.map(bda => bda._id.toString());
 
     // Step 13: Find activity logs where operationId matches any Bda ID
-    const bdaLogs = await ActivityLogg.find({
-      operationId: { $in: bdaIds }
-    });
+    const bdaLogs = await ActivityLogg.find({ operationId: { $in: bdaIds } }).populate('userId', 'userName userImage');
 
     // Step 14: Query Leads to get documents where regionId matches the provided id
     const leadsDocuments = await Leads.find({ regionId: id });
@@ -658,9 +647,7 @@ exports.getActivityLogByOperationId = async (req, res) => {
     const leadsIds = leadsDocuments.map(lead => lead._id.toString());
 
     // Step 16: Find activity logs where operationId matches any Leads ID
-    const leadsLogs = await ActivityLogg.find({
-      operationId: { $in: leadsIds }
-    });
+    const leadsLogs = await ActivityLogg.find({ operationId: { $in: leadsIds } }).populate('userId', 'userName userImage');
 
     // Step 17: Combine all logs and sort by timestamp in descending order
     const logs = [
@@ -670,19 +657,18 @@ exports.getActivityLogByOperationId = async (req, res) => {
       ...regionManagerLogs,
       ...bdaLogs,
       ...leadsLogs
-    ].sort((a, b) => {
-      const dateA = new Date(a.timestamp);
-      const dateB = new Date(b.timestamp);
-      return dateB - dateA; // Sort in descending order
-    });
+    ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
-    // Step 18: Check if logs are empty
-    if (logs.length === 0) {
+    // Step 18: Get only the last 10 documents
+    const limitedLogs = logs.slice(0, 10);
+
+    // Step 19: Check if logs are empty
+    if (limitedLogs.length === 0) {
       return res.status(404).json({ message: "No activity logs found for the provided operation ID" });
     }
 
-    // Step 19: Send the combined logs as the response
-    res.status(200).json(logs);
+    // Step 20: Send the combined logs as the response
+    res.status(200).json(limitedLogs);
   } catch (error) {
     console.error("Error fetching activity logs:", error);
     res.status(500).json({ message: "Internal server error" });
