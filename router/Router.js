@@ -29,6 +29,8 @@ router.put("/user/:userId",verifyToken,checkPermission('Edit User'), userControl
 router.delete("/user/:userId",verifyToken,checkPermission('Delete User'), userController.deleteUser,ActivityLogGeneration('Delete User'));
 
 // Region manager
+router.get("/region-manager-check/:id",verifyToken,checkPermission('Add Area Manager'), regionManagerController.addRegionManagerCheck);
+
 router.post('/region-manager',verifyToken,checkPermission('Add Region Manager'),regionManagerController.addRegionManager,ActivityLogGeneration('Add Region Manager'))
 
 router.get("/region-managers",verifyToken,checkPermission('View Region Manager'), regionManagerController.getAllRegionManager);
@@ -42,6 +44,8 @@ router.get("/region-manager/:id/details",verifyToken,checkPermission('View Regio
 router.delete("/region-managers/:id",verifyToken,checkPermission('Delete Region Manager'), regionManagerController.deleteRegionManager,ActivityLogGeneration('Delete Region Manager'));
 
 // Area manager
+router.get("/area-manager-check/:id",verifyToken,checkPermission('Add Area Manager'), areaManagerController.addAreaManagerCheck);
+
 router.post('/area-manager',verifyToken,checkPermission('Add Area Manager'),areaManagerController.addAreaManager,ActivityLogGeneration('Add Area Manager'))
 
 router.get("/area-managers",verifyToken,checkPermission('View Area Manager'), areaManagerController.getAllAreaManager);

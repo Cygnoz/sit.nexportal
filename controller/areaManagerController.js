@@ -207,6 +207,22 @@ exports.addAreaManager = async (req, res, next) => {
   }
 };
 
+exports.addAreaManagerCheck = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const existingAreaManager = await AreaManager.findOne({ area: id });
+        if (existingAreaManager) {
+          return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });
+        }
+    return res.status(201).json({
+      message: "success"
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.getAreaManager = async (req, res) => {
   try {
     const { id } = req.params;

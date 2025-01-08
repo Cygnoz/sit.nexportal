@@ -212,6 +212,23 @@ exports.addRegionManager = async (req, res, next) => {
   }
 };
 
+exports.addRegionManagerCheck = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    const existingRegionManager = await RegionManager.findOne({ region: id });
+    
+    if (existingRegionManager) {
+      return res.status(400).json({ message: "Region is already assigned to another Region Manager. Try adding another region." });
+    }
+    return res.status(201).json({
+      message: "success"
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.getRegionManager = async (req, res) => {
   try {
     const { id } = req.params;
