@@ -107,8 +107,8 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
           {user?.userImage ? (
             <img className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full" src={user?.userImage} alt="" />
           ) : (
-            <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
-              <UserIcon color="#768294" />
+            <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-black rounded-full flex justify-center items-center">
+              <UserIcon color="white" />
             </p>
           )}
         </p>

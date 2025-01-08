@@ -97,26 +97,31 @@ const AreaView = ({ }: // status,
 
   const handleDeactivate = async () => {
     try {
-      const { response, error } = await deactivationArea(`${endPoints.DEACTIVATE_AREA}/${id}`);
-
-      console.log(id);
-      console.log(response);
-      console.log(error, "error message");
-
-      if (response && !error) {
+      const endpoint = area?.status === "Active"
+        ? `${endPoints.DEACTIVATE_AREA}/${id}` // Deactivate endpoint
+        : `${endPoints.DEACTIVATE_AREA}/${id}`; // Activate endpoint (ensure this exists in backend)
+  
+      const { response, error } = await deactivationArea(endpoint);
+      console.log("res",response);
+      console.log("err",error);
+      if (response && !error) {  
         console.log(response.data);
         toast.success(response.data.message);
-        navigate("/areas");
-      } else {
+        setTimeout(() => {
+          navigate("/areas");
+        }, 2000); // 2-second delay before navigation
+      }
+       else {
         console.log(error?.response?.data?.message);
         toast.error(error?.response?.data?.message || "An error occurred");
       }
     } catch (err) {
-      console.error("Deactivate error:", err);
-      toast.error("Failed to deactivate the area.");
+      console.error("Deactivate/Activate error:", err);
+      toast.error("Failed to update the area status.");
     }
   };
-  return (
+
+    return (
     <>
       <div ref={topRef}>
         <div className="flex items-center text-[16px] my-2 space-x-2">

@@ -767,7 +767,7 @@ function BusinessCard({ }: Props) {
                                 <div className="flex gap-1 p-3">
                                     <div>
                                         {toggleStates["Company Logo"] && (
-                                            <img className="w-32 h-10" src={cygnoz} alt="abc" />
+                                            <img className="w-32 h-8" src={cygnoz} alt="abc" />
                                         )}
                                         {toggleStates["Logo Title"] && (
                                             <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
@@ -940,7 +940,7 @@ function BusinessCard({ }: Props) {
     <div className="relative flex gap-1 p-3">
         <div>
             {toggleStates["Company Logo"] && (
-                <img className="w-32 h-10" src={cygnoz} alt="Company Logo" />
+                <img className="w-32 h-8" src={cygnoz} alt="Company Logo" />
             )}
             {toggleStates["Logo Title"] && (
                 <p className="text-[#FFFFFF] font-normal text-[10px] py-1">
