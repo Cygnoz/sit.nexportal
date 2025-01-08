@@ -74,7 +74,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   const { request: editAM } = useApi("put", 3002);
   const { request: getAM } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
-  const { allAreas, allRegions, allCountries, allWc } = useRegularApi();
+  const { dropDownAreas, dropdownRegions, allCountries, allWc } = useRegularApi();
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -166,21 +166,23 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
 
   useEffect(() => {
     // Map the regions into the required format for regions data
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
 
     // Set the data object with updated regions
     setData((prevData: any) => ({ ...prevData, regions: filteredRegions }));
-  }, [allRegions]);
+  }, [dropdownRegions]);
 
   useEffect(() => {
     // Filter areas based on the selected region
-    const filteredAreas = allAreas?.filter(
-      (area: any) => area.region?._id === watch("region")
+    const filteredAreas = dropDownAreas?.filter(
+      (area: any) => area?.region === watch("region")
     );
 
+    console.log("dee",filteredAreas);
+    
     // Map the filtered areas to the required format
     const transformedAreas = filteredAreas?.map((area: any) => ({
       label: area.areaName,
@@ -189,7 +191,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
 
     // Set the data object with updated areas
     setData((prevData: any) => ({ ...prevData, areas: transformedAreas }));
-  }, [watch("region"), allAreas]); // Re-run when either selected region or allAreas changes
+  }, [watch("region"), dropDownAreas]); // Re-run when either selected region or allAreas changes
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
