@@ -163,8 +163,9 @@ exports.logout = async (req, res) => {
   try {
     // Find the user
     const id = req.params.id
-    const user = await User.findOne(id);
+    const user = await User.findById(id);
 
+console.log(user.userName);
 
     // Capture IP address and User-Agent during logout
     const requestIP = req.ip || req.connection.remoteAddress;
@@ -194,7 +195,7 @@ exports.logout = async (req, res) => {
     // Respond with a success message
     res.status(200).json({
       success: true,
-      message: 'User logged out successfully',
+      message: `${user.userName} logged out successfully`,
     });
 
   } catch (error) {
