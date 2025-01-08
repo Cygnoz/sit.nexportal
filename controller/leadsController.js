@@ -227,7 +227,7 @@ if (!existingLead) {
 
 
 
-exports.deleteLead = async (req, res) => {
+exports.deleteLead = async (req, res, next) => {
   try {
     const { leadId } = req.params;
 
@@ -264,7 +264,7 @@ exports.deleteLead = async (req, res) => {
   }
 };
 
-exports.convertLeadToTrial = async (req, res) => {
+exports.convertLeadToTrial = async (req, res, next) => {
   try {
 
     const { leadId } = req.params; // Get the lead ID from request parameters
