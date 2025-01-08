@@ -70,6 +70,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
+  const {request:checkAm}=useApi("get",3002)
   const { request: addAM } = useApi("post", 3002);
   const { request: editAM } = useApi("put", 3002);
   const { request: getAM } = useApi("get", 3002);
@@ -121,6 +122,31 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
     }
   };
 
+  const checkAM=async()=>{
+    try{
+      const {response,error}=await checkAm(`${endPoints.CHECK_AM}/${watch("area")}`)
+      console.log("res",response);
+      console.log("err",error);
+      
+      
+      if(response && !error){
+        return true
+      }else{
+        
+        
+        
+        if(error?.response?.data?.message==="Area is already assigned to another Area Manager. Try adding another Area."){
+          return false
+        }else{
+          return true
+        }
+      }
+    }catch(err){
+      console.log(err);
+      
+    }
+  }
+
   const tabs = [
     "Personal Information",
     "Company Information",
@@ -130,11 +156,38 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
+  // const handleNext = async (tab: string) => {
+  //   const currentIndex = tabs.indexOf(activeTab);
+  //   let fieldsToValidate: any[] = [];
+  //   if (tab === "Personal Information") {
+  //     fieldsToValidate = ["userName", "phoneNo","personalEmail"];
+  //   } else if (tab === "Company Information") {
+  //     fieldsToValidate = [
+  //       !editId && "email",
+  //       !editId && "password",
+  //       !editId && "confirmPassword",
+  //       "region",
+  //       "area",
+  //       "workEmail"
+  //     ];
+  //   }
+  //   const isValid = fieldsToValidate.length
+  //     ? await trigger(fieldsToValidate)
+  //     : true;
+  //   if (isValid && currentIndex < tabs.length - 1) {
+  //     setActiveTab(tabs[currentIndex + 1]);
+  //     clearErrors();
+      
+  //   }
+  // };
+
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
+    let canProceed = true; // Default to true, modify if checkRM fails
+  
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo","personalEmail"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
         !editId && "email",
@@ -142,16 +195,29 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
         !editId && "confirmPassword",
         "region",
         "area",
-        "workEmail"
+        "workEmail",
       ];
+      const rmCheck = await checkAM(); // Call checkRM function
+      
+      if (!rmCheck) {
+        canProceed = false;
+        // Replace with your preferred method for showing a message
+        toast.error("Area is already assigned to another Area Manager. Try adding another Area."); 
+      }
     }
-    const isValid = fieldsToValidate.length
+
+    console.log("can proceed",canProceed);
+    
+  
+    // Validate fields only if canProceed is true
+    const isValid = canProceed && fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
-    if (isValid && currentIndex < tabs.length - 1) {
+    
+    // If validation passes and we can proceed, move to the next tab
+    if (isValid && canProceed && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
-      
     }
   };
 

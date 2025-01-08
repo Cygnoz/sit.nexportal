@@ -1,131 +1,32 @@
 import rightArrow from '../../../../assets/image/right-arrow.png'
 import EditIcon from '../../../../assets/icons/EditIcon'
 import profileImage from '../../../../assets/image/AvatarImg.png'
-// import SortBy from '../../../../components/ui/SortBy'
-import { useState } from 'react'
+import SelectDropdown from '../../../../components/ui/SelectDropdown'
 
 type Props = {}
 
 const ActivityTimeline = ({}: Props) => {
-    const [selectedMonth, setSelectedMonth] = useState("");
-      const [selectedYear, setSelectedYear] = useState("");
-    
-      const months = [
-        "January",
-        "February",
-        "March",
-        "April",
-        "May",
-        "June",
-        "July",
-        "August",
-        "September",
-        "October",
-        "November",
-        "December",
-      ];
-    
-      const years = Array.from({ length: 50 }, (_, i) => 2000 + i);
-    
-      const handleMonthSelect = (month: string) => setSelectedMonth(month);
-      const handleYearSelect = (year: string) => setSelectedYear(year);
-    
-      const [isMonthDropdownOpen, setIsMonthDropdownOpen] = useState(false);
-      const [isYearDropdownOpen, setIsYearDropdownOpen] = useState(false);
     
     
       
   return (
     <div>
                 <div className="w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
-            {/* <div className="flex gap-4 mb-2">
-            <SortBy
-            sort={[length=4, ]}
-            />
-            
-             <SortBy
-            sort={[length=4, ]}
-            />
-            </div> */}
+          
              <div className="flex gap-4">
-        {/* Month Dropdown */}
-        <div className="relative">
-          <button
-            className="flex items-center px-4 py-2 border rounded-xl bg-[#FEFDFA]"
-            onClick={() => setIsMonthDropdownOpen(!isMonthDropdownOpen)} // Toggle dropdown visibility
-          >
-            {selectedMonth || "All Activities"}
-            
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="ml-2 h-4 w-4 text-gray-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-          {isMonthDropdownOpen && ( // Show dropdown only when it's open
-            <div className="absolute mt-2 bg-white border rounded-md shadow-lg">
-              {months.map((month) => (
-                <div
-                  key={month}
-                  className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  onClick={() =>{ handleMonthSelect(month)
-                   setIsMonthDropdownOpen(!isMonthDropdownOpen)}
-                  }
-                >
-                  {month}
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-{/* Year Dropdown */}
-<div className="relative">
-  <button
-    className="flex items-center px-4 py-2 border rounded-xl bg-[#FEFDFA]"
-    onClick={() => setIsYearDropdownOpen(!isYearDropdownOpen)} // Toggle dropdown visibility
-  >
-    {selectedYear || "All Time Perios"}
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="ml-2 h-4 w-4 text-gray-500"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="2"
-        d="M19 9l-7 7-7-7"
-      />
-    </svg>
-  </button>
-  {isYearDropdownOpen && ( // Show dropdown only when it's open
-    <div className="absolute mt-2 bg-white border rounded-md shadow-lg max-h-72 overflow-y-auto">
-      {years.map((year) => (
-        <div
-          key={year}
-          className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-          onClick={() => {
-            setIsYearDropdownOpen(!isYearDropdownOpen);
-            handleYearSelect(year.toString());
-          }}
-        >
-          {year}
-        </div>
-      ))}
-    </div>
-  )}
-</div>
+             <SelectDropdown
+            placeholder="All Activities"
+            searchPlaceholder="Search Activities"
+            width="w-44"
+          />
+
+<SelectDropdown
+           
+            placeholder="All Timelines"
+           
+            searchPlaceholder="Search Timelines"
+            width="w-44"
+          />
 
       </div>
             <p className="text-[#303F58] text-sm font-bold mt-3">Today, November 21,2024</p>
