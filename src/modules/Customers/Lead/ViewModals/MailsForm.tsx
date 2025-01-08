@@ -16,13 +16,33 @@ import Input from "../../../../components/form/Input";
 import NumberListIcon from "../../../../assets/icons/NumberListIcon";
 import BulletListIcon from "../../../../assets/icons/BulletListIcon";
 import StrikeThroughIcon from "../../../../assets/icons/StrikeThroughIcon";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { LeadEmailData } from "../../../../Interfaces/LeadEmail";
+import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
 
 
 type Props = {
   onClose: () => void;
 }
 
+const validationSchema = Yup.object({
+  activityType: Yup.string().required("Type is required"),
+});
+
 const MailsForm = ({ onClose }: Props) => {
+
+    const {
+      handleSubmit,
+      register,
+      // clearErrors,
+    } = useForm<LeadEmailData>({
+      resolver: yupResolver(validationSchema),
+    });
+  
 
   const Emoji = Quill.import('formats/emoji');
   Quill.register('modules/emoji', Emoji);
@@ -47,6 +67,7 @@ const MailsForm = ({ onClose }: Props) => {
   icons['emoji'] = EmojiIconHTML;
 
   const [value, setValue] = useState('');
+  const {request: addLeadMail}=useApi('post',3001)
 
   const modules = {
     toolbar: [
@@ -59,6 +80,31 @@ const MailsForm = ({ onClose }: Props) => {
     'emoji-textarea': false,
     'emoji-shortname': true,
   };
+
+  const onSubmit: SubmitHandler<LeadEmailData> = async (data: any, event) => {
+    event?.preventDefault(); // Prevent default form submission behavior
+    console.log("Data", data);
+    try {
+      const {response , error} = await addLeadMail(endPoints.LEAD_ACTIVITY)
+      console.log(response);
+      console.log(error);
+            
+      if (response && !error) {
+        console.log(response.data);
+        
+      } else {
+        console.log(error.data.message);
+        
+      }
+    } catch (err) {
+      console.error("Error submitting lead mail data:", err);
+      toast.error("An unexpected error occurred."); // Handle unexpected errors
+    }
+  };
+
+  // const handleInputChange = (field: keyof LeadEmailData) => {
+  //   clearErrors(field); // Clear the error for the specific field when the user starts typing
+  // };
 
 
   return (
@@ -77,11 +123,12 @@ const MailsForm = ({ onClose }: Props) => {
             </div>
           </div>
         </div>
-        <div className="flex gap-4 p-4">
+        <div className="flex gap-4 p-4" onSubmit={handleSubmit(onSubmit)}>
           <p className="mt-3 text-[#303F58] text-xs font-semibold ms-2">To</p>
           <Input 
             placeholder='Anjela John (anjela@gmail.com)'
             type="email"
+            {...register("emailTo")}
             className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2 text-[#303F58] text-xs font-semibold text-center"
             />
 
@@ -98,6 +145,7 @@ const MailsForm = ({ onClose }: Props) => {
 
         {/* <p className="text-[#303F58] text-sm font-semibold p-4 ms-2 mt-2">Your Subject Title</p> */}
         <Input
+        {...register("emailSubject")}
         placeholder="Your Subject Title"
         type="text"
         className="text-[#303F58] text-sm font-semibold outline-none w-[493px] px-4 mt-6"
@@ -113,12 +161,14 @@ const MailsForm = ({ onClose }: Props) => {
             placeholder="Write here your message..."
             className="quill-editor h-[250px]  text-[#4B5C79] text-sm font-normal"
             theme="snow"
+            // {...register('emailText')}
+            // onChange={() => handleInputChange("emailText")}
             modules={modules}
           />
         </div>
 
         <div className='m-5 flex justify-end'>
-          <Button className="w-16 h-9" variant='primary' size='sm'>Done</Button>
+          <Button className="w-16 h-9" variant='primary' type="submit" size='sm'>Done</Button>
         </div>
 
 
