@@ -20,7 +20,7 @@ exports.getSolvedTicketsByRegion = async (req, res) => {
       regions.map(async (region) => {
         const solvedTicket = await Ticket.countDocuments({
           region: region._id,
-          status: "Solved",
+          status: "Resolved",
         });
 
         return {
