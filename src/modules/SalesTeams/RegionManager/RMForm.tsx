@@ -58,7 +58,7 @@ const editValidationSchema = Yup.object().shape({
 const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   
   const { request: addRM } = useApi("post", 3002);
-  const { allRegions, allWc, allCountries } = useRegularApi();
+  const { dropdownRegions, allWc, allCountries } = useRegularApi();
   const { request: editRM } = useApi("put", 3002);
   const { request: getRM } = useApi("get", 3002);
 
@@ -184,7 +184,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       value: String(region._id),
       label: region.regionName,
     }));
@@ -193,7 +193,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       ...prevData,
       regions: filteredRegions,
     }));
-  }, [allRegions]);
+  }, [dropdownRegions]);
 
   // UseEffect for updating wc
   useEffect(() => {

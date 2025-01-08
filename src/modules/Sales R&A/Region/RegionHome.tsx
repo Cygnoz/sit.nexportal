@@ -67,6 +67,8 @@ const RegionHome = () => {
     getAllRegions();
   }, []);
 
+  console.log(allRegion);
+  
   // Data for HomeCards
   const homeCardData = [
     {
@@ -107,11 +109,11 @@ const RegionHome = () => {
   ];
 
   // Define the columns with strict keys
-  const columns: { key: keyof RegionData; label: string }[] = [
+  const columns: { key: any; label: string }[] = [
     { key: "regionCode", label: "Region Code" },
     { key: "regionName", label: "Region Name" },
     { key: "country", label: "Country" },
-    { key: "description", label: "Description" },
+    { key: "status", label: "Status" },
     { key: "createdAt", label: "Created Date" },
   ];
 

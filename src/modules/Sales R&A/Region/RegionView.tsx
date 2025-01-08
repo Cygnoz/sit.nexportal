@@ -52,6 +52,7 @@ function RegionView({}: Props) {
   }, []);
   const { request: getRM } = useApi("get", 3002);
   const { request: deleteRegion } = useApi("delete", 3003);
+  const { request: deactivateRegion } = useApi("put", 3003);
   const {request:getAreaDetails}=useApi('get',3003)
   const [dropDown, setDropDown] = useState([]);
   const navigate=useNavigate()
@@ -111,17 +112,19 @@ function RegionView({}: Props) {
     editRegion: false,
     addArea: false,
     deleteRegion:false,
-    editAm:false
+    editAm:false,
+  deactivateRegion:false,
   });
 
   // Function to toggle modal visibility
-  const handleModalToggle = (editRegion = false, addArea = false,deleteRegion=false,editAm=false) => {
+  const handleModalToggle = (editRegion = false, addArea = false,deleteRegion=false,editAm=false,deactivateRegion=false) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editRegion,
       addArea,
       deleteRegion,
-      editAm
+      editAm,
+      deactivateRegion
     }));
     getARegion();
     getAllTeam()
@@ -237,6 +240,34 @@ function RegionView({}: Props) {
     }
   };
 
+
+  const handleDeactivate = async () => {
+    try {
+      const { response, error } = await deactivateRegion(`${endPoints.DEACTIVATION}/${id}`);
+      console.log(response);
+      console.log(error, "error message");
+      
+      
+      if (response) {
+       console.log(response.data);
+       toast.success(response.data.message);
+       navigate("/regions");
+       
+      } else {
+        console.log(error?.response?.data?.message);
+        
+        toast.error(error?.response?.data?.message  || "An error occurred");     
+        
+        
+      }
+    } catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the lead.");
+    }
+  };
+
+
+
   return (
     <>
       <div ref={topRef}  className="h-full flex">
@@ -262,7 +293,7 @@ function RegionView({}: Props) {
                   <div className="w-fit flex justify-center items-center flex-col">
                     <p className="text-[#8F99A9] text-[10px]">Region Status</p>
                     <p className="bg-[#6AAF681A] text-[#6AAF68] text-[10px] py-1 px-2 rounded-xl w-fit mt-1">
-                      Active
+                    {data.regionData?.status}
                     </p>
                   </div>
                 </div>
@@ -281,7 +312,7 @@ function RegionView({}: Props) {
               <div className="flex justify-evenly items-center w-full text-[10px]">
                 <div className="flex flex-col items-center space-y-1">
                   <div
-                    onClick={() => handleModalToggle(true, false,false,false)}
+                    onClick={() => handleModalToggle(true, false,false,false,false)}
                     className="cursor-pointer w-8 h-8 mb-2 rounded-full"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -295,7 +326,7 @@ function RegionView({}: Props) {
 
                 <div className="flex flex-col  items-center space-y-1">
                   <div
-                    onClick={() => handleModalToggle(false, true,false,false)}
+                    onClick={() => handleModalToggle(false, true,false,false,false)}
                     className="cursor-pointer w-8 h-8 mb-2 rounded-full"
                   >
                     <PlusCircleIcon size={35} color="#D52B1E4D" />
@@ -308,7 +339,9 @@ function RegionView({}: Props) {
                 <div className="flex flex-col  items-center space-y-1">
                   <div className="w-8 h-8 mb-2 rounded-full">
                   <div className="rounded-full cursor-pointer  bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
+                   <div 
+                   onClick={() => handleModalToggle(false, false,false,false,true)}
+                   className="ms-2 mt-2">
                    <DeActivateIcon size={18} color="#D52B1E4D" />
                    </div>
                     </div>
@@ -318,7 +351,7 @@ function RegionView({}: Props) {
                   </p>
                 </div>
 
-                <div onClick={() => handleModalToggle(false,false,true,false)}  className="cursor-pointer">
+                <div onClick={() => handleModalToggle(false,false,true,false,false)}  className="cursor-pointer">
                 <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
                   <div className="ms-2 mt-2 ">
                     <Trash size={18} color="#BC3126" />
@@ -461,7 +494,20 @@ function RegionView({}: Props) {
           prompt="Are you sure want to delete this region?"
           onClose={() => handleModalToggle()}
         />
-      </Modal>       
+      </Modal>  
+
+       <Modal
+        open={isModalOpen.deactivateRegion}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDeactivate}
+          prompt="Are you sure want to deactivate this region?"
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>        
 
       <Modal   open={isModalOpen.editAm} onClose={() => handleModalToggle()}>
      <AMForm editId={data.amEditId}  onClose={() => handleModalToggle()} />
