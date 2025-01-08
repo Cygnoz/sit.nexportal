@@ -15,6 +15,8 @@ import PreviousIcon from "../../../../assets/icons/PreviousIcon";
 import NextIcon from "../../../../assets/icons/NextIcon";
 import TickIcon from "../../../../assets/icons/TickIcon";
 import EllipsisVerticalIcon from "../../../../assets/icons/EllipsisVerticalIcon";
+import Modal from "../../../../components/modal/Modal";
+import TasksForm from "../ViewModals/TasksForm";
 // import EllipsisVerticalIcon from "../../../../assets/icons/ellipsisVerticalIcon";
 
 const ImageAndLabel = [
@@ -197,7 +199,7 @@ const TaskTable = <T extends object>({
           ))} */}
           {headerContents.button && (
             <div>
-                <Button className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148] -mt-1" variant="secondary">+<span className="text-xs">Add Tasks</span></Button>
+                <Button onClick={handleModalToggle} className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148] -mt-1" variant="secondary">+<span className="text-xs">Add Tasks</span></Button>
             </div>
           )}
         </div>
@@ -267,6 +269,13 @@ const TaskTable = <T extends object>({
     }, 3000);
     return () => clearTimeout(timeout);
   }, [data]);
+
+      // State to manage modal visibility
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      // Function to toggle modal visibility
+      const handleModalToggle = () => {
+          setIsModalOpen((prev) => !prev);
+      };  
 
   return (
     <div className="w-full  bg-white rounded-lg p-5">
@@ -478,6 +487,11 @@ const TaskTable = <T extends object>({
           </div>
         </div>
       )}
+
+<Modal className="w-[45%]" open={isModalOpen} onClose={handleModalToggle}>
+      <TasksForm  onClose={handleModalToggle}/>
+      </Modal>
+
     </div>
   );
 };
