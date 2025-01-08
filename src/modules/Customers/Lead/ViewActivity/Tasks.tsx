@@ -1,13 +1,11 @@
-import Boxes from "../../../../assets/icons/Boxes"
-import PackageCheck from "../../../../assets/icons/PackageCheck"
-import Table from "../../../../components/ui/Table"
+// import Boxes from "../../../../assets/icons/Boxes"
+// import PackageCheck from "../../../../assets/icons/PackageCheck"
+import TaskTable from "./TaskTable";
 
 interface LeadViewData {
     task: string;
     dueDate: string;
     bda: string;
-    button: string;
-    source: string;
   }
 
 type Props = {}
@@ -15,11 +13,11 @@ type Props = {}
 const Tasks = ({}: Props) => {
          // Data for the table
 const leadData: LeadViewData[] = [
-    { task: "BDA12345", dueDate: "Anjela John", bda: "(406) 555-0120", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Kristin Watson", bda: "(480) 555-0103", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Wade Warren", bda: "(702) 555-0122", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "", },
+    { task: "Send Follow Up Email", dueDate: "5/12/2024", bda: "Anjela John", },
+    { task: "Call the lead to discuss their requirements further.", dueDate: "9/8/2024", bda: "Anjela John", },
+    { task: "Schedule Product Demo", dueDate: "19/4/2024", bda: "Anjela John",},
+    { task: "Prepare Proposal", dueDate: "26/9/2024", bda: "Anjela John",},
+    { task: "Send Follow Up Email", dueDate: "6/7/2024", bda: "Anjela John",  },
   ];
   
     // Define the columns with strict keys
@@ -27,28 +25,29 @@ const leadData: LeadViewData[] = [
     { key: "task", label: "Task" },
     { key: "dueDate", label: "Due Date" },
     { key: "bda", label: "BDA" },
-    { key: "button", label: "" },
-    { key: "source", label: "" },
   ];
 
   return (
     <div>
-             <div>
-        <Table<LeadViewData>
+         <div>
+        <TaskTable<LeadViewData>
             data={leadData}
             columns={columns}
             headerContents={{
-            title: "Lead Details",
+            title: "Tasks",
             search: { placeholder: "Search" },
-            sort: [
-                  {
-                    sortHead: "Filter",
-                    sortList: [
-                      { label: "Sort by Date", icon: <PackageCheck size={14} color="#4B5C79"/> },
-                      { label: "Sort by Status", icon: <Boxes size={14} color="#4B5C79"/> }
-                    ]
-                  }
-                ]
+            // sort: [
+            //       {
+            //         sortHead: "Filter",
+            //         sortList: [
+            //           { label: "Sort by Date", icon: <PackageCheck size={14} color="#4B5C79"/> },
+            //           { label: "Sort by Status", icon: <Boxes size={14} color="#4B5C79"/> }
+            //         ]
+            //       }
+            //     ],
+            button:{
+              buttonHead:"Add Task"
+            }
             }}
             noAction
         />

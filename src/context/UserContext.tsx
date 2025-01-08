@@ -9,6 +9,7 @@ interface User {
   empId:string
   employeeId:string
   id:string
+  email:string;
 }
 
 // Create a Context with a default value of undefined for the user

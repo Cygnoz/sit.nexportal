@@ -26,6 +26,7 @@ import Trash from "../../../assets/icons/Trash";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import type{ RegionView } from "../../../Interfaces/RegionView";
 import AMForm from "../../SalesTeams/AreaManager/AMForm";
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 
 type Props = {};
 const initialRegionAreaData: RegionView = {
@@ -292,9 +293,14 @@ function RegionView({}: Props) {
                 <div className="border-r pe-3">
                   <div className="w-fit flex justify-center items-center flex-col">
                     <p className="text-[#8F99A9] text-[10px]">Region Status</p>
-                    <p className="bg-[#6AAF681A] text-[#6AAF68] text-[10px] py-1 px-2 rounded-xl w-fit mt-1">
-                    {data.regionData?.status}
-                    </p>
+                    <h3
+                  className={`p-2 rounded-full text-xs font-medium ${data?.regionData?.status === "Active"
+                    ? "bg-[#6AAF681A] text-[#6AAF68]"
+                    : "bg-[#6AAF681A] text-orange-500"
+                    }`}
+                >
+                  {data?.regionData?.status}
+                </h3>
                   </div>
                 </div>
                 <div className="ps-3">
@@ -336,20 +342,31 @@ function RegionView({}: Props) {
                   </p>
                 </div>
 
-                <div className="flex flex-col  items-center space-y-1">
-                  <div className="w-8 h-8 mb-2 rounded-full">
-                  <div className="rounded-full cursor-pointer  bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div 
-                   onClick={() => handleModalToggle(false, false,false,false,true)}
-                   className="ms-2 mt-2">
-                   <DeActivateIcon size={18} color="#D52B1E4D" />
-                   </div>
-                    </div>
+                <div
+              onClick={() => handleModalToggle(false, false,false,false, true)}
+              className="flex flex-col items-center space-y-1 cursor-pointer"
+            >
+              <div className="w-8 h-8 mb-2 rounded-full">
+              {data?.regionData?.status === "Active" ?
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
                   </div>
-                  <p className="text-center font-medium  text-xs ">
-                    DeActivate
-                  </p>
                 </div>
+                :
+                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                </div>
+              </div>
+
+                  }
+
+              </div>
+              <p className="text-center ms-2">
+                {data?.regionData?.status === "Active" ? "Deactivate" : "Activate"}
+              </p>
+            </div>
 
                 <div onClick={() => handleModalToggle(false,false,true,false,false)}  className="cursor-pointer">
                 <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
@@ -504,7 +521,11 @@ function RegionView({}: Props) {
       >
         <ConfirmModal
           action={handleDeactivate}
-          prompt="Are you sure want to deactivate this region?"
+          prompt={
+            data?.regionData?.status === "Active"
+              ? "Are you sure you want to deactivate this area?"
+              : "Are you sure you want to activate this area?"
+          }
           onClose={() => handleModalToggle()}
         />
       </Modal>        

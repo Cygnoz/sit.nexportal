@@ -1,18 +1,21 @@
 import React, { useEffect, useMemo, useState } from "react";
-import Eye from "../../assets/icons/Eye";
-import NextIcon from "../../assets/icons/NextIcon";
-import PencilLine from "../../assets/icons/PencilLine";
-import PreviousIcon from "../../assets/icons/PreviousIcon";
-import Trash from "../../assets/icons/Trash";
-import SearchBar from "./SearchBar";
-import SortBy from "./SortBy";
-import IndiaLogo from "../../assets/image/IndiaLogo.png";
-import SaudhiLogo from "../../assets/image/SaudiLogo.png";
-import UAELogo from "../../assets/image/UAELogo.webp";
-import UserIcon from "../../assets/icons/UserIcon";
-import No_Data_found from "../../assets/image/NO_DATA.png";
-import Button from "./Button";
-import ArrowRight from "../../assets/icons/ArrowRight";
+import Eye from "../../../../assets/icons/Eye";
+import IndiaLogo from "../../../../assets/image/IndiaLogo.png";
+import SaudhiLogo from "../../../../assets/image/SaudiLogo.png";
+import UAELogo from "../../../../assets/image/UAELogo.webp";
+import No_Data_found from "../../../../assets/image/NO_DATA.png";
+import SearchBar from "../../../../components/ui/SearchBar";
+// import SortBy from "../../../../components/ui/SortBy";
+import UserIcon from "../../../../assets/icons/UserIcon";
+import Button from "../../../../components/ui/Button";
+import ArrowRight from "../../../../assets/icons/ArrowRight";
+import PencilLine from "../../../../assets/icons/PencilLine";
+import Trash from "../../../../assets/icons/Trash";
+import PreviousIcon from "../../../../assets/icons/PreviousIcon";
+import NextIcon from "../../../../assets/icons/NextIcon";
+import TickIcon from "../../../../assets/icons/TickIcon";
+import EllipsisVerticalIcon from "../../../../assets/icons/EllipsisVerticalIcon";
+// import EllipsisVerticalIcon from "../../../../assets/icons/ellipsisVerticalIcon";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -31,6 +34,9 @@ interface TableProps<T> {
       sortHead: string;
       sortList: { label: string; icon: React.ReactNode; action?: () => void }[];
     }[];
+    button?:{
+        buttonHead:string;
+    }
   };
   actionList?: {
     label: "view" | "edit" | "delete";
@@ -42,7 +48,7 @@ interface TableProps<T> {
   skeltonCount?:number
 }
 
-const Table = <T extends object>({
+const TaskTable = <T extends object>({
   data,
   columns,
   headerContents,
@@ -123,9 +129,6 @@ const Table = <T extends object>({
         return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
       case "Paid":
         return "bg-purple-200 text-center text-black py-1 px-2 rounded-lg";
-        case "Deactivate":
-          return "bg-orange-500 text-center text-white py-1 px-2 rounded-lg";
-  
       default:
         return "";
     }
@@ -177,10 +180,10 @@ const Table = <T extends object>({
       } items-center mb-4`}
     >
       {headerContents.title && (
-        <h2 className="text-lg font-bold">{headerContents.title}</h2>
+        <h2 className="text-[#303F58] text-sm font-bold p-2">{headerContents.title}</h2>
       )}
       {headerContents.search && (
-        <div className={`w-[440px] ${headerContents.title && "ms-auto me-2"}`}>
+        <div className={`w-[280px] ${headerContents.title && "me-auto px-6"}`}>
           <SearchBar
             searchValue={searchValue}
             onSearchChange={setSearchValue}
@@ -188,13 +191,16 @@ const Table = <T extends object>({
           />
         </div>
       )}
-      {headerContents.sort && (
         <div className="flex gap-2">
-          {headerContents.sort.map((sort, index) => (
+          {/* {headerContents.sort.map((sort, index) => (
             <SortBy key={index} sort={sort} />
-          ))}
+          ))} */}
+          {headerContents.button && (
+            <div>
+                <Button className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148] -mt-1" variant="secondary">+<span className="text-xs">Add Tasks</span></Button>
+            </div>
+          )}
         </div>
-      )}
     </div>
   );
 
@@ -263,7 +269,7 @@ const Table = <T extends object>({
   }, [data]);
 
   return (
-    <div className="w-full  bg-white rounded-lg p-4">
+    <div className="w-full  bg-white rounded-lg p-5">
       {renderHeader()}
 
       <div
@@ -297,6 +303,8 @@ const Table = <T extends object>({
                   {col.key == "convert" ? "Convert" : col.label}
                 </th>
               ))}
+              <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
+              <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
               {!noAction && (
                 <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium">
                   Action
@@ -373,6 +381,23 @@ const Table = <T extends object>({
                     </div>
                   </td>
                 ))}
+                <td className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
+                    <div>
+                        <Button variant="tertiary"> 
+                            <div className="flex gap-1">
+                                <div className="p-[2px]"><TickIcon size={12} color="#565148"/></div>
+                                <p className="text-[#565148] text-xs font-medium">Mark as Completed</p>
+                            </div>
+                        </Button>
+                    </div>
+
+                </td>
+                <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
+                    <div>
+                        <EllipsisVerticalIcon color="#768294"/>
+                    </div>
+
+                </td>
                 {!noAction && (
                   <td
                     className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
@@ -457,4 +482,4 @@ const Table = <T extends object>({
   );
 };
 
-export default Table;
+export default TaskTable;

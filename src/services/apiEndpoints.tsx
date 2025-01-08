@@ -18,6 +18,7 @@ export const endPoints = {
   AREA: "/area",
   GET_AREAS: "/areas",
   RECENT_ACTIVITY: "/area-activity-logs",
+  DEACTIVATE_AREA:"/deactivateArea",
 
   //RM
   RM: "/region-manager",
@@ -66,6 +67,8 @@ export const endPoints = {
   GET_ALL_PRAISE:"/praises",
   GET_ONE_PRAISE:"/praises",
 
+  CONVERSION_RATE:'/conversion-rate',
+
   // Region Inside View 
 
   CUSTOMERCOUNTS:"/customer/statistics",
@@ -74,9 +77,12 @@ export const endPoints = {
   ACTIVITIES:"activity-logs",
   DEACTIVATION:"/deactivateRegion",
 
-  DROPDOWN_DATA:"/dropdown-data"
+  DROPDOWN_DATA:"/dropdown-data",
 
 
   
+
+  //LOGOUT
+  LOGOUT:"/logout", 
   
 };

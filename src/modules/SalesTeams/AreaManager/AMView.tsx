@@ -19,6 +19,9 @@ import AMForm from './AMForm';
 import AMViewAward from './AMViewAward';
 import AMViewCardandTable from "./AMViewCardandTable";
 import AMViewForm from "./AMViewForm";
+import Trash from "../../../assets/icons/Trash";
+import toast from "react-hot-toast";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
 
 
 // import AMViewAward from './AMViewAward';
@@ -35,21 +38,23 @@ interface AMData {
 type Props = {}
 
 const AMView = ({ }: Props) => {
-const topRef = useRef<HTMLDivElement>(null);
-  
-    useEffect(() => {
-      // Scroll to the top of the referenced element
-      topRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, []);
+  const topRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    // Scroll to the top of the referenced element
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
   // const [isModalOpen, setIsModalOpen] = useState(false);
   // const [isAwardOpen, setIsAwardOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState({
     editAM: false,
     viewAM: false,
-    awardAM: false
+    awardAM: false,
+    confirm:false,
   });
   const { request: getaAM } = useApi('get', 3002)
   const { id } = useParams()
+  const {request:deleteaAM}=useApi('delete',3002)
   const [getData, setGetData] = useState<{
     amData: any;
   }>
@@ -77,21 +82,38 @@ const topRef = useRef<HTMLDivElement>(null);
   }, [id])
   console.log(getData);
 
+  const handleDelete = async () => {
+    try {
+      const { response, error } = await deleteaAM(`${endPoints.GET_ALL_AM}/${id}`);
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/area-manager");
+      } else {
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete the Area Manager.");
+    }
+  };
+
+
   const navigate = useNavigate()
 
-  const handleModalToggle = (editAM = false, viewAM = false, awardAM = false) => {
+  const handleModalToggle = (editAM = false, viewAM = false, awardAM = false, confirm=false,) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editAM: editAM,
       viewAM: viewAM,
       awardAM: awardAM,
+      confirm: confirm,
     }));
     getAAM()
   }
 
- const handleView=(id:any)=>{
-  console.log(id);
- }
+  const handleView = (id: any) => {
+    console.log(id);
+  }
 
   const data: AMData[] = [
     { name: "Devid Billie", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
@@ -143,23 +165,23 @@ const topRef = useRef<HTMLDivElement>(null);
     { name: "Page G", uv: 3490, avatar: profileImage },
     { name: "Page H", uv: 4000, avatar: profileImage },
   ];
-  
+
   // Normalize the data
   const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
   const normalizedData = ChartData.map((entry) => ({
     ...entry,
     uv: (entry?.uv / maxValue) * 100,
   }));
-  
 
-  
-  
-  
-  
+
+
+
+
+
   // Custom Bubble Component
-  const CustomBubble = (props:any) => {
+  const CustomBubble = (props: any) => {
     const { x, y } = props;
-  
+
     if (x == null || y == null) return null;
     return (
       <div
@@ -175,16 +197,16 @@ const topRef = useRef<HTMLDivElement>(null);
       />
     );
   };
-  
+
   // Custom Bar Shape with Curved Top
-  const CustomBarWithCurve = (props:any) => {
+  const CustomBarWithCurve = (props: any) => {
     const { x, y, width, height, fill } = props;
-  
+
     if (!x || !y || !width || !height) return null;
-  
+
     const radius = width / 2;
     const gap = 2;
-  
+
     return (
       <>
         <rect
@@ -325,47 +347,47 @@ const topRef = useRef<HTMLDivElement>(null);
     {
       name: "Jan 05",
       Area1: 5673,
-      
+
       amt: 9000,
     },
     {
       name: "Jan 10",
       Area1: 4563,
-      
+
       amt: 9777,
     },
     {
       name: "Jan 15",
       Area1: 1298,
-      
+
       amt: 8000,
     },
     {
       name: "Jan 20",
       Area1: 1890,
-     
+
       amt: 6000,
     },
     {
       name: "Jan 25",
       Area1: 1890,
-      
+
       amt: 2181,
     },
     {
       name: "Jan 30",
       Area1: 1890,
-     
+
       amt: 2500,
     },
   ];
- 
 
-            
+
+
   return (
     <div ref={topRef}>
       <div className="flex items-center text-[16px] my-2 space-x-2">
-        <p onClick={()=>navigate('/area-manager')}  className="font-bold cursor-pointer text-[#820000] ">AM</p>
+        <p onClick={() => navigate('/area-manager')} className="font-bold cursor-pointer text-[#820000] ">AM</p>
         <ChevronRight color="#4B5C79" size={18} />
         <p className="font-bold text-[#303F58] ">{getData.amData?.user?.userName ? getData.amData?.user?.userName : 'N/A'}</p>
       </div>
@@ -390,81 +412,104 @@ const topRef = useRef<HTMLDivElement>(null);
         </div>
         <div className='justify-between  w-full'>
           <div>
-          <h1 className="ms-7 text-[#FFFEFB] text-2xl font-normal">{getData.amData?.user?.userName ? getData.amData?.user?.userName : 'N/A'}</h1>
+            <h1 className="ms-7 text-[#FFFEFB] text-2xl font-normal">{getData.amData?.user?.userName ? getData.amData?.user?.userName : 'N/A'}</h1>
           </div>
           <div className="flex mt-1">
-           <div className='flex'>
-           <div className="border-r ms-3">
-              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
-              <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.phoneNo ? getData.amData?.user?.phoneNo : 'N/A'}</p>
+            <div className='flex'>
+              <div className="border-r ms-3">
+                <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
+                <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.phoneNo ? getData.amData?.user?.phoneNo : 'N/A'}</p>
+              </div>
+              <div className="border-r">
+                <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Email</p>
+                <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.email ? getData.amData?.user?.email : 'N/A'}</p>
+              </div>
+              <div className="">
+                <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Area</p>
+                <p onClick={() => navigate(`/areas/${getData.amData?.area?._id}`)} className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
+              </div>
             </div>
-            <div className="border-r">
-              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Email</p>
-              <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.email ? getData.amData?.user?.email : 'N/A'}</p>
+            <div className='flex justify-between'>
+              <div className="-mt-5 ms-32 me-6">
+                <p className="text-[#D4D4D4] text-xs font-medium">Role</p>
+                <p className="text-[#FFFFFF] text-sm font-medium">Area Manager</p>
+              </div>
+              <div className="me-6 -mt-5">
+                <p className="text-[#D4D4D4] text-xs font-medium">Employee ID</p>
+                <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.employeeId ? getData.amData?.user?.employeeId : 'N/A'}</p>
+              </div>
+              <div className="-mt-5">
+                <p className="text-[#D4D4D4] text-xs font-medium">Joining Date</p>
+                <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.dateOfJoining ? new Date(getData.amData?.dateOfJoining).toLocaleDateString() : 'N/A'}</p>
+              </div>
             </div>
-            <div className="">
-              <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Area</p>
-              <p onClick={() => navigate(`/areas/${getData.amData?.area?._id}`)} className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
-            </div>
-           </div>
-           <div className='flex justify-between'>
-           <div className="-mt-5 ms-32 me-6">
-              <p className="text-[#D4D4D4] text-xs font-medium">Role</p>
-              <p className="text-[#FFFFFF] text-sm font-medium">Area Manager</p>
-            </div>
-            <div className="me-6 -mt-5">
-              <p className="text-[#D4D4D4] text-xs font-medium">Employee ID</p>
-              <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.employeeId ? getData.amData?.user?.employeeId : 'N/A'}</p>
-            </div>
-            <div className="-mt-5">
-              <p className="text-[#D4D4D4] text-xs font-medium">Joining Date</p>
-              <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.dateOfJoining ? new Date(getData.amData?.dateOfJoining).toLocaleDateString() : 'N/A'}</p>
-            </div>
-           </div>
             <div className="flex ms-auto -mt-6 ">
               <div className="flex flex-col items-center space-y-1 ">
-                <div onClick={()=>handleModalToggle(true,false,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <EditIcon size={18} color="#C4A25D" />
-                   </div>
+                <div onClick={() => handleModalToggle(true, false, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <EditIcon size={18} color="#C4A25D" />
                     </div>
+                  </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
               </div>
 
               <div className="flex flex-col  items-center space-y-1">
-                <div onClick={()=>handleModalToggle(false,true,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <ViewRoundIcon size={18} color="#B6D6FF" />
-                   </div>
+                <div onClick={() => handleModalToggle(false, true, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <ViewRoundIcon size={18} color="#B6D6FF" />
                     </div>
+                  </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
               </div>
 
               <div className="flex flex-col  items-center space-y-1">
-                <div onClick={()=>handleModalToggle(false,false,true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <AwardIcon size={18} color="#B6FFD7" />
-                   </div>
+                <div onClick={() => handleModalToggle(false, false, true, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <AwardIcon size={18} color="#B6FFD7" />
                     </div>
+                  </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
               </div>
 
               <div className="flex flex-col  items-center space-y-1">
                 <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <DeActivateIcon size={18} color="#D52B1E4D" />
-                   </div>
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
                     </div>
+                  </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
               </div>
+
+              {/* <div className="flex flex-col -ms-2 items-center space-y-1">
+                    <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                    <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
+                  <div className="ms-2 mt-2 ">
+                    <Trash size={18} color="#BC3126" />
+                  </div>
+                </div>
+                    </div>
+                    <p className="text-center ms-3">Delete</p>
+                  </div> */}
+
+              <div className="flex flex-col  items-center space-y-1">
+                <div onClick={() => handleModalToggle(false, false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <Trash size={18} color="#BC3126" />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Delete</p>
+              </div>
+
 
             </div>
 
@@ -503,70 +548,70 @@ const topRef = useRef<HTMLDivElement>(null);
 
               />
               <div className='flex justify-center'>
-              <div className="space-y-3">
-                {roles.map((role) => (
-                  <div key={role.name} className="flex items-center gap-20 w-64 justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
-                      <span className="text-gray-800 font-medium text-xs">{role.name}</span>
+                <div className="space-y-3">
+                  {roles.map((role) => (
+                    <div key={role.name} className="flex items-center gap-20 w-64 justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
+                        <span className="text-gray-800 font-medium text-xs">{role.name}</span>
+                      </div>
+                      <span className=" text-gray-600 text-xs">{role.count}</span>
                     </div>
-                    <span className=" text-gray-600 text-xs">{role.count}</span>
-                  </div>
-                ))}
-              </div> 
+                  ))}
+                </div>
               </div>
             </div>
           </div>
         </div>
         <div className="col-span-8">
-        <div className='w-full h-fit p-4 bg-white rounded-lg'>
-      <p className="text-[#303F58] text-lg font-bold p-3">Top performing BDA's</p>
-      <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
+          <div className='w-full h-fit p-4 bg-white rounded-lg'>
+            <p className="text-[#303F58] text-lg font-bold p-3">Top performing BDA's</p>
+            <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
 
-      <div className="relative">
-      <BarChart
-  className="h-fit"
-  barGap={54}
-  barCategoryGap="40%"
-  width={800}
-  height={350}
-  data={normalizedData}
->
-  {/* Cartesian Grid */}
-  <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
+            <div className="relative">
+              <BarChart
+                className="h-fit"
+                barGap={54}
+                barCategoryGap="40%"
+                width={800}
+                height={350}
+                data={normalizedData}
+              >
+                {/* Cartesian Grid */}
+                <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
 
-  {/* Y-Axis */}
-  <YAxis
-    tickFormatter={(tick) => `${tick}%`}
-    domain={[0, 100]}
-    ticks={[0, 20, 40, 60, 80, 100]}
-    axisLine={false}
-    tickLine={false}
-  />
+                {/* Y-Axis */}
+                <YAxis
+                  tickFormatter={(tick) => `${tick}%`}
+                  domain={[0, 100]}
+                  ticks={[0, 20, 40, 60, 80, 100]}
+                  axisLine={false}
+                  tickLine={false}
+                />
 
-  {/* Bar with custom curved shape */}
-  <Bar
-  dataKey="uv"
-  fill="#B9E3CF"
-  barSize={8}
-  shape={<CustomBarWithCurve />}
->
-  {/* Add bubbles at the top */}
-  <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
+                {/* Bar with custom curved shape */}
+                <Bar
+                  dataKey="uv"
+                  fill="#B9E3CF"
+                  barSize={8}
+                  shape={<CustomBarWithCurve />}
+                >
+                  {/* Add bubbles at the top */}
+                  <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
 
-</Bar>
+                </Bar>
 
-</BarChart>
-<div className='flex ms-24 gap-[53px] -mt-2'>
-{ChartData.map((chart)=>(
-  <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
-)) 
-}
- </div>
- 
+              </BarChart>
+              <div className='flex ms-24 gap-[53px] -mt-2'>
+                {ChartData.map((chart) => (
+                  <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
+                ))
+                }
+              </div>
 
-      </div>
-    </div>
+
+            </div>
+          </div>
 
 
 
@@ -575,9 +620,9 @@ const topRef = useRef<HTMLDivElement>(null);
 
         </div>
       </div>
-    
+
       <div>
-      <LicensersTable<AMData>
+        <LicensersTable<AMData>
           data={data}
           columns={columns}
           headerContents={{
@@ -599,82 +644,82 @@ const topRef = useRef<HTMLDivElement>(null);
           title={card.title} 
           />
         ))} */}
-          <div className="py-3 bg-white p-2 w-full">
-            <div className="py-1 ms-2 flex justify-between">
-              <h2 className="font-bold">Leads Converted by Area Manager Over Time</h2>
-              <div className="">
-                <label htmlFor="month-select"></label>
-                <select
-                  className="bg-[#FEFDFA] rounded-lg"
-                  id="month-select"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  style={{ padding: "5px", border: "1px solid #ccc" }}
-                >
-                  {Object.keys(datass).map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="mt-5 w-full">
-              <LineChart
-                width={1250}
-                height={400}
-                data={datas}
-                margin={{
-                  top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
+        <div className="py-3 bg-white p-2 w-full">
+          <div className="py-1 ms-2 flex justify-between">
+            <h2 className="font-bold">Leads Converted by Area Manager Over Time</h2>
+            <div className="">
+              <label htmlFor="month-select"></label>
+              <select
+                className="bg-[#FEFDFA] rounded-lg"
+                id="month-select"
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                style={{ padding: "5px", border: "1px solid #ccc" }}
               >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Legend content={<CustomLegend />} />
-                <Line
-                  type="monotone"
-                  dataKey="Area1"
-                  stroke="#e2b0ff"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area2"
-                  stroke="#8884d8"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area3"
-                  stroke="#82ca9d"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area4"
-                  stroke="#d86a57"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area5"
-                  stroke="#6ab6ff"
-                  strokeWidth={3}
-                  dot={false}
-                />
-              </LineChart>
+                {Object.keys(datass).map((month) => (
+                  <option key={month} value={month}>
+                    {month}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
+          <div className="mt-5 w-full">
+            <LineChart
+              width={1250}
+              height={400}
+              data={datas}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} />
+              <YAxis axisLine={false} tickLine={false} />
+              <Tooltip />
+              <Legend content={<CustomLegend />} />
+              <Line
+                type="monotone"
+                dataKey="Area1"
+                stroke="#e2b0ff"
+                strokeWidth={3}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="Area2"
+                stroke="#8884d8"
+                strokeWidth={3}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="Area3"
+                stroke="#82ca9d"
+                strokeWidth={3}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="Area4"
+                stroke="#d86a57"
+                strokeWidth={3}
+                dot={false}
+              />
+              <Line
+                type="monotone"
+                dataKey="Area5"
+                stroke="#6ab6ff"
+                strokeWidth={3}
+                dot={false}
+              />
+            </LineChart>
+          </div>
         </div>
+      </div>
       {/* Modal controlled by state */}
       {/* <Modal open={isModalOpen} onClose={handleModalToggle}>
         <AMViewForm onClose={handleModalToggle} />
@@ -692,6 +737,19 @@ const topRef = useRef<HTMLDivElement>(null);
       <Modal open={isModalOpen.awardAM} onClose={() => handleModalToggle()} align='right' className="w-[25%] me-12 mt-14">
         <AMViewAward getData={getData} onClose={() => handleModalToggle()} />
       </Modal>
+      <Modal
+        open={isModalOpen.confirm}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          prompt="Are you sure want to delete this Area manager?"
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>       
+
     </div>
   )
 }

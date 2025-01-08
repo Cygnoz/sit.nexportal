@@ -6,6 +6,7 @@ import Button from "../../../../components/ui/Button"
 // import NotesForm from "../View/NotesForm"
 import Modal from "../../../../components/modal/Modal"
 import NotesForm from "../ViewModals/NotesForm"
+import SearchBar from "../../../../components/ui/SearchBar"
 
 type Props = {}
 
@@ -17,13 +18,21 @@ const Notes = ({}: Props) => {
              const handleModalToggle = () => {
                setIsModalOpen((prev) => !prev);
              };
-    
+
+     const [searchValue, setSearchValue] = useState<string>("");
+
   return (
     <div>
        <div className="w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
         <div className="flex justify-between">
-            <p className="text-[#303F58] text-sm font-bold">Notes</p>
-            {/* <SearchBar placeholder="Search" searchValue="" onSearchChange={} /> */}
+        <div className="flex gap-6">
+                    <p className="text-[#303F58] text-sm font-bold p-2">Notes</p>
+                        <SearchBar
+                            placeholder="Search"
+                            searchValue={searchValue}
+                            onSearchChange={setSearchValue}
+                        />
+                    </div>            {/* <SearchBar placeholder="Search" searchValue="" onSearchChange={} /> */}
             <Button onClick={handleModalToggle} className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148]" variant="secondary">+<span className="text-xs">Add Notes</span></Button>
         </div>
         <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5">

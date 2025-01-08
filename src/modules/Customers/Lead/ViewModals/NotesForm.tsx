@@ -90,7 +90,7 @@ const NotesForm = ({ onClose }: Props) => {
           </div>
         </div>
 
-        <div className='w-full h-full mb-4 bg-[#FAFAFA]'>
+        <div className='w-full h-full mb-4'>
           <ReactQuill
             value={value}
             onChange={setValue}
