@@ -123,7 +123,7 @@ exports.verifyOtp =  async (req, res) => {
         token: `Bearer ${token}`, // Prepend "Bearer " to the token
         user: {
           id: user._id,
-          email: user.userEmail,
+          email: user.email,
           userName: user.userName,
           userImage: user.userImage,
           employeeId: user.employeeId,
@@ -1073,7 +1073,7 @@ exports.getRegionsAreasBdas = async (req, res) => {
 
     // Fetch active areas
     const areas = await Area.find({ status: "Active" })
-      .select("_id areaName");
+      .select("_id areaName region");
 
     // Fetch active BDAs and populate the user field to get userName
     const bdas = await Bda.find({ status: "Active" })
@@ -1082,11 +1082,12 @@ exports.getRegionsAreasBdas = async (req, res) => {
         model: User,
         select: 'userName'
       })
-      .select("_id user");
+      .select("_id user area");
 
     // Format BDAs to include userName directly
     const formattedBdas = bdas.map(bda => ({
       _id: bda._id,
+      area: bda.area,
       userName: bda.user?.userName || 'N/A'
     }));
 
