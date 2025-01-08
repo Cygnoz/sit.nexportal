@@ -56,12 +56,11 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
-  
   const { request: addRM } = useApi("post", 3002);
-  const { allRegions, allWc, allCountries } = useRegularApi();
+  const { dropdownRegions, allWc, allCountries } = useRegularApi();
   const { request: editRM } = useApi("put", 3002);
   const { request: getRM } = useApi("get", 3002);
-
+  const {request:checkRm}=useApi("get",3002)
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -122,28 +121,46 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     }
   };
 
-  console.log(errors);
-  
+
+  const checkRM=async()=>{
+    try{
+      const {response,error}=await checkRm(`${endPoints.CHECK_RM}/${watch("region")}`)
+      if(response && !error){
+        return true
+      }else{
+        return false
+      }
+    }catch(err){
+      console.log(err);
+      
+    }
+  }
+ 
+
   useEffect(() => {
-    if (errors && Object.keys(errors).length > 0 && activeTab=="ID & Business Card") {
+    if (
+      errors &&
+      Object.keys(errors).length > 0 &&
+      activeTab == "ID & Business Card"
+    ) {
       // Get the first error field
       const firstErrorField = Object.keys(errors)[0];
-  
+
       // Find the tab containing this field
-      const tabIndex:any = StaffTabsList.findIndex((tab) =>
+      const tabIndex: any = StaffTabsList.findIndex((tab) =>
         tab.validationField.includes(firstErrorField)
       );
-  
+
       // If a matching tab is found, switch to it
       if (tabIndex >= 0) {
         setActiveTab(tabs[tabIndex]);
       }
-     const errorrs:any=errors
+      const errorrs: any = errors;
       // Log all errors
       Object.keys(errorrs).forEach((field) => {
         console.log(`${field}: ${errorrs[field]?.message}`);
       });
-  
+
       // Show the first error message in a toast
       toast.error(errorrs[firstErrorField]?.message);
     }
@@ -152,24 +169,43 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
+    let canProceed = true; // Default to true, modify if checkRM fails
+  
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
         !editId && "email",
         !editId && "password",
         !editId && "confirmPassword",
         "region",
+        "workEmail",
       ];
+      const rmCheck = await checkRM(); // Call checkRM function
+      
+      if (!rmCheck) {
+        canProceed = false;
+        // Replace with your preferred method for showing a message
+        toast.error("Region is already assigned to another Region Manager. Try adding another region."); 
+      }
     }
-    const isValid = fieldsToValidate.length
+
+    console.log("can proceed",canProceed);
+    
+  
+    // Validate fields only if canProceed is true
+    const isValid = canProceed && fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
-    if (isValid && currentIndex < tabs.length - 1) {
+    
+    // If validation passes and we can proceed, move to the next tab
+    if (isValid && canProceed && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
     }
   };
+  
+
   const handleBack = () => {
     const currentIndex = tabs.indexOf(activeTab);
     if (currentIndex > 0) {
@@ -182,9 +218,10 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
+
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       value: String(region._id),
       label: region.regionName,
     }));
@@ -193,7 +230,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       ...prevData,
       regions: filteredRegions,
     }));
-  }, [allRegions]);
+  }, [dropdownRegions]);
 
   // UseEffect for updating wc
   useEffect(() => {
@@ -300,6 +337,9 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     getOneRM();
   }, [editId]); // Trigger the effect when editId changes
 
+ 
+  
+
   return (
     <div className="p-5 bg-white rounded shadow-md   hide-scrollbar">
       <div className="flex justify-between items-center mb-4">
@@ -326,7 +366,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         {tabs.map((tab, index) => (
           <div
             key={tab}
-            onClick={()=>setActiveTab(tab)}
+            onClick={() => setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${
               activeTab === tab
                 ? "text-deepStateBlue border-b-2 border-secondary2"
@@ -383,15 +423,23 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                 <Input
                   required
                   placeholder="Enter Full Name"
+                  value={watch("userName")}
                   label="Full Name"
                   error={errors.userName?.message}
-                  {...register("userName")}
+                  onChange={(e)=>{
+                    handleInputChange("userName")
+                    setValue("userName",e.target.value)
+                  }}
                 />
                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
                   error={errors.personalEmail?.message}
-                  {...register("personalEmail")}
+                  value={watch("personalEmail")}
+                  onChange={(e)=>{
+                    setValue("personalEmail",e.target.value)
+                    handleInputChange("personalEmail")
+                  }}
                 />
                 <CustomPhoneInput
                   label="Phone Number"
@@ -403,7 +451,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     handleInputChange("phoneNo");
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}
-                  // Watch phone field for changes
                 />
                 <div className="grid grid-cols-2 gap-2">
                   <Input
@@ -439,18 +486,29 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   label="Country"
                   error={errors.country?.message}
                   value={watch("country")}
+                  onChange={(selectedValue) => {
+                    // Update the country value and clear the state when country changes
+                    setValue("country", selectedValue);
+                    setValue("state", ""); // Reset state when country changes
+                    handleInputChange("country");
+                  }}
                   options={data.country}
-                  {...register("country")}
                 />
+
                 <Select
                   placeholder={
-                    data.state.length == 0 ? "Choose Country" : "Select State"
+                    data.state.length === 0 ? "Choose Country" : "Select State"
                   }
+                  value={watch("state")}
+                  onChange={(selectedValue) => {
+                    setValue("state", selectedValue);
+                    handleInputChange("state");
+                  }}
                   label="State"
                   error={errors.state?.message}
                   options={data.state}
-                  {...register("state")}
                 />
+
                 <Input
                   label="City"
                   placeholder="Enter City"
@@ -498,22 +556,34 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                       required
                       placeholder="Enter Email"
                       label="Email"
+                      value={watch("email")}
                       error={errors.email?.message}
-                      {...register("email")}
+                      onChange={(e)=>{
+                        handleInputChange("email")
+                        setValue("email",e.target.value)
+                      }}
                     />
                     <InputPasswordEye
                       label={editId ? "New Password" : "Password"}
                       required
+                      value={watch("password")}
                       placeholder="Enter your password"
                       error={errors.password?.message}
-                      {...register("password")}
+                      onChange={(e)=>{
+                        handleInputChange("password")
+                        setValue("password",e.target.value)
+                      }}
                     />
                     <InputPasswordEye
                       label="Confirm Password"
                       required
+                      value={watch("confirmPassword")}
                       placeholder="Confirm your password"
                       error={errors.confirmPassword?.message}
-                      {...register("confirmPassword")}
+                      onChange={(e)=>{
+                        handleInputChange("confirmPassword")
+                        setValue("confirmPassword",e.target.value)
+                      }}
                     />
                   </div>
                 </>
@@ -528,7 +598,11 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   placeholder="Enter Work Email"
                   label="Work Email"
                   error={errors.workEmail?.message}
-                  {...register("workEmail")}
+                  value={watch("workEmail")}
+                  onChange={(e)=>{
+                    setValue("workEmail",e.target.value)
+                    handleInputChange("workEmail")
+                  }}
                 />
                 <CustomPhoneInput
                   label="Work phone"
@@ -548,17 +622,24 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   placeholder="Select Region"
                   label="Select Region"
                   value={watch("region")}
+                  onChange={(selectedValue) => {
+                    setValue("region", selectedValue); // Manually update the region value
+                    handleInputChange("region");
+                  }}
                   error={errors.region?.message}
                   options={data.regions}
-                  {...register("region")}
                 />
+
                 <Select
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
                   value={watch("commission")}
+                  onChange={(selectedValue) => {
+                    setValue("commission", selectedValue); // Manually update the commission value
+                    handleInputChange("commission");
+                  }}
                   error={errors.commission?.message}
                   options={data.wc}
-                  {...register("commission")}
                 />
               </div>
             </>
@@ -735,7 +816,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
               variant="primary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
-              type="submit"
+              
               onClick={() => handleNext(activeTab)}
             >
               Next

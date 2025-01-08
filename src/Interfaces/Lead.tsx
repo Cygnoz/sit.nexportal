@@ -3,7 +3,7 @@ export interface LeadData {
     image?:string;
     firstName: string;
     lastName?: string;
-    email: string;
+    email?: string;
     phone: string;
     website?: string;
     leadSource?: string;

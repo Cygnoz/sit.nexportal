@@ -86,18 +86,14 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
 
 
 
+ useEffect(()=>{
+ 
+       setValue("contactName",customerData?.firstName)
+       setValue("organizationName",orgData?.organizationName?orgData?.organizationName:customerData?.companyName)
+       setValue("contactNum",orgData?.primaryContactNum?orgData?.primaryContactNum:customerData?.phone )
+       setValue("email",orgData?.primaryContactEmail?orgData?.primaryContactEmail:customerData?.email)
   
-  useEffect(()=>{
-    setValue("contactName",customerData?.firstName)
-  },[customerData])
-
-  useEffect(()=>{
-    if(orgData){
-      setValue("organizationName",orgData?.organizationName)
-      setValue("contactNum",orgData?.primaryContactNum )
-      setValue("email",orgData?.primaryContactEmail )
-    }
-  },[orgData])
+   },[orgData,customerData])
 
   useEffect(() => {
     if (type === 'lead' && watch("startDate")) {

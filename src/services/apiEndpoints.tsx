@@ -17,17 +17,20 @@ export const endPoints = {
   // Area
   AREA: "/area",
   GET_AREAS: "/areas",
+  RECENT_ACTIVITY: "/area-activity-logs",
   DEACTIVATE_AREA:"/deactivateArea",
 
   //RM
   RM: "/region-manager",
   GET_ALL_RM: "/region-managers",
+  CHECK_RM:'/region-manager-check',
 
   //Country and State
   GET_COUNTRY: "/countries",
 
   // Area Manager
   AM: "/area-manager",
+  CHECK_AM:'/area-manager-check',
 
   //Worker Commission
   WC: "/commissions",
@@ -66,6 +69,10 @@ export const endPoints = {
   GET_ALL_PRAISE:"/praises",
   GET_ONE_PRAISE:"/praises",
 
+
+
+  // Dashboard
+  TEAM_BREAK_DOWN:'/team-counts',
   CONVERSION_RATE:'/conversion-rate',
 
   // Region Inside View 
@@ -74,6 +81,12 @@ export const endPoints = {
 
   //Region Recent Activity
   ACTIVITIES:"activity-logs",
+  DEACTIVATION:"/deactivateRegion",
+
+  DROPDOWN_DATA:"/dropdown-data",
+
+
+  
 
   //LOGOUT
   LOGOUT:"/logout", 

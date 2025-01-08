@@ -39,6 +39,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
     handleSubmit,
     setValue,
     watch,
+    clearErrors,
     formState: { errors },
   } = useForm<AreaData>({
     resolver: yupResolver(validationSchema),
@@ -108,7 +109,9 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
     }
   }, [editId]);
 
-  console.log(editId);
+ const handleInputChange = (field: keyof AreaData) => {
+     clearErrors(field); // Clear the error for the specific field when the user starts typing
+   };
   
   
 
@@ -157,7 +160,11 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
           value={watch("region")}
           error={errors.region?.message}
           options={regionData}
-          {...register("region")}
+          onChange={(selectedValue) => {
+            // Update the country value and clear the state when country changes
+            setValue("region", selectedValue);
+            handleInputChange("region");
+          }}
         />
         <Input
           placeholder="Enter Description"

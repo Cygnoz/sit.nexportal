@@ -35,7 +35,9 @@ function TrialEditForm({ onClose }: Props) {
         register,
         handleSubmit,
         formState: { errors },
-
+        clearErrors,
+        setValue,
+        watch
 
     } = useForm<TrialData>({
         resolver: yupResolver(validationSchema),
@@ -45,6 +47,9 @@ function TrialEditForm({ onClose }: Props) {
         console.log("Form Data:", data);
     };
 
+    const handleInputChange = (field: keyof TrialData) => {
+        clearErrors(field); // Clear the error for the specific field when the user starts typing
+   };
 
 
 
@@ -94,6 +99,7 @@ function TrialEditForm({ onClose }: Props) {
                                 />
                                 <Select
                                     label="Status"
+                                    value={watch("status")}
                                     placeholder="Select Status"
                                     error={errors.status?.message}
                                     options={[
@@ -101,7 +107,10 @@ function TrialEditForm({ onClose }: Props) {
                                         { value: "name", label: "Completed" },
                                         { value: "name", label: "Pending" },
                                     ]}
-                                    {...register("status")}
+                                    onChange={(selectedValue)=>{
+                                        handleInputChange("status")
+                                        setValue("status",selectedValue)
+                                    }}
                                 />
 
 
