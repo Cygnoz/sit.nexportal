@@ -60,7 +60,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const { allRegions, allWc, allCountries } = useRegularApi();
   const { request: editRM } = useApi("put", 3002);
   const { request: getRM } = useApi("get", 3002);
-
+  const {request:checkRm}=useApi("get",3002)
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -121,6 +121,20 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     }
   };
 
+
+  const checkRM=async()=>{
+    try{
+      const {response,error}=await checkRm(`${endPoints.CHECK_RM}/${watch("region")}`)
+      if(response && !error){
+        return true
+      }else{
+        return false
+      }
+    }catch(err){
+      console.log(err);
+      
+    }
+  }
  
 
   useEffect(() => {
@@ -155,26 +169,42 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
+    let canProceed = true; // Default to true, modify if checkRM fails
+  
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo","personalEmail"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
         !editId && "email",
         !editId && "password",
         !editId && "confirmPassword",
         "region",
-        "workEmail"
+        "workEmail",
       ];
+      const rmCheck = await checkRM(); // Call checkRM function
+      
+      if (!rmCheck) {
+        canProceed = false;
+        // Replace with your preferred method for showing a message
+        toast.error("Region is already assigned to another Region Manager. Try adding another region."); 
+      }
     }
-    const isValid = fieldsToValidate.length
+
+    console.log("can proceed",canProceed);
+    
+  
+    // Validate fields only if canProceed is true
+    const isValid = canProceed && fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
-    if (isValid && currentIndex < tabs.length - 1) {
+    
+    // If validation passes and we can proceed, move to the next tab
+    if (isValid && canProceed && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
-      
     }
   };
+  
 
   const handleBack = () => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -188,7 +218,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-  console.log('err',errors)
 
   // UseEffect for updating regions
   useEffect(() => {

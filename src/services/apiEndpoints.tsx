@@ -21,12 +21,14 @@ export const endPoints = {
   //RM
   RM: "/region-manager",
   GET_ALL_RM: "/region-managers",
+  CHECK_RM:'/region-manager-check',
 
   //Country and State
   GET_COUNTRY: "/countries",
 
   // Area Manager
   AM: "/area-manager",
+  CHECK_AM:'/area-manager-check',
 
   //Worker Commission
   WC: "/commissions",
@@ -66,7 +68,16 @@ export const endPoints = {
   GET_ONE_PRAISE:"/praises",
 
 
-  // Region Inside View 
+
   // Dashboard
   TEAM_BREAK_DOWN:'/team-counts',
+  CONVERSION_RATE:'/conversion-rate',
+
+  // Region Inside View 
+
+  CUSTOMERCOUNTS:"/customer/statistics",
+
+  //Region Recent Activity
+  ACTIVITIES:"activity-logs",
+  
 };

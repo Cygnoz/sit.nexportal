@@ -17,7 +17,7 @@ const Select: React.FC<SelectProps> = ({
   label,
   options,
   error,
-  placeholder = "Select an option",
+  placeholder,
   required,
   readOnly,
   value,
@@ -27,27 +27,21 @@ const Select: React.FC<SelectProps> = ({
   const [searchValue, setSearchValue] = useState("");
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [dropdownPosition, setDropdownPosition] = useState<"up" | "down">("down");
   const dropdownRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Add placeholder as the first option if provided
+    const allOptions = placeholder
+      ? [{ value: "", label: placeholder }, ...options]
+      : options;
+
     setFilteredOptions(
-      options.filter((option) =>
+      allOptions.filter((option) =>
         option.label.toLowerCase().includes(searchValue.toLowerCase())
       )
     );
-  }, [searchValue, options]);
-
-  // Handle dropdown positioning
-  useEffect(() => {
-    if (isOpen && dropdownRef.current) {
-      const rect = dropdownRef.current.getBoundingClientRect();
-      const spaceAbove = rect.top;
-      const spaceBelow = window.innerHeight - rect.bottom;
-      setDropdownPosition(spaceBelow < 200 && spaceAbove > spaceBelow ? "up" : "down");
-    }
-  }, [isOpen]);
+  }, [searchValue, options, placeholder]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -65,36 +59,6 @@ const Select: React.FC<SelectProps> = ({
     };
   }, []);
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      if (selectedIndex === null || selectedIndex < filteredOptions.length - 1) {
-        const nextIndex = selectedIndex === null ? 0 : selectedIndex + 1;
-        setSelectedIndex(nextIndex);
-        scrollToOption(nextIndex);
-      }
-    } else if (e.key === "ArrowUp") {
-      if (selectedIndex !== null && selectedIndex > 0) {
-        const prevIndex = selectedIndex - 1;
-        setSelectedIndex(prevIndex);
-        scrollToOption(prevIndex);
-      }
-    } else if (e.key === "Enter") {
-      if (selectedIndex !== null) {
-        handleOptionSelect(filteredOptions[selectedIndex].value);
-      }
-    }
-  };
-
-  const scrollToOption = (index: number) => {
-    const optionElement = listRef.current?.children[index] as HTMLElement;
-    if (optionElement) {
-      optionElement.scrollIntoView({
-        behavior: "smooth",
-        block: "nearest",
-      });
-    }
-  };
-
   const handleOptionSelect = (selectedValue: string) => {
     if (onChange) onChange(selectedValue);
     setIsOpen(false);
@@ -104,9 +68,7 @@ const Select: React.FC<SelectProps> = ({
   return (
     <div className="relative w-full" ref={dropdownRef}>
       <label className={`block text-sm font-medium ${label && "mb-2"}`}>
-        <p>
-          {label} {required && <span className="text-red-500">*</span>}
-        </p>
+        {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div
         className={`relative ${
@@ -120,8 +82,8 @@ const Select: React.FC<SelectProps> = ({
                       ${error ? "border-red-500" : "border-gray-300"}`}
         >
           {value
-            ? options.find((option) => option.value === value)?.label
-            : placeholder}
+            ? options.find((option) => option.value === value)?.label || placeholder
+            : placeholder || options[0]?.label}
         </div>
         <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
           <ChevronDown color="gray" />
@@ -129,10 +91,7 @@ const Select: React.FC<SelectProps> = ({
       </div>
       {isOpen && (
         <div
-          className={`absolute z-10 mt-1 w-full p-1 bg-white border border-gray-300 rounded-md shadow-lg ${
-            dropdownPosition === "up" ? "bottom-full mb-2" : "top-full mt-2"
-          }`}
-          onKeyDown={handleKeyDown}
+          className="absolute z-10 mt-1 w-full p-1 bg-white border border-gray-300 rounded-md shadow-lg"
           tabIndex={0}
         >
           <SearchBar searchValue={searchValue} onSearchChange={setSearchValue} />

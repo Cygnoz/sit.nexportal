@@ -16,8 +16,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { useUser } from "../../../context/UserContext";
-import Modal from "../../../components/modal/Modal";
-import OrganisationForm from "../../../components/modal/ConvertionModal/OrganisationForm";
+
 
 type Props = {
   onClose: () => void;
@@ -54,8 +53,8 @@ function LicenserForm({ onClose ,editId}: Props) {
 
     }>({ regions:[], areas: [],bdas:[],state:[] ,country:[]});
 
-    const [isOpenOrg,setIsOpenOrg]=useState(false)
-    const [licenserId,setLicenserId]=useState('')
+    // const [isOpenOrg,setIsOpenOrg]=useState(false)
+    // const [licenserId,setLicenserId]=useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
@@ -74,7 +73,11 @@ function LicenserForm({ onClose ,editId}: Props) {
 
   
 
-  const licenserIntegration=async()=>{
+ 
+
+  const onSubmit: SubmitHandler<LicenserData> = async (data:any, event) => {
+    event?.preventDefault(); // Prevent default form submission behavior
+    console.log("Form Data", data);
     try {
       const fun = editId ? editLicenser : addLicenser; // Select the appropriate function based on editId
       let response, error;
@@ -93,9 +96,9 @@ function LicenserForm({ onClose ,editId}: Props) {
         
          toast.success(response.data.message); // Show success toast
          onClose()
-         setTimeout(() => {
-          setIsOpenOrg(true)
-         }, 1500);
+        //  setTimeout(() => {
+        //   setIsOpenOrg(true)
+        //  }, 1500);
       } else {
         toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
       }
@@ -103,12 +106,6 @@ function LicenserForm({ onClose ,editId}: Props) {
       console.error("Error submitting license data:", err);
       toast.error("An unexpected error occurred."); // Handle unexpected errors
     }
-  }
-
-  const onSubmit: SubmitHandler<LicenserData> = async (data:any, event) => {
-    event?.preventDefault(); // Prevent default form submission behavior
-    console.log("Form Data", data);
-    licenserIntegration()
   };
 
   
@@ -274,9 +271,9 @@ function LicenserForm({ onClose ,editId}: Props) {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-  const orgFormClose=()=>{
-    setIsOpenOrg(false)
-  }
+  // const orgFormClose=()=>{
+  //   setIsOpenOrg(false)
+  // }
 
   return (
     <>
@@ -513,14 +510,14 @@ function LicenserForm({ onClose ,editId}: Props) {
      
         </form>
     </div>
-    <Modal
+    {/* <Modal
                 open={isOpenOrg}
                 align="center"
                 onClose={orgFormClose}
                 className="w-[35%]"
             >
                 <OrganisationForm licenserId={licenserId}  licenserData={watch()}   type="licenser"  onClose={orgFormClose} />
-            </Modal>
+            </Modal> */}
     </>
   );
 }
