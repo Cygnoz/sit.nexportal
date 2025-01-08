@@ -7,6 +7,7 @@ const ticketSchema = new Schema(
   {
 
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead'},
+    region: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead'},
     supervisor:{ type: mongoose.Schema.Types.ObjectId, ref: 'Supervisor'},
     supportAgentId: { type: mongoose.Schema.Types.ObjectId, ref: 'SupportAgent'},
     subject: { type: String }, // Brief summary or title of the ticket
