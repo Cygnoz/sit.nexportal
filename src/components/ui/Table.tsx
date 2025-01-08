@@ -123,6 +123,9 @@ const Table = <T extends object>({
         return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
       case "Paid":
         return "bg-purple-200 text-center text-black py-1 px-2 rounded-lg";
+        case "Deactivate":
+          return "bg-orange-500 text-center text-white py-1 px-2 rounded-lg";
+  
       default:
         return "";
     }

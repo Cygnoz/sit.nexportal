@@ -6,6 +6,8 @@ import SearchBar from "../components/ui/SearchBar";
 import { useUser } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import { NavList } from "../components/list/NavLists";
+import Modal from "../components/modal/Modal";
+import UserModal from "./Logout/UserModal";
 
 interface HeaderProps {
   searchValue: string;
@@ -27,6 +29,13 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
       route.key.trim().toLowerCase().includes(searchValue.toLowerCase()) ||
       route.label.trim().toLowerCase().includes(searchValue.toLowerCase())
   );
+  // State to manage modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Function to toggle modal visibility
+  const handleModalToggle = () => {
+    setIsModalOpen((prev) => !prev);
+  };
+
 
   const handleSelect = (route: any) => {
     setDropdownVisible(false);
@@ -130,8 +139,8 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
             <Bell />
           </p>
         </div>
-        <p className="tooltip" data-tooltip="User">
-          {user?.userImage ? (
+        <p onClick={handleModalToggle} className="tooltip cursor-pointer" data-tooltip="User">
+          {user?.userImage && user?.userImage.length>50 ? (
             <img
               className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full"
               src={user?.userImage}
@@ -144,6 +153,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
           )}
         </p>
       </div>
+      <Modal className="w-fit me-4 -mt-96" align="right" open={isModalOpen} onClose={handleModalToggle}>
+      <UserModal  onClose={handleModalToggle}/>
+      </Modal>
     </div>
   );
 };
