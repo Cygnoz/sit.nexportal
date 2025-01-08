@@ -15,6 +15,8 @@ const ActivityLogGeneration = require('../controller/authController/activityLogC
 const leadController = require('../controller/leadsController')
  
 const licenserController = require('../controller/licenserController')
+
+const activityController = require('../controller/activityController')
  
  
 //add lead
@@ -51,6 +53,18 @@ router.get('/licenser/:licenserId',verifyToken,checkPermission('View Licenser'),
 router.put('/licenser/:id',verifyToken,checkPermission('Edit Licenser'),licenserController.editLicenser,ActivityLogGeneration('Edit Licenser'))
  
 // router.delete('/licenser/:licenserId',verifyToken,checkPermission('Delete Licenser'),leadController.deleteLead,ActivityLogGeneration('Delete Licenser'))
+
+//Activity
+router.post('/activity',verifyToken,checkPermission('Add Activity'), activityController.addActivity,ActivityLogGeneration('Add Activity'));
+ 
+router.get('/activity/:id',verifyToken,checkPermission('View Activity'), activityController.getActivity);  
+ 
+router.get('/activitys/:leadId',verifyToken,checkPermission('View Activity'),activityController.getAllActivities);
+ 
+router.put("/activity/:id",verifyToken,checkPermission('Edit Activity'),activityController.editActivity,ActivityLogGeneration('Edit Activity'));
+ 
+router.delete("/activity/:activityId",verifyToken,checkPermission('Delete Activity'), activityController.deleteActivity,ActivityLogGeneration('Delete Activity'));
+ 
  
  
 module.exports = router
