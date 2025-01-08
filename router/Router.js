@@ -24,6 +24,7 @@ router.get('/logout',userController.logout)
 router.post('/verify-otp',userController.verifyOtp)
 router.post('/roles',userController.addOrUpdateRoles)
 router.get('/countries',userController.getCountriesData)
+router.get('/dropdown-data',userController.getRegionsAreasBdas)
 
 router.get('/activity-logs/:id',verifyToken,checkPermission('View Region'), regionController.getActivityLogByOperationId);
 router.get('/area-activity-logs/:id',verifyToken,checkPermission('View Area'), areaController.getActivityLogByAreaId);

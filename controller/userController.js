@@ -2,7 +2,9 @@
 const ActivityLog = require('../database/model/activityLog'); 
 const moment = require("moment-timezone");
 const Role = require('../database/model/role'); 
-
+const Region = require("../database/model/region");
+const Area = require("../database/model/area");
+const Bda = require("../database/model/bda");
 const User = require('../database/model/user');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -1063,6 +1065,42 @@ const roles = [
   }
 ];
 
+exports.getRegionsAreasBdas = async (req, res) => {
+  try {
+    // Fetch active regions
+    const regions = await Region.find({ status: "Active" })
+      .select("_id regionName");
+
+    // Fetch active areas
+    const areas = await Area.find({ status: "Active" })
+      .select("_id areaName");
+
+    // Fetch active BDAs and populate the user field to get userName
+    const bdas = await Bda.find({ status: "Active" })
+      .populate({
+        path: 'user',
+        model: User,
+        select: 'userName'
+      })
+      .select("_id user");
+
+    // Format BDAs to include userName directly
+    const formattedBdas = bdas.map(bda => ({
+      _id: bda._id,
+      userName: bda.user?.userName || 'N/A'
+    }));
+
+    // Send the response
+    res.status(200).json({
+      regions,
+      areas,
+      bdas: formattedBdas
+    });
+  } catch (error) {
+    console.error('Error fetching regions, areas, and BDAs:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
 
 
 exports.getCountriesData = (req, res) => {
