@@ -392,13 +392,18 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-
+      
        // Praise
        { action: "Add Praise", note: "Add Praise" },
        { action: "View Praise", note: "View Praise" },
        { action: "Edit Praise", note: "Edit Praise" },
-       { action: "Edit Praise", note: "Edit Praise" },
- 
+       { action: "Delete Praise", note: "Delete Praise" },
+      
+       // Activity
+       { action: "Add Activity", note: "Add Activity" },
+       { action: "View Activity", note: "View Activity" },
+       { action: "Edit Activity", note: "Edit Activity" },
+       { action: "Delete Activity", note: "Delete Activity" },
     ],
   },
   {
@@ -580,13 +585,18 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-
+      
        // Praise
        { action: "Add Praise", note: "Add Praise" },
        { action: "View Praise", note: "View Praise" },
        { action: "Edit Praise", note: "Edit Praise" },
-       { action: "Edit Praise", note: "Edit Praise" },
- 
+       { action: "Delete Praise", note: "Delete Praise" },
+      
+       // Activity
+       { action: "Add Activity", note: "Add Activity" },
+       { action: "View Activity", note: "View Activity" },
+       { action: "Edit Activity", note: "Edit Activity" },
+       { action: "Delete Activity", note: "Delete Activity" },
     ],
   },
   {
@@ -675,13 +685,18 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-
+      
        // Praise
        { action: "Add Praise", note: "Add Praise" },
        { action: "View Praise", note: "View Praise" },
        { action: "Edit Praise", note: "Edit Praise" },
-       { action: "Edit Praise", note: "Edit Praise" },
- 
+       { action: "Delete Praise", note: "Delete Praise" },
+      
+       // Activity
+       { action: "Add Activity", note: "Add Activity" },
+       { action: "View Activity", note: "View Activity" },
+       { action: "Edit Activity", note: "Edit Activity" },
+       { action: "Delete Activity", note: "Delete Activity" },
     ],
   },
   {
@@ -770,13 +785,18 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-
+      
        // Praise
        { action: "Add Praise", note: "Add Praise" },
        { action: "View Praise", note: "View Praise" },
        { action: "Edit Praise", note: "Edit Praise" },
-       { action: "Edit Praise", note: "Edit Praise" },
- 
+       { action: "Delete Praise", note: "Delete Praise" },
+      
+       // Activity
+       { action: "Add Activity", note: "Add Activity" },
+       { action: "View Activity", note: "View Activity" },
+       { action: "Edit Activity", note: "Edit Activity" },
+       { action: "Delete Activity", note: "Delete Activity" },
     ],
   },
   {
@@ -865,13 +885,18 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-
+      
        // Praise
        { action: "Add Praise", note: "Add Praise" },
        { action: "View Praise", note: "View Praise" },
        { action: "Edit Praise", note: "Edit Praise" },
-       { action: "Edit Praise", note: "Edit Praise" },
- 
+       { action: "Delete Praise", note: "Delete Praise" },
+      
+       // Activity
+       { action: "Add Activity", note: "Add Activity" },
+       { action: "View Activity", note: "View Activity" },
+       { action: "Edit Activity", note: "Edit Activity" },
+       { action: "Delete Activity", note: "Delete Activity" },
     ],
   },
   {
@@ -960,13 +985,18 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-
+      
        // Praise
        { action: "Add Praise", note: "Add Praise" },
        { action: "View Praise", note: "View Praise" },
        { action: "Edit Praise", note: "Edit Praise" },
-       { action: "Edit Praise", note: "Edit Praise" },
- 
+       { action: "Delete Praise", note: "Delete Praise" },
+      
+       // Activity
+       { action: "Add Activity", note: "Add Activity" },
+       { action: "View Activity", note: "View Activity" },
+       { action: "Edit Activity", note: "Edit Activity" },
+       { action: "Delete Activity", note: "Delete Activity" },
     ],
   },
   {
@@ -1055,13 +1085,18 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-
+      
        // Praise
        { action: "Add Praise", note: "Add Praise" },
        { action: "View Praise", note: "View Praise" },
        { action: "Edit Praise", note: "Edit Praise" },
-       { action: "Edit Praise", note: "Edit Praise" },
- 
+       { action: "Delete Praise", note: "Delete Praise" },
+      
+       // Activity
+       { action: "Add Activity", note: "Add Activity" },
+       { action: "View Activity", note: "View Activity" },
+       { action: "Edit Activity", note: "Edit Activity" },
+       { action: "Delete Activity", note: "Delete Activity" },
     ],
   }
 ];

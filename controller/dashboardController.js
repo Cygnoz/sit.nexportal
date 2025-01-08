@@ -25,6 +25,7 @@ exports.getSolvedTicketsByRegion = async (req, res) => {
 
         return {
           _id: region._id,
+          country: region.country,
           regionName: region.regionName,
           solvedTicket,
         };
