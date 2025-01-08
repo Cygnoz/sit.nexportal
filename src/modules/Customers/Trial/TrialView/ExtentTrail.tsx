@@ -35,8 +35,8 @@ function ExtentTrail({ onClose, trialData, getCutomer }: Props) {
         handleSubmit,
         formState: { errors },
         watch,
-        setValue
-
+        setValue,
+        clearErrors
     } = useForm<ExtentTrialData>({
         resolver: yupResolver(validationSchema),
     });
@@ -88,7 +88,9 @@ function ExtentTrail({ onClose, trialData, getCutomer }: Props) {
 
 
 
-
+    const handleInputChange = (field: keyof ExtentTrialData) => {
+         clearErrors(field); // Clear the error for the specific field when the user starts typing
+    };
 
 
 
@@ -117,6 +119,7 @@ function ExtentTrail({ onClose, trialData, getCutomer }: Props) {
                                 <Select
                                     label="Duration"
                                     required
+                                    value={watch("duration")}
                                     placeholder="Select Duration"
                                     error={errors.duration?.message}
                                     options={[
@@ -128,7 +131,10 @@ function ExtentTrail({ onClose, trialData, getCutomer }: Props) {
                                         { value: "6", label: "6 days" },
                                         { value: "7", label: "7 days" },
                                     ]}
-                                    {...register("duration")}
+                                    onChange={(selectedValue)=>{
+                                        handleInputChange("duration")
+                                        setValue("duration",selectedValue)
+                                    }}
                                 />
 
                                 <Input

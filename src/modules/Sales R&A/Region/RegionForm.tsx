@@ -22,20 +22,19 @@ const validationSchema = Yup.object({
   country: Yup.string().required("Country is required"),
 });
 
-
-
 const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
-  const {allCountries}=useRegularApi()
+  const { allCountries } = useRegularApi();
   const { request: addRegion } = useApi("post", 3003);
   const { request: editRegion } = useApi("put", 3003);
   const { request: getRegion } = useApi("get", 3003);
-  const [countries,setCountries]=useState<[]>([])
+  const [countries, setCountries] = useState<[]>([]);
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-    watch
+    watch,
+    clearErrors,
   } = useForm<RegionData>({
     resolver: yupResolver(validationSchema),
   });
@@ -50,7 +49,9 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
     if (editId) {
       (async () => {
         try {
-          const { response, error } = await getRegion(`${endPoints.REGION}/${editId}`);
+          const { response, error } = await getRegion(
+            `${endPoints.REGION}/${editId}`
+          );
           if (response && !error) {
             setFormValues(response.data);
           } else {
@@ -65,7 +66,7 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
 
   const onSubmit: SubmitHandler<RegionData> = async (data) => {
     console.log(data);
-    
+
     try {
       const apiCall = editId ? editRegion : addRegion;
       const { response, error } = await apiCall(
@@ -88,12 +89,13 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
       label: country.name,
       value: country.name,
     }));
-   setCountries(filteredCountry)
+    setCountries(filteredCountry);
   }, [allCountries]);
 
- console.log(allCountries);
- 
-  
+  const handleInputChange = (field: keyof RegionData) => {
+    clearErrors(field); // Clear the error for the specific field when the user starts typing
+  };
+
   return (
     <div className="p-5 bg-white rounded shadow-md space-y-3">
       <div className="flex justify-between">
@@ -128,13 +130,17 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
           {...register("regionCode")}
         /> */}
         <Select
+          placeholder="Select Country"
           required
           label="Country"
-          placeholder="Select Country"
-          value={watch("country")}
           error={errors.country?.message}
+          value={watch("country")}
+          onChange={(selectedValue) => {
+            // Update the country value and clear the state when country changes
+            setValue("country", selectedValue);
+            handleInputChange("country");
+          }}
           options={countries}
-          {...register("country")}
         />
         <Input
           placeholder="Enter Description"

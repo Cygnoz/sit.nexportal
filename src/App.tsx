@@ -22,7 +22,7 @@ import TicketsHome from './modules/Tickets/TicketsHome';
 import UserHome from './modules/Users/User/UserHome';
 import UserLogHome from './modules/Users/UserLog/UserLogHome';
 import WCommisionHome from './modules/Users/WorkerCommision/WCommisionHome';
-import DashboardPage from './pages/DashboardPage';
+import DashboardPage from './pages/Dashboard/DashboardPage';
 import Login from './pages/login/Login';
 import Otp from './pages/login/Otp';
 // import RMViewForm from './modules/RegionalManager/RegionManager/RMViewForm';

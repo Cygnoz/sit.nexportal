@@ -17,6 +17,7 @@ import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { useUser } from "../../../context/UserContext";
 
+
 type Props = {
   onClose: () => void;
   editId?:string
@@ -33,8 +34,8 @@ const validationSchema = Yup.object({
    regionId:Yup.string().required('Region is required'),
    areaId:Yup.string().required('Area is required'),
    bdaId:Yup.string().required('Bda is required'),
-   startDate:Yup.string().required('startDate is required'),
-  endDate:Yup.string().required('endDate is required')
+   startDate:Yup.string().required('StartDate is required'),
+  endDate:Yup.string().required('EndDate is required')
 });
 
 function LicenserForm({ onClose ,editId}: Props) {
@@ -51,7 +52,9 @@ function LicenserForm({ onClose ,editId}: Props) {
       state: { label: string; value: string }[]
 
     }>({ regions:[], areas: [],bdas:[],state:[] ,country:[]});
-    
+
+    // const [isOpenOrg,setIsOpenOrg]=useState(false)
+    // const [licenserId,setLicenserId]=useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
@@ -68,14 +71,13 @@ function LicenserForm({ onClose ,editId}: Props) {
     },
   });
 
-  console.log(data);
   
+
+ 
 
   const onSubmit: SubmitHandler<LicenserData> = async (data:any, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("Form Data", data);
-    
-  
     try {
       const fun = editId ? editLicenser : addLicenser; // Select the appropriate function based on editId
       let response, error;
@@ -88,12 +90,15 @@ function LicenserForm({ onClose ,editId}: Props) {
       }
       console.log("Response:", response);
       console.log("Error:", error);
-  
+      
       if (response && !error) {
         //console.log(response.data);
         
          toast.success(response.data.message); // Show success toast
-        onClose(); // Close the form/modal
+         onClose()
+        //  setTimeout(() => {
+        //   setIsOpenOrg(true)
+        //  }, 1500);
       } else {
         toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
       }
@@ -102,6 +107,8 @@ function LicenserForm({ onClose ,editId}: Props) {
       toast.error("An unexpected error occurred."); // Handle unexpected errors
     }
   };
+
+  
   
 
 
@@ -236,10 +243,6 @@ function LicenserForm({ onClose ,editId}: Props) {
       Object.keys(data).forEach((key) => {
         setValue(key as keyof LicenserData, data[key as keyof LicenserData]);
       });
-      // console.log(watch("firstName"));
-      
-      // console.log(watch("areaId"));
-      // console.log(watch("regionId"));
     };
   
     const getOneLicenser = async () => {
@@ -268,7 +271,12 @@ function LicenserForm({ onClose ,editId}: Props) {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
+  // const orgFormClose=()=>{
+  //   setIsOpenOrg(false)
+  // }
+
   return (
+    <>
     <div className="px-5 py-3 bg-white rounded shadow-md">
       <div className="flex justify-between">
       <div>
@@ -377,20 +385,31 @@ function LicenserForm({ onClose ,editId}: Props) {
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
          
-             <Select
+          <Select
                   placeholder="Select Country"
                   label="Country"
                   error={errors.country?.message}
                   value={watch("country")}
+                  onChange={(selectedValue) => {
+                    // Update the country value and clear the state when country changes
+                    setValue("country", selectedValue);
+                    handleInputChange("country");
+                    setValue("state", ""); // Reset state when country changes
+                  }}
                   options={data.country}
-                  {...register("country")}
                 />
                 <Select
-                  placeholder={data.state.length==0?"Choose Country":"Select State"}
+                  placeholder={
+                    data.state.length === 0 ? "Choose Country" : "Select State"
+                  }
+                  value={watch("state")}
+                  onChange={(selectedValue) => {
+                    setValue("state", selectedValue);
+                    handleInputChange("state");
+                  }}
                   label="State"
                   error={errors.state?.message}
                   options={data.state}
-                  {...register("state")}
                 />
              <Input
               label="Company ID"
@@ -424,47 +443,51 @@ function LicenserForm({ onClose ,editId}: Props) {
           />
          <div className="col-span-2 gap-3 grid grid-cols-3">
          <Select
-         readOnly={user?.role=="BDA"?true:false}
-          required
-              label="Region"
-              placeholder="Select Region"
-              error={errors.regionId?.message}
-              options={data.regions}
-              {...register("regionId")}
-            />
-            <Select
             readOnly={user?.role=="BDA"?true:false}
             required
-            label="Area"
-            placeholder={
-              data.areas.length === 0
-                ? watch("regionId")?.length > 0
-                  ? "No Area Found"
-                  : "Select Region"
-                : "Select Area"
-            }
-              error={errors.areaId?.message}
-              options={data.areas}
-            {...register("areaId")}
-          />
-          <Select
-          readOnly={user?.role=="BDA"?true:false}
-          required
-          label="Assign BDA"
-          error={errors.bdaId?.message}
-          placeholder={
-            data.bdas.length === 0
-              ? watch("areaId")?.length > 0
-                ? "No BDA Found"
-                : "Select Area"
-              : "Select BDA"
-          }
-          options={data.bdas}
-          {...register("bdaId")}
-        />
+            placeholder="Select Region"
+            label="Select Region"
+            value={watch("regionId")}
+            onChange={(selectedValue) => {
+              setValue("regionId", selectedValue); // Manually update the region value
+              handleInputChange("regionId");
+              setValue("areaId", "");
+              setValue("bdaId", "");
+            }}
+            error={errors.regionId?.message}
+            options={data.regions}
+            />
+            <Select
+              readOnly={user?.role=="BDA"?true:false}
+              required
+                  label="Select Area"
+                  placeholder={watch("regionId")?"Select Area":"Select Region"}
+                  value={watch("areaId")}
+                  onChange={(selectedValue) => {
+                    setValue("areaId", selectedValue); // Manually update the region value
+                    setValue("bdaId","")
+                    handleInputChange("areaId");
+                  }}
+                  error={errors.areaId?.message}
+                  options={data.areas}
+            />
+            <Select
+              readOnly={user?.role=="BDA"?true:false}
+              required
+                  label="Assigned BDA"
+                  placeholder={watch("areaId")?"Select BDA":"Select Area"}
+                  value={watch("bdaId")}
+                  onChange={(selectedValue) => {
+                    setValue("bdaId", selectedValue); // Manually update the region value
+                    handleInputChange("bdaId");
+                  }}
+                  error={errors.bdaId?.message}
+                  options={data.bdas}
+            />
          </div>
+        
         </div>
-        <div className="bottom-0 left-0 w-full p-2 bg-white flex gap-2 justify-end">
+        <div className="bottom-0 left-0 w-full pt-2 ps-2 bg-white flex gap-2 justify-end">
           <Button
             variant="tertiary"
             className="h-8 text-sm border rounded-lg"
@@ -487,6 +510,15 @@ function LicenserForm({ onClose ,editId}: Props) {
      
         </form>
     </div>
+    {/* <Modal
+                open={isOpenOrg}
+                align="center"
+                onClose={orgFormClose}
+                className="w-[35%]"
+            >
+                <OrganisationForm licenserId={licenserId}  licenserData={watch()}   type="licenser"  onClose={orgFormClose} />
+            </Modal> */}
+    </>
   );
 }
 

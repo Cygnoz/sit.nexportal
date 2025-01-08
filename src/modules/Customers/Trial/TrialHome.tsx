@@ -27,8 +27,7 @@ const TrialHome = () => {
   const {request:getAllTrial}=useApi('get',3001)
   const [allTrials,setAllTrials]=useState<LeadData[]>([])
    const navigate=useNavigate()
-     console.log("sdsz",allTrials);
-     
+    
       const handleView=(id:any)=>{
         navigate(`/trial/${id}`)
       }
@@ -56,11 +55,17 @@ const TrialHome = () => {
       ];
             
   const getTrials=async()=>{
+    
     try{
       const {response,error}=await getAllTrial(endPoints.TRIAL)
+      console.log("res",response);
+      console.log("err",error);
+      
+      
       if(response && !error){
-     
-        const transformLicense= response.data.trials?.map((trial:any) => ({
+        console.log("res",response);
+      console.log("err",error);
+        const transformLicense= response.data.trial?.map((trial:any) => ({
           ...trial,
           startDate: trial.startDate
           ? new Date(trial.startDate).toLocaleDateString("en-GB")

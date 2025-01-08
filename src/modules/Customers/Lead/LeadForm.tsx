@@ -26,8 +26,7 @@ type Props = {
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First name is required"),
   email: Yup.string()
-    .email("Invalid email format")
-    .required("Email is required"),
+    .email("Invalid email format"),
   phone: Yup.string().required("Phone is required"),
   regionId:Yup.string().required('Region is required'),
   areaId:Yup.string().required('Area is required'),
@@ -237,8 +236,7 @@ const salutation = [
   }, [editId,user]);
 
 
-  console.log(watch());
-  console.log(errors);
+ 
   
 
   return (
@@ -291,7 +289,6 @@ const salutation = [
           <div className="grid grid-cols-2 gap-4">
             <PrefixInput
               required
-              
               label="Enter your name"
               selectName="salutation"
               inputName="firstName"
@@ -315,7 +312,7 @@ const salutation = [
               onChange={() => handleInputChange("lastName")}
             />
            <Input
-                required
+
                 label="Email Address"
                 type="email"
                 placeholder="Enter Email"
@@ -351,53 +348,50 @@ const salutation = [
             <Select
             readOnly={user?.role=="BDA"?true:false}
             required
-              label="Region"
-              placeholder="Select Region"
-              options={data.regions}
-              error={errors.regionId?.message}
-              {...register("regionId")}
+            placeholder="Select Region"
+            label="Select Region"
+            value={watch("regionId")}
+            onChange={(selectedValue) => {
+              setValue("regionId", selectedValue); // Manually update the region value
+              handleInputChange("regionId");
+              setValue("areaId", "");
+              setValue("bdaId", "");
+            }}
+            error={errors.regionId?.message}
+            options={data.regions}
             />
             <Select
               readOnly={user?.role=="BDA"?true:false}
               required
-              label="Area"
-              placeholder={
-                data.areas.length === 0
-                  ? watch("regionId")?.length > 0
-                    ? "No Area Found"
-                    : "Select Region"
-                  : "Select Area"
-              }
-              error={errors.areaId?.message}
-              options={data.areas}
-              {...register("areaId")}
+                  label="Select Area"
+                  placeholder={watch("regionId")?"Select Area":"Select Region"}
+                  value={watch("areaId")}
+                  onChange={(selectedValue) => {
+                    setValue("areaId", selectedValue); // Manually update the region value
+                    setValue("bdaId","")
+                    handleInputChange("areaId");
+                  }}
+                  error={errors.areaId?.message}
+                  options={data.areas}
             />
             <Select
               readOnly={user?.role=="BDA"?true:false}
               required
-              label="Assign BDA"
-              placeholder={
-                data.bdas.length === 0
-                  ? watch("areaId")?.length > 0
-                    ? "No BDA Found"
-                    : "Select Area"
-                  : "Select BDA"
-              }
-              error={errors.bdaId?.message}
-              options={data.bdas}
-              {...register("bdaId")}
+                  label="Assigned BDA"
+                  placeholder={watch("areaId")?"Select BDA":"Select Area"}
+                  value={watch("bdaId")}
+                  onChange={(selectedValue) => {
+                    setValue("bdaId", selectedValue); // Manually update the region value
+                    handleInputChange("bdaId");
+                  }}
+                  error={errors.bdaId?.message}
+                  options={data.bdas}
             />
           </div>
         </div>
         <div className="col-span-12 grid grid-cols-12 gap-4 mt-6">
-          <div className="col-span-4">
-            <Input
-              label="Company ID"
-              placeholder="Enter Company ID"
-              {...register("companyId")}
-            />
-          </div>
-          <div className="col-span-4">
+          
+          <div className="col-span-8">
             <Input
               label="Company Name"
               placeholder="Enter Company Name"

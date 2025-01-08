@@ -39,6 +39,7 @@ const baseSchema = {
   age: Yup.number()
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
+  region: Yup.string().required("Region is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -126,20 +127,24 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
-
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo"];
-    } else if (!editId && tab === "Company Information") {
-      fieldsToValidate = ["email", "password", "confirmPassword"];
+      fieldsToValidate = ["userName", "phoneNo","personalEmail"];
+    } else if (tab === "Company Information") {
+      fieldsToValidate = [
+        !editId && "email",
+        !editId && "password",
+        !editId && "confirmPassword",
+        "region",
+        "workEmail"
+      ];
     }
-
     const isValid = fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
-
     if (isValid && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
+      
     }
   };
 
@@ -386,27 +391,35 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                   )}
                 </div>
                 <div className="grid grid-cols-2 gap-2 col-span-10">
-                  <Input
+                <Input
+                  required
+                  placeholder="Enter Full Name"
+                  value={watch("userName")}
+                  label="Full Name"
+                  error={errors.userName?.message}
+                  onChange={(e)=>{
+                    handleInputChange("userName")
+                    setValue("userName",e.target.value)
+                  }}
+                />
+                <Input
+                  placeholder="Enter Email Address"
+                  label="Email Address"
+                  error={errors.personalEmail?.message}
+                  value={watch("personalEmail")}
+                  onChange={(e)=>{
+                    setValue("personalEmail",e.target.value)
+                    handleInputChange("personalEmail")
+                  }}
+                />
+                  <CustomPhoneInput 
                     required
-                    placeholder="Enter Full Name"
-                    label="Full Name"
-                    error={errors.userName?.message}
-                    {...register("userName")}
-                  />
-                  <Input
-                    placeholder="Enter Email Address"
-                    label="Email Address"
-                    error={errors.personalEmail?.message}
-                    {...register("personalEmail")}
-                  />
-                  <CustomPhoneInput
-                    required
-                    placeholder="Phone"
+                    placeholder="Phone" 
                     label="Phone"
                     error={errors.phoneNo?.message}
                     value={watch("phoneNo")} // Watch phone field for changes
                     onChange={(value) => {
-                      handleInputChange("phoneNo");
+                      handleInputChange("phoneNo"); 
                       setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                     }}
                   />
@@ -439,21 +452,31 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                     {...register("address.street2")}
                   />
                   <Select
-                    label="Country"
-                    placeholder="Select Country"
-                    value={watch("country")}
-                    error={errors.country?.message}
-                    options={data.country}
-                    {...register("country")}
-                  />
-                  <Select
-                    label="State"
-                    value={watch("state")}
-                    placeholder="Select State"
-                    error={errors.state?.message}
-                    options={data.state}
-                    {...register("state")}
-                  />
+                  placeholder="Select Country"
+                  label="Country"
+                  error={errors.country?.message}
+                  value={watch("country")}
+                  onChange={(selectedValue) => {
+                    // Update the country value and clear the state when country changes
+                    setValue("country", selectedValue);
+                    handleInputChange("country");
+                    setValue("state", ""); // Reset state when country changes
+                  }}
+                  options={data.country}
+                />
+                <Select
+                  placeholder={
+                    data.state.length === 0 ? "Choose Country" : "Select State"
+                  }
+                  value={watch("state")}
+                  onChange={(selectedValue) => {
+                    setValue("state", selectedValue);
+                    handleInputChange("state");
+                  }}
+                  label="State"
+                  error={errors.state?.message}
+                  options={data.state}
+                />
                   <Input
                     label="City"
                     placeholder="Enter City"
@@ -497,42 +520,55 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                       {editId ? "Edit" : "Set"} Login Credential
                     </p>
                     <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
-                      <Input
-                        required
-                        type="email"
-                        placeholder="Enter Email"
-                        label="Email"
-                        error={errors.email?.message}
-                        {...register("email")}
-                      />
-
-                      <InputPasswordEye
-                        label={editId ? "New Password" : "Password"}
-                        required
-                        placeholder="Enter your password"
-                        error={errors.password?.message}
-                        {...register("password")}
-                      />
-                      <InputPasswordEye
-                        label="Confirm Password"
-                        required
-                        placeholder="Confirm your password"
-                        error={errors.confirmPassword?.message}
-                        {...register("confirmPassword")}
-                      />
+                    <Input
+                      required
+                      placeholder="Enter Email"
+                      label="Email"
+                      value={watch("email")}
+                      error={errors.email?.message}
+                      onChange={(e)=>{
+                        handleInputChange("email")
+                        setValue("email",e.target.value)
+                      }}
+                    />
+                    <InputPasswordEye
+                      label={editId ? "New Password" : "Password"}
+                      required
+                      value={watch("password")}
+                      placeholder="Enter your password"
+                      error={errors.password?.message}
+                      onChange={(e)=>{
+                        handleInputChange("password")
+                        setValue("password",e.target.value)
+                      }}
+                    />
+                    <InputPasswordEye
+                      label="Confirm Password"
+                      required
+                      value={watch("confirmPassword")}
+                      placeholder="Confirm your password"
+                      error={errors.confirmPassword?.message}
+                      onChange={(e)=>{
+                        handleInputChange("confirmPassword")
+                        setValue("confirmPassword",e.target.value)
+                      }}
+                    />
                     </div>
                   </>
                 )}
 
                 <hr className="" />
                 <div className="grid grid-cols-2 gap-4 mt-4">
-                  <Input
-                    placeholder="Enter Work Email"
-                    type="email"
-                    label="Work Email"
-                    error={errors.workEmail?.message}
-                    {...register("workEmail")}
-                  />
+                <Input
+                  placeholder="Enter Work Email"
+                  label="Work Email"
+                  error={errors.workEmail?.message}
+                  value={watch("workEmail")}
+                  onChange={(e)=>{
+                    setValue("workEmail",e.target.value)
+                    handleInputChange("workEmail")
+                  }}
+                />
                   <CustomPhoneInput
                     placeholder="Phone"
                     label="Work phone"
@@ -544,21 +580,29 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                     }}
                   />
                   <Select
-                    label="Select Region"
-                    placeholder="Choose Region"
-                    value={watch("region")}
-                    error={errors.region?.message}
-                    options={data.regions}
-                    {...register("region")}
-                  />
-                  <Select
-                    label="Choose Commission Profile"
-                    placeholder="Commission Profile"
-                    value={watch("commission")}
-                    error={errors.commission?.message}
-                    options={data.wc}
-                    {...register("commission")}
-                  />
+                  required
+                  placeholder="Select Region"
+                  label="Select Region"
+                  value={watch("region")}
+                  onChange={(selectedValue) => {
+                    setValue("region", selectedValue); // Manually update the region value
+                    handleInputChange("region");
+                  }}
+                  error={errors.region?.message}
+                  options={data.regions}
+                />
+
+                <Select
+                  label="Choose Commission Profile"
+                  placeholder="Commission Profile"
+                  value={watch("commission")}
+                  onChange={(selectedValue) => {
+                    setValue("commission", selectedValue); // Manually update the commission value
+                    handleInputChange("commission");
+                  }}
+                  error={errors.commission?.message}
+                  options={data.wc}
+                />
                 </div>
               </div>
             )}
@@ -736,7 +780,6 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                 variant="primary"
                 className="h-8 text-sm border rounded-lg"
                 size="lg"
-                type="submit"
                 onClick={() => handleNext(activeTab)}
               >
                 Next

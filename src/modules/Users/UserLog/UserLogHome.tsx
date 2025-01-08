@@ -259,7 +259,8 @@ function UserLogHome({}: Props) {
 
   <div className='mt-5'>
     <Select
-      onChange={(e) => handleSorting('user', e.target.value)}
+      value={sortMethods.user}
+      onChange={(selectedValue) => handleSorting('user',selectedValue)}
       placeholder="Select User"
       options={usersList}
     />
@@ -267,7 +268,8 @@ function UserLogHome({}: Props) {
 
   <div className='mt-5'>
     <Select
-      onChange={(e) => handleSorting('screen', e.target.value)}
+      value={sortMethods.screen}
+      onChange={(selectedValue) => handleSorting('screen', selectedValue)}
       placeholder="Select Screen"
       options={screenList}
     />
@@ -275,7 +277,8 @@ function UserLogHome({}: Props) {
 
   <div className='mt-5'>
     <Select
-      onChange={(e) => handleSorting('action', e.target.value)}
+      value={sortMethods.action}
+      onChange={(selectedValue) => handleSorting('action', selectedValue)}
       placeholder="Select Action"
       options={actionList}
     />
