@@ -1,5 +1,4 @@
 import UserIcon from "../../assets/icons/UserIcon"
-import person1 from '../../assets/image/AvatarImg.png'
 import useApi from "../../Hooks/useApi";
 import { endPoints } from "../../services/apiEndpoints";
 import toast from "react-hot-toast";
@@ -16,57 +15,63 @@ type Props = {
     onClose: () => void; // Prop for handling modal close
 }
 
-const UserModal = ({onClose }: Props) => {
+const UserModal = ({ onClose }: Props) => {
 
-    const {user}=useUser()
+    const { user } = useUser()
 
     console.log(user);
-    
+
     const navigate = useNavigate()
 
-      // State to manage modal visibility
-      const [isModalOpen, setIsModalOpen] = useState(false);
-      // Function to toggle modal visibility
-      const handleModalToggle = () => {
+    // State to manage modal visibility
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    // Function to toggle modal visibility
+    const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
-      };
-    
-    
+    };
 
-    const {request : userLogout}=useApi('get',3003)
+    const { request: userLogout } = useApi('get', 3003)
 
-    const getLogout = async()=>{
-        try{
-            const { response, error } = await userLogout(endPoints.LOGOUT)
+    const getLogout = async () => {
+        try {
+            const { response, error } = await userLogout(`${endPoints.LOGOUT}/${user?.id}`)
             console.log(response);
             console.log(error);
-            if(response && !error){
+            if (response && !error) {
                 console.log(response.data);
                 toast.success(response.data.message)
                 onClose()
                 setTimeout(() => {
                     navigate('/');
-                  }, 2000);            }
-            else{
+                }, 1000);
+            }
+            else {
                 console.log(error.data.message);
-                
+
             }
         }
-        catch(err){
+        catch (err) {
             console.log(err, ' error message');
-            
+
         }
     }
     return (
         <div>
             <div className="w-64 h-fit bg-[#FFFFFF] p-4 rounded-lg">
                 <div className="flex gap-4 my-2">
-                    <div>
-                    <img className="rounded-full w-8 h-8" src={person1} alt="" />
-                    </div>
+                    {user?.userImage
+                        ?
+                        <div>
+                            <img className="rounded-full w-8 h-8" src={user?.userImage} alt="" />
+                        </div>
+                        :
+                        <p className="w-8 h-8 bg-black rounded-full flex justify-center items-center">
+                            <UserIcon color="white" size={22} />
+                        </p>
+                    }
                     <div>
                         <p className="text-[#4B5C79] text-sm font-semibold">{user?.userName}</p>
-                        <p className="text-[#8F99A9] text-xs font-normal">{user?.email ? user?.email:'N/A'}</p>
+                        <p className="text-[#8F99A9] text-xs font-normal">{user?.email ? user?.email : 'N/A'}</p>
                     </div>
                 </div>
 
@@ -117,20 +122,20 @@ const UserModal = ({onClose }: Props) => {
                         </div>
                     </div>
                     <div>
-                        <p onClick={()=>{handleModalToggle()}} className="text-[#4B5C79] text-sm font-medium p-1 cursor-pointer">Logout</p>
+                        <p onClick={() => { handleModalToggle() }} className="text-[#4B5C79] text-sm font-medium p-1 cursor-pointer">Logout</p>
                     </div>
                 </div>
 
 
             </div>
             <Modal className="w-[30%]" align="center" open={isModalOpen} onClose={handleModalToggle}>
-      <ConfirmModal
-       action={()=>getLogout()}
-          prompt={
-             "Are you sure you want to logout?"
-          }
-          onClose={() => handleModalToggle()}/>
-      </Modal>
+                <ConfirmModal
+                    action={() => getLogout()}
+                    prompt={
+                        "Are you sure you want to logout?"
+                    }
+                    onClose={() => handleModalToggle()} />
+            </Modal>
 
         </div>
     )

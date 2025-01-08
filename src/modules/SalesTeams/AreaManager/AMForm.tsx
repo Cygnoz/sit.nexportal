@@ -24,6 +24,9 @@ import CustomPhoneInput from "../../../components/form/CustomPhone";
 import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
+import Modal from "../../../components/modal/Modal";
+import AMViewBCard from "./AMViewBCard";
+import AMIdCardView from "./AMIdCardView";
 
 interface AddAreaManagerProps {
   onClose: () => void; // Prop for handling modal close
@@ -71,6 +74,20 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   });
 
   const {request:checkAm}=useApi("get",3002)
+  const [isModalOpen, setIsModalOpen] = useState({
+    viewBusinesscard: false,
+    viewIdcard: false,
+  });
+
+  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false,) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      viewBusinesscard:viewBusinesscard,
+      viewIdcard: viewIdcard,
+      
+    }));
+  }
+
   const { request: addAM } = useApi("post", 3002);
   const { request: editAM } = useApi("put", 3002);
   const { request: getAM } = useApi("get", 3002);
@@ -156,30 +173,6 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
-  // const handleNext = async (tab: string) => {
-  //   const currentIndex = tabs.indexOf(activeTab);
-  //   let fieldsToValidate: any[] = [];
-  //   if (tab === "Personal Information") {
-  //     fieldsToValidate = ["userName", "phoneNo","personalEmail"];
-  //   } else if (tab === "Company Information") {
-  //     fieldsToValidate = [
-  //       !editId && "email",
-  //       !editId && "password",
-  //       !editId && "confirmPassword",
-  //       "region",
-  //       "area",
-  //       "workEmail"
-  //     ];
-  //   }
-  //   const isValid = fieldsToValidate.length
-  //     ? await trigger(fieldsToValidate)
-  //     : true;
-  //   if (isValid && currentIndex < tabs.length - 1) {
-  //     setActiveTab(tabs[currentIndex + 1]);
-  //     clearErrors();
-      
-  //   }
-  // };
 
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -804,6 +797,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
                 <img src={bcardback} width={220} className="mb-3" alt="" />
                 <div className="flex gap-3 justify-end">
                   <Button
+                    onClick={()=>handleModalToggle(true, false)}
                     variant="tertiary"
                     size="sm"
                     className="text-xs text-[#565148] font-medium rounded-md"
@@ -824,6 +818,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
                 <img src={idcard} className="my-3" alt="" />
                 <div className="flex gap-3 justify-end">
                   <Button
+                    onClick={()=>handleModalToggle(false, true)}
                     variant="tertiary"
                     size="sm"
                     className="text-xs text-[#565148] font-medium rounded-md"
@@ -881,6 +876,13 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
           )}
         </div>
       </form>
+      <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
+        <AMViewBCard onClose={() => handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
+        <AMIdCardView onClose={() => handleModalToggle()} />
+      </Modal>
+
     </div>
   );
 };
