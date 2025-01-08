@@ -7,6 +7,40 @@ const RegionManager = require("../database/model/regionManager");
 const Bda = require("../database/model/bda");
 const User = require('../database/model/user');
 const Leads = require("../database/model/leads")
+const Ticket = require("../database/model/ticket");
+
+
+exports.getSolvedTicketsByRegion = async (req, res) => {
+  try {
+    // Fetch all regions
+    const regions = await Region.find();
+
+    // Prepare an array to store the result
+    const result = await Promise.all(
+      regions.map(async (region) => {
+        const solvedTicket = await Ticket.countDocuments({
+          region: region._id,
+          status: "Solved",
+        });
+
+        return {
+          _id: region._id,
+          regionName: region.regionName,
+          solvedTicket,
+        };
+      })
+    );
+
+    const sortedResult = result
+      .sort((a, b) => b.solvedTicket - a.solvedTicket)
+      .slice(0, 6);
+
+    // Send response
+    res.json(sortedResult);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
 
 
 
