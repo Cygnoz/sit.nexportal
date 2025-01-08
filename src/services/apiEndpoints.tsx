@@ -17,6 +17,7 @@ export const endPoints = {
   // Area
   AREA: "/area",
   GET_AREAS: "/areas",
+  DEACTIVATE_AREA:"/deactivateArea",
 
   //RM
   RM: "/region-manager",
@@ -73,5 +74,8 @@ export const endPoints = {
 
   //Region Recent Activity
   ACTIVITIES:"activity-logs",
+
+  //LOGOUT
+  LOGOUT:"/logout", 
   
 };

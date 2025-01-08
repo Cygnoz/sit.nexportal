@@ -110,7 +110,7 @@ const AreaHome = () => {
     { key: "areaName", label: "Area Name" },
     { key: "createdAt", label: "Created Date" },
     { key: "region", label: "Region" },
-    { key: "description", label: "Description" },
+    { key: "status", label: "Status" },
   ];
   
   const name = "Name";
