@@ -43,7 +43,7 @@ function LicenserForm({ onClose ,editId}: Props) {
   const {request:addLicenser}=useApi('post',3001)
   const {request:editLicenser}=useApi('put',3001)
  const {request:getLicenser}=useApi('get',3001)
-  const {allRegions,allAreas,allBDA,allCountries}=useRegularApi()
+  const {dropdownRegions,dropDownAreas,dropDownBdas,allCountries}=useRegularApi()
     const [data, setData] = useState<{
       regions: { label: string; value: string }[];
       areas: { label: string; value: string }[];
@@ -149,7 +149,7 @@ function LicenserForm({ onClose ,editId}: Props) {
 
     // UseEffect for updating regions
     useEffect(() => {
-      const filteredRegions = allRegions?.map((region: any) => ({
+      const filteredRegions = dropdownRegions?.map((region: any) => ({
         value: String(region._id),
         label: region.regionName,
       }));
@@ -158,12 +158,12 @@ function LicenserForm({ onClose ,editId}: Props) {
         ...prevData,
         regions: filteredRegions,
       }));
-    }, [allRegions]);
+    }, [dropdownRegions]);
   
     // UseEffect for updating areas based on selected region
     useEffect(() => {
-      const filteredAreas = allAreas?.filter(
-        (area: any) => area.region?._id === watch("regionId")
+      const filteredAreas = dropDownAreas?.filter(
+        (area: any) => area?.region === watch("regionId")
       );
       const transformedAreas = filteredAreas?.map((area: any) => ({
         label: area.areaName,
@@ -175,16 +175,16 @@ function LicenserForm({ onClose ,editId}: Props) {
         ...prevData,
         areas: transformedAreas,
       }));
-    }, [watch("regionId"), allAreas]);
+    }, [watch("regionId"), dropDownAreas]);
   
     // UseEffect for updating regions
     useEffect(() => {
-      const filteredBDA = allBDA?.filter(
-        (bda: any) => bda.area?._id === watch("areaId")
+      const filteredBDA = dropDownBdas?.filter(
+        (bda: any) => bda?.area === watch("areaId")
       );
       const transformedBda:any = filteredBDA?.map((bda: any) => ({
         value: String(bda?._id),
-        label: bda?.bdaName,
+        label: bda?.userName,
       }));
       
       // Update the state without using previous `data` state
@@ -192,13 +192,13 @@ function LicenserForm({ onClose ,editId}: Props) {
         ...prevData,
         bdas: transformedBda,
       }));
-    }, [allBDA,watch("areaId")]);
+    }, [dropDownBdas,watch("areaId")]);
 
     useEffect(()=>{
-      console.log("allBDA",allBDA);
+      console.log("allBDA",dropDownBdas);
       
       if(user?.role=="BDA"){
-        const filteredBDA:any = allBDA?.find(
+        const filteredBDA:any = dropDownBdas?.find(
           (bda: any) => bda?.user?.employeeId === user?.employeeId
         );
   
@@ -208,7 +208,7 @@ function LicenserForm({ onClose ,editId}: Props) {
           setValue("bdaId", filteredBDA?._id || "");
           
       }
-    },[user,allBDA])
+    },[user,dropDownBdas])
     
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({

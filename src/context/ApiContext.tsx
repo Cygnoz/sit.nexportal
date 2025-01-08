@@ -8,15 +8,24 @@ import { endPoints } from "../services/apiEndpoints";
 import { useUser } from "./UserContext";
 import { TotalCounts } from "../Interfaces/Counts";
 import { TotalCustomersCount } from "../Interfaces/CustomerCounts";
-
+interface DropdownApi {
+  regions:[],
+  areas:[],
+  bdas:[],
+  message:string;
+}
 type ApiContextType = {
   allRegions?: RegionData[];
   allAreas?: AreaData[];
   allWc?: WCData[];
   allCountries?: any;
   allBDA?: BDAData[];
-  totalCounts?:TotalCounts;
-  customersCounts?:TotalCustomersCount;
+  totalCounts?: TotalCounts;
+  customersCounts?: TotalCustomersCount;
+  dropdownRegions?: DropdownApi["regions"];
+  dropDownAreas?:DropdownApi["areas"]
+  dropDownBdas?:DropdownApi["bdas"]
+ 
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -30,6 +39,9 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const {request:getAllCounts}=useApi('get',3003);
  const {request:getAllCustomersCounts}=useApi('get',3001);
   const { request: getAllCountries } = useApi("get", 3003);
+  const { request: getAllDropdown } = useApi("get", 3003);
+
+  const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);
   const [allWc, setAllWc] = useState<WCData[]>([]);
@@ -50,6 +62,23 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       console.error("Error fetching regions:", err);
     }
   };
+
+  
+  // Fetch all regions
+  const fetchDropdown = async () => {
+    try {
+      const { response, error } = await getAllDropdown(endPoints.DROPDOWN_DATA);
+      if (response && !error) {
+        console.log(response.data);
+        setDropdownApi(response.data);
+      }
+    } catch (err) {
+      console.error("Error fetching Datas:", err);
+    }
+  };
+
+  console.log(dropdownApi);
+  
 
   // Fetch all areas
   const fetchAreas = async () => {
@@ -79,7 +108,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         );
         setAllWc(transformedRegions);
       } else {
-        console.log(error);
+      //  console.log(error);
       }
     } catch (err) {
       console.log(err);
@@ -155,6 +184,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const fetchData = () => {
       fetchRegions();
+      fetchDropdown();
       fetchAreas();
       getWC();
       getCountries();
@@ -178,8 +208,18 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <ApiContext.Provider
-      value={{ allRegions, allAreas, allWc, allCountries, allBDA,totalCounts,customersCounts }}
-    >
+    value={{
+      allRegions,
+      allAreas,
+      allWc,
+      allCountries,
+      allBDA,
+      totalCounts,
+      customersCounts,
+      dropdownRegions: dropdownApi?.regions || [],
+      dropDownAreas:dropdownApi?.areas||[],
+      dropDownBdas:dropdownApi?.bdas||[]
+    }}  >
       {children}
     </ApiContext.Provider>
   );

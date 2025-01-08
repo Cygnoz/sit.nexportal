@@ -56,7 +56,7 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
-  const { allRegions, allWc, allCountries } = useRegularApi();
+  const { dropdownRegions, allWc, allCountries } = useRegularApi();
   const { request: addSV } = useApi("post", 3003);
   const { request: editSV } = useApi("put", 3003);
   const { request: getSV } = useApi("get", 3003);
@@ -162,7 +162,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       value: String(region._id),
       label: region.regionName,
     }));
@@ -171,7 +171,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
       ...prevData,
       regions: filteredRegions,
     }));
-  }, [allRegions]);
+  }, [dropdownRegions]);
 
   // UseEffect for updating wc
   useEffect(() => {

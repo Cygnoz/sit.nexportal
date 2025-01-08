@@ -28,7 +28,7 @@ function TopBreakDownByRegion({}: Props) {
       const { response, error } = await getConvertionRate(endPoint);
 
       if (response && !error) {
-        const { areaManager, bda, regionManager, supervisor, supportAgent, totalTeam } = response.data;
+        const { areaManager, bda, regionManager, supervisor, supportAgent } = response.data;
 
         // Update the roles array with the fetched data
         const updatedRoles = [

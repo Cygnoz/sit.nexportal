@@ -27,11 +27,12 @@ const Select: React.FC<SelectProps> = ({
   const [searchValue, setSearchValue] = useState("");
   const [filteredOptions, setFilteredOptions] = useState(options);
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [dropdownPosition, setDropdownPosition] = useState<"top" | "bottom">("bottom");
+
   const dropdownRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Add placeholder as the first option if provided
     const allOptions = placeholder
       ? [{ value: "", label: placeholder }, ...options]
       : options;
@@ -58,6 +59,19 @@ const Select: React.FC<SelectProps> = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  useEffect(() => {
+    if (isOpen && dropdownRef.current) {
+      const dropdownRect = dropdownRef.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      if (dropdownRect.bottom + 150 > viewportHeight) {
+        setDropdownPosition("top");
+      } else {
+        setDropdownPosition("bottom");
+      }
+    }
+  }, [isOpen]);
 
   const handleOptionSelect = (selectedValue: string) => {
     if (onChange) onChange(selectedValue);
@@ -91,7 +105,9 @@ const Select: React.FC<SelectProps> = ({
       </div>
       {isOpen && (
         <div
-          className="absolute z-10 mt-1 w-full p-1 bg-white border border-gray-300 rounded-md shadow-lg"
+          className={`absolute z-10 mt-1 w-full p-1 bg-white border border-gray-300 rounded-md shadow-lg ${
+            dropdownPosition === "top" ? "bottom-full mb-1" : "top-full mt-1"
+          }`}
           tabIndex={0}
         >
           <SearchBar searchValue={searchValue} onSearchChange={setSearchValue} />

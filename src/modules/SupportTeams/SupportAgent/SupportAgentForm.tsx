@@ -60,7 +60,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   onClose,
   editId,
 }) => {
-  const { allRegions, allWc, allCountries } = useRegularApi();
+  const { dropdownRegions, allWc, allCountries } = useRegularApi();
   const { request: addSA } = useApi("post", 3003);
   const { request: editSA } = useApi("put", 3003);
   const { request: getSA } = useApi("get", 3003);
@@ -166,7 +166,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       value: String(region._id),
       label: region.regionName,
     }));
@@ -175,7 +175,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
       ...prevData,
       regions: filteredRegions,
     }));
-  }, [allRegions]);
+  }, [dropdownRegions]);
 
   // UseEffect for updating wc
   useEffect(() => {

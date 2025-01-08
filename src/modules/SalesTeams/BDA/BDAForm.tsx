@@ -57,7 +57,7 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
-  const { allAreas, allRegions, allWc, allCountries } = useRegularApi();
+  const { dropDownAreas, dropdownRegions, allWc, allCountries } = useRegularApi();
   const { request: addBDA } = useApi("post", 3002);
   const { request: editBDA } = useApi("put", 3002);
   const { request: getBDA } = useApi("get", 3002);
@@ -159,7 +159,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       value: String(region._id),
       label: region.regionName,
     }));
@@ -168,12 +168,12 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
       ...prevData,
       regions: filteredRegions,
     }));
-  }, [allRegions]);
+  }, [dropdownRegions]);
 
   // UseEffect for updating areas based on selected region
   useEffect(() => {
-    const filteredAreas = allAreas?.filter(
-      (area: any) => area.region?._id === watch("region")
+    const filteredAreas = dropDownAreas?.filter(
+      (area: any) => area?.region=== watch("region")
     );
     const transformedAreas = filteredAreas?.map((area: any) => ({
       label: area.areaName,
@@ -185,7 +185,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
       ...prevData,
       areas: transformedAreas,
     }));
-  }, [watch("region"), allAreas]);
+  }, [watch("region"), dropDownAreas]);
 
   // UseEffect for updating wc
   useEffect(() => {
