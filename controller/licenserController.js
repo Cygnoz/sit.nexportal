@@ -62,8 +62,9 @@ exports.addLicenser = async (req, res , next ) => {
     // const newLead = await createLead(cleanedData)
    
     const savedLicenser = await createLicenser(cleanedData, regionId, areaId, bdaId ,  userId, userName );
- 
-    res.status(201).json({ message: "licenser added successfully", savedLicenser });
+   console.log(savedLicenser._id);
+   const licenserId = savedLicenser._id
+    res.status(201).json({ message: "licenser added successfully", licenserId });
  
   // Pass operation details to middleware
   ActivityLog(req, "successfully", savedLicenser._id);
