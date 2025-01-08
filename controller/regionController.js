@@ -600,9 +600,7 @@ exports.getActivityLogByOperationId = async (req, res) => {
     // Step 1: Find all areas where region matches the provided id
     const areas = await Area.find({ region: id });
 
-    if (areas.length === 0) {
-      return res.status(404).json({ message: "No areas found for the provided region ID" });
-    }
+    
 
     // Step 2: Extract all area IDs and convert them to strings
     const areaIds = areas.map(area => area._id.toString());
@@ -612,7 +610,8 @@ exports.getActivityLogByOperationId = async (req, res) => {
 
     // Step 4: Find activity logs for region ID
     const regionLogs = await ActivityLogg.find({ operationId: id }).populate('userId', 'userName userImage');
-
+    console.log(regionLogs);
+    
     // Step 5: Query AreaManager to get documents where region matches the provided id
     const areaManagers = await AreaManager.find({ region: id });
 
@@ -660,6 +659,8 @@ exports.getActivityLogByOperationId = async (req, res) => {
     ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
 
     // Step 18: Get only the last 10 documents
+    // console.log("Full logs",logs);
+    
     const limitedLogs = logs.slice(0, 10);
 
     // Step 19: Check if logs are empty

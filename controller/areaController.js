@@ -4,6 +4,8 @@ const Leads = require("../database/model/leads")
 const mongoose = require('mongoose');
 const Bda = require("../database/model/bda");
 const User = require("../database/model/user");
+const ActivityLogg = require('../database/model/activityLog');
+
 
 const AreaManager = require('../database/model/areaManager')
 
@@ -434,6 +436,67 @@ exports.getAreaLeadDetails = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getActivityLogByAreaId = async (req, res) => {
+  try {
+    const { id } = req.params;
+console.log(id);
+
+    // Step 1: Find activity logs where operationId matches the provided Area ID
+    const areaLogs = await ActivityLogg.find({ operationId: id });
+console.log("area log",areaLogs);
+
+    // Step 2: Query AreaManager to get documents where area matches the provided id
+    const areaManagers = await AreaManager.find({ area: id });
+
+    // Step 3: Extract AreaManager IDs
+    const areaManagerIds = areaManagers.map(manager => manager._id.toString());
+
+    // Step 4: Find activity logs where operationId matches any AreaManager ID
+    const areaManagerLogs = await ActivityLogg.find({ operationId: { $in: areaManagerIds } }).populate('userId', 'userName userImage');
+
+    // Step 5: Query Bda to get documents where area matches the provided id
+    const bdaDocuments = await Bda.find({ area: id });
+
+    // Step 6: Extract Bda IDs
+    const bdaIds = bdaDocuments.map(bda => bda._id.toString());
+
+    // Step 7: Find activity logs where operationId matches any Bda ID
+    const bdaLogs = await ActivityLogg.find({ operationId: { $in: bdaIds } }).populate('userId', 'userName userImage');
+
+    // Step 8: Query Leads to get documents where areaId matches the provided id
+    const leadsDocuments = await Leads.find({ areaId: id });
+
+    // Step 9: Extract Leads IDs
+    const leadsIds = leadsDocuments.map(lead => lead._id.toString());
+
+    // Step 10: Find activity logs where operationId matches any Leads ID
+    const leadsLogs = await ActivityLogg.find({ operationId: { $in: leadsIds } }).populate('userId', 'userName userImage');
+
+    // Step 11: Combine all logs and sort by timestamp in descending order
+    const logs = [
+      ...areaLogs,
+      ...areaManagerLogs,
+      ...bdaLogs,
+      ...leadsLogs
+    ].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+    // Step 12: Get only the last 10 documents
+    const limitedLogs = logs.slice(0, 10);
+
+    // Step 13: Check if logs are empty
+    if (limitedLogs.length === 0) {
+      return res.status(404).json({ message: "No activity logs found for the provided Area ID" });
+    }
+
+    // Step 14: Send the combined logs as the response
+    res.status(200).json(limitedLogs);
+  } catch (error) {
+    console.error("Error fetching activity logs:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 
 

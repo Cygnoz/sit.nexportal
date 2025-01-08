@@ -19,12 +19,14 @@ const ActivityLogGeneration = require('../controller/authController/activityLogC
 
 // login
 router.post('/login',userController.login)
+router.get('/logout',userController.logout)
 
 router.post('/verify-otp',userController.verifyOtp)
 router.post('/roles',userController.addOrUpdateRoles)
 router.get('/countries',userController.getCountriesData)
 
 router.get('/activity-logs/:id',verifyToken,checkPermission('View Region'), regionController.getActivityLogByOperationId);
+router.get('/area-activity-logs/:id',verifyToken,checkPermission('View Area'), areaController.getActivityLogByAreaId);
 
 // region
 router.post("/region",verifyToken,checkPermission('Add Region'), regionController.addRegion,ActivityLogGeneration('Add Region'));
@@ -36,6 +38,8 @@ router.get("/regions",verifyToken,checkPermission('View Region'), regionControll
 router.put("/region/:regionId",verifyToken,checkPermission('Edit Region'), regionController.updateRegion,ActivityLogGeneration('Edit Region'));
 
 router.delete("/region/:regionId",verifyToken,checkPermission('Delete Region'), regionController.deleteRegion,ActivityLogGeneration('Delete Region'));
+
+router.put("/deactivateRegion/:regionId",verifyToken,checkPermission('Deactivate Region'), regionController.deactivateRegion,ActivityLogGeneration('Deactivate Region'));
 
 router.get("/regions/:id/areas",verifyToken,checkPermission('View Region'), regionController.getAreasByRegion);
 router.get("/regions/:id/details",verifyToken,checkPermission('View Region'), regionController.getRegionDetails);
@@ -57,6 +61,8 @@ router.get("/areas",verifyToken,checkPermission('View Area'), areaController.get
 router.put("/area/:areaId",verifyToken,checkPermission('Edit Area'), areaController.updateArea,ActivityLogGeneration('Edit Area'));
 
 router.delete("/area/:areaId",verifyToken,checkPermission('Delete Area'), areaController.deleteArea,ActivityLogGeneration('Delete Area'));
+
+router.put("/deactivateArea/:areaId",verifyToken,checkPermission('Deactivate Area'), areaController.deactivateArea,ActivityLogGeneration('Deactivate Area'));
 
 router.get("/areas/:id/overview",verifyToken,checkPermission('View Region'), areaController.getAreaDetails);
 

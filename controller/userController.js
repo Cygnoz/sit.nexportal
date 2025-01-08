@@ -145,7 +145,6 @@ exports.verifyOtp =  async (req, res) => {
       });
       await activity.save();
 
-
       // Invalidate the OTP after successful verification
       otpCache.del(email);
     } else {
@@ -156,6 +155,52 @@ exports.verifyOtp =  async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
+// Logout
+exports.logout = async (req, res) => {
+  try {
+    // Find the user
+    const id = req.params.id
+    const user = await User.findOne(id);
+
+
+    // Capture IP address and User-Agent during logout
+    const requestIP = req.ip || req.connection.remoteAddress;
+    const requestUserAgent = req.headers['user-agent'];
+
+    // Log the logout activity
+    const generatedDateTime = generateTimeAndDateForDB(
+      "Asia/Kolkata",
+      "DD/MM/YY",
+      "/"
+    );
+    const actionTime = generatedDateTime.dateTime;
+
+    const activity = new ActivityLog({
+      userId: user._id,
+      activity: `${user.userName} logged out successfully.`,
+      timestamp: actionTime,
+      action: "Logout",
+      screen: "Logout",
+      status: "allowed",
+      // ip: requestIP,
+      // userAgent: requestUserAgent,
+    });
+
+    await activity.save();
+
+    // Respond with a success message
+    res.status(200).json({
+      success: true,
+      message: 'User logged out successfully',
+    });
+
+  } catch (error) {
+    console.error('Error in logout:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
 
 
 function generateTimeAndDateForDB(
@@ -275,12 +320,14 @@ const roles = [
       { action: "View Region", note: "View Region" },
       { action: "Edit Region", note: "Edit Region" },
       { action: "Delete Region", note: "Delete Region" },
+      { action: "Deactivate Region", note: "Deactivate Region" },
 
       // Area
       { action: "Add Area", note: "Add Area" },
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+      { action: "Deactivate Area", note: "Deactivate Area" },
 
       // Region Manager
       { action: "Add Region Manager", note: "Add Region Manager" },
@@ -461,12 +508,14 @@ const roles = [
       { action: "View Region", note: "View Region" },
       { action: "Edit Region", note: "Edit Region" },
       { action: "Delete Region", note: "Delete Region" },
+      { action: "Deactivate Region", note: "Deactivate Region" },
 
       // Area
       { action: "Add Area", note: "Add Area" },
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+      { action: "Deactivate Area", note: "Deactivate Area" },
 
       // Region Manager
       { action: "Add Region Manager", note: "Add Region Manager" },
@@ -511,11 +560,11 @@ const roles = [
       { action: "Delete Lead", note: "Delete Lead" },
 
       // Trial
-      { action: "Add Trial", note: "Add Trial" },
+      { action: "Convert Trial", note: "Convert Trial" },
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
-      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Convert Licenser", note: "Convert Licenser" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -554,12 +603,14 @@ const roles = [
       { action: "View Region", note: "View Region" },
       { action: "Edit Region", note: "Edit Region" },
       { action: "Delete Region", note: "Delete Region" },
+      { action: "Deactivate Region", note: "Deactivate Region" },
 
       // Area
       { action: "Add Area", note: "Add Area" },
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+      { action: "Deactivate Area", note: "Deactivate Area" },
 
       // Region Manager
       { action: "Add Region Manager", note: "Add Region Manager" },
@@ -604,10 +655,11 @@ const roles = [
       { action: "Delete Lead", note: "Delete Lead" },
 
       // Trial
-      { action: "Add Trial", note: "Add Trial" },
+      { action: "Convert Trial", note: "Convert Trial" },
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
+      { action: "Convert Licenser", note: "Convert Licenser" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -620,7 +672,6 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-      { action: "Extend Trial", note: "Extend Trial" },
 
        // Praise
        { action: "Add Praise", note: "Add Praise" },
@@ -647,12 +698,14 @@ const roles = [
       { action: "View Region", note: "View Region" },
       { action: "Edit Region", note: "Edit Region" },
       { action: "Delete Region", note: "Delete Region" },
+      { action: "Deactivate Region", note: "Deactivate Region" },
 
       // Area
       { action: "Add Area", note: "Add Area" },
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+      { action: "Deactivate Area", note: "Deactivate Area" },
 
       // Region Manager
       { action: "Add Region Manager", note: "Add Region Manager" },
@@ -697,11 +750,11 @@ const roles = [
       { action: "Delete Lead", note: "Delete Lead" },
 
       // Trial
-      { action: "Add Trial", note: "Add Trial" },
+      { action: "Convert Trial", note: "Convert Trial" },
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
-      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Convert Licenser", note: "Convert Licenser" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -740,12 +793,14 @@ const roles = [
       { action: "View Region", note: "View Region" },
       { action: "Edit Region", note: "Edit Region" },
       { action: "Delete Region", note: "Delete Region" },
+      { action: "Deactivate Region", note: "Deactivate Region" },
 
       // Area
       { action: "Add Area", note: "Add Area" },
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+      { action: "Deactivate Area", note: "Deactivate Area" },
 
       // Region Manager
       { action: "Add Region Manager", note: "Add Region Manager" },
@@ -790,11 +845,11 @@ const roles = [
       { action: "Delete Lead", note: "Delete Lead" },
 
       // Trial
-      { action: "Add Trial", note: "Add Trial" },
+      { action: "Convert Trial", note: "Convert Trial" },
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
-      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Convert Licenser", note: "Convert Licenser" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -833,12 +888,14 @@ const roles = [
       { action: "View Region", note: "View Region" },
       { action: "Edit Region", note: "Edit Region" },
       { action: "Delete Region", note: "Delete Region" },
+      { action: "Deactivate Region", note: "Deactivate Region" },
 
       // Area
       { action: "Add Area", note: "Add Area" },
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+      { action: "Deactivate Area", note: "Deactivate Area" },
 
       // Region Manager
       { action: "Add Region Manager", note: "Add Region Manager" },
@@ -883,11 +940,11 @@ const roles = [
       { action: "Delete Lead", note: "Delete Lead" },
 
       // Trial
-      { action: "Add Trial", note: "Add Trial" },
+      { action: "Convert Trial", note: "Convert Trial" },
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
-      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Convert Licenser", note: "Convert Licenser" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -926,12 +983,14 @@ const roles = [
       { action: "View Region", note: "View Region" },
       { action: "Edit Region", note: "Edit Region" },
       { action: "Delete Region", note: "Delete Region" },
+      { action: "Deactivate Region", note: "Deactivate Region" },
 
       // Area
       { action: "Add Area", note: "Add Area" },
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+      { action: "Deactivate Area", note: "Deactivate Area" },
 
       // Region Manager
       { action: "Add Region Manager", note: "Add Region Manager" },
@@ -976,10 +1035,11 @@ const roles = [
       { action: "Delete Lead", note: "Delete Lead" },
 
       // Trial
-      { action: "Add Trial", note: "Add Trial" },
+      { action: "Convert Trial", note: "Convert Trial" },
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
+      { action: "Convert Licenser", note: "Convert Licenser" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -992,7 +1052,6 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-      { action: "Extend Trial", note: "Extend Trial" },
 
        // Praise
        { action: "Add Praise", note: "Add Praise" },
