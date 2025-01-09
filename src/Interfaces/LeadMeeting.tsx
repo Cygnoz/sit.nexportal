@@ -1,6 +1,6 @@
 export interface LeadMeetingData{
     leadId?:string;
-    activityType:string;
+    activityType:"Meeting";
     meetingTitle?:string;
     addNotes?:string;
     meetingType?:string;

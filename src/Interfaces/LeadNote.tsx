@@ -1,6 +1,6 @@
 export interface LeadNoteData{
     leadId?:string;
-    activityType:string;
+    activityType:"Note";
     relatedTo?:string;
     noteMembers?:string;
     note?:string;

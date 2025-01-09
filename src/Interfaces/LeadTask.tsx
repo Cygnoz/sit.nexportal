@@ -1,6 +1,6 @@
 export interface LeadTaskData{
     leadId?:string;
-    activityType:string;
+    activityType:"Task";
     taskTitle?:string;
     taskDescription?:string;
     taskType?:string;
