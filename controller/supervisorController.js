@@ -1,6 +1,7 @@
 const User = require("../database/model/user");
 const Region = require("../database/model/region");
 const Commission = require("../database/model/commission");
+const SupportAgent = require('../database/model/supportAgent'); 
 const Supervisor = require("../database/model/supervisor");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
@@ -169,6 +170,12 @@ exports.addSupervisor = async (req, res, next) => {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
+     // Check if the region is already assigned to another RegionManager
+        const existingSupervisor= await Supervisor.findOne({ region: data.region });
+        if (existingSupervisor) {
+          return res.status(400).json({ message: "Region is already assigned to another Supervisor . Try adding another region." });
+        }
+
     // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
 
     // if (!emailSent) {
@@ -197,6 +204,23 @@ exports.addSupervisor = async (req, res, next) => {
   } catch (error) {
     logOperation(req, "Failed");
     next();
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.addSupervisorCheck = async (req, res, next) => {
+  try {
+    const id = req.params.id
+    // Check if the region is already assigned to another RegionManager
+    const existingSupervisor= await Supervisor.findOne({ region: id });
+    if (existingSupervisor) {
+      return res.status(400).json({ message: "Region is already assigned to another Supervisor . Try adding another region." });
+    }
+    return res.status(201).json({
+      message: "success"
+    });
+  } catch (error) {
     console.error("Unexpected error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }

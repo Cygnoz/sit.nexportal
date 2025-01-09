@@ -84,6 +84,8 @@ router.put('/commissions/:Id',verifyToken,checkPermission('Edit Commission'),  c
 router.delete('/commissions/:Id',verifyToken,checkPermission('Delete Commission'),  commissionController.deleteCommission,ActivityLogGeneration('Delete Commission'));
 
 // supervisor
+router.get("/supervisor-check/:id",verifyToken,checkPermission('Add Supervisor'), supervisorController.addSupervisorCheck);
+
 router.post('/supervisor',verifyToken,checkPermission('Add Supervisor'),supervisorController.addSupervisor,ActivityLogGeneration('Add Supervisor'))
 
 router.get("/supervisor",verifyToken,checkPermission('View Supervisor'), supervisorController.getAllSupervisor);

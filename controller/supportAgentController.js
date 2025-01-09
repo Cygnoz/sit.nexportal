@@ -1,75 +1,74 @@
-
 const User = require("../database/model/user");
 const Region = require("../database/model/region");
 const Commission = require("../database/model/commission");
 const SupportAgent = require("../database/model/supportAgent");
+const Supervisor = require("../database/model/supervisor");
 const Ticket = require("../database/model/ticket");
 const bcrypt = require("bcryptjs");
-const crypto = require('crypto');
-const { ObjectId } = require('mongoose').Types;
-const nodemailer = require('nodemailer');
+const crypto = require("crypto");
+const { ObjectId } = require("mongoose").Types;
+const nodemailer = require("nodemailer");
 
-const key = Buffer.from(process.env.ENCRYPTION_KEY, 'utf8'); 
-const iv = Buffer.from(process.env.ENCRYPTION_IV, 'utf8'); 
+const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
+const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
 
-
-//Encrpytion 
+//Encrpytion
 function encrypt(text) {
   try {
-      const cipher = crypto.createCipheriv('aes-256-gcm', key, iv);
-      let encrypted = cipher.update(text, 'utf8', 'hex');
-      encrypted += cipher.final('hex');
+    const cipher = crypto.createCipheriv("aes-256-gcm", key, iv);
+    let encrypted = cipher.update(text, "utf8", "hex");
+    encrypted += cipher.final("hex");
 
-      const authTag = cipher.getAuthTag().toString('hex'); // Get authentication tag
+    const authTag = cipher.getAuthTag().toString("hex"); // Get authentication tag
 
-      return `${iv.toString('hex')}:${encrypted}:${authTag}`; // Return IV, encrypted text, and tag
+    return `${iv.toString("hex")}:${encrypted}:${authTag}`; // Return IV, encrypted text, and tag
   } catch (error) {
-      console.error("Encryption error:", error);
-      throw error;
+    console.error("Encryption error:", error);
+    throw error;
   }
 }
-
 
 //Decrpytion
 function decrypt(encryptedText) {
   try {
-      // Split the encrypted text to get the IV, encrypted data, and authentication tag
-      const [ivHex, encryptedData, authTagHex] = encryptedText.split(':');
-      const iv = Buffer.from(ivHex, 'hex');
-      const authTag = Buffer.from(authTagHex, 'hex');
+    // Split the encrypted text to get the IV, encrypted data, and authentication tag
+    const [ivHex, encryptedData, authTagHex] = encryptedText.split(":");
+    const iv = Buffer.from(ivHex, "hex");
+    const authTag = Buffer.from(authTagHex, "hex");
 
-      // Create the decipher with the algorithm, key, and IV
-      const decipher = crypto.createDecipheriv('aes-256-gcm', key, iv);
-      decipher.setAuthTag(authTag); // Set the authentication tag
+    // Create the decipher with the algorithm, key, and IV
+    const decipher = crypto.createDecipheriv("aes-256-gcm", key, iv);
+    decipher.setAuthTag(authTag); // Set the authentication tag
 
-      let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
-      decrypted += decipher.final('utf8');
-      return decrypted;
+    let decrypted = decipher.update(encryptedData, "hex", "utf8");
+    decrypted += decipher.final("utf8");
+    return decrypted;
   } catch (error) {
-      console.error("Decryption error:", error);
-      throw error;
+    console.error("Decryption error:", error);
+    throw error;
   }
 }
 
 // A function to encrypt sensitive fields if they exist
 const encryptSensitiveFields = (data) => {
-  const encryptIfExists = (field) => field ? encrypt(field) : field;
+  const encryptIfExists = (field) => (field ? encrypt(field) : field);
 
   data.adhaarNo = encryptIfExists(data.adhaarNo);
   data.panNo = encryptIfExists(data.panNo);
   if (data.bankDetails) {
-    data.bankDetails.bankAccountNo = encryptIfExists(data.bankDetails.bankAccountNo);
+    data.bankDetails.bankAccountNo = encryptIfExists(
+      data.bankDetails.bankAccountNo
+    );
   }
 
   return data;
 };
 
-
 // Validation utility function
 const validateRequiredFields = (requiredFields, data) => {
-  const missingFields = requiredFields.filter(field => !data[field]);
-  return missingFields.length === 0 
-    ? null 
+  const missingFields = requiredFields.filter((field) => !data[field]);
+  return missingFields.length === 0
+    ? null
     : `Missing required fields: ${missingFields.join(", ")}`;
 };
 
@@ -80,11 +79,7 @@ const checkDuplicateUser = async (userName, email, phoneNo, excludeId) => {
     $and: [
       { _id: { $ne: excludeId } }, // Exclude the current document
       {
-        $or: [
-          { userName },
-          { email },
-          { phoneNo },
-        ],
+        $or: [{ userName }, { email }, { phoneNo }],
       },
     ],
   });
@@ -102,170 +97,178 @@ const checkDuplicateUser = async (userName, email, phoneNo, excludeId) => {
   return duplicateMessages.join(". ");
 };
 
-
 // Logging utility function
 const logOperation = (req, status, operationId = null) => {
-    const { id, userName } = req.user;
-    const log = { id, userName, status };
-  
-    if (operationId) {
-      log.operationId = operationId;
-    }
-  
-    req.user = log;
-  };
+  const { id, userName } = req.user;
+  const log = { id, userName, status };
 
-  function cleanData(data) {
-    const cleanData = (value) => (value === null || value === undefined || value === "" || value === 0 ? undefined : value);
-    return Object.keys(data).reduce((acc, key) => {
-      acc[key] = cleanData(data[key]);
-      return acc;
-    }, {});
+  if (operationId) {
+    log.operationId = operationId;
   }
 
-  async function createUser(data) {
-    const { password, ...rest } = data; // Extract password and the rest of the data
-    const hashedPassword = await bcrypt.hash(password, 10);
+  req.user = log;
+};
 
-    // employee id
-    let nextId = 1;
-    const lastUser = await User.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
-    if (lastUser) {
-      const lastId = parseInt(lastUser.employeeId.slice(6));
-      // Extract the numeric part from the customerID
-      nextId = lastId + 1; // Increment the last numeric part
-    }    
-    const employeeId = `EMPID-${nextId.toString().padStart(4, '0')}`;
-  
+function cleanData(data) {
+  const cleanData = (value) =>
+    value === null || value === undefined || value === "" || value === 0
+      ? undefined
+      : value;
+  return Object.keys(data).reduce((acc, key) => {
+    acc[key] = cleanData(data[key]);
+    return acc;
+  }, {});
+}
 
-    const newUser = new User({
-      ...rest, // Spread other properties from data
-      employeeId,
-      password: hashedPassword, // Use hashed password
-      role: "Support Agent", // Set default role
-    });
-    return newUser.save();
+async function createUser(data) {
+  const { password, ...rest } = data; // Extract password and the rest of the data
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // employee id
+  let nextId = 1;
+  const lastUser = await User.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+  if (lastUser) {
+    const lastId = parseInt(lastUser.employeeId.slice(6));
+    // Extract the numeric part from the customerID
+    nextId = lastId + 1; // Increment the last numeric part
   }
-  
-  
-  async function createSupportAgent(data, user) {
-    const newSupportAgent = new SupportAgent({...data, user});
-    return newSupportAgent.save();
-  }
+  const employeeId = `EMPID-${nextId.toString().padStart(4, "0")}`;
 
+  const newUser = new User({
+    ...rest, // Spread other properties from data
+    employeeId,
+    password: hashedPassword, // Use hashed password
+    role: "Support Agent", // Set default role
+  });
+  return newUser.save();
+}
 
-  exports.addSupportAgent = async (req, res, next) => {
-    try {
-      // Destructure and validate
-      let data = cleanData(req.body);
+async function createSupportAgent(data, user) {
+  const newSupportAgent = new SupportAgent({ ...data, user });
+  return newSupportAgent.save();
+}
+
+exports.addSupportAgent = async (req, res, next) => {
+  try {
+    // Destructure and validate
+    let data = cleanData(req.body);
     //   const data = req.body;
-    
-      const requiredFields = ["userName", "phoneNo", "email", "password"];
-      const validationError = validateRequiredFields(requiredFields, data);
 
-      if (validationError) {
-        return res.status(400).json({ message: validationError });
-      }
-      
-  
-      // Check for duplicates
-      const duplicateCheck = await checkDuplicateUser(data.userName, data.email, data.phoneNo);
-      if (duplicateCheck) {
-        return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
-      }
+    const requiredFields = ["userName", "phoneNo", "email", "password"];
+    const validationError = validateRequiredFields(requiredFields, data);
 
-      // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
-    
-      // if (!emailSent) {
-      //   return res
-      //     .status(500)
-      //     .json({ success: false, message: 'Failed to send login credentials email' });
-      // }
-  
-      // Create user
-      const newUser = await createUser(data);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
 
-        // Encrypt sensitive fields
+    // Check for duplicates
+    const duplicateCheck = await checkDuplicateUser(
+      data.userName,
+      data.email,
+      data.phoneNo
+    );
+    if (duplicateCheck) {
+      return res.status(400).json({ message: ` ${duplicateCheck}` });
+    }
+
+    const supervisor = await Supervisor.findOne({ region: data.region });
+
+    // Check which manager is missing and send a specific error response
+    if (!supervisor) {
+      return res.status(404).json({
+        message: "supervisor not found for the provided region.",
+      });
+    }
+
+    // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
+
+    // if (!emailSent) {
+    //   return res
+    //     .status(500)
+    //     .json({ success: false, message: 'Failed to send login credentials email' });
+    // }
+
+    // Create user
+    const newUser = await createUser(data);
+
+    // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
-      data.status = 'Active'
-  
-      // Create region manager
-      const newSupportAgent = await createSupportAgent(data, newUser._id);
-  
-      logOperation(req, "Successfully", newSupportAgent._id);
-      next()
-      return res.status(201).json({
-        message: "Support Agent added successfully",
-        userId: newUser._id,
-        SupportAgent: newSupportAgent._id,
-      });
-    } catch (error) {
-      
-      logOperation(req, "Failed");
-       next();
-      console.error("Unexpected error:", error);
-      return res.status(500).json({ message: "Internal server error" });
+    data.status = "Active";
+
+    // Create region manager
+    const newSupportAgent = await createSupportAgent(data, newUser._id);
+
+    logOperation(req, "Successfully", newSupportAgent._id);
+    next();
+    return res.status(201).json({
+      message: "Support Agent added successfully",
+      userId: newUser._id,
+      SupportAgent: newSupportAgent._id,
+    });
+  } catch (error) {
+    logOperation(req, "Failed");
+    next();
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getSupportAgent = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const supportAgent = await SupportAgent.findById(id).populate([
+      { path: "user", select: "userName phoneNo userImage email employeeId" },
+      { path: "region", select: "regionName regionCode" },
+      { path: "commission", select: "profileName" },
+    ]);
+
+    if (!supportAgent) {
+      return res.status(404).json({ message: "Support Agent not found" });
     }
-  };
-  
 
-  exports.getSupportAgent = async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      const supportAgent = await SupportAgent.findById(id).populate([
-        { path: 'user', select: 'userName phoneNo userImage email employeeId' },
-        { path: 'region', select: 'regionName regionCode' },
-        { path: 'commission', select: 'profileName' },
-      ]);
-  
-      if (!supportAgent) {
-        return res.status(404).json({ message: "Support Agent not found" });
-      }
+    const decryptField = (field) => (field ? decrypt(field) : field);
 
-      const decryptField = (field) => field ? decrypt(field) : field;
-  
-      supportAgent.adhaarNo = decryptField(supportAgent.adhaarNo);
-      supportAgent.panNo = decryptField(supportAgent.panNo);
-      if (supportAgent.bankDetails) {
-        supportAgent.bankDetails.bankAccountNo = decryptField(supportAgent.bankDetails.bankAccountNo);
-      }
-
-      res.status(200).json(supportAgent);
-    } catch (error) {
-      console.error("Error fetching Support Agent:", error);
-      res.status(500).json({ message: "Internal server error" });
+    supportAgent.adhaarNo = decryptField(supportAgent.adhaarNo);
+    supportAgent.panNo = decryptField(supportAgent.panNo);
+    if (supportAgent.bankDetails) {
+      supportAgent.bankDetails.bankAccountNo = decryptField(
+        supportAgent.bankDetails.bankAccountNo
+      );
     }
-  };
-  
-  
-  exports.getAllSupportAgent = async (req, res) => {
-    try {
-      const supportAgent = await SupportAgent.find({}).populate([
-        { path: 'user', select: 'userName phoneNo userImage email' },
-        { path: 'region', select: 'regionName' },
-        { path: 'commission', select: 'profileName' },
-      ]);
-  
-      if (supportAgent.length === 0) {
-        return res.status(404).json({ message: "No Support Agent found" });
-      }
-  
-      res.status(200).json({ supportAgent });
-    } catch (error) {
-      console.error("Error fetching all Support Agent:", error);
-      res.status(500).json({ message: "Internal server error" });
+
+    res.status(200).json(supportAgent);
+  } catch (error) {
+    console.error("Error fetching Support Agent:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+exports.getAllSupportAgent = async (req, res) => {
+  try {
+    const supportAgent = await SupportAgent.find({}).populate([
+      { path: "user", select: "userName phoneNo userImage email" },
+      { path: "region", select: "regionName" },
+      { path: "commission", select: "profileName" },
+    ]);
+
+    if (supportAgent.length === 0) {
+      return res.status(404).json({ message: "No Support Agent found" });
     }
-  };
-  
 
+    res.status(200).json({ supportAgent });
+  } catch (error) {
+    console.error("Error fetching all Support Agent:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
 
-    exports.editSupportAgent = async (req, res,next) => {
-      try {
-        const { id } = req.params;
-        let data = cleanData(req.body);
-        // Fetch the existing document to get the user field
+exports.editSupportAgent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    let data = cleanData(req.body);
+    // Fetch the existing document to get the user field
     const existiSupportAgent = await SupportAgent.findById(id);
     if (!existiSupportAgent) {
       return res.status(404).json({ message: "Support Agent not found" });
@@ -274,106 +277,110 @@ const logOperation = (req, status, operationId = null) => {
     // Extract the user field (ObjectId)
     const existingUserId = existiSupportAgent.user;
 
-  
-        
-        // Validate required fields
-        const requiredFields = ["userName", "phoneNo", "email"];
-        const validationError = validateRequiredFields(requiredFields, data);
-    
-        if (validationError) {
-          return res.status(400).json({ message: validationError });
-        }
-    
-        // Check for duplicate user details, excluding the current document
-        const duplicateCheck = await checkDuplicateUser(data.userName, data.email, data.phoneNo, existingUserId);
-        if (duplicateCheck) {
-          return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
-        }
+    // Validate required fields
+    const requiredFields = ["userName", "phoneNo", "email"];
+    const validationError = validateRequiredFields(requiredFields, data);
 
-        // Encrypt sensitive fields
-     data = encryptSensitiveFields(data);
+    if (validationError) {
+      return res.status(400).json({ message: validationError });
+    }
 
-    
-        const user = await User.findById(existingUserId);
-        Object.assign(user, data);
-        await user.save();
-       
-        Object.assign(existiSupportAgent, data);
-        const updatedSupportAgent = await existiSupportAgent.save();
-    
-        if (!updatedSupportAgent) {
-          return res.status(404).json({ message: "Supervisor not found" });
-        }
-    
-        res.status(200).json({
-          message: "Support Agent updated successfully"
-        });
-        logOperation(req, "Successfully", updatedSupportAgent._id);
-      next()
-      } catch (error) {
-        console.error("Error editing Support Agent:", error);
-        res.status(500).json({ message: "Internal server error" });
-        logOperation(req, "Failed");
-       next();
-      }
-    };
-    
-    exports.deleteSupportAgent = async (req, res, next) => {
-      try {
-        const { id } = req.params;
-   
-        // Find the support agent
-        const supportAgent = await SupportAgent.findById(id);
-        if (!supportAgent) {
-          return res.status(404).json({ message: "Support agent not found" });
-        }
-   
-        // Check if the support agent is used in the Ticket collection
-        const dependentTickets = await Ticket.find({ supportAgentId : id });
-        if (dependentTickets.length > 0) {
-          return res.status(400).json({
-            message: "Cannot delete support agent: They are associated with existing tickets.",
-            tickets: dependentTickets.map(ticket => ({
-              id: ticket._id,
-              subject: ticket.subject,
-              status: ticket.status,
-            })),
-          });
-        }
-   
-        // Retrieve the associated user ID
-        const userId = supportAgent.user;
-   
-        // Delete the support agent
-        const deletedSupportAgent = await SupportAgent.findByIdAndDelete(id);
-        if (!deletedSupportAgent) {
-          return res.status(404).json({ message: "Support agent not found or already deleted." });
-        }
-   
-        // Delete the associated user
-        const deletedUser = await User.findByIdAndDelete(userId);
-        if (!deletedUser) {
-          return res.status(404).json({ message: "Associated user not found or already deleted." });
-        }
-   
-        // Log operation and send success response
-        logOperation(req, "Successfully", deletedSupportAgent._id);
-        next()
-        return res.status(200).json({
-          message: "Support agent and associated user deleted successfully",
-        });
-   
-      } catch (error) {
-        console.error("Error deleting support agent:", error);
-   
-        // Log failure and respond with an error
-        logOperation(req, "Failed");
-        next()
-        return res.status(500).json({ message: "Internal server error" });
-      }
-    };
+    // Check for duplicate user details, excluding the current document
+    const duplicateCheck = await checkDuplicateUser(
+      data.userName,
+      data.email,
+      data.phoneNo,
+      existingUserId
+    );
+    if (duplicateCheck) {
+      return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
+    }
 
+    // Encrypt sensitive fields
+    data = encryptSensitiveFields(data);
 
+    const user = await User.findById(existingUserId);
+    Object.assign(user, data);
+    await user.save();
+
+    Object.assign(existiSupportAgent, data);
+    const updatedSupportAgent = await existiSupportAgent.save();
+
+    if (!updatedSupportAgent) {
+      return res.status(404).json({ message: "Supervisor not found" });
+    }
+
+    res.status(200).json({
+      message: "Support Agent updated successfully",
+    });
+    logOperation(req, "Successfully", updatedSupportAgent._id);
+    next();
+  } catch (error) {
+    console.error("Error editing Support Agent:", error);
+    res.status(500).json({ message: "Internal server error" });
+    logOperation(req, "Failed");
+    next();
+  }
+};
+
+exports.deleteSupportAgent = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+
+    // Find the support agent
+    const supportAgent = await SupportAgent.findById(id);
+    if (!supportAgent) {
+      return res.status(404).json({ message: "Support agent not found" });
+    }
+
+    // Check if the support agent is used in the Ticket collection
+    const dependentTickets = await Ticket.find({ supportAgentId: id });
+    if (dependentTickets.length > 0) {
+      return res.status(400).json({
+        message:
+          "Cannot delete support agent: They are associated with existing tickets.",
+        tickets: dependentTickets.map((ticket) => ({
+          id: ticket._id,
+          subject: ticket.subject,
+          status: ticket.status,
+        })),
+      });
+    }
+
+    // Retrieve the associated user ID
+    const userId = supportAgent.user;
+
+    // Delete the support agent
+    const deletedSupportAgent = await SupportAgent.findByIdAndDelete(id);
+    if (!deletedSupportAgent) {
+      return res
+        .status(404)
+        .json({ message: "Support agent not found or already deleted." });
+    }
+
+    // Delete the associated user
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res
+        .status(404)
+        .json({ message: "Associated user not found or already deleted." });
+    }
+
+    // Log operation and send success response
+    logOperation(req, "Successfully", deletedSupportAgent._id);
+    next();
+    return res.status(200).json({
+      message: "Support agent and associated user deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting support agent:", error);
+
+    // Log failure and respond with an error
+    logOperation(req, "Failed");
+    next();
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
 
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
@@ -394,7 +401,7 @@ const sendCredentialsEmail = async (email, password, userName) => {
   const mailOptions = {
     from: `"NexPortal" <${process.env.EMAIL}>`,
     to: email,
-    subject: 'Your NexPortal Login Credentials',
+    subject: "Your NexPortal Login Credentials",
     text: `Dear ${userName},
 
 Welcome to NexPortal – Sales & Support System.
@@ -417,17 +424,14 @@ Best regards,
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('Login credentials email sent successfully');
+    console.log("Login credentials email sent successfully");
     return true;
   } catch (error) {
-    console.error('Error sending login credentials email:', error);
+    console.error("Error sending login credentials email:", error);
     return false;
   }
 };
-    
-// The CygnoNex Team  
-// NexPortal  
+
+// The CygnoNex Team
+// NexPortal
 // Support: notify@cygnonex.com
-
-
-
