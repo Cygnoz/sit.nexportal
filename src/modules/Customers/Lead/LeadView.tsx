@@ -207,7 +207,7 @@ function LeadView({ }: Props) {
           )}
 
           {activeTab === "Activities" && (
-            <ViewActivities />
+            <ViewActivities leadData={leadData} />
           )}
 
 
@@ -215,7 +215,7 @@ function LeadView({ }: Props) {
         </div>
       </div>
       <Modal className="w-[45%]" open={isModalOpen.email} onClose={() => handleModalToggle()}>
-        <MailsForm onClose={() => handleModalToggle()} />
+        <MailsForm leadData={leadData} onClose={() => handleModalToggle()} />
       </Modal>
 
       <Modal className="w-[45%]" open={isModalOpen.meeting} onClose={() => handleModalToggle()}>
@@ -232,6 +232,7 @@ function LeadView({ }: Props) {
 
 
     </div>
+    
   )
 }
 

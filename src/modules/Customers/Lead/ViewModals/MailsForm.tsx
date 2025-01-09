@@ -24,10 +24,13 @@ import toast from "react-hot-toast";
 import useApi from "../../../../Hooks/useApi";
 import { endPoints } from "../../../../services/apiEndpoints";
 import { useParams } from "react-router-dom";
+import UserIcon from "../../../../assets/icons/UserIcon";
+import { useUser } from "../../../../context/UserContext";
 
 
 type Props = {
   onClose: () => void;
+  leadData:any;
 }
 
 const validationSchema = Yup.object().shape({
@@ -40,11 +43,13 @@ const validationSchema = Yup.object().shape({
     emailText: Yup.string(),
 });
 
-const MailsForm = ({ onClose }: Props) => {
+const MailsForm = ({ onClose , leadData}: Props) => {
 
       const { id } = useParams()
       console.log(id);
-
+      const {user} =useUser()
+      console.log(user);
+      
     const {
       handleSubmit,
       register,
@@ -54,8 +59,9 @@ const MailsForm = ({ onClose }: Props) => {
   } = useForm<LeadEmailData>({
       resolver: yupResolver(validationSchema),
       defaultValues: {
-        activityType: "Task",
-        leadId: id
+        activityType: "email",
+        leadId: id,
+        emailFrom:user?.userName
     }
     });
   
@@ -102,15 +108,18 @@ const MailsForm = ({ onClose }: Props) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("Data", data);
     try {
-      const {response , error} = await addLeadMail(endPoints.LEAD_ACTIVITY)
+      const {response , error} = await addLeadMail(endPoints.LEAD_ACTIVITY, data)
       console.log(response);
       console.log(error);
             
       if (response && !error) {
         console.log(response.data);
+        toast.success(response.data.message)
+        onClose()
         
       } else {
-        console.log(error.data.message);
+        console.log(error.respone.data.message);
+        toast.error(error.respone.data.message)
         
       }
     } catch (err) {
@@ -144,23 +153,33 @@ useEffect(()=>{
             </div>
           </div>
         </div>
-        <div className="flex gap-4 p-4" onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="flex gap-4 p-4">
           <p className="mt-3 text-[#303F58] text-xs font-semibold ms-2">To</p>
-          <Input 
+          {/* <Input 
             placeholder='Anjela John (anjela@gmail.com)'
             type="email"
             {...register("emailTo")}
             value={watch("emailTo")}
             className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2 text-[#303F58] text-xs font-semibold text-center"
-            />
+            /> */}
 
-          {/* <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2">
-            <div className="rounded-full w-6 h-6 overflow-hidden ms-1 mt-[1%]">
-              <img src={image} alt="" />
-            </div>
-            <p className="text-[#303F58] text-xs font-semibold mt-1">Anjela John (anjela@gmail.com)</p>
+          <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2">
+            <div className="rounded-full w-6 h-6 overflow-hidden mx-1 mt-[1%]">
+            {leadData?.image ? (
+                <img
+                  src={leadData?.image} // Replace with the actual image URL
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <p className="w-6 h-6 bg-black rounded-full flex justify-center items-center">
+                  <UserIcon color="white" size={16} />
+                </p>
+              )}            </div>
+            <p className="text-[#303F58] text-xs font-semibold mt-1">{leadData?.email}</p>
 
-          </div> */}
+          </div>
         </div>
         <p className="text-end px-6 -mt-11">Cc <span className="ms-2">Bcc</span></p>
 
@@ -184,8 +203,6 @@ useEffect(()=>{
             placeholder="Write here your message..."
             className="quill-editor h-[250px]  text-[#4B5C79] text-sm font-normal"
             theme="snow"
-            //  {...register('emailText')}
-            // onChange={() => handleInputChange("emailText")}
             modules={modules}
           />
 
@@ -194,6 +211,7 @@ useEffect(()=>{
         <div className='m-5 flex justify-end'>
           <Button className="w-16 h-9" variant='primary' type="submit" size='sm'>Done</Button>
         </div>
+        </form>
 
 
       </div>

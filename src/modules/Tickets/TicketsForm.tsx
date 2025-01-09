@@ -45,6 +45,7 @@ function TicketsForm({ onClose, editId }: Props) {
     handleSubmit,
     formState: { errors },
     clearErrors,
+    
     watch,
     setValue,
   } = useForm<TicketsData>({
@@ -175,10 +176,6 @@ function TicketsForm({ onClose, editId }: Props) {
     Object.keys(data).forEach((key) => {
       setValue(key as keyof TicketsData, data[key as keyof TicketsData]);
     });
-    // console.log(watch("firstName"));
-
-    // console.log(watch("areaId"));
-    // console.log(watch("regionId"));
   };
 
   const getOneTickets = async () => {
@@ -189,17 +186,23 @@ function TicketsForm({ onClose, editId }: Props) {
       if (response && !error) {
         const Ticket = response.data; // Return the fetched data
         console.log("Fetched Tickets data:", Ticket);
-        console.log(Ticket);
-
-        setFormValues(Ticket);
+        // Assuming you want to extract specific fields from the fetched Ticket data
+        const filteredData = {
+          ...Ticket,
+          customerId: Ticket?.customerId?._id,
+          supportAgentId: Ticket?.supportAgentId?._id
+        };
+  
+        setFormValues(filteredData); // Update the form values with the filtered data
       } else {
         // Handle the error case if needed (for example, log the error)
-        console.error("Error fetching Lead data:", error);
+        console.error("Error fetching Ticket data:", error);
       }
     } catch (err) {
-      console.error("Error fetching Lead data:", err);
+      console.error("Error fetching Ticket data:", err);
     }
   };
+  
 
   useEffect(() => {
     getOneTickets();
@@ -234,10 +237,10 @@ function TicketsForm({ onClose, editId }: Props) {
                   value={watch("customerId")}
                   error={errors.customerId?.message}
                   options={allrequestor}
-                  onChange={(selectedValue)=>{
-                    handleInputChange("customerId")
+                  onChange={(selectedValue) => {
+                    handleInputChange("customerId");
                     setValue("customerId", selectedValue);
-                  }} 
+                  }}
                 />
                 <Input
                   required
@@ -262,10 +265,10 @@ function TicketsForm({ onClose, editId }: Props) {
                   placeholder="Select Agent"
                   error={errors.supportAgentId?.message}
                   options={allSA}
-                  onChange={(selectedValue)=>{
-                    handleInputChange("supportAgentId")
+                  onChange={(selectedValue) => {
+                    handleInputChange("supportAgentId");
                     setValue("supportAgentId", selectedValue);
-                  }} 
+                  }}
                 />
 
                 <div
@@ -283,10 +286,10 @@ function TicketsForm({ onClose, editId }: Props) {
                         placeholder="Choose Priority"
                         error={errors.priority?.message}
                         options={Priority}
-                        onChange={(selectedValue)=>{
-                          handleInputChange("priority")
+                        onChange={(selectedValue) => {
+                          handleInputChange("priority");
                           setValue("priority", selectedValue);
-                        }} 
+                        }}
                       />
                       <Select
                         label="Status"
@@ -294,10 +297,10 @@ function TicketsForm({ onClose, editId }: Props) {
                         placeholder="Choose Status"
                         error={errors.status?.message} // Ensure the correct error field is used
                         options={Status}
-                        onChange={(selectedValue)=>{
-                          handleInputChange("status")
+                        onChange={(selectedValue) => {
+                          handleInputChange("status");
                           setValue("status", selectedValue);
-                        }} 
+                        }}
                       />
                     </>
                   ) : (
@@ -309,10 +312,10 @@ function TicketsForm({ onClose, editId }: Props) {
                       placeholder="Choose Priority"
                       error={errors.priority?.message}
                       options={Priority}
-                      onChange={(selectedValue)=>{
-                        handleInputChange("priority")
+                      onChange={(selectedValue) => {
+                        handleInputChange("priority");
                         setValue("priority", selectedValue);
-                      }} 
+                      }}
                     />
                   )}
                 </div>

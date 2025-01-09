@@ -5,7 +5,8 @@ export interface LeadMeetingData{
     addNotes?:string;
     meetingType?:string;
     dueDate?:string;
-    time?:string;
+    timeFrom?:string;
+    timeTo?:string;
     meetingLocation?:string;
     location?:string;
     landMark?:string;

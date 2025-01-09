@@ -94,50 +94,53 @@ function TopBreakDownByRegion({}: Props) {
 
         {/* Only show the pie chart and breakdown if totalStaffCount > 0 */}
         {totalStaffCount > 0 ? (
-  <div className="-mt-3 relative">
-    <div className='absolute top-[29%] left-[41%] z-50 text-center'>
-      <p className='text-2xl font-bold'>{totalStaffCount}</p>
-      <p className='text-md'>Total Team</p>
-    </div>
-    <VictoryPie
-      innerRadius={48}
-      padAngle={4}
-      data={pieData}
-      categories={{
-        y: roles.map(role => role.name),
-      }}
-      theme={VictoryTheme.clean}
-      labels={({ datum }) => `${((datum.y / totalStaffCount) * 100).toFixed(1)}%`}
-      labelComponent={<VictoryLabel style={{ fill: '#303F58', fontSize: 15, marginLeft: -50 }} />}
-      style={{
-        data: {
-          fill: ({ datum }) => datum.color,
-        },
-      }}
-    />
-    <div className='flex justify-center'>
-      <div className="space-y-4">
-        {roles.filter(role => role.count > 0).length > 0 ? (
-          roles.filter(role => role.count > 0).map((role) => (
-            <div key={role.name} className="flex items-center justify-between w-72 space-x-3">
-              <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
-                <span className="text-gray-800 font-medium text-xs">{role.name}</span>
-              </div>
-              <span className="ml-auto text-gray-600 text-xs">{role.count}</span>
-            </div>
-          ))
-        ) : (
-         
-            <div className="flex justify-center flex-col items-center">
-              <img width={70} src={No_Data_found} alt="No Data Found" />
-              <p className="font-bold text-red-700">No Records Found!</p>
-            </div>
-         
-        )}
-      </div>
-    </div>
-  </div>
+ <div className="relative ">
+ <VictoryPie
+   innerRadius={55}
+   padAngle={4}
+   data={pieData}
+   categories={{
+     y: roles.map(role => role.name),
+   }}
+   theme={VictoryTheme.clean}
+   labels={({ datum }) => `${((datum.y / totalStaffCount) * 100).toFixed(1)}%`}
+   labelComponent={<VictoryLabel style={{ fill: '#303F58', fontSize: 15, marginLeft: -50 }} />}
+   style={{
+     data: {
+       fill: ({ datum }) => datum.color,
+     },
+   }}
+ />
+ 
+ {/* Custom label in the center of the pie chart */}
+ <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-[20%] z-50 text-center">
+   <p className="text-2xl font-bold">{totalStaffCount}</p>
+   <p className="text-md">Total Team</p>
+ </div>
+
+ <div className="flex justify-center">
+   <div className="space-y-4">
+     {roles.filter(role => role.count > 0).length > 0 ? (
+       roles.filter(role => role.count > 0).map((role) => (
+         <div key={role.name} className="flex items-center justify-between w-72 space-x-3">
+           <div className="flex items-center gap-2">
+             <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
+             <span className="text-gray-800 font-medium text-xs">{role.name}</span>
+           </div>
+           <span className="ml-auto text-gray-600 text-xs">{role.count}</span>
+         </div>
+       ))
+     ) : (
+       <div className="flex justify-center flex-col items-center">
+         <img width={70} src={No_Data_found} alt="No Data Found" />
+         <p className="font-bold text-red-700">No Records Found!</p>
+       </div>
+     )}
+   </div>
+ </div>
+</div>
+
+
 ) : (
   <div className="flex justify-center -mt-5 flex-col items-center h-full">
   <img width={100} src={No_Data_found} alt="No Data Found" />
