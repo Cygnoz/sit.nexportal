@@ -65,15 +65,20 @@ exports.addLead = async (req, res , next ) => {
     if (!validateInputs( cleanedData, regionExists, areaExists, bdaExists ,res)) return;
  
  
-    const regionManager = await RegionManager.findOne({ region: regionId });
-    const areaManager = await AreaManager.findOne({ area: areaId });
- 
-    // If the regionManager or areaManager is not found, return an error
-    if (!regionManager || !areaManager) {
-      return res.status(404).json({
-        message: "Region Manager or Area Manager not found for the provided regionId or areaId."
-      });
+    const [regionManager, areaManager] = await Promise.all([
+      RegionManager.findOne({ region: regionId }),
+      AreaManager.findOne({ area: areaId })
+    ]);
+    
+    // Send specific error responses based on missing data
+    if (!regionManager) {
+      return res.status(404).json({ message: "Region Manager not found for the provided region." });
     }
+    
+    if (!areaManager) {
+      return res.status(404).json({ message: "Area Manager not found for the provided area." });
+    }
+    
  
    
     // const savedLeads = await createNewLeads(cleanedData, regionId, areaId, bdaId , userId, userName );

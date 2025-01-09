@@ -6,7 +6,7 @@ const { Schema } = mongoose;
  
 const activitySchema = new Schema({
  
-    leadId:{ type: mongoose.Schema.Types.ObjectId, ref: 'Lead'},
+    leadId:{type:String},
     activityType:{type:String},
  
     //email
@@ -14,7 +14,6 @@ const activitySchema = new Schema({
     emailFrom:{type:String},
     emailSubject:{type:String},
     emailFile:{type:String},
-    emailText:{type:String},
  
     //note
     relatedTo:{type:String},
@@ -26,7 +25,8 @@ const activitySchema = new Schema({
     addNotes:{type:String},
     meetingType:{type:String},
     dueDate:{type:String},
-    time:{type:String},
+    timeFrom:{type:String},
+    timeTo:{type:String},
     meetingLocation:{type:String},
     location:{type:String},
     landMark:{type:String},
