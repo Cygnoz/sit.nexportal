@@ -85,8 +85,8 @@ export const endPoints = {
 
   DROPDOWN_DATA:"/dropdown-data",
 
-
-  
+  // LEAD ACTIVITY
+  LEAD_ACTIVITY:"/activity",
 
   //LOGOUT
   LOGOUT:"/logout", 
