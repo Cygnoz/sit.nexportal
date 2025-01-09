@@ -69,7 +69,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { response, error } = await getAllDropdown(endPoints.DROPDOWN_DATA);
       if (response && !error) {
-
         setDropdownApi(response.data);
       }
     } catch (err) {
@@ -171,7 +170,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         
         setTotalCustomersCounts(response.data)
       }else{
-        console.log("err",error);
+      //  console.log("err",error);
       }
     }catch(err){
       console.log(err);

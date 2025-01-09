@@ -103,13 +103,13 @@ const TicketsView = ({ }: Props) => {
             <h1 className="font-normal text-[#303F58] text-sm">Requester</h1>
             <div className="rounded-full flex my-3">
               <img className="w-6 h-6 mt-1" src={person} alt="" />
-              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.customerDetails?.firstName}</h2>
+              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.customerId?.firstName}</h2>
             </div>
             <hr />
             <h1 className="font-normal text-[#303F58] text-sm mt-3">Assignee</h1>
             <div className="rounded-full flex my-3">
               <img className="w-6 h-6 mt-1" src={person} alt="" />
-              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.supportAgentDetails?.name}</h2>
+              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.supportAgentId?.user?.userName}</h2>
             </div>
             
            
