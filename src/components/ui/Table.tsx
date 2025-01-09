@@ -78,6 +78,8 @@ const Table = <T extends object>({
     setCurrentPage(1);
   };
 
+  
+
   // Function to determine row styles based on `status`
   const getStatusClass = (status: string | undefined) => {
     switch (status) {
@@ -251,6 +253,7 @@ const Table = <T extends object>({
     </tr>
   );
 
+  
   useEffect(() => {
     const timeout = setTimeout(() => {
       if (data?.length === 0) {

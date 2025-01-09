@@ -5,7 +5,7 @@ import ItalicIcon from "../../../../assets/icons/ItalicIcon";
 import UnderlineIcon from "../../../../assets/icons/UnderlineIcon";
 import LinkIcon from "../../../../assets/icons/LinkIcon";
 import EmojiIcon from "../../../../assets/icons/EmojiIcon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import 'react-quill/dist/quill.snow.css';
 import 'quill-emoji/dist/quill-emoji.css';
 import { Quill } from 'react-quill';
@@ -16,14 +16,51 @@ import Input from "../../../../components/form/Input";
 import NumberListIcon from "../../../../assets/icons/NumberListIcon";
 import BulletListIcon from "../../../../assets/icons/BulletListIcon";
 import StrikeThroughIcon from "../../../../assets/icons/StrikeThroughIcon";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { LeadEmailData } from "../../../../Interfaces/LeadEmail";
+import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
+import { useParams } from "react-router-dom";
 
 
 type Props = {
   onClose: () => void;
 }
 
+const validationSchema = Yup.object().shape({
+    activityType: Yup.string(), // Ensure it's validated as "Meeting".
+    leadId: Yup.string(),
+    emailTo: Yup.string(),
+    emailFrom: Yup.string(),
+    emailSubject: Yup.string(),
+    emailFile: Yup.string(),
+    emailText: Yup.string(),
+});
+
 const MailsForm = ({ onClose }: Props) => {
 
+      const { id } = useParams()
+      console.log(id);
+
+    const {
+      handleSubmit,
+      register,
+      setValue,
+      formState: { errors },
+      watch,
+  } = useForm<LeadEmailData>({
+      resolver: yupResolver(validationSchema),
+      defaultValues: {
+        activityType: "Task",
+        leadId: id
+    }
+    });
+  
+    console.log(errors);
+        
   const Emoji = Quill.import('formats/emoji');
   Quill.register('modules/emoji', Emoji);
   const icons = Quill.import('ui/icons');
@@ -46,7 +83,8 @@ const MailsForm = ({ onClose }: Props) => {
   icons['link'] = LinkIconHTML;
   icons['emoji'] = EmojiIconHTML;
 
-  const [value, setValue] = useState('');
+  const [quillValue, setQuillValue] = useState<any>();
+  const {request: addLeadMail}=useApi('post',3001)
 
   const modules = {
     toolbar: [
@@ -59,6 +97,35 @@ const MailsForm = ({ onClose }: Props) => {
     'emoji-textarea': false,
     'emoji-shortname': true,
   };
+
+  const onSubmit: SubmitHandler<LeadEmailData> = async (data: any, event) => {
+    event?.preventDefault(); // Prevent default form submission behavior
+    console.log("Data", data);
+    try {
+      const {response , error} = await addLeadMail(endPoints.LEAD_ACTIVITY)
+      console.log(response);
+      console.log(error);
+            
+      if (response && !error) {
+        console.log(response.data);
+        
+      } else {
+        console.log(error.data.message);
+        
+      }
+    } catch (err) {
+      console.error("Error submitting lead mail data:", err);
+      toast.error("An unexpected error occurred."); // Handle unexpected errors
+    }
+  };
+
+console.log(quillValue);
+
+useEffect(()=>{
+ if(quillValue){
+  setValue("emailText",quillValue)
+ }
+},[quillValue])
 
 
   return (
@@ -77,11 +144,13 @@ const MailsForm = ({ onClose }: Props) => {
             </div>
           </div>
         </div>
-        <div className="flex gap-4 p-4">
+        <div className="flex gap-4 p-4" onSubmit={handleSubmit(onSubmit)}>
           <p className="mt-3 text-[#303F58] text-xs font-semibold ms-2">To</p>
           <Input 
             placeholder='Anjela John (anjela@gmail.com)'
             type="email"
+            {...register("emailTo")}
+            value={watch("emailTo")}
             className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2 text-[#303F58] text-xs font-semibold text-center"
             />
 
@@ -98,6 +167,8 @@ const MailsForm = ({ onClose }: Props) => {
 
         {/* <p className="text-[#303F58] text-sm font-semibold p-4 ms-2 mt-2">Your Subject Title</p> */}
         <Input
+        {...register("emailSubject")}
+        value={watch("emailSubject")}
         placeholder="Your Subject Title"
         type="text"
         className="text-[#303F58] text-sm font-semibold outline-none w-[493px] px-4 mt-6"
@@ -108,17 +179,20 @@ const MailsForm = ({ onClose }: Props) => {
  
         <div className='w-full h-[300px] px-6 mt-6'>
           <ReactQuill
-            value={value}
-            onChange={setValue}
+            value={quillValue}
+            onChange={setQuillValue}
             placeholder="Write here your message..."
             className="quill-editor h-[250px]  text-[#4B5C79] text-sm font-normal"
             theme="snow"
+            //  {...register('emailText')}
+            // onChange={() => handleInputChange("emailText")}
             modules={modules}
           />
+
         </div>
 
         <div className='m-5 flex justify-end'>
-          <Button className="w-16 h-9" variant='primary' size='sm'>Done</Button>
+          <Button className="w-16 h-9" variant='primary' type="submit" size='sm'>Done</Button>
         </div>
 
 

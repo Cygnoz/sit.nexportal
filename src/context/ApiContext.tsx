@@ -69,7 +69,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const { response, error } = await getAllDropdown(endPoints.DROPDOWN_DATA);
       if (response && !error) {
-        //console.log(response.data);
         setDropdownApi(response.data);
       }
     } catch (err) {
@@ -77,7 +76,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
- // console.log(dropdownApi);
+ 
   
 
   // Fetch all areas
@@ -111,7 +110,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       //  console.log(error);
       }
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
   };
 
@@ -167,7 +166,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     try{
       const {response,error}=await getAllCustomersCounts(endPoints.CUSTOMERCOUNTS)
       if(response && !error){
-      //  console.log(response.data);
+       
         
         setTotalCustomersCounts(response.data)
       }else{

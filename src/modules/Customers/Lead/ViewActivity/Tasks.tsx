@@ -1,6 +1,10 @@
 // import Boxes from "../../../../assets/icons/Boxes"
 // import PackageCheck from "../../../../assets/icons/PackageCheck"
+import { useEffect, useState } from "react";
+import useApi from "../../../../Hooks/useApi";
 import TaskTable from "./TaskTable";
+import { useParams } from "react-router-dom";
+import { endPoints } from "../../../../services/apiEndpoints";
 
 interface LeadViewData {
     task: string;
@@ -11,18 +15,46 @@ interface LeadViewData {
 type Props = {}
 
 const Tasks = ({}: Props) => {
-         // Data for the table
-const leadData: LeadViewData[] = [
-    { task: "Send Follow Up Email", dueDate: "5/12/2024", bda: "Anjela John", },
-    { task: "Call the lead to discuss their requirements further.", dueDate: "9/8/2024", bda: "Anjela John", },
-    { task: "Schedule Product Demo", dueDate: "19/4/2024", bda: "Anjela John",},
-    { task: "Prepare Proposal", dueDate: "26/9/2024", bda: "Anjela John",},
-    { task: "Send Follow Up Email", dueDate: "6/7/2024", bda: "Anjela John",  },
-  ];
+
+  const {request : getLeadTask}=useApi('get',3001)
+  const [taskData, setTaskData]=useState<any[]>([])
+
+  const {id}=useParams()
+
+      const getTask = async()=>{
+          try{
+              const {response, error}= await getLeadTask(`${endPoints.GET_ALL_LEAD_ACTIVITIES}/${id}`)
+              console.log(response);
+              console.log(error);
+              if(response && !error){
+                  console.log(response.data.activities);
+                  const transformedTask = response.data?.activities?.map((task:any)=>({
+                    ...task,
+                    taskTitle:task?.taskTitle,
+                    taskDescription:task?.taskDescription,
+                    dueDate:task?.dueDate,
+                    taskType:task?.taskType,
+                    time:task?.time,
+                  })) || []
+                  setTaskData(transformedTask)               
+              }           
+              else{
+                  console.log(error.response.data.message);               
+              }
+          }
+          catch(err){
+              console.log(err, "error message");
+              
+          }
+      }
+      useEffect(()=>{
+          getTask()
+      },[])
+      console.log(taskData);
   
     // Define the columns with strict keys
-  const columns: { key: keyof LeadViewData; label: string }[] = [
-    { key: "task", label: "Task" },
+  const columns: { key: any; label: string }[] = [
+    { key: "taskTitle", label: "Task" },
     { key: "dueDate", label: "Due Date" },
     { key: "bda", label: "BDA" },
   ];
@@ -31,7 +63,7 @@ const leadData: LeadViewData[] = [
     <div>
          <div>
         <TaskTable<LeadViewData>
-            data={leadData}
+            data={taskData}
             columns={columns}
             headerContents={{
             title: "Tasks",
