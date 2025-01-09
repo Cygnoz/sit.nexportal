@@ -12,7 +12,7 @@ type TicketBarProps = {
           style={{ width: `${percentage}%`, backgroundColor: color }}
           className="h-6 rounded-md flex items-center px-2"
         >
-            <p className="text-xs">{count}</p>
+            <p className="text-xs -ms-1">{count}</p>
             </div>
       </div>
     );

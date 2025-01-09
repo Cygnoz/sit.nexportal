@@ -232,6 +232,7 @@ function LeadView({ }: Props) {
 
 
     </div>
+    
   )
 }
 

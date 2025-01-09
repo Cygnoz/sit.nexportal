@@ -48,13 +48,14 @@ function TicketsHome({ }: Props) {
   const getTickets = async () => {
     try {
       const { response, error } = await getAllTickets(endPoints.GET_TICKETS);
-      console.log("res", response);
 
       if (response && !error) {
         const currentTime = new Date();
-        const transformTicket = response.data.tickets?.map((tickets: any) => ({
+        const transformTicket = response.data?.map((tickets: any) => ({
           ...tickets,
-          name: `${tickets?.customerDetails?.firstName}${tickets?.customerDetails?.lastName ? tickets?.customerDetails?.lastName : ""}`,
+          name: tickets?.
+            supportAgentId
+            ?.user?.userName,
           openingDate: tickets?.openingDate,
           timeAgo: calculateTimeAgo(new Date(tickets?.openingDate), currentTime),
         })) || [];
@@ -77,25 +78,50 @@ function TicketsHome({ }: Props) {
     return `${diffInDays} days ago`;
   };
 
+  // Inside the TicketsHome component:
   useEffect(() => {
-    if(allTickets.length>0){
-      // Set an interval to update the "time ago" values
-      const interval = setInterval(() => {
+    let interval:any;
+    let timeout:any;
+  
+    if (allTickets.length === 1) {
+      timeout = setTimeout(() => {
+        interval = setInterval(() => {
+          setAllTickets((prevTickets) =>
+            prevTickets.map((ticket) => ({
+              ...ticket,
+              timeAgo: calculateTimeAgo(new Date(ticket.openingDate), new Date()),
+            }))
+          );
+        }, 1000); // Update every second
+      }, 2000); // Delay execution by 2 seconds
+    } else if (allTickets.length >= 2) {
+      interval = setInterval(() => {
         setAllTickets((prevTickets) =>
           prevTickets.map((ticket) => ({
             ...ticket,
             timeAgo: calculateTimeAgo(new Date(ticket.openingDate), new Date()),
           }))
         );
-      }, 1000); // Update every 60 seconds
-  
-      return () => clearInterval(interval); // Cleanup interval on unmount
+      }, 1000); // Update every second
     }
-  }, [allTickets])
+  
+    // Cleanup function to clear timeout and interval
+    return () => {
+      if (timeout) clearTimeout(timeout);
+      if (interval) clearInterval(interval);
+    };
+  }, [allTickets]); // Re-run when allTickets changes
+  
+  
 
-  useEffect(()=>{
-    getTickets();
-  },[])
+useEffect(() => {
+  getTickets(); // Fetch tickets initially when the component mounts
+}, []);
+
+
+
+
+ 
 
   // Define the columns with strict keys
   const columns: { key: keyof TicketsData; label: string }[] = [
@@ -158,6 +184,10 @@ function TicketsHome({ }: Props) {
     ],
   };
 
+ 
+
+  
+
   return (
     <>
        <div className="text-[#303F58] space-y-4">
@@ -207,7 +237,7 @@ function TicketsHome({ }: Props) {
                 <SortBy sort={sort} />
               </div>
               <Table<TicketsData>
-                data={allTickets}
+                data={allTickets.length==0?[]:allTickets}
                 columns={columns}
                 headerContents={{
                   title: "Ticket Details",

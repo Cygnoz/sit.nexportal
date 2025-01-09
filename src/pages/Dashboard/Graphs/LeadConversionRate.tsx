@@ -36,7 +36,7 @@ function LeadConversionRate({}: Props) {
       
       setChartData(filteredData)
       } else {
-        console.error(error.data);
+        // console.error(error.data);
       }
     } catch (err) {
       console.error(err);
