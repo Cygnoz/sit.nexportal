@@ -125,10 +125,18 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const checkRM=async()=>{
     try{
       const {response,error}=await checkRm(`${endPoints.CHECK_RM}/${watch("region")}`)
+      console.log("res",response);
+      console.log("err",error);
+      
+      
       if(response && !error){
         return true
       }else{
-        return false
+        if(error?.response?.data?.message==="Region is already assigned to another Region Manager. Try adding another region."){
+          return false
+        }else{
+          return true
+        }
       }
     }catch(err){
       console.log(err);
@@ -189,9 +197,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         toast.error("Region is already assigned to another Region Manager. Try adding another region."); 
       }
     }
-
-    console.log("can proceed",canProceed);
-    
   
     // Validate fields only if canProceed is true
     const isValid = canProceed && fieldsToValidate.length

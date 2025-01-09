@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import AreaIcon from "../../assets/icons/AreaIcon";
 import FileCheck from "../../assets/icons/FileCheck";
 import RegionIcon from '../../assets/icons/RegionIcon';
@@ -11,12 +12,16 @@ import HomeCard from "../../components/ui/HomeCards";
 import RatingStar from '../../components/ui/RatingStar';
 import TicketsBar from '../../components/ui/TicketsBar';
 import { useRegularApi } from "../../context/ApiContext";
+import useApi from "../../Hooks/useApi";
+import { endPoints } from "../../services/apiEndpoints";
 import LeadConversionRate from "./Graphs/LeadConversionRate";
 import TopBreakDownByRegion from './Graphs/TopBreakDownByRegion';
 import TopRevenueByRegion from './Graphs/TopRevenueByRegion';
 
 const DashboardPage = () => {
   const {totalCounts}=useRegularApi()
+  const {request:getSolveTickets}=useApi('get',3003)
+  const [solvedTickets,setSolvedTickets]=useState([])
   const homeCardData = [
     {
       icon: <RegionIcon size={24} />,
@@ -66,8 +71,24 @@ const DashboardPage = () => {
   
 
  
-  
-  
+  // Country logos array
+const countryLogo = [
+  {
+    country: "India",
+    logo: indLogo,
+  },
+  {
+    country: "Saudi Arabia",
+    logo: SaudhLogo,
+  },
+  {
+    country: "United Arab Emirates",
+    logo: UAELogo,
+  }
+];
+
+// Color array
+const colors = ["#FF9800", "#4CAF50", "#2196F3", "#9C27B0", "#F44336", "#FFC107"];
   
 
   const countries = [
@@ -103,21 +124,33 @@ const DashboardPage = () => {
     },
   ];
 
-  const regions = [
-    { countryName: 'India', ticketCount: 2544, logo: indLogo, color: '#FF9800' }, // Orange
-    { countryName: 'Italy', ticketCount: 2100, logo: SaudhLogo, color: '#4CAF50' }, // Green
-    { countryName: 'Saudi', ticketCount: 2012, logo: UAELogo, color: '#2196F3' }, // Blue
-    { countryName: 'Australia', ticketCount: 1860, logo: indLogo, color: '#9C27B0' }, // Purple
-    { countryName: 'Japan', ticketCount: 1540, logo: UAELogo, color: '#F44336' }, // Red
-    { countryName: 'Sri Lanka', ticketCount: 901, logo: SaudhLogo, color: '#FFC107' }, // Yellow
-  ];
+  
 
   
 
   
 
-  const maxTicketCount = Math.max(...regions.map((region) => region.ticketCount));
+  const maxTicketCount = Math.max(...solvedTickets.map((region:any) => region.solvedTicket));
   
+  const getSolvedTickets=async()=>{
+    try{
+      const {response,error}=await getSolveTickets(endPoints.RESOLVED_TICKETS)
+
+    if(response && !error){
+      setSolvedTickets(response.data)
+    }else{
+      console.log("err",error);
+      
+    }
+    }catch(err){
+      console.log(err);
+      
+    }
+  }
+
+  useEffect(()=>{
+    getSolvedTickets()
+  },[])
 
   return (
     <div className="text-[#303F58] mb-3">
@@ -158,22 +191,46 @@ const DashboardPage = () => {
               }
           </div>
         </div>
-        <div className="col-span-2 ">
-        <div className='p-4 bg-white w-full space-y-3 rounded-lg h-full'>
-      <h2 className='font-bold'>Top Ticket Resolved Regions</h2>
-      {regions.map((region) => (
-        <div key={region.countryName} className='grid grid-cols-2 py-1'>
-          <div className='flex items-center gap-2'>
-            <img className='w-5 h-5 rounded-full' src={region.logo} alt={region.countryName} />
-            <p className='text-sm'>{region.countryName}</p>
+        <div className="col-span-2">
+  <div className="p-4 bg-white w-full space-y-3 rounded-lg h-full "> 
+    <h2 className="font-bold">Top Ticket Resolved Regions</h2>
+    
+    {solvedTickets.map((solve:any, index:any) => {
+      // Find the matching logo from countryLogo array
+      const countryData = countryLogo.find((country) => country.country === solve.country);
+
+      // Dynamically assign a color from the colors array
+      const color = colors[index % colors.length];
+      <div className="overflow-y-scroll">
+
+      </div>
+      return (
+        <div key={solve?.regionName} className="grid grid-cols-2 py-1 ">
+          <div className="flex items-center gap-2">
+            <img
+              className="w-5 h-5 rounded-full"
+              src={countryData?.logo || ""}
+              alt={solve?.country || "Unknown Country"}
+            />
+           <p className="text-sm">
+  {solve?.regionName.length > 8 
+    ? `${solve?.regionName.slice(0, 8)}...` 
+    : solve?.regionName}
+</p>
           </div>
           <div className="flex items-center gap-2">
-            <TicketsBar count={region.ticketCount} maxCount={maxTicketCount} color={region.color} />
+            <TicketsBar
+              count={solve?.solvedTicket}
+              maxCount={maxTicketCount}
+              color={color}
+            />
           </div>
         </div>
-      ))}
-    </div>
-        </div>
+      );
+    })}
+  </div>
+</div>
+
         <div className="col-span-8">
           <LeadConversionRate/>
         </div>
