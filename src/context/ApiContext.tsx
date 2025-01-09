@@ -170,7 +170,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         
         setTotalCustomersCounts(response.data)
       }else{
-        console.log("err",error);
+      //  console.log("err",error);
       }
     }catch(err){
       console.log(err);

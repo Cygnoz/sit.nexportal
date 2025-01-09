@@ -1,6 +1,6 @@
 
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import 'quill-emoji/dist/quill-emoji.css';
@@ -21,14 +21,53 @@ import Input from '../../../../components/form/Input';
 import StrikeThroughIcon from '../../../../assets/icons/StrikeThroughIcon';
 import NumberListIcon from '../../../../assets/icons/NumberListIcon';
 import BulletListIcon from '../../../../assets/icons/BulletListIcon';
-
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as Yup from "yup";
+import { useParams } from 'react-router-dom';
+import { LeadNoteData } from '../../../../Interfaces/LeadNote';
+import { SubmitHandler, useForm } from 'react-hook-form';
+import useApi from '../../../../Hooks/useApi';
+import { endPoints } from '../../../../services/apiEndpoints';
+import toast from 'react-hot-toast';
 
 type Props = {
   onClose: () => void;
+  editId?: any;
 }
 
-const NotesForm = ({ onClose }: Props) => {
-  const [value, setValue] = useState('');
+
+const validationSchema = Yup.object().shape({
+    activityType: Yup.string(), // Ensure it's validated as "Meeting".
+    leadId: Yup.string(),
+    relatedTo:Yup.string(),
+    noteMembers:Yup.string(),
+    note:Yup.string(),
+});
+
+const NotesForm = ({ onClose ,editId}: Props) => {
+  console.log("editId",editId);
+  
+  const { id } = useParams()
+        console.log(id);
+  
+      const {
+        handleSubmit,
+        register,
+        setValue,
+        formState: { errors },
+        watch,
+    } = useForm<LeadNoteData>({
+        resolver: yupResolver(validationSchema),
+        defaultValues: {
+          activityType: "Note",
+          leadId: id
+      }
+      });
+    
+      console.log(errors);
+
+      const [quillValue, setQuillValue] = useState<any>();
+      const {request: addLeadNote}=useApi('post',3001)
 
   const Emoji = Quill.import('formats/emoji');
   Quill.register('modules/emoji', Emoji);
@@ -64,6 +103,36 @@ const NotesForm = ({ onClose }: Props) => {
     'emoji-textarea': false,
     'emoji-shortname': true,
   };
+
+  const onSubmit: SubmitHandler<LeadNoteData> = async (data: any, event) => {
+    event?.preventDefault(); // Prevent default form submission behavior
+    console.log("Data", data);
+    try {
+      const {response , error} = await addLeadNote(endPoints.LEAD_ACTIVITY,data)
+      if (response && !error) {
+        console.log(response.data);
+        toast.success(response.data.message)
+        onClose();
+      } else {
+        console.log(error.data.message);
+        
+      }
+    } catch (err) {
+      console.error("Error submitting lead note data:", err);
+      toast.error("An unexpected error occurred."); // Handle unexpected errors
+    }
+  };
+
+
+useEffect(()=>{
+ if(quillValue){
+  setValue("note",quillValue)
+ }
+},[quillValue])
+
+console.log("darssss",errors);
+
+
   return (
     <div>
       <div className='p-4 mb-6 h-full'>
@@ -78,33 +147,36 @@ const NotesForm = ({ onClose }: Props) => {
           </div>
 
         </div>
-        <div className='my-4'>
-          <div className="flex gap-2">
+        <form className='my-4' onSubmit={handleSubmit(onSubmit)}>
+          <div className="flex gap-2"  >
             <p className='text-[#4B5C79] text-sm font-normal my-2'>Related to: </p>
             <Input
               placeholder='Anjela John'
-              type="email"
+              {...register("relatedTo")}
+              value={watch("relatedTo")}
               className="w-fit h-fit flex p-2 mt-1 text-[#303F58] text-xs font-semibold"
             />
 
           </div>
-        </div>
-
-        <div className='w-full h-full mb-4'>
+          <div className='w-full h-full mb-4'>
           <ReactQuill
-            value={value}
-            onChange={setValue}
+            value={quillValue}
+            onChange={setQuillValue}
             placeholder="Start typing. @mention people to notify them"
             className="quill-editor h-[300px] text-[#4B5C79] text-sm font-normal outline-none"
             theme="snow"
             modules={modules}
           />
         </div>
+        <div className='mt-16 flex justify-end'>
+        <Button type="submit" className='w-16 h-9 ms-2' variant='primary' size='sm'>Done</Button>
       </div>
-      <div className='m-4 flex justify-end'>
-        <Button className='w-16 h-9 ms-2' variant='primary' size='sm'>Done</Button>
-      </div>
+        </form>
 
+        
+
+      </div>
+      
     </div>
   )
 }
