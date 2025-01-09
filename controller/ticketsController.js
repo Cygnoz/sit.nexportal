@@ -7,6 +7,7 @@ const User = require("../database/model/user")
 const { Types } = require("mongoose");
 const moment = require('moment-timezone');
 const mongoose = require('mongoose');
+const filterByRole = require("../services/filterByRole");
 
 
 
@@ -207,43 +208,11 @@ exports.getTicket = async (req, res) => {
 
 exports.getAllTickets = async (req, res) => {
   try {
-    // // Fetch all tickets
-    // const tickets = await Ticket.find();
 
-    // if (tickets.length === 0) {
-    //   return res.status(404).json({ message: "No tickets found" });
-    // }
-
-    // // Enrich each ticket with limited customer and support agent details
-    // const enrichedTickets = await Promise.all(
-    //   tickets.map(async (ticket) => {
-    //     const { customerId, supportAgentId } = ticket;
-
-    //     // Fetch customer from Leads with status "Trial" or "Licenser"
-    //     const customerExists = await Leads.findOne(
-    //       { _id: customerId, customerStatus: { $in: ["Trial", "Licenser"] } },
-    //       { _id: 1, firstName: 1 , lastName: 1 , email:1 , phone:1 , image:1 }
-    //     );
-
-    //     const { supportAgentExists, supportAgentName } = await dataExist(customerId, supportAgentId);
-
-    //     return {
-    //       ...ticket.toObject(),
-    //       customerDetails: customerExists || { message: "Customer not found or not in trial/licenser status" },
-    //       supportAgentDetails: supportAgentExists
-    //         ? {
-    //             id: supportAgentExists._id,
-    //             name: supportAgentName || "Support agent name not found",
-    //           }
-    //         : { message: "Support agent not found" },
-    //     };
-    //   })
-    // );
-
-    // res.status(200).json({ message: "Tickets retrieved successfully", tickets: enrichedTickets });
-
+    const userId = req.user.id;
+    const query = await filterByRole(userId);
     // Fetch the ticket and populate necessary fields
-    const tickets = await Ticket.find()
+    const tickets = await Ticket.find(query)
       .populate({
         path: 'customerId',
         select: 'firstName image' // Fetch firstName and image from Lead collection
