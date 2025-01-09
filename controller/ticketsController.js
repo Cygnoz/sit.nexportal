@@ -141,9 +141,6 @@ exports.addTicket = async (req, res, next) => {
       userName
     );
  
-    // Include supervisorId in the ticket response
-    savedTickets.supervisorId = supervisor._id;  // Add supervisor's _id to the ticket object
- 
     // Respond with success and the new ticket details, including supervisorId
     res.status(201).json({
       message: "Ticket added successfully",
