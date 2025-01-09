@@ -25,8 +25,8 @@ import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
-import AMViewBCard from "./AMViewBCard";
-import AMIdCardView from "./AMIdCardView";
+import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
 interface AddAreaManagerProps {
   onClose: () => void; // Prop for handling modal close
@@ -383,6 +383,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   }, [editId]); // Trigger the effect when editId changes
 
   return (
+    <>
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
       <div className="flex justify-between items-center mb-4">
@@ -876,14 +877,16 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
           )}
         </div>
       </form>
-      <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
-        <AMViewBCard onClose={() => handleModalToggle()} />
-      </Modal>
-      <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
-        <AMIdCardView onClose={() => handleModalToggle()} />
-      </Modal>
-
+    
     </div>
+      <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
+      <AMViewBCard onClose={() => handleModalToggle()} />
+    </Modal>
+    <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
+      <AMIdCardView onClose={() => handleModalToggle()} />
+    </Modal>
+
+    </>
   );
 };
 
