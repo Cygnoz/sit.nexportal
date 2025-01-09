@@ -838,7 +838,7 @@ const roles = [
       { action: "Delete Area Manager", note: "Delete Area Manager" },
 
       // BDA
-      { action: "Add BDA", note: "Add BDA" },
+      // { action: "Add BDA", note: "Add BDA" },
       { action: "View BDA", note: "View BDA" },
       { action: "Edit BDA", note: "Edit BDA" },
       { action: "Delete BDA", note: "Delete BDA" },

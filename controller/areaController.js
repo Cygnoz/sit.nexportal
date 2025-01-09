@@ -104,18 +104,33 @@ exports.getArea = async (req, res) => {
   try {
     const { areaId } = req.params;
 
+    // Fetch the area and populate the region details
     const area = await Area.findById(areaId).populate('region', 'regionCode regionName').exec();
-    
+
     if (!area) {
       return res.status(404).json({ message: "Area not found" });
     }
 
-    res.status(200).json(area);
+    // Fetch the area managers and populate the user details
+    const areaManagers = await AreaManager.find({ area: areaId })
+      .populate({
+        path: 'user', // Reference field in AreaManager
+        select: 'userName userImage', // Fields to take from the User collection
+      })
+      .select('_id'); // Select only _id from AreaManager
+
+    // Send both area and areaManagers as a single response
+    res.status(200).json({
+      area,
+      areaManagers
+    });
+
   } catch (error) {
     console.error("Error fetching area:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 exports.getAllAreas = async (req, res) => {
     try {
