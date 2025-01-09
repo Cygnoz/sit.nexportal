@@ -9,14 +9,10 @@ type Props = {
 const TasksForm = ({ onClose }: Props) => {
     return (
         <div>
-            <div className="h-fit w-fit rounded-lg">
+            <div className="h-fit w-full rounded-lg">
                 <div className="flex justify-between">
                     <div className="space-y-2 p-4">
                         <h3 className="text-[#303F58] font-bold text-lg">Create Task</h3>
-                        <p className="text-[11px] text-[#8F99A9] mt-1">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-                            eiusmod tempor incididunt
-                        </p>
                     </div>
                     <p onClick={onClose} className="text-3xl p-4 cursor-pointer">&times;</p>
                 </div>
@@ -26,15 +22,21 @@ const TasksForm = ({ onClose }: Props) => {
                     <div >
                         <div className="space-y-4 px-4">
                             <Input
-                                label=" Meeting Title"
+                                label=" Task Title"
                                 placeholder=""
                             />
-                            <Input
-                                label="Add Notes"
+                            {/* <Input
+                                label="Task Description"
                                 placeholder=""
-                            />
+                            /> */}
+                            <p className="text-[#303F58] text-sm font-normal">Task Description</p>
+                            <textarea 
+                            className="w-full border border-[#CECECE]"
+                            >
 
-                            <div className="grid grid-cols-12 gap-4">
+                            </textarea>
+
+                            {/* <div className="grid grid-cols-12 gap-4">
                                 <div className="col-span-3">
                                     <Select
                                         label="Meeting Type"
@@ -66,13 +68,13 @@ const TasksForm = ({ onClose }: Props) => {
                                         placeholder="7:28 "
                                     />
                                 </div>
-                            </div>
+                            </div> */}
 
 
                             <div className="grid grid-cols-3 gap-4">
                                 <Select
-                                    label="Meeting Location"
-                                    placeholder="Select Place"
+                                    label="Task Type"
+                                    placeholder="Select Type"
                                     options={[
                                         { value: "name", label: "Kkkk" },
                                         { value: "name", label: "Taattuu" },
@@ -80,13 +82,14 @@ const TasksForm = ({ onClose }: Props) => {
                                     ]}
                                 />
                                 <Input
-                                    label="Location"
-                                    placeholder="Enter Location"
+                                    label="Due Date"
+                                    placeholder="Enter Date"
+                                    type="date"
                                 />
 
                                 <Input
-                                    label="Landmark"
-                                    placeholder="Enter Landmark"
+                                    label="Time"
+                                    placeholder="Enter Time"
                                 />
                             </div>
 
