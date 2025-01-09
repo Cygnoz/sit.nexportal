@@ -23,6 +23,9 @@ import idcard from "../../../assets/image/ID-card 1.png";
 import ViewIcon from "../../../assets/icons/ViewIcon";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
+import Modal from "../../../components/modal/Modal";
+import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
 interface AddSVProps {
   onClose: () => void; // Prop for handling modal close
@@ -79,6 +82,20 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   } = useForm<SVData>({
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
+
+  const [isModalOpen, setIsModalOpen] = useState({
+    viewBusinesscard: false,
+    viewIdcard: false,
+  });
+
+  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false,) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      viewBusinesscard:viewBusinesscard,
+      viewIdcard: viewIdcard,
+      
+    }));
+  }
 
   const onSubmit: SubmitHandler<SVData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
@@ -711,6 +728,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                   <img src={bcardback} width={220} className="mb-3" alt="" />
                   <div className="flex gap-3 justify-end">
                     <Button
+                      onClick={()=>handleModalToggle(true, false)}
                       variant="tertiary"
                       size="sm"
                       className="text-xs text-[#565148] font-medium rounded-md"
@@ -731,6 +749,8 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                   <img src={idcard} className="my-3" alt="" />
                   <div className="flex gap-3 justify-end">
                     <Button
+                    
+                    onClick={()=>handleModalToggle(false, true)}
                       variant="tertiary"
                       size="sm"
                       className="text-xs text-[#565148] font-medium rounded-md"
@@ -788,6 +808,12 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
           </div>
         </form>
       </div>
+      <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
+      <AMViewBCard onClose={() => handleModalToggle()} />
+    </Modal>
+    <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
+      <AMIdCardView onClose={() => handleModalToggle()} />
+    </Modal>
     </>
   );
 };

@@ -27,6 +27,10 @@ import SupervisorForm from "./SupervisorForm";
 import RatingStar from "../../../components/ui/RatingStar";
 import person1 from "../../../assets/image/Ellipse 14.png";
 import person2 from "../../../assets/image/Ellipse 43.png";
+import Trash from "../../../assets/icons/Trash";
+import toast from "react-hot-toast";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
+
 
 
 interface SupervisorData {
@@ -52,21 +56,25 @@ const SuperVisorView = ({}: Props) => {
     editSV: false,
     viewSV: false,
     awardSV: false,
+    confirm: false,
   });
   const handleModalToggle = (
     editSV = false,
     viewSV = false,
-    awardSV = false
+    awardSV = false,
+    confirm=false,
   ) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editSV: editSV,
       viewSV: viewSV,
       awardSV: awardSV,
+      confirm: confirm,
     }));
     getASV();
   };
 
+  const {request:deleteaSV}=useApi('delete',3003)
   const { request: getaSV } = useApi("get", 3003);
   const { id } = useParams();
   const [getData, setGetData] = useState<{
@@ -93,6 +101,21 @@ const SuperVisorView = ({}: Props) => {
   useEffect(() => {
     getASV();
   }, [id]);
+
+  const handleDelete = async () => {
+    try {
+      const { response, error } = await deleteaSV(`${endPoints.SUPER_VISOR}/${id}`);
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/supervisor");
+      } else {
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete the SuperVisor.");
+    }
+  };
   
 
   const navigate=useNavigate()
@@ -410,7 +433,7 @@ const SuperVisorView = ({}: Props) => {
               <hr />
 
               <div className="flex py-2 mt-24 space-x-6">
-                <div className="flex flex-col items-center space-y-1">
+                <div className="flex flex-col items-center ">
                   <div
                     onClick={() => handleModalToggle(true, false, false)}
                     className="w-8 h-8 mb-2 rounded-full border-white cursor-pointer"
@@ -426,7 +449,7 @@ const SuperVisorView = ({}: Props) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col  items-center space-y-1">
+                <div className="flex flex-col  items-center ">
                   <div
                     onClick={() => handleModalToggle(false, true, false)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
@@ -442,7 +465,7 @@ const SuperVisorView = ({}: Props) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col   items-center space-y-1">
+                <div className="flex flex-col   items-center ">
                   <div
                     onClick={() => handleModalToggle(false, false, true)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
@@ -458,7 +481,7 @@ const SuperVisorView = ({}: Props) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col  items-center space-y-1">
+                <div className="flex flex-col  items-center ">
                   <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                       <div className="ms-2 mt-2">
@@ -470,6 +493,17 @@ const SuperVisorView = ({}: Props) => {
                     DeActivate
                   </p>
                 </div>
+
+                <div className="flex flex-col  items-center">
+                <div onClick={() => handleModalToggle(false, false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <Trash size={18} color="#BC3126" />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Delete</p>
+              </div>
               </div>
             </div>
           </div>
@@ -493,6 +527,18 @@ const SuperVisorView = ({}: Props) => {
       >
         <SVViewAward getData={getData} onClose={() => handleModalToggle()} />
       </Modal >
+      <Modal
+        open={isModalOpen.confirm}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          prompt="Are you sure want to delete this Supervisor?"
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>      
     </>
   );
 };
