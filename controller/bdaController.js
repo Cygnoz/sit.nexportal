@@ -8,6 +8,9 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { ObjectId } = require("mongoose").Types;
 const nodemailer = require("nodemailer");
+const filterByRole = require("../services/filterByRole");
+const AreaManager = require("../database/model/areaManager");
+const RegionManager = require("../database/model/regionManager");
 
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
@@ -168,6 +171,20 @@ exports.addBda = async (req, res, next) => {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
+    const [regionManager, areaManager] = await Promise.all([
+          RegionManager.findOne({ region: data.region }),
+          AreaManager.findOne({ area: data.area })
+        ]);
+        
+        // Send specific error responses based on missing data
+        if (!regionManager) {
+          return res.status(404).json({ message: "Region Manager not found for the provided region." });
+        }
+        
+        if (!areaManager) {
+          return res.status(404).json({ message: "Area Manager not found for the provided area." });
+        }
+
     // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
 
     // if (!emailSent) {
@@ -234,7 +251,10 @@ exports.getBda = async (req, res) => {
 
 exports.getAllBda = async (req, res) => {
   try {
-    const bda = await Bda.find({}).populate([
+    const userId = req.user.id;
+    const query = await filterByRole(userId);
+
+    const bda = await Bda.find(query).populate([
       { path: "user", select: "userName phoneNo userImage email employeeId" },
       { path: "region", select: "regionName" },
       { path: "area", select: "areaName" },

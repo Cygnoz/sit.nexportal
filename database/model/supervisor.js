@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const bdaSchema = new mongoose.Schema({
+const supervisorSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User'},
     personalEmail: { type: String},
   age: { type: Number},
@@ -18,10 +18,7 @@ const bdaSchema = new mongoose.Schema({
   workEmail: { type: String},
   workPhone: { type: String},
   status: { type: String},
-  regionManager: { type: mongoose.Schema.Types.ObjectId, ref: "RegionManager" },
-    areaManager: { type: mongoose.Schema.Types.ObjectId, ref: "AreaManager" },
-  region: { type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
-  area: { type: mongoose.Schema.Types.ObjectId, ref: 'Area'},
+  region : { type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
   commission: { type: mongoose.Schema.Types.ObjectId, ref: 'Commission'},
   bankDetails: {
     bankName: { type: String},
@@ -29,7 +26,7 @@ const bdaSchema = new mongoose.Schema({
     bankAccountNo: { type: String},
     ifscCode: { type: String},
   },
-});
+},
+{ timestamps: true });
 
-module.exports = mongoose.model('Bda', bdaSchema);
-
+module.exports = mongoose.model('Supervisor', supervisorSchema);

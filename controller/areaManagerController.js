@@ -207,9 +207,10 @@ exports.addAreaManager = async (req, res, next) => {
   }
 };
 
-exports.addAreaManagerCheck = async (req, res, next) => {
+exports.addAreaManagerCheck = async (req, res) => {
   try {
     const id = req.params.id
+    
     const existingAreaManager = await AreaManager.findOne({ area: id });
         if (existingAreaManager) {
           return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });

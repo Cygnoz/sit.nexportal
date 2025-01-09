@@ -2,6 +2,8 @@ const User = require("../database/model/user");
 const AreaManager = require("../database/model/areaManager");
 const RegionManager = require("../database/model/regionManager");
 const Bda = require('../database/model/bda')
+const SupportAgent = require('../database/model/supportAgent'); 
+const Supervisor = require("../database/model/supervisor");
 
 const filterByRole = async (userId) => {
   const user = await User.findById(userId).select("role");
@@ -27,6 +29,18 @@ const filterByRole = async (userId) => {
       const bda = await Bda.findOne({ user: userId }).select("_id");
       if (!bda) throw new Error("BDA not found.");
       query.bdaId = bda._id;
+      break;
+    }
+    case "Supervisor": {
+      const supervisor = await Supervisor.findOne({ user: userId }).select("_id");
+      if (!supervisor) throw new Error("Supervisor not found.");
+      query.supervisor = supervisor._id;
+      break;
+    }
+    case "Support Agent": {
+      const supportAgent = await SupportAgent.findOne({ user: userId }).select("_id");
+      if (!supportAgent) throw new Error("Support Agent not found.");
+      query.supportAgentId = supportAgent._id;
       break;
     }
     default:
