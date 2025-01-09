@@ -31,6 +31,7 @@ const leadSchema = new Schema({
   startDate: { type: String },
   endDate:{ type: String },
   duration:{type:String},
+  licensorDate:{type:String},
 
   companyId: { type: String },
   companyName: { type: String },

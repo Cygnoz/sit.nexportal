@@ -175,7 +175,7 @@ exports.getAllLeads = async (req, res) => {
     // Return response
     res.status(200).json({ leads });
   } catch (error) {
-    console.error("Error fetching Licensers:", error.message);
+    console.error("Error fetching Leads:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
@@ -354,8 +354,6 @@ exports.convertLeadToTrial = async (req, res, next) => {
 };
 
 
-
-
 exports.getAllTrials = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -376,15 +374,37 @@ exports.getAllTrials = async (req, res) => {
 
     if (!trial.length) return res.status(404).json({ message: "No Trial found." });
 
-    // Return response
+    const currentDate = moment().format("YYYY-MM-DD");
+
+    // Iterate through trials and update trialStatus based on the date conditions
+    for (const trials of trial) {
+      const { startDate, endDate, trialStatus } = trials;
+
+      if (trialStatus === "Extended") {
+        if (moment(currentDate).isBetween(startDate, endDate, undefined, "[]")) {
+          // Keep the status as "Extended"
+        } else {
+          // Update to "Expired" if out of date range
+          trials.trialStatus = "Expired";
+          await trials.save();
+        }
+      } else {
+        if (moment(currentDate).isBetween(startDate, endDate, undefined, "[]")) {
+          trials.trialStatus = "In Progress";
+        } else {
+          trials.trialStatus = "Expired";
+        }
+        await trials.save();
+      }
+    }
+
+    // Return updated trials
     res.status(200).json({ trial });
   } catch (error) {
     console.error("Error fetching Licensers:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 exports.getClientDetails = async (req, res) => {
   try {
@@ -427,30 +447,26 @@ exports.getClientDetails = async (req, res) => {
 };
 
 
-exports.convertTrialToLicenser = async (req, res) => {
+exports.convertTrialToLicenser = async (req, res,next) => {
   try {
     const { trialId } = req.params; // Assume the request contains the ID of the trial to convert.
+    const { startDate, endDate } = req.body;
 
-    const { startDate,endDate} = req.body;
-
+    // Get the current date in "YYYY-MM-DD" format
+    const licensorDate = moment().format('YYYY-MM-DD');
 
     // Find the trial by ID and update its customerStatus to "Licenser"
     const updatedTrial = await Leads.findByIdAndUpdate(
       trialId,
-      { customerStatus: "Licenser",
-        licensorStatus:"Active",
+      {
+        customerStatus: "Licenser",
+        licensorStatus: "Active",
         startDate,
-        endDate
-       },
+        endDate,
+        licensorDate,
+      },
       { new: true } // Return the updated document
     );
-
-    // const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = false );
-    // if (!emailSent) {
-    //   return res
-    //     .status(500)
-    //     .json({ success: false, message: 'Failed to send login credentials email' });
-    // }
 
     // Check if the trial was found and updated
     if (!updatedTrial) {
@@ -458,15 +474,56 @@ exports.convertTrialToLicenser = async (req, res) => {
     }
 
     res.status(200).json({ message: "Trial converted to Licenser successfully.", trial: updatedTrial });
-    ActivityLog(req, "Successfully", updatedLead._id);
-    next()
+    ActivityLog(req, "Successfully", updatedTrial._id);
+    next();
   } catch (error) {
     console.error("Error converting Trial to Licenser:", error);
     res.status(500).json({ message: "Internal server error." });
     ActivityLog(req, "Failed");
-   next();
+    next();
   }
 };
+
+// exports.convertTrialToLicenser = async (req, res) => {
+//   try {
+//     const { trialId } = req.params; // Assume the request contains the ID of the trial to convert.
+
+//     const { startDate,endDate} = req.body;
+
+
+//     // Find the trial by ID and update its customerStatus to "Licenser"
+//     const updatedTrial = await Leads.findByIdAndUpdate(
+//       trialId,
+//       { customerStatus: "Licenser",
+//         licensorStatus:"Active",
+//         startDate,
+//         endDate
+//        },
+//       { new: true } // Return the updated document
+//     );
+
+//     // const emailSent = await sendClientCredentialsEmail(email, organizationName, contactName, password, startDate, endDate, isTrial = false );
+//     // if (!emailSent) {
+//     //   return res
+//     //     .status(500)
+//     //     .json({ success: false, message: 'Failed to send login credentials email' });
+//     // }
+
+//     // Check if the trial was found and updated
+//     if (!updatedTrial) {
+//       return res.status(404).json({ message: "Trial not found or unable to convert." });
+//     }
+
+//     res.status(200).json({ message: "Trial converted to Licenser successfully.", trial: updatedTrial });
+//     ActivityLog(req, "Successfully", updatedLead._id);
+//     next()
+//   } catch (error) {
+//     console.error("Error converting Trial to Licenser:", error);
+//     res.status(500).json({ message: "Internal server error." });
+//     ActivityLog(req, "Failed");
+//    next();
+//   }
+// };
 
 
 
@@ -881,7 +938,7 @@ exports.getStatistics = async (req, res) => {
       lead => lead.customerStatus === "Trial" && lead.trialStatus === "Extended"
     ).length;
     const convertedTrials = leads.filter(
-      lead => lead.customerStatus === "Trial" && lead.trialStatus !== undefined
+      lead => lead.customerStatus === "Licenser" && lead.trialStatus !== undefined
     ).length;
     const expiredTrials = leads.filter(
       lead => lead.customerStatus === "Trial" && lead.trialStatus === "Expired"
@@ -889,7 +946,7 @@ exports.getStatistics = async (req, res) => {
 
     const totalLicensers = leads.filter(lead => lead.customerStatus === "Licenser").length;
     const licensersToday = leads.filter(
-      lead => lead.customerStatus === "Licenser" && moment(lead.createdAt).format("YYYY-MM-DD") === currentDate
+      lead => lead.customerStatus === "Licenser" && moment(lead.licensorDate).format("YYYY-MM-DD") === currentDate
     ).length;
     const activeLicensers = leads.filter(
       lead => lead.customerStatus === "Licenser" && lead.licensorStatus === "Active"

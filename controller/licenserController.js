@@ -109,7 +109,6 @@ exports.getLicenser = async (req, res) => {
 };
  
  
-
 exports.getAllLicensers = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -118,7 +117,7 @@ exports.getAllLicensers = async (req, res) => {
     // Add customerStatus filter
     query.customerStatus = "Licenser";
 
-    // Fetch Licensers
+    // Fetch Licensors
     const licensers = await Leads.find(query)
       .populate({ path: "regionId", select: "_id regionName" })
       .populate({ path: "areaId", select: "_id areaName" })
@@ -128,15 +127,69 @@ exports.getAllLicensers = async (req, res) => {
         populate: { path: "user", select: "userName" },
       });
 
-    if (!licensers.length) return res.status(404).json({ message: "No Licensers found." });
+    if (!licensers.length) return res.status(404).json({ message: "No Licensors found." });
 
-    // Return response
+    const currentDate = moment().format("YYYY-MM-DD");
+
+    // Iterate through licensors and update licensorStatus based on the date conditions
+    for (const licensor of licensers) {
+      const { startDate, endDate } = licensor;
+
+      if (moment(currentDate).isBetween(startDate, endDate, undefined, "[]")) {
+        const remainingDays = moment(endDate).diff(currentDate, "days");
+
+        if (remainingDays <= 7) {
+          // If 7 or fewer days remaining, set status to Pending Renewal
+          licensor.licensorStatus = "Pending Renewal";
+        } else {
+          // Otherwise, set status to Active
+          licensor.licensorStatus = "Active";
+        }
+      } else {
+        // If the current date is outside the start and end dates, set status to Expired
+        licensor.licensorStatus = "Expired";
+      }
+
+      // Save the updated licensor status
+      await licensor.save();
+    }
+
+    // Return updated licensors
     res.status(200).json({ licensers });
   } catch (error) {
-    console.error("Error fetching Licensers:", error.message);
+    console.error("Error fetching Licensors:", error.message);
     res.status(500).json({ message: error.message });
   }
 };
+
+
+// exports.getAllLicensers = async (req, res) => {
+//   try {
+//     const userId = req.user.id;
+//     const query = await filterByRole(userId);
+
+//     // Add customerStatus filter
+//     query.customerStatus = "Licenser";
+
+//     // Fetch Licensers
+//     const licensers = await Leads.find(query)
+//       .populate({ path: "regionId", select: "_id regionName" })
+//       .populate({ path: "areaId", select: "_id areaName" })
+//       .populate({
+//         path: "bdaId",
+//         select: "_id user",
+//         populate: { path: "user", select: "userName" },
+//       });
+
+//     if (!licensers.length) return res.status(404).json({ message: "No Licensers found." });
+
+//     // Return response
+//     res.status(200).json({ licensers });
+//   } catch (error) {
+//     console.error("Error fetching Licensers:", error.message);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
  
 exports.editLicenser = async (req, res, next) => {
