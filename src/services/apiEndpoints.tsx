@@ -74,9 +74,9 @@ export const endPoints = {
   // Dashboard
   TEAM_BREAK_DOWN:'/team-counts',
   CONVERSION_RATE:'/conversion-rate',
+  RESOLVED_TICKETS:'/tickets/solved-by-region',
 
   // Region Inside View 
-
   CUSTOMERCOUNTS:"/customer/statistics",
 
   //Region Recent Activity

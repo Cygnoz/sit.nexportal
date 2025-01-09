@@ -76,10 +76,10 @@ const WCommisionHome = () => {
         );
         setAllWC(transformedRegions);
       } else {
-        console.log(error);
+        // console.log(error);
       }
     } catch (err) {
-      console.log(err);
+      // console.log(err);
     }
   };
 
