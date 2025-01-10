@@ -569,7 +569,10 @@ const AMView = ({ }: Props) => {
 
       </div>
       {/* Card & table */}
-      <AMViewCardandTable bdaDetails={bdaDetails} />
+      <AMViewCardandTable
+        bdaDetails={bdaDetails}
+        insideAmData={insideAmData}
+        />
       {/* Charts */}
       <div className="grid grid-cols-12 py-12 gap-4">
         <div className="col-span-4 h-full">
