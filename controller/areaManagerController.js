@@ -11,6 +11,7 @@ const nodemailer = require("nodemailer");
 const RegionManager = require("../database/model/regionManager");
 const filterByRole = require("../services/filterByRole");
 const regionManager = require("../database/model/regionManager");
+const Bda = require("../database/model/bda");
 
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
@@ -515,3 +516,116 @@ Best regards,
 // The CygnoNex Team
 // NexPortal
 // Support: notify@cygnonex.com
+
+
+exports.getAreaManagerDetails = async (req, res) => {
+  try {
+    const { id } = req.params; // `id` is the AreaManager ID
+ 
+    // Step 1: Fetch the AreaManager
+    const areaManager = await AreaManager.findById(id).populate("user");
+    if (!areaManager) {
+      return res.status(404).json({ message: "Area Manager not found" });
+    }
+ 
+    // Step 2: Extract the area ID and AreaManager's name
+    const areaId = areaManager.area;
+    const areaManagerName = areaManager.user?.userName || "N/A";
+ 
+    // Step 3: Calculate total leads (only 'Lead' status) and converted leads
+    const totalLeads = await Leads.countDocuments({
+      areaId,
+      customerStatus: "Lead", // Only count leads with 'Lead' status
+    });
+ 
+    const convertedLeads = await Leads.countDocuments({
+      // areaManager: id,
+      areaId,
+      customerStatus: { $ne: "Lead" }, // Non-leads are considered converted
+    });
+ 
+    // Step 4: Calculate total licensers
+    const totalLicensers = await Leads.countDocuments({
+      // areaManager: id,
+      areaId,
+      customerStatus: "Licenser",
+    });
+   
+    const areaManagerConversionRate =
+    totalLeads > 0
+      ? Math.min(((convertedLeads / totalLeads) * 100).toFixed(2), 100)
+      : "0";
+ 
+    // Step 5: Fetch BDAs under the given area
+    const bdas = await Bda.find({ area: areaId });
+ 
+    // Step 6: Prepare BDA details with conversion rates
+    const bdaDetails = await Promise.all(
+      bdas.map(async (bda) => {
+        const bdaUser = await User.findById(bda.user);
+   
+        // Count all leads assigned to the BDA (regardless of status)
+        const totalLeadsForBda = await Leads.countDocuments({ bdaId: bda._id });
+   
+        // Count converted leads for the BDA
+        const convertedLeadsForBda = await Leads.countDocuments({
+          bdaId: bda._id,
+          customerStatus: { $ne: "Lead" }, // Non-leads are considered converted
+        });
+   
+        // Adjust the conversion rate to cap at 100%
+        const bdaConversionRate =
+          totalLeadsForBda > 0
+            ? Math.min(
+                ((convertedLeadsForBda / totalLeadsForBda) * 100).toFixed(2),
+                100
+              )
+            : "0";
+   
+        const area = await Area.findById(bda.area);
+   
+        return {
+          bdaId: bda._id,
+          bdaName: bdaUser?.userName || "N/A",
+          leadsAssigned: totalLeadsForBda,
+          bdaConversionRate: `${bdaConversionRate}%`,
+          areaName: area?.areaName || "N/A",
+        };
+      })
+    );
+   
+    // Step 7: Fetch licensers under the AreaManager
+    const licensers = await Leads.find({
+      // areaManager: id,
+      areaId,
+      customerStatus: "Licenser",
+    }).select("firstName licensorStatus startDate endDate");
+ 
+    const licenserDetails = licensers.map((licenser) => ({
+      firstName: licenser.firstName,
+      licensorStatus: licenser.licensorStatus,
+      startDate: licenser.startDate,
+      endDate: licenser.endDate,
+    }));
+ 
+    // Step 8: Total BDA count
+    const totalBdaCount = bdas.length;
+ 
+    // Step 9: Response with conversion rates, details, and licensers
+    res.status(200).json({
+      areaManagerDetails: {
+        areaManagerName,
+        areaId,
+        areaManagerConversionRate: `${areaManagerConversionRate}%`,
+      },
+      totalLeads,
+      totalLicensers,
+      totalBdaCount,
+      bdaDetails,
+      licenserDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching Area Manager details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

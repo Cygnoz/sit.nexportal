@@ -56,6 +56,8 @@ router.put("/area-managers/:id",verifyToken,checkPermission('Edit Area Manager')
 
 router.delete("/area-managers/:id",verifyToken,checkPermission('Delete Area Manager'), areaManagerController.deleteAreaManager,ActivityLogGeneration('Delete Area Manager'));
 
+router.get('/area-manager/:id/details',verifyToken,checkPermission('View Area Manager'), areaManagerController.getAreaManagerDetails);
+
 // BDA
 // Area manager
 router.put("/bda-check",verifyToken,checkPermission('Add BDA'), bdaController.bdaCheck);
