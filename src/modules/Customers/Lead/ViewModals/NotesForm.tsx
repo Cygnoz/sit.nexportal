@@ -45,6 +45,12 @@ const validationSchema = Yup.object().shape({
 });
 
 const NotesForm = ({ onClose ,editId}: Props) => {
+  const [quillValue, setQuillValue] = useState<any>();
+  const {request: addLeadNote}=useApi('post',3001)
+  const { request: getLeadNote } = useApi("get", 3001);
+  const { request: editLeadNote } = useApi("put", 3001);
+
+
   console.log("editId",editId);
   
   const { id } = useParams()
@@ -66,9 +72,7 @@ const NotesForm = ({ onClose ,editId}: Props) => {
     
       console.log(errors);
 
-      const [quillValue, setQuillValue] = useState<any>();
-      const {request: addLeadNote}=useApi('post',3001)
-
+     
   const Emoji = Quill.import('formats/emoji');
   Quill.register('modules/emoji', Emoji);
   const icons = Quill.import('ui/icons');
@@ -104,11 +108,45 @@ const NotesForm = ({ onClose ,editId}: Props) => {
     'emoji-shortname': true,
   };
 
+  const setFormValues = (data: LeadNoteData) => {
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof LeadNoteData, data[key as keyof LeadNoteData]);
+    });
+  
+    // Set Quill value when editing
+    if (data.note) {
+      setQuillValue(data.note);
+    }
+  };
+  
+  useEffect(() => {
+    if (editId) {
+      (async () => {
+        try {
+          const { response, error } = await getLeadNote(`${endPoints.LEAD_ACTIVITY}/${editId}`);
+          if (response && !error) {
+            console.log(response.data.activity);
+            
+            setFormValues(response.data.activity);
+          } else {
+            console.log(error.response.data.message);
+          }
+        } catch (err) {
+          console.error("Error fetching notes data:", err);
+        }
+      })();
+    }
+  }, [editId]);
+
+    //console.log("dd",watch());
+    
+
   const onSubmit: SubmitHandler<LeadNoteData> = async (data: any, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("Data", data);
     try {
-      const {response , error} = await addLeadNote(endPoints.LEAD_ACTIVITY,data)
+      const apiCall = editId ? editLeadNote : addLeadNote;
+      const {response , error} = await apiCall(  editId ? `${endPoints.LEAD_ACTIVITY}/${editId}`: endPoints.LEAD_ACTIVITY , data);
       if (response && !error) {
         console.log(response.data);
         toast.success(response.data.message)
@@ -139,7 +177,7 @@ console.log("darssss",errors);
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-lg font-bold text-deepStateBlue ">
-              Add Note
+            {editId ? "Edit" : "Add"} Note
             </h1>
           </div>
           <div>
@@ -159,15 +197,15 @@ console.log("darssss",errors);
 
           </div>
           <div className='w-full h-full mb-4'>
-          <ReactQuill
-            value={quillValue}
-            onChange={setQuillValue}
-            placeholder="Start typing. @mention people to notify them"
-            className="quill-editor h-[300px] text-[#4B5C79] text-sm font-normal outline-none"
-            theme="snow"
-            modules={modules}
-          />
-        </div>
+    <ReactQuill
+      value={quillValue || watch("note") || ""}
+      onChange={setQuillValue}
+      placeholder="Start typing. @mention people to notify them"
+      className="quill-editor h-[300px] text-[#4B5C79] text-sm font-normal outline-none"
+      theme="snow"
+      modules={modules}
+    />
+  </div>
         <div className='mt-16 flex justify-end'>
         <Button type="submit" className='w-16 h-9 ms-2' variant='primary' size='sm'>Done</Button>
       </div>

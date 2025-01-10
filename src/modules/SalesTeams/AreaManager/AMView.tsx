@@ -82,6 +82,38 @@ const AMView = ({ }: Props) => {
   }, [id])
   console.log(getData);
 
+  // const { request: getInsideAM } = useApi('get', 3002);
+  // const [insideAmData, setInsideAmData] = useState();
+  // const [bdaDetails, setBdaDetails] = useState([]);
+  // const [licenserDetails, setLicenserDetails] = useState([]);
+  
+  // const getInsideViewAM = async () => {
+  //   try {
+  //     const { response, error } = await getInsideAM(`${endPoints.AM}/${id}/details`);
+      
+  //     if (response && !error) {
+  //       console.log(response.data);
+  //       setInsideAmData(response.data);
+        
+  //       // Extract bdaDetails and licenserDetails separately
+  //       setBdaDetails(response.data.bdaDetails || []);
+  //       setLicenserDetails(response.data.licenserDetails || []);
+  //     } else {
+  //       console.error(error.response.data.message);
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching AM data:", err);
+  //   }
+  // };
+  
+  // useEffect(() => {
+  //   getInsideViewAM();
+  // }, [id]);
+  
+  // console.log("Inside AM Data:", insideAmData);
+  // console.log("BDA Details:", bdaDetails);
+  // console.log("Licenser Details:", licenserDetails);
+    
   const handleDelete = async () => {
     try {
       const { response, error } = await deleteaAM(`${endPoints.GET_ALL_AM}/${id}`);

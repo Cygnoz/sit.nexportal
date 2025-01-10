@@ -8,7 +8,7 @@ import EditIcon from "../../../../assets/icons/EditIcon";
 import RegionIcon from "../../../../assets/icons/RegionIcon";
 import RupeeIcon from "../../../../assets/icons/RupeeIcon";
 import TicketCheck from "../../../../assets/icons/TicketCheck";
-import Trash from "../../../../assets/icons/Trash";
+// import Trash from "../../../../assets/icons/Trash";
 import UserIcon from "../../../../assets/icons/UserIcon";
 import ViewRoundIcon from "../../../../assets/icons/ViewRoundIcon";
 import licenserImg from '../../../../assets/image/LicenserView.jpeg';
@@ -22,6 +22,7 @@ import LicenserViewForm from "./LicenserViewForm";
 import PaymentTable from "./PaymentTable";
 import RecentActivityView from "./RecenetActivity";
 import SupportTicketTable from "./SupportTicketTable";
+import { getStatusClass } from "../../../../components/ui/GetStatusClass";
 
 type Props = {
 
@@ -45,12 +46,14 @@ function LicenserView({ }: Props) {
     viewLicenser: false,
     confirm: false,
     
+    
   });
   const handleModalToggle = (
 
     editLicenser = false,
     viewLicenser= false,
     confirm = false,
+    
     
     
   ) => {
@@ -60,7 +63,7 @@ function LicenserView({ }: Props) {
       viewLicenser,
       confirm,
     }));
-  
+  getOneLicenser
    // if (getLead) getLead(); // Safeguard
   };
    
@@ -200,18 +203,39 @@ function LicenserView({ }: Props) {
               </div>
             </div>
             <div className="col-span-10 flex flex-col space-y-2">
-              <div className="text-sm space-y-1">
-                <p>License Expiry Alert</p>
-                <p>license for <u> Plan 2 </u>  will expire on</p>
-              </div>
-              <p className="text-[#E04F52] text-[16px] font-semibold">
-    {licenseData?.endDate ? new Date(licenseData.endDate).toLocaleDateString('en-GB') : null}
-</p>
-<p className="text-[#4B5C79] text-[14px] font-normal">
-    {licenseData?.endDate ? `${Math.ceil((new Date(licenseData.endDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left` : 'No end date available'}
-</p>
+  <div>
+    <p>License Expiry Alert</p>
+    <div
+      className={`${getStatusClass(licenseData?.licensorStatus)} flex items-center gap-2 w-fit`}
+    >
+      <p className="text-sm">{licenseData?.licensorStatus}</p>
+    </div>
+  </div>
 
-            </div>
+  {licenseData?.licensorStatus === "Expired" ? (
+    <p className="text-[#E04F52] text-[16px] font-semibold">Update This Licensor</p>
+  ) : (
+    (licenseData?.licensorStatus === "Active" || licenseData?.licensorStatus === "Pending Renewal") && (
+      <>
+        <p className="text-[#E04F52] text-[16px] font-semibold">
+          {licenseData?.endDate
+            ? new Date(licenseData.endDate).toLocaleDateString("en-GB")
+            : null}
+        </p>
+        <p className="text-[#4B5C79] text-[14px] font-normal">
+          {licenseData?.endDate
+            ? `${Math.ceil(
+                (new Date(licenseData.endDate).getTime() - new Date().getTime()) /
+                  (1000 * 60 * 60 * 24)
+              )} days left`
+            : "No end date available"}
+        </p>
+      </>
+    )
+  )}
+</div>
+
+
           </div>
           <RecentActivityView />
         </div>
@@ -267,7 +291,7 @@ function LicenserView({ }: Props) {
 
                 </div>
 
-                <div className="flex flex-col  items-center space-y-2">
+                {/* <div className="flex flex-col  items-center space-y-2">
                   <div onClick={() => handleModalToggle(false,false,true)} className="w-6 h-6 mb-2 cursor-pointer rounded-full">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
@@ -278,21 +302,22 @@ function LicenserView({ }: Props) {
                   </div>
                   <p className="text-center font-medium  text-white text-[10px] ms-3">Delete</p>
 
-                </div>
+                </div> */}
 
 
               </div>
             </div>
-            <div className="h-[65px] py-3 bg-white rounded-b-lg">
-              <div className="ms-28 space-x-6 flex">
-                {licenser.map((data) => (
-                  <div className="text-[12px]">
-                    <p className="text-[#8F99A9] ">{data.label}</p>
-                    <p className="text-[#303F58] font-medium ">{data.key}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <div className="h-[65px] py-3 bg-white rounded-b-lg px-2">
+  <div className="ms-28 space-x-6 flex justify-end">
+    {licenser.map((data) => (
+      <div className="text-[12px]" key={data.key}>
+        <p className="text-[#8F99A9]">{data.label}</p>
+        <p className="text-[#303F58] font-medium">{data.key}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
           </div>
           <SupportTicketTable />
           <PaymentTable />

@@ -51,7 +51,7 @@ const AMHome = () => {
           console.log(response);
           
           if (response && !error) {
-            const transformedAreas = response.data.areaManager?.map((am: any) => ({
+            const transformedAreas = response.data.areaManagers?.map((am: any) => ({
               ...am,
               dateOfJoining: am.dateOfJoining
               ? new Date(am.dateOfJoining).toLocaleDateString("en-GB")
