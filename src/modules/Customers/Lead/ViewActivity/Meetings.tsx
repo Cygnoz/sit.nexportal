@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react"
 import ClockIcon from "../../../../assets/icons/ClockIcon"
-import LocationIcon from "../../../../assets/icons/LocationIcon"
 import MeetingIcon from "../../../../assets/icons/MeetingIcon"
 import PanelTopIcon from "../../../../assets/icons/PanelTopIcon"
 import PlusCircle from "../../../../assets/icons/PlusCircle"
@@ -12,6 +11,7 @@ import AddMeetingNotes from "../ViewModals/AddMeetingNotes"
 import useApi from "../../../../Hooks/useApi"
 import { endPoints } from "../../../../services/apiEndpoints"
 import { useParams } from "react-router-dom"
+import PlaneIcon from "../../../../assets/icons/PlaneIcon"
 
 type Props = {}
 
@@ -32,7 +32,7 @@ const Meetings = ({ }: Props) => {
             addMeeting,
             addNotes,
         }));
-
+        getMeeting()
     };
 
     const [searchValue, setSearchValue] = useState<string>("");
@@ -48,7 +48,10 @@ const Meetings = ({ }: Props) => {
             console.log(error);
             if (response && !error) {
                 console.log(response.data);
-                setMeetingData(response.data.activities)
+                const taskActivities = response.data.activities.filter((activity:any) => activity?.activityType === 'Meeting');
+                setMeetingData(taskActivities.reverse())
+                console.log(taskActivities);
+                
             }
             else {
                 console.log(error.response.data.message);
@@ -84,20 +87,19 @@ const Meetings = ({ }: Props) => {
                         <div className="flex justify-between p-5">
                             <div className="flex gap-3">
                                 <PanelTopIcon size={36} />
-                                <p className="mt-1 text-[#303F58] text-xs font-semibold">{meeting.meetingTitle}</p>
+                                <p className="mt-1 text-[#303F58] text-xs font-semibold">{meeting.meetingTitle ? meeting.meetingTitle: 'N/A'}</p>
                             </div>
                             <div>
                                 <p className="text-[#4B5C79] text-xs font-semibold">
-                                    {new Date(meeting?.dueDate).toLocaleString("en-US", {
+                                    {new Date(meeting?.updatedAt).toLocaleString("en-US", {
                                         month: "long",
                                         day: "numeric",
                                         year: "numeric",
-                                       // hour: "numeric",
-                                        // minute: "2-digit",
-                                        // hour12: true,
+                                       hour: "numeric",
+                                        minute: "2-digit",
+                                        hour12: true,
                                     })}
-                                    ,
-                                    {meeting?.time}</p>
+                                   </p>
                             </div>
                         </div>
                         <div className="flex justify-between px-5 ms-4">
@@ -111,12 +113,12 @@ const Meetings = ({ }: Props) => {
                         </div>
                         <div className="my-3 px-5 ms-4 flex gap-2">
                             <ClockIcon size={14} />
-                            <p className="text-[#4B5C79] text-xs font-medium">Time: <span className="text-[#303F58] text-xs font-semibold">{meeting?.time} - 11.00 AM</span></p>
+                            <p className="text-[#4B5C79] text-xs font-medium">Time: <span className="text-[#303F58] text-xs font-semibold">{meeting?.timeFrom ? meeting?.timeFrom:"N/A"} - {meeting?.timeTo ? meeting?.timeTo:"N/A"}</span></p>
                         </div>
                         <div className="flex justify-between px-5 ms-4">
                             <div className="flex gap-2">
-                                <LocationIcon size={14} />
-                                <p className="text-[#4B5C79] text-xs font-medium">Location: <span className="text-[#303F58] text-xs font-semibold">{meeting.location}, {meeting.meetingLocation}</span></p>
+                                <PlaneIcon size={14} />
+                                <p className="text-[#4B5C79] text-xs font-medium">Location: <span className="text-[#303F58] text-xs font-semibold">{meeting.location?meeting.location:'N/A'}, {meeting.meetingLocation?meeting.meetingLocation:'N/A'}</span></p>
                             </div>
                             <div onClick={() => handleModalToggle(false, true)} className="-mt-3 cursor-pointer">
                                 <PlusCircle color="#303F58" />
