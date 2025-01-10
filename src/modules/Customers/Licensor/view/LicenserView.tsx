@@ -291,18 +291,6 @@ function LicenserView({ }: Props) {
 
                 </div>
 
-                {/* <div className="flex flex-col  items-center space-y-2">
-                  <div onClick={() => handleModalToggle(false,false,true)} className="w-6 h-6 mb-2 cursor-pointer rounded-full">
-                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2">
-                    <Trash size={18} color="red" />
-                  </div>
-                    </div>
-                    
-                  </div>
-                  <p className="text-center font-medium  text-white text-[10px] ms-3">Delete</p>
-
-                </div> */}
 
 
               </div>
@@ -310,7 +298,7 @@ function LicenserView({ }: Props) {
             <div className="h-[65px] py-3 bg-white rounded-b-lg px-2">
   <div className="ms-28 space-x-6 flex justify-end">
     {licenser.map((data) => (
-      <div className="text-[12px]" key={data.key}>
+      <div className="text-[12px]">
         <p className="text-[#8F99A9]">{data.label}</p>
         <p className="text-[#303F58] font-medium">{data.key}</p>
       </div>

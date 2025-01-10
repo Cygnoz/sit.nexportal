@@ -20,7 +20,7 @@ function LeadConversionRate({}: Props) {
   const [chartData, setChartData] = useState<any>(); // State to store the chart data
   const [selectedRegion, setSelectedRegion] = useState<any>(null);
 
-  const getBreakDown = async () => {
+  const getConvertion = async () => {
     try {
       const endPoint = selectedRegion ? `${endPoints.CONVERSION_RATE}/${selectedRegion.value}` : endPoints.CONVERSION_RATE;
       const { response, error } = await getConvertionRate(endPoint);
@@ -60,7 +60,7 @@ function LeadConversionRate({}: Props) {
   };
 
   useEffect(() => {
-    getBreakDown();
+    getConvertion();
     handleFetchRegions();
   }, [allRegions, selectedRegion]);
 

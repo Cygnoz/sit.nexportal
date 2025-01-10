@@ -117,7 +117,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
           </div>
           <div className="flex gap-4 w-full ">
             <div className="w-14 h-14 rounded-full overflow-hidden">
-              {leadData?.image ? (
+              {leadData?.image.length > 50 ? (
                 <img
                   src={leadData?.image} // Replace with the actual image URL
                   alt="Profile"

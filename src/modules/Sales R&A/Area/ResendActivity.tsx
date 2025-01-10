@@ -45,7 +45,7 @@ const ResendActivity = ({}: Props) => {
 
   return (
     <div>
-      <div className="bg-white p-5 h-96 overflow-y-auto overflow-x-hidden">
+      <div className="bg-white p-5 h-96 overflow-y-auto overflow-x-hidden hide-scrollbar">
   <h1 className="font-bold text-sm">Recent Activity Feed</h1>
 
   {data.length === 0 ? (
