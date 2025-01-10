@@ -17,8 +17,7 @@ type Props = {
   regionAreaData?: RegionView;
 };
 
-const RegionAriaView = ({ regionData, regionAreaData }: Props) => {
-  console.log(regionData);
+const RegionAriaView = ({  regionAreaData }: Props) => {
 
   const navigate = useNavigate();
 

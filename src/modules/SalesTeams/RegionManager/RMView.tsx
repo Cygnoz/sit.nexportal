@@ -85,7 +85,7 @@ const RMView = () => {
   useEffect(() => {
     getARM();
   }, [id]);
-  console.log(getData);
+ 
 
   const navigate = useNavigate();
 
@@ -110,21 +110,21 @@ const RMView = () => {
   const homeCardData = [
     {
       icon: <AreaIcon size={24} />,
-      number: "167",
+      number: getData?.rmData?.totalCounts?.totalAreaManaged,
       title: "Total Area",
       iconFrameColor: "#30B777",
       iconFrameBorderColor: "#B3F0D3CC",
     },
     {
       icon: <UserIcon size={24} />,
-      number: "86",
+      number: getData?.rmData?.totalCounts?.totalAreaManagers,
       title: "Total Area Manager",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
     {
       icon: <AreaManagerIcon size={24} />,
-      number: "498",
+      number:getData?.rmData?.totalCounts?.totalBdas,
       title: "Total BDA's",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
@@ -265,8 +265,8 @@ const RMView = () => {
           </p>
           <ChevronRight color="#4B5C79" size={18} />
           <p className="font-bold text-[#303F58] ">
-            {getData.rmData?.user?.userName
-              ? getData.rmData?.user?.userName
+            {getData?.rmData?.regionManager?.user?.userName
+              ? getData?.rmData?.regionManager?.user?.userName
               : "N/A"}
           </p>
         </div>
@@ -285,10 +285,10 @@ const RMView = () => {
                 <div className="flex items-center gap-4 text-white">
                   <div className="flex items-center gap-2">
                     <div className="w-25 h-25 bg-blue ms-2 py-2 items-center justify-center rounded-full ">
-                      {getData.rmData?.user?.userImage && getData.rmData?.user?.userImage>50 ? (
+                      {getData?.rmData?.regionManager?.user?.userImage && getData?.rmData?.regionManager?.user?.userImage>50 ? (
                         <img
                           className="w-16 h-16 rounded-full"
-                          src={getData.rmData?.user?.userImage}
+                          src={getData?.rmData?.regionManager?.user?.userImage}
                           alt=""
                         />
                       ) : (
@@ -297,8 +297,8 @@ const RMView = () => {
                         </p>
                       )}
                       <h2 className="font-normal text-center text-2xl py-2">
-                        {getData.rmData?.user?.userName
-                          ? getData.rmData?.user?.userName
+                        {getData?.rmData?.regionManager?.user?.userName
+                          ? getData?.rmData?.regionManager?.user?.userName
                           : "N/A"}
                       </h2>
                     </div>
@@ -310,8 +310,8 @@ const RMView = () => {
                       Contact Number
                     </p>
                     <h3 className="text-sm font-medium">
-                      {getData.rmData?.user?.phoneNo
-                        ? getData.rmData?.user?.phoneNo
+                      {getData?.rmData?.regionManager?.user?.phoneNo
+                        ? getData?.rmData?.regionManager?.user?.phoneNo
                         : "N/A"}
                     </h3>
                   </div>
@@ -321,8 +321,8 @@ const RMView = () => {
                       Email
                     </p>
                     <p className="text-sm font-medium">
-                      {getData.rmData?.user?.email
-                        ? getData.rmData?.user?.email
+                      {getData?.rmData?.regionManager?.user?.email
+                        ? getData?.rmData?.regionManager?.user?.email
                         : "N/A"}
                     </p>
                   </div>
@@ -333,12 +333,12 @@ const RMView = () => {
                     </p>
                     <p
                       onClick={() =>
-                        navigate(`/regions/${getData.rmData?.region?._id}`)
+                        navigate(`/regions/${getData?.rmData?.regionManager?.region?._id}`)
                       }
                       className=" text-[#FFFFFF] text-sm font-medium underline"
                     >
-                      {getData.rmData?.region?.regionCode
-                        ? getData.rmData?.region?.regionCode
+                      {getData?.rmData?.regionManager?.region?.regionCode
+                        ? getData?.rmData?.regionManager?.region?.regionCode
                         : "N/A"}
                     </p>{" "}
                   </div>
@@ -361,8 +361,8 @@ const RMView = () => {
                     <div className="text-center w-24">
                       <p className="text-xs text-[#D4D4D4] py-2">Employee ID</p>
                       <p className="text-xs">
-                        {getData.rmData?.user?.employeeId
-                          ? getData.rmData?.user?.employeeId
+                        {getData?.rmData?.regionManager?.user?.employeeId
+                          ? getData?.rmData?.regionManager?.user?.employeeId
                           : "N/A"}
                       </p>
                     </div>
@@ -372,7 +372,7 @@ const RMView = () => {
                         Joining Date
                       </p>
                       <p className="text-xs ">
-                        {getData.rmData?.dateOfJoining
+                        {getData?.rmData?.regionManager?.dateOfJoining
                           ? new Date(
                               getData.rmData.dateOfJoining
                             ).toLocaleDateString()

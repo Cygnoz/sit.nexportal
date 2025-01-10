@@ -79,10 +79,10 @@ const BDAView = ({}: Props) => {
   });
   
   const viewCardData = [
-    { icon: <LeadsCardIcon />, number: data.bdaViewDetails.bdaDetails?.totalLeadsAssigned, title: "Total Leads Assigned", iconFrameColor: '#DD9F86', iconFrameBorderColor: '#F6DCD2' },
-    { icon: <UserIcon />, number: data.bdaViewDetails.bdaDetails?.totalLeadsAssigned, title: "Total Licenses Sold", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+    { icon: <LeadsCardIcon />, number: data.bdaViewDetails.bdaDetails?.totalLeadsAssigned? data.bdaViewDetails.bdaDetails?.totalLeadsAssigned:0, title: "Total Leads Assigned", iconFrameColor: '#DD9F86', iconFrameBorderColor: '#F6DCD2' },
+    { icon: <UserIcon />, number: data.bdaViewDetails.bdaDetails?.totalLeadsAssigned?data.bdaViewDetails.bdaDetails?.totalLeadsAssigned:0, title: "Total Licenses Sold", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
     { icon: <LeadsCardIcon />, number: "₹89,567", title: "Total Revenue Generated", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
-    { icon: <LeadsCardIcon />, number:data.bdaViewDetails.bdaDetails?.totalLicensesSold, title: "Pending Tasks", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
+    { icon: <LeadsCardIcon />, number:data.bdaViewDetails.bdaDetails?.totalLicensesSold?data.bdaViewDetails.bdaDetails?.totalLicensesSold:0, title: "Pending Tasks", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
 
     // { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
   ];

@@ -22,6 +22,8 @@ const DashboardPage = () => {
   const { totalCounts } = useRegularApi();
   const { request: getSolveTickets } = useApi("get", 3003);
   const [solvedTickets, setSolvedTickets] = useState([]);
+  console.log("dssd",totalCounts);
+  
   const homeCardData = [
     {
       icon: <RegionIcon size={24} />,
@@ -53,7 +55,7 @@ const DashboardPage = () => {
     },
     {
       icon: <FileCheck size={24} />,
-      number: "564",
+      number: totalCounts?.activeLicensor,
       title: "Active Licenses",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
