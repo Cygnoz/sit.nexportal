@@ -30,6 +30,7 @@ import {
 import Trash from "../../../../assets/icons/Trash";
 import ConfirmModal from "../../../../components/modal/ConfirmModal";
 import toast from "react-hot-toast";
+import { LeadData } from "../../../../Interfaces/Lead";
 
 interface BDAViewData {
   leadId:string;
@@ -50,10 +51,18 @@ interface Licencer {
   action: string;
 }
 
+interface BDAViewDetails {
+  TransformedLead:[]
+  LicenserDetails:[]
+  TrialDetails:[]
+  bdaDetails:any
+}
+
 
 type Props = {}
 
 const BDAView = ({}: Props) => {
+  const {request:getBDAViewDetails}=useApi('get',3002)
   const topRef = useRef<HTMLDivElement>(null);
     
       useEffect(() => {
@@ -65,14 +74,23 @@ const BDAView = ({}: Props) => {
   const {request:getBDA}=useApi('get',3002);
   const {request: deleteABda}=useApi('delete',3002);
   const [data, setData] = useState<{
-    bdaData:any;
-    regionManager:any;
-  }>({ bdaData:{},regionManager:[] });
+    bdaData: any;
+    bdaViewDetails: BDAViewDetails;
+  }>({
+    bdaData: {},
+    bdaViewDetails: {
+      TransformedLead: [],
+      LicenserDetails: [],
+      TrialDetails: [],
+      bdaDetails:{}
+    },
+  });
+  
   const viewCardData = [
-    { icon: <LeadsCardIcon />, number: "32", title: "Total Leads Assigned", iconFrameColor: '#DD9F86', iconFrameBorderColor: '#F6DCD2' },
-    { icon: <UserIcon />, number: "17", title: "Total Licenses Sold", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+    { icon: <LeadsCardIcon />, number: data.bdaViewDetails.bdaDetails?.totalLeadsAssigned, title: "Total Leads Assigned", iconFrameColor: '#DD9F86', iconFrameBorderColor: '#F6DCD2' },
+    { icon: <UserIcon />, number: data.bdaViewDetails.bdaDetails?.totalLeadsAssigned, title: "Total Licenses Sold", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
     { icon: <LeadsCardIcon />, number: "₹89,567", title: "Total Revenue Generated", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
-    { icon: <LeadsCardIcon />, number: "6", title: "Pending Tasks", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
+    { icon: <LeadsCardIcon />, number:data.bdaViewDetails.bdaDetails?.totalLicensesSold, title: "Pending Tasks", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
 
     // { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
   ];
@@ -109,22 +127,18 @@ const BDAView = ({}: Props) => {
     console.log(deleteId);
   }
   // Data for the table
-  const bdaData: BDAViewData[] = [
-    { leadId:"LD12345", leadName: "Devid Billie", phoneNo: "(406) 555-0120", email: "danten@mail.ru", origin:"Website", assignedDate:"7/11/19", status: "New",  },
-    { leadId:"LD12345", leadName: "Sudeep Kumar", phoneNo: "(406) 555-0120", email: "danten@mail.ru", origin:"Referral", assignedDate:"7/11/19", status: "Contacted",  },
-    { leadId:"LD12345", leadName: "Kathryn Murphy", phoneNo: "(406) 555-0120", email: "irnabela@gmail.com", origin:"Website", assignedDate:"7/11/19", status: "Closed",  },
-    { leadId:"LD12345", leadName: "Darrell Steward", phoneNo: "(406) 555-0120", email: "irnabela@gmail.com", origin:"Event", assignedDate:"7/11/19", status: "New", },
-  ];
+ 
   // Define the columns with strict keys
-  const columns: { key: keyof BDAViewData; label: string }[] = [
-    { key: "leadId", label: "Lead ID" },
+  const columns: { key:  any; label: string }[] = [
+    { key: "customerId", label: "Lead ID" },
     { key: "leadName", label: "Lead Name" },
-    { key: "phoneNo", label: "Phone Number" },
+    { key: "phone", label: "Phone Number" },
     { key: "email", label: "Email Address" },
-    { key: "origin", label: "Status" },
-    { key: "assignedDate", label: "Assigned Date" },
-    { key: "status", label: "Status" },
+    { key: "createdAt", label: "Assigned Date" },
+    { key: "leadStatus", label: "Status" },
   ];
+
+
   
 
   const LicencerData:Licencer[] = [
@@ -184,10 +198,45 @@ const BDAView = ({}: Props) => {
     }
   };
   
+  const getBDAViewData = async () => {
+    try {
+      const { response, error } = await getBDAViewDetails(`${endPoints.BDA_DETAILS}/${id}/customers`);
+      if (response && !error) {
+        console.log("res",response.data);
+        const { LeadDetails, LicenserDetails, TrialDetails,bdaDetails } = response.data;
   
+        const TransformedLead = LeadDetails?.map((lead: any) => ({
+          ...lead,
+          createdAt: new Date(lead.createdAt).toLocaleDateString("en-GB"), // Format date
+        }));
+  
+        const TransformData = { TransformedLead, LicenserDetails, TrialDetails,bdaDetails };
+  
+        setData((prev) => ({
+          ...prev,
+          bdaViewDetails:TransformData
+        }));
+      } else {
+        console.error("Error response from API:", error);
+      }
+    } catch (err) {
+      console.error("Error fetching BDA view data:", err);
+    }
+  };
+  
+  
+
+
   useEffect(() => {
     getOneBDA()
+    getBDAViewData()
   }, [id]);
+
+  console.log("Bda Deatils",data.bdaViewDetails);
+  
+
+
+
 
 
   const leadConversionData = [
@@ -376,7 +425,7 @@ const BDAView = ({}: Props) => {
         
      {/* Table Section */}
       <div className=" mt-4">
-        <Table<BDAViewData> data={bdaData} columns={columns} headerContents={{
+        <Table<LeadData> data={data.bdaViewDetails.TransformedLead} columns={columns} headerContents={{
           title: "Leads Details",
           search: { placeholder: 'Search BDA by Name' },
         }}
