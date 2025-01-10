@@ -1,5 +1,5 @@
 export interface LeadEmailData{
-    activityType:string;
+    activityType?:string;
     leadId?:string;
     emailTo?:string;
     emailFrom?:string;

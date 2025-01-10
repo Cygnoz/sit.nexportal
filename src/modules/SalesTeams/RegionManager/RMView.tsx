@@ -393,7 +393,7 @@ const RMView = () => {
 
                   <div onClick={()=>handleModalToggle(false,false,false,true)} className="flex flex-col -ms-2 items-center space-y-1">
                     <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                    <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
+                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2 ">
                     <Trash size={18} color="#BC3126" />
                   </div>

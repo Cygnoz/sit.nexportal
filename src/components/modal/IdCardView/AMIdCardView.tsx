@@ -29,7 +29,7 @@ const AMIdCardView = ({onClose}: Props) => {
         {/* Profile Section */}
         <div className=" gap-1 mt-10 m-4">
                 <div>
-                    <img className="w-24 h-24 rounded-full" src={profile} alt="Profile" />
+                    <img className="w-24 h-24 rounded-full border-4" src={profile} alt="Profile" />
                 </div>
                 <div>
                    
