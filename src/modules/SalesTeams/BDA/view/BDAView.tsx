@@ -258,13 +258,14 @@ const BDAView = ({}: Props) => {
         <div className="col-span-4 rounded-xl bg-cover"  style={{backgroundImage:`url(${backGroundView})`}}>
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
-            <div className="w-20 h-20 rounded-full overflow-hidden">
-          {data.bdaData?.user?.userImage?<img
+            <div className="w-14 h-14 rounded-full overflow-hidden">
+          {data.bdaData?.user?.userImage && data.bdaData?.user?.userImage>50 ?          
+          <img
             src={data.bdaData?.user?.userImage} // Replace with the actual image URL
             alt="Profile"
             className="w-full h-full object-cover"
           />:
-          <p className="w-full h-full    bg-black rounded-full flex justify-center items-center">
+          <p className="w-14 h-14 bg-black rounded-full flex justify-center items-center">
                 <UserIcon color="white" size={40} />
           </p>}
         </div>

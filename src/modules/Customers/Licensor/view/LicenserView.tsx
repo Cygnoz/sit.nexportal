@@ -241,7 +241,7 @@ function LicenserView({ }: Props) {
         </div>
         <div className="w-[86%] space-y-3">
           <div className="h-[130px] relative flex flex-col  bg-white rounded-lg">
-           {licenseData?.image? <img src={licenseData?.image} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>:
+           {licenseData?.image && licenseData?.image>50 ? <img src={licenseData?.image} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>:
               <p className="rounded-full absolute top-8 left-5 border-2 flex items-center justify-center border-white bg-black w-[61px] h-[61px]"  >
               <UserIcon color="white" size={35} />
             </p>
