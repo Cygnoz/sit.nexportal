@@ -520,12 +520,14 @@ exports.getBdaDetails = async (req, res) => {
     const { id } = req.params;
 
     // Fetch BDA details
-    const bda = await Bda.findById(id).populate([
-      { path: "user", select: "userName phoneNo userImage email employeeId" },
-      { path: "region", select: "regionName regionCode" },
-      { path: "area", select: "areaName areaCode" },
-      { path: "commission", select: "profileName" },
-    ]);
+    const bda = await Bda.findById(id)
+  .select("user region area commission") // Only fetch these fields from the bda collection
+  .populate([
+    { path: "user", select: "userName phoneNo userImage email employeeId" },
+    { path: "region", select: "regionName regionCode" },
+    { path: "area", select: "areaName areaCode" },
+    { path: "commission", select: "profileName" },
+  ]);
 
     if (!bda) {
       return res.status(404).json({ message: "BDA not found" });
@@ -576,6 +578,46 @@ exports.getBdaDetails = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching BDA details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+exports.getLeadDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch LeadDetails
+    const leadDetails = await Leads.find(
+      { bdaId: id, customerStatus: "Lead" },
+      "_id customerId firstName phone email leadSource createdAt leadStatus"
+    );
+
+    // Fetch TrialDetails
+    const trialDetails = await Leads.find(
+      { bdaId: id, customerStatus: "Trial" },
+      "_id customerId firstName trialStatus startDate endDate"
+    );
+
+    // Fetch LicenserDetails
+    const licenserDetails = await Leads.find(
+      { bdaId: id, customerStatus: "Licenser" },
+      "_id firstName licensorStatus startDate endDate"
+    );
+
+    // Check if no details found
+    if (!leadDetails.length && !trialDetails.length && !licenserDetails.length) {
+      return res.status(404).json({ message: "No details found for this BDA" });
+    }
+
+    // Send response
+    res.status(200).json({
+      LeadDetails: leadDetails,
+      TrialDetails: trialDetails,
+      LicenserDetails: licenserDetails,
+    });
+  } catch (error) {
+    console.error("Error fetching details:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };

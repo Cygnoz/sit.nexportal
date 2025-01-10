@@ -64,6 +64,8 @@ router.put("/bda-check",verifyToken,checkPermission('Add BDA'), bdaController.bd
 
 router.get("/bda-details/:id",verifyToken,checkPermission('View BDA'), bdaController.getBdaDetails);
 
+router.get("/bda-details/:id/customers",verifyToken,checkPermission('View BDA'), bdaController.getLeadDetails);
+
 router.post('/bda',verifyToken,checkPermission('Add BDA'),bdaController.addBda,ActivityLogGeneration('Add BDA'))
 
 router.get("/bda",verifyToken,checkPermission('View BDA'), bdaController.getAllBda);
