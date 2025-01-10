@@ -51,7 +51,7 @@ const Table = <T extends object>({
   noAction,
   noPagination,
   maxHeight,
-  skeltonCount=5
+  skeltonCount=8
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);

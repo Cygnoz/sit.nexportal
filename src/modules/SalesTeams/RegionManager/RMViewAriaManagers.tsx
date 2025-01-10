@@ -16,18 +16,18 @@ const RMViewAriaManagers = ({totalAreaManagers}: Props) => {
     <div>
        <div className="rounded-xl">
       <div>
-      <h1 className="font-bold text-sm sticky top-0 bg-white pb-2 p-2">
+      <h1 className="font-bold text-sm sticky top-0 bg-white pb-2 p-6">
         Area Managers
       </h1>
       </div>
 
-      <div className="bg-white  h-96 overflow-y-scroll hide-scrollbar ">
+      <div className="bg-white  h-[370px] overflow-y-scroll hide-scrollbar ">
         
 <div className="bg-white m-2">
   {totalAreaManagers.length === 0 ? (
-    <div className="flex justify-center flex-col items-center h-full">
+    <div className="flex justify-center flex-col items-center h-full p-24">
       <img width={70} src={No_Data_found} alt="No Data Found" />
-      <p className="font-bold text-red-700">No Result Found!</p>
+      <p className="font-bold text-red-700 text-center">No Result Found!</p>
     </div>
   ) : (
     totalAreaManagers.map((manager: any, index: number) => (

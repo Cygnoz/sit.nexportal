@@ -483,7 +483,7 @@ const AMView = ({ }: Props) => {
               className="w-full h-full object-cover"
             /> */}
             {
-              getData.amData?.user?.userImage ?
+              getData.amData?.user?.userImage && getData.amData?.user?.userImage>50 ?
                 <img className="w-16 h-16 rounded-full" src={getData.amData?.user?.userImage} alt="" />
                 :
                 <p className="w-16 h-16    bg-black rounded-full flex justify-center items-center">
