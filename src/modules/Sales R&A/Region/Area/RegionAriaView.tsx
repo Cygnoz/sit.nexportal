@@ -1,12 +1,12 @@
 import { Bar, BarChart, Cell, Tooltip, XAxis, YAxis } from "recharts";
 import { VictoryLabel, VictoryPie, VictoryTheme } from "victory";
-import AreaIcon from "../../../assets/icons/AreaIcon";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
-import LicenserCardIcon from "../../../assets/icons/LicenserCardIcon";
-import UserIcon from "../../../assets/icons/UserIcon";
-import HomeCard from "../../../components/ui/HomeCards";
-import Table from "../../../components/ui/Table";
-import { regionAreaData, RegionView,regionLicenserData } from "../../../Interfaces/RegionView";
+import AreaIcon from "../../../../assets/icons/AreaIcon";
+import AreaManagerIcon from "../../../../assets/icons/AreaMangerIcon";
+import LicenserCardIcon from "../../../../assets/icons/LicenserCardIcon";
+import UserIcon from "../../../../assets/icons/UserIcon";
+import HomeCard from "../../../../components/ui/HomeCards";
+import Table from "../../../../components/ui/Table";
+import { regionAreaData, RegionView,regionLicenserData } from "../../../../Interfaces/RegionView";
 import RRecentActivityView from "./RecentActivityView";
 import { useNavigate } from "react-router-dom";
 

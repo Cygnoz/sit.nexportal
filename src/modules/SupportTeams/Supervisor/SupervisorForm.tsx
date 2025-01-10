@@ -57,6 +57,7 @@ const editValidationSchema = Yup.object().shape({
 
 const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   const { dropdownRegions, allWc, allCountries } = useRegularApi();
+  const {request:checkSVs}=useApi("get",3003)
   const { request: addSV } = useApi("post", 3003);
   const { request: editSV } = useApi("put", 3003);
   const { request: getSV } = useApi("get", 3003);
@@ -124,27 +125,61 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
+  const checkSV=async()=>{
+    try{
+      const {response,error}=await checkSVs(`${endPoints.CHECK_SV}/${watch("region")}`)
+      console.log("res",response);
+      console.log("err",error);
+      
+      
+      if(response && !error){
+        return true
+      }else{
+        if(error?.response?.data?.message==="Region is already assigned to another Supervisor . Try adding another region."){
+          return false
+        }else{
+          return true
+        }
+      }
+    }catch(err){
+      console.log(err);
+      
+    }
+  }
+
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
+    let canProceed = true; // Default to true, modify if checkRM fails
+  
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo","personalEmail"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
         !editId && "email",
         !editId && "password",
         !editId && "confirmPassword",
         "region",
-        "workEmail"
+        "workEmail",
       ];
+      const rmCheck = await checkSV(); // Call checkRM function
+      
+      if (!rmCheck) {
+        canProceed = false;
+        // Replace with your preferred method for showing a message
+        toast.error("Region is already assigned to another Supervisor . Try adding another region."); 
+      }
     }
-    const isValid = fieldsToValidate.length
+  
+    // Validate fields only if canProceed is true
+    const isValid = canProceed && fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
-    if (isValid && currentIndex < tabs.length - 1) {
+    
+    // If validation passes and we can proceed, move to the next tab
+    if (isValid && canProceed && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
-      
     }
   };
 

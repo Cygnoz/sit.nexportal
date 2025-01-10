@@ -24,6 +24,7 @@ export const endPoints = {
   RM: "/region-manager",
   GET_ALL_RM: "/region-managers",
   CHECK_RM:'/region-manager-check',
+  TOP_PERFORMANCE:'/top-performers',
 
   //Country and State
   GET_COUNTRY: "/countries",
@@ -42,9 +43,10 @@ export const endPoints = {
 
   //SuperVisor
   SUPER_VISOR: "/supervisor",
-
+  CHECK_SV:"/supervisor-check",
   //Support Agent
   SUPPORT_AGENT: "/supportAgent",
+
 
   // Lead
   LEADS: "/leads",

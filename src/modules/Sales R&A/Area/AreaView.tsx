@@ -64,7 +64,7 @@ const AreaView = ({ }: // status,
   const getAreas = async () => {
     try {
       const { response, error } = await getArea(`${endPoints.AREA}/${id}`);
-      console.log("res", response);
+      console.log("ressssssssssssssssssssssss", response);
       if (response && !error) {
         setArea(response.data);
       } else {

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 
-import { endPoints } from "../../../services/apiEndpoints";
-import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
+import useApi from "../../../../Hooks/useApi";
 import { useParams } from "react-router-dom";
-import UserIcon from "../../../assets/icons/UserIcon";
-import No_Data_found from '../../../assets/image/NO_DATA.png';
-import AreaIcon from "../../../assets/icons/AreaIcon";
-import RegionIcon from "../../../assets/icons/RegionIcon";
-import CalenderClock from "../../../assets/icons/CalenderClock";
-import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
+import UserIcon from "../../../../assets/icons/UserIcon";
+import No_Data_found from '../../../../assets/image/NO_DATA.png';
+import AreaIcon from "../../../../assets/icons/AreaIcon";
+import RegionIcon from "../../../../assets/icons/RegionIcon";
+import CalenderClock from "../../../../assets/icons/CalenderClock";
+import AreaManagerIcon from "../../../../assets/icons/AreaMangerIcon";
 
 
 // Timeline Component
