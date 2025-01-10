@@ -8,6 +8,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { ObjectId } = require("mongoose").Types;
 const nodemailer = require("nodemailer");
+const Praise = require('../database/model/praise')
 
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
@@ -435,3 +436,72 @@ Best regards,
 // The CygnoNex Team
 // NexPortal
 // Support: notify@cygnonex.com
+
+
+exports.getSupportAgentDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    
+    // Count total tickets assigned to the support agent
+    const totalTickets = await Ticket.countDocuments({ supportAgentId: id });
+
+    // Count tickets resolved by the support agent
+    const ticketsResolved = await Ticket.countDocuments({
+      supportAgentId: id,
+      status: "Resolved",
+    });
+
+    const openTickets = await Ticket.find({
+      supportAgentId: id,
+      status: { $ne: "Resolved" },
+    })
+      .select("ticketId subject status priority customerId")
+      .populate({
+        path: "customerId",
+        model: "Lead", // Specify the Leads collection
+        select: "companyName organizationId", // Select only the required fields from Leads
+      })
+      .lean();
+    
+    // Get closed tickets
+    const closedTickets = await Ticket.find({
+      supportAgentId: id,
+      status: "Resolved",
+    })
+      .select("ticketId subject status priority customerId")
+      .populate({
+        path: "customerId",
+        model: "Lead", // Specify the Leads collection
+        select: "companyName organizationId",
+      })
+      .lean();
+    
+      const rewards = await  Praise.find({ usersId : id })
+
+    // Format tickets arrays
+    const formatTickets = (tickets) =>
+      tickets.map((ticket) => ({
+        ticketId: ticket.ticketId,
+        companyName: ticket.customerId?.companyName || "",
+        organizationId: ticket.customerId?.organizationId || "",
+        subject: ticket.subject,
+        status: ticket.status,
+        priority: ticket.priority,
+      }));
+
+    // Send response
+    res.status(200).json({
+      totalTickets,
+      ticketsResolved,
+      rewards,
+      tickets: {
+        openTickets: formatTickets(openTickets),
+        closedTickets: formatTickets(closedTickets),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching support agent details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

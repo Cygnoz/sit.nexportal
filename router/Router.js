@@ -109,6 +109,8 @@ router.put("/supportAgent/:id",verifyToken,checkPermission('Edit Support Agent')
 
 router.delete("/supportAgent/:id",verifyToken,checkPermission('Delete Support Agent'), supportAgentController.deleteSupportAgent,ActivityLogGeneration('Delete Support Agent'));
 
+router.get("/supportAgent/:id/details",verifyToken,checkPermission('View Support Agent'), supportAgentController.getSupportAgentDetails);
+
 // dashboard
 router.get("/counts",verifyToken,dashboardController.getDocumentCounts );
 

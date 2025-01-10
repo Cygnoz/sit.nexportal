@@ -5,12 +5,13 @@ const { Schema } = mongoose;
 
 const ticketSchema = new Schema(
   {
-    customerId: { type: String },
-    supportAgentId: { type: String },
-    requestor: { type: String }, // The person who raised the ticket
+
+    customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead'},
+    region: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead'},
+    supervisor:{ type: mongoose.Schema.Types.ObjectId, ref: 'Supervisor'},
+    supportAgentId: { type: mongoose.Schema.Types.ObjectId, ref: 'SupportAgent'},
     subject: { type: String }, // Brief summary or title of the ticket
     description: { type: String }, // Detailed description of the issue or request
-    assignedTo: { type: String }, // Person or team assigned to resolve the ticket
     priority: { type: String }, // Priority level
     type: { type: String }, // Ticket type
     status :{ type: String },
