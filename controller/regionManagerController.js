@@ -229,12 +229,44 @@ exports.addRegionManagerCheck = async (req, res, next) => {
   }
 };
 
+// exports.getRegionManager = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const regionManager = await RegionManager.findById(id).populate([
+//       { path: "user", select: "userName phoneNo userImage  employeeId email" },
+//       { path: "region", select: "regionName regionCode" },
+//       { path: "commission", select: "profileName" },
+//     ]);
+
+//     if (!regionManager) {
+//       return res.status(404).json({ message: "Region Manager not found" });
+//     }
+
+//     const decryptField = (field) => (field ? decrypt(field) : field);
+
+//     regionManager.adhaarNo = decryptField(regionManager.adhaarNo);
+//     regionManager.panNo = decryptField(regionManager.panNo);
+//     if (regionManager.bankDetails) {
+//       regionManager.bankDetails.bankAccountNo = decryptField(
+//         regionManager.bankDetails.bankAccountNo
+//       );
+//     }
+
+//     res.status(200).json(regionManager);
+//   } catch (error) {
+//     console.error("Error fetching Region Manager:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
 exports.getRegionManager = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Fetch region manager details with populated fields
     const regionManager = await RegionManager.findById(id).populate([
-      { path: "user", select: "userName phoneNo userImage  employeeId email" },
+      { path: "user", select: "userName phoneNo userImage employeeId email" },
       { path: "region", select: "regionName regionCode" },
       { path: "commission", select: "profileName" },
     ]);
@@ -243,8 +275,8 @@ exports.getRegionManager = async (req, res) => {
       return res.status(404).json({ message: "Region Manager not found" });
     }
 
+    // Decrypt sensitive fields
     const decryptField = (field) => (field ? decrypt(field) : field);
-
     regionManager.adhaarNo = decryptField(regionManager.adhaarNo);
     regionManager.panNo = decryptField(regionManager.panNo);
     if (regionManager.bankDetails) {
@@ -253,12 +285,35 @@ exports.getRegionManager = async (req, res) => {
       );
     }
 
-    res.status(200).json(regionManager);
+    // Extract the region ID from the region manager
+    const regionId = regionManager.region._id;
+
+    // Fetch areas managed by the region
+    const totalAreaManaged = await Area.find({ region: regionId });
+    const areaIds = totalAreaManaged.map((area) => area._id);
+
+    // Fetch area managers for the fetched areas
+    const totalAreaManagers = await AreaManager.find({ area: { $in: areaIds } });
+
+    // Fetch BDA details for the region
+    const totalBdas = await getBdaDetails(regionId);
+
+    // Send the response
+    res.status(200).json({
+      regionManager,
+      totalCounts: {
+        totalAreaManaged: totalAreaManaged.length,
+        totalAreaManagers: totalAreaManagers.length,
+        totalBdas: totalBdas.length,
+      },
+    });
   } catch (error) {
     console.error("Error fetching Region Manager:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 
 exports.getAllRegionManager = async (req, res) => {
   try {
