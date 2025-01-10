@@ -44,7 +44,7 @@ router.get("/region-manager/:id/details",verifyToken,checkPermission('View Regio
 router.delete("/region-managers/:id",verifyToken,checkPermission('Delete Region Manager'), regionManagerController.deleteRegionManager,ActivityLogGeneration('Delete Region Manager'));
 
 // Area manager
-router.get("/area-manager-check/:id",verifyToken,checkPermission('Add Area Manager'), areaManagerController.addAreaManagerCheck);
+router.put("/area-manager-check",verifyToken,checkPermission('Add Area Manager'), areaManagerController.addAreaManagerCheck);
 
 router.post('/area-manager',verifyToken,checkPermission('Add Area Manager'),areaManagerController.addAreaManager,ActivityLogGeneration('Add Area Manager'))
 
@@ -58,6 +58,10 @@ router.delete("/area-managers/:id",verifyToken,checkPermission('Delete Area Mana
 
 // BDA
 // Area manager
+router.put("/bda-check",verifyToken,checkPermission('Add BDA'), bdaController.bdaCheck);
+
+router.get("/bda-details/:id",verifyToken,checkPermission('View BDA'), bdaController.getBdaDetails);
+
 router.post('/bda',verifyToken,checkPermission('Add BDA'),bdaController.addBda,ActivityLogGeneration('Add BDA'))
 
 router.get("/bda",verifyToken,checkPermission('View BDA'), bdaController.getAllBda);

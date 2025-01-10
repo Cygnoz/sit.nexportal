@@ -443,6 +443,119 @@ Best regards,
 
 
 
+// exports.getRegionManagerDetails = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     // Fetch the regionManager using the provided id
+//     const regionManager = await RegionManager.findById(id);
+//     if (!regionManager) {
+//       return res.status(404).json({ message: "Region Manager not found" });
+//     }
+
+//     // Extract the region ID from the fetched regionManager
+//     const regionId = regionManager.region;
+
+//     // Fetch areas managed by the region
+//     const totalAreaManaged = await Area.find({ region: regionId });
+
+//     // Map through the areas to fetch the required details
+//     const areaDetails = await Promise.all(totalAreaManaged.map(async (area) => {
+//       // Fetch the area manager for the area
+//       const areaManager = await AreaManager.findOne({ area: area._id });
+
+//       if (!areaManager) {
+//         return {
+//           areaCode: area.areaCode,
+//           areaName: area.areaName,
+//           areaManagerName: null, // In case no area manager is found
+//         };
+//       }
+
+//       // Fetch the user (area manager's name)
+//       const user = await User.findById(areaManager.user);
+
+//       return {
+//         _id:area._id,
+//         areaCode: area.areaCode,
+//         areaName: area.areaName,
+//         areaManagerName: user ? user.userName : null, // If user is found, return their username
+//       };
+//     }));
+
+//     // Get area IDs from the fetched areas
+//     const areaIds = totalAreaManaged.map((area) => area._id);
+
+//     // Fetch area managers managing the fetched areas
+//     const totalAreaManagers = await AreaManager.find({ area: { $in: areaIds } })
+//     .select('_id user')
+//     .populate({
+//         path: 'user',
+//         select: 'userName userImage email phoneNo _id'
+//     });
+
+
+//     const bdaDetails =  getBdaDetails(regionId)
+ 
+
+//     // Fetch BDAs associated with the area managers
+//     // const totalBdas = await Bda.find({ region: regionId  });
+
+//     // Send the response
+//     res.status(200).json({
+//       totalAreaManaged: areaDetails,
+//       totalAreaManagers,
+//       totalBdas,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching region manager details:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+// const getBdaDetails = async (regionId) => {
+//   // Fetch all BDA documents that match the area
+//   const bdas = await Bda.find({ region: regionId }, { user: 1, dateOfJoining: 1 }).lean();
+
+//   // Prepare array for BDA details
+//   const bdaDetails = await Promise.all(
+//     bdas.map(async (bda) => {
+//       const user = await User.findById(bda.user, {
+//         employeeId: 1,
+//         userName: 1,
+//         email: 1,
+//         phoneNo: 1,
+//         userImage: 1,
+//       }).lean();
+
+//       const totalLeads = await Leads.countDocuments({ regionId, bdaId: bda._id });
+//       const leadsClosed = await Leads.countDocuments({
+//         regionId,
+//         bdaId: bda._id,
+//         customerStatus: { $ne: "Lead" },
+//       });
+
+//       return {
+//         _id :bda._id,
+//         employeeId: user?.employeeId || null,
+//         userName: user?.userName || null,
+//         email: user?.email || null,
+//         phoneNo: user?.phoneNo || null,
+//         userImage: user?.userImage || null,
+//         dateOfJoining: bda.dateOfJoining,
+//         totalLeads,
+//         leadsClosed,
+//       };
+//     })
+//   );
+
+//   return bdaDetails;
+// };
+
+
+
+
 exports.getRegionManagerDetails = async (req, res) => {
   try {
     const { id } = req.params;
@@ -460,43 +573,53 @@ exports.getRegionManagerDetails = async (req, res) => {
     const totalAreaManaged = await Area.find({ region: regionId });
 
     // Map through the areas to fetch the required details
-    const areaDetails = await Promise.all(totalAreaManaged.map(async (area) => {
-      // Fetch the area manager for the area
-      const areaManager = await AreaManager.findOne({ area: area._id });
+    const areaDetails = await Promise.all(
+      totalAreaManaged.map(async (area) => {
+        // Fetch the area manager for the area
+        const areaManager = await AreaManager.findOne({ area: area._id });
 
-      if (!areaManager) {
+        if (!areaManager) {
+          return {
+            _id: area._id,
+            areaCode: area.areaCode,
+            areaName: area.areaName,
+            areaManagerName: null, // In case no area manager is found
+          };
+        }
+
+        // Fetch the user (area manager's name)
+        const user = await User.findById(areaManager.user);
+
         return {
+          _id: area._id,
           areaCode: area.areaCode,
           areaName: area.areaName,
-          areaManagerName: null, // In case no area manager is found
+          areaManagerName: user ? user.userName : null, // If user is found, return their username
         };
-      }
-
-      // Fetch the user (area manager's name)
-      const user = await User.findById(areaManager.user);
-
-      return {
-        _id:area._id,
-        areaCode: area.areaCode,
-        areaName: area.areaName,
-        areaManagerName: user ? user.userName : null, // If user is found, return their username
-      };
-    }));
+      })
+    );
 
     // Get area IDs from the fetched areas
     const areaIds = totalAreaManaged.map((area) => area._id);
 
     // Fetch area managers managing the fetched areas
-    const totalAreaManagers = await AreaManager.find({ area: { $in: areaIds } });
+    const totalAreaManagers = await AreaManager.find({ area: { $in: areaIds } })
+      .select('_id user')
+      .populate({
+        path: 'user',
+        select: 'userName userImage email phoneNo _id',
+      });
 
-    // Get area manager IDs to fetch BDAs
-    const areaManagerIds = totalAreaManagers.map((manager) => manager._id);
-
-    // Fetch BDAs associated with the area managers
-    const totalBdas = await Bda.find({ areaManager: { $in: areaManagerIds } });
+    // Fetch BDA details
+    const totalBdas = await getBdaDetails(regionId);
 
     // Send the response
     res.status(200).json({
+      regionManager: {
+        id: regionManager._id,
+        name: regionManager.name,
+        email: regionManager.email,
+      },
       totalAreaManaged: areaDetails,
       totalAreaManagers,
       totalBdas,
@@ -507,3 +630,41 @@ exports.getRegionManagerDetails = async (req, res) => {
   }
 };
 
+const getBdaDetails = async (regionId) => {
+  // Fetch all BDA documents that match the region
+  const bdas = await Bda.find({ region: regionId }, { user: 1, dateOfJoining: 1 }).lean();
+
+  // Prepare array for BDA details
+  const bdaDetails = await Promise.all(
+    bdas.map(async (bda) => {
+      const user = await User.findById(bda.user, {
+        employeeId: 1,
+        userName: 1,
+        email: 1,
+        phoneNo: 1,
+        userImage: 1,
+      }).lean();
+
+      const totalLeads = await Leads.countDocuments({ regionId, bdaId: bda._id });
+      const leadsClosed = await Leads.countDocuments({
+        regionId,
+        bdaId: bda._id,
+        customerStatus: { $ne: "Lead" },
+      });
+
+      return {
+        _id: bda._id,
+        employeeId: user?.employeeId || null,
+        userName: user?.userName || null,
+        email: user?.email || null,
+        phoneNo: user?.phoneNo || null,
+        userImage: user?.userImage || null,
+        dateOfJoining: bda.dateOfJoining,
+        totalLeads,
+        leadsClosed,
+      };
+    })
+  );
+
+  return bdaDetails;
+};

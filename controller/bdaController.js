@@ -11,6 +11,7 @@ const nodemailer = require("nodemailer");
 const filterByRole = require("../services/filterByRole");
 const AreaManager = require("../database/model/areaManager");
 const RegionManager = require("../database/model/regionManager");
+const Activity = require("../database/model/activity");
 
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
@@ -218,6 +219,32 @@ exports.addBda = async (req, res, next) => {
   }
 };
 
+exports.bdaCheck = async (req, res) => {
+  try {
+    const {regionId , areaId } = req.body
+    
+    const [regionManager, areaManager] = await Promise.all([
+      RegionManager.findOne({ region: regionId }),
+      AreaManager.findOne({ area: areaId })
+    ]);
+    
+    // Send specific error responses based on missing data
+    if (!regionManager) {
+      return res.status(404).json({ message: "Region Manager not found for the provided region." });
+    }
+    
+    if (!areaManager) {
+      return res.status(404).json({ message: "Area Manager not found for the provided area." });
+    }
+    return res.status(201).json({
+      message: "success"
+    });
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 exports.getBda = async (req, res) => {
   try {
     const { id } = req.params;
@@ -252,24 +279,78 @@ exports.getBda = async (req, res) => {
 exports.getAllBda = async (req, res) => {
   try {
     const userId = req.user.id;
-    const query = await filterByRole(userId);
 
+    // Fetch user's role in a single query with selected fields
+    const user = await User.findById(userId).select("role");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { role } = user;
+
+    // Base query to find Bda
+    let query = {};
+
+    if (["Super Admin", "Sales Admin", "Support Admin"].includes(role)) {
+      // No additional filters for these roles
+    } else if (role === "Region Manager") {
+      // Fetch region ID in a single query
+      const regionManager = await RegionManager.findOne({ user: userId }).select("region");
+      if (!regionManager) {
+        return res.status(404).json({ message: "Region Manager data not found" });
+      }
+      query.region = regionManager.region;
+    } else if (role === "Area Manager") {
+      // Fetch area ID in a single query
+      const areaManager = await AreaManager.findOne({ user: userId }).select("area");
+      if (!areaManager) {
+        return res.status(404).json({ message: "Area Manager data not found" });
+      }
+      query.area = areaManager.area;
+    } else {
+      return res.status(403).json({ message: "Unauthorized role" });
+    }
+
+    // Fetch Bda data based on the filtered query
     const bda = await Bda.find(query).populate([
       { path: "user", select: "userName phoneNo userImage email employeeId" },
       { path: "region", select: "regionName" },
       { path: "area", select: "areaName" },
       { path: "commission", select: "profileName" },
     ]);
-    if (bda.length === 0) {
+
+    if (!bda || bda.length === 0) {
       return res.status(404).json({ message: "No BDA found" });
     }
 
     res.status(200).json({ bda });
   } catch (error) {
-    console.error("Error fetching all Bda:", error);
+    console.error("Error fetching Bda data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// exports.getAllBda = async (req, res) => {
+//   try {
+//     const userId = req.user.id;
+    
+
+//     const bda = await Bda.find(query).populate([
+//       { path: "user", select: "userName phoneNo userImage email employeeId" },
+//       { path: "region", select: "regionName" },
+//       { path: "area", select: "areaName" },
+//       { path: "commission", select: "profileName" },
+//     ]);
+//     if (bda.length === 0) {
+//       return res.status(404).json({ message: "No BDA found" });
+//     }
+
+//     res.status(200).json({ bda });
+//   } catch (error) {
+//     console.error("Error fetching all Bda:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 exports.editBda = async (req, res, next) => {
   try {
@@ -433,3 +514,68 @@ Best regards,
 // The CygnoNex Team
 // NexPortal
 // Support: notify@cygnonex.com
+
+exports.getBdaDetails = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Fetch BDA details
+    const bda = await Bda.findById(id).populate([
+      { path: "user", select: "userName phoneNo userImage email employeeId" },
+      { path: "region", select: "regionName regionCode" },
+      { path: "area", select: "areaName areaCode" },
+      { path: "commission", select: "profileName" },
+    ]);
+
+    if (!bda) {
+      return res.status(404).json({ message: "BDA not found" });
+    }
+
+    // Decrypt sensitive fields (if necessary)
+    const decryptField = (field) => (field ? decrypt(field) : field);
+    bda.adhaarNo = decryptField(bda.adhaarNo);
+    bda.panNo = decryptField(bda.panNo);
+    if (bda.bankDetails) {
+      bda.bankDetails.bankAccountNo = decryptField(bda.bankDetails.bankAccountNo);
+    }
+
+    // Get total leads assigned
+    const totalLeadsAssigned = await Leads.countDocuments({ bdaId: id });
+
+    // Get total licenses sold
+    const totalLicensesSold = await Leads.countDocuments({
+      bdaId: id,
+      customerStatus: "Licenser",
+    });
+
+    // Get pending tasks
+    const leads = await Leads.find({ bdaId: id }, "_id");
+    const leadIds = leads.map((lead) => lead._id);
+
+    const pendingTasks = await Activity.countDocuments({
+      leadId: { $in: leadIds },
+      activityType: "Task",
+      taskStatus: { $ne: "In Progress" },
+    });
+
+    // Get lead by status
+    const leadByStatus = {
+      open: await Leads.countDocuments({ bdaId: id, leadStatus: "Contacted" }),
+      inProgress: await Leads.countDocuments({ bdaId: id, leadStatus: "In Progress" }),
+      converted: await Leads.countDocuments({ bdaId: id, customerStatus: { $ne: "Lead" } }),
+      dropped: await Leads.countDocuments({ bdaId: id, leadStatus: "Lost" }),
+    };
+
+    // Send response
+    res.status(200).json({
+      bda,
+      totalLeadsAssigned,
+      totalLicensesSold,
+      pendingTasks,
+      leadByStatus,
+    });
+  } catch (error) {
+    console.error("Error fetching BDA details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

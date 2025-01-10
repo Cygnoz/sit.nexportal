@@ -8,6 +8,9 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { ObjectId } = require("mongoose").Types;
 const nodemailer = require("nodemailer");
+const RegionManager = require("../database/model/regionManager");
+const filterByRole = require("../services/filterByRole");
+const regionManager = require("../database/model/regionManager");
 
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
@@ -173,7 +176,14 @@ exports.addAreaManager = async (req, res, next) => {
         if (existingAreaManager) {
           return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });
         }
-
+         const [regionManager] = await Promise.all([
+                  RegionManager.findOne({ region: data.region })
+                ]);
+                
+                // Send specific error responses based on missing data
+                if (!regionManager) {
+                  return res.status(404).json({ message: "Region Manager not found for the provided region." });
+                }
     // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
 
     // if (!emailSent) {
@@ -209,9 +219,17 @@ exports.addAreaManager = async (req, res, next) => {
 
 exports.addAreaManagerCheck = async (req, res) => {
   try {
-    const id = req.params.id
+    const {regionId , areaId } = req.body
     
-    const existingAreaManager = await AreaManager.findOne({ area: id });
+    const [regionManager] = await Promise.all([
+      RegionManager.findOne({ region: regionId })
+    ]);
+    
+    // Send specific error responses based on missing data
+    if (!regionManager) {
+      return res.status(404).json({ message: "Region Manager not found for the provided region." });
+    }
+    const existingAreaManager = await AreaManager.findOne({ area: areaId });
         if (existingAreaManager) {
           return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });
         }
@@ -255,24 +273,88 @@ exports.getAreaManager = async (req, res) => {
   }
 };
 
+
 exports.getAllAreaManager = async (req, res) => {
   try {
-    const areaManager = await AreaManager.find({}).populate([
-      { path: "user", select: "userName phoneNo userImage email employeeId" },
-      { path: "region", select: "regionName" },
-      { path: "area", select: "areaName" },
-      { path: "commission", select: "profileName" },
-    ]);
-    if (areaManager.length === 0) {
-      return res.status(404).json({ message: "No Area Manager found" });
+    const userId = req.user.id;
+
+    // Step 1: Find the user's role
+    const user = await User.findById(userId).select("role");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json({ areaManager });
+    // Step 2: If the user is Super Admin, Sales Admin, or Support Admin, fetch all Area Managers
+    if (["Super Admin", "Sales Admin", "Support Admin"].includes(user.role)) {
+      const areaManagers = await AreaManager.find({}).populate([
+        { path: "user", select: "userName phoneNo userImage email employeeId" },
+        { path: "region", select: "regionName" },
+        { path: "area", select: "areaName" },
+        { path: "commission", select: "profileName" },
+      ]);
+
+      if (areaManagers.length === 0) {
+        return res.status(404).json({ message: "No Area Manager found" });
+      }
+
+      return res.status(200).json({ areaManagers });
+    }
+
+    // Step 3: If the user is a Region Manager, fetch Area Managers under their region
+    if (user.role === "Region Manager") {
+      // Find the Region Manager's regionId
+      const regionManager = await RegionManager.findOne({ user: userId }).select("region");
+      if (!regionManager) {
+        return res.status(404).json({ message: "Region Manager not found" });
+      }
+
+      const regionId = regionManager.region;
+
+      // Fetch Area Managers under the region
+      const areaManagers = await AreaManager.find({ region: regionId }).populate([
+        { path: "user", select: "userName phoneNo userImage email employeeId" },
+        { path: "region", select: "regionName" },
+        { path: "area", select: "areaName" },
+        { path: "commission", select: "profileName" },
+      ]);
+
+      if (areaManagers.length === 0) {
+        return res.status(404).json({ message: "No Area Manager found for the given region" });
+      }
+
+      return res.status(200).json({ areaManagers });
+    }
+
+    // Step 4: If the role is not authorized, return a 403 response
+    return res.status(403).json({ message: "Unauthorized access" });
   } catch (error) {
-    console.error("Error fetching all Area Manager:", error);
+    console.error("Error fetching all Area Managers:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+// exports.getAllAreaManager = async (req, res) => {
+//   try {
+
+//     const userId = req.user.id;
+
+//     const areaManager = await AreaManager.find({}).populate([
+//       { path: "user", select: "userName phoneNo userImage email employeeId" },
+//       { path: "region", select: "regionName" },
+//       { path: "area", select: "areaName" },
+//       { path: "commission", select: "profileName" },
+//     ]);
+//     if (areaManager.length === 0) {
+//       return res.status(404).json({ message: "No Area Manager found" });
+//     }
+
+//     res.status(200).json({ areaManager });
+//   } catch (error) {
+//     console.error("Error fetching all Area Manager:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 exports.editAreaManager = async (req, res, next) => {
   try {
