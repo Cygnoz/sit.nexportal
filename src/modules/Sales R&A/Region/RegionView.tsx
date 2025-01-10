@@ -51,7 +51,7 @@ function RegionView({}: Props) {
     // Scroll to the top of the referenced element
     topRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
-  const { request: getRM } = useApi("get", 3002);
+ 
   const { request: deleteRegion } = useApi("delete", 3003);
   const { request: deactivateRegion } = useApi("put", 3003);
   const {request:getAreaDetails}=useApi('get',3003)
@@ -86,7 +86,6 @@ function RegionView({}: Props) {
   const getARegion = async () => {
     try {
       const { response, error } = await getRegion(`${endPoints.REGION}/${id}`);
-
       if (response && !error) {
         setData((prevData) => ({
           ...prevData,
@@ -126,41 +125,12 @@ function RegionView({}: Props) {
   };
 
   const countryLogoObject = countyLogo.find(
-    (item) => item.countryName === data.regionData.country
+    (item) => item.countryName === data.regionData?.region?.country
   );
 
   const src = countryLogoObject ? countryLogoObject.countryLogo : region;
 
-  const getRMs = async () => {
-    try {
-      const { response, error } = await getRM(endPoints.GET_ALL_RM);
-      console.log(response);
-
-      if (response && !error) {
-        const transformedRMss =
-          response.data.regionManager?.map((region: any) => ({
-            //   ...region,
-            //   dateOfJoining: region.dateOfJoining
-            //   ? new Date(region.dateOfJoining).toLocaleDateString("en-GB")
-            //   : "N/A",
-            // loginEmail:region.user.email
-            userName: region.user?.userName,
-            email: region.user?.email,
-            phoneNo: region.user?.phoneNo,
-            userImage: region.user?.userImage,
-          })) || [];
-        setData((prevData) => ({
-          ...prevData,
-          regionManager: transformedRMss,
-        }));
-      } else {
-        console.log(error?.response?.data?.message || "Failed to fetch data.");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      toast.error("An unexpected error occurred.");
-    }
-  };
+ 
 
   
   const getRegionAreaData=async()=>{
@@ -212,7 +182,6 @@ function RegionView({}: Props) {
 
   
   useEffect(() => {
-    getRMs();
     getARegion();
     getRegionAreaData();
     getAllTeam();
@@ -262,6 +231,9 @@ function RegionView({}: Props) {
   };
 
 
+  console.log("data",data.regionData);
+  
+
 
   return (
     <>
@@ -272,7 +244,7 @@ function RegionView({}: Props) {
             <p onClick={()=>navigate('/regions')} className="font-bold cursor-pointer text-[#820000]">Region</p>
             <ChevronRight color="#4B5C79" size={18} />
             <p className="font-bold text-[#303F58]">
-              {data.regionData?.regionName}
+              {data.regionData?.region?.regionName}
             </p>
           </div>
           <div className="h-auto w-full bg-[#FFFFFF] rounded-lg p-3">
@@ -281,19 +253,19 @@ function RegionView({}: Props) {
                 <img className="w-16 h-16 rounded-full" src={src} alt="" />
               </div>
               <p className="font-bold text-[#303F58]">
-                {data.regionData?.regionName}
+                {data.regionData?.region?.regionName}
               </p>
               <div className="grid grid-cols-2">
                 <div className="border-r pe-3">
                   <div className="w-fit flex justify-center items-center flex-col">
                     <p className="text-[#8F99A9] text-[10px]">Region Status</p>
                     <h3
-                  className={`p-2 rounded-full text-xs font-medium ${data?.regionData?.status === "Active"
+                  className={`p-2 rounded-full text-xs font-medium ${data?.regionData?.region?.status === "Active"
                     ? "bg-[#6AAF681A] text-[#6AAF68]"
                     : "bg-[#6AAF681A] text-orange-500"
                     }`}
                 >
-                  {data?.regionData?.status}
+                  {data?.regionData?.region?.status}
                 </h3>
                   </div>
                 </div>
@@ -301,9 +273,9 @@ function RegionView({}: Props) {
                   <div className="w-fit flex justify-center items-center flex-col">
                     <p className="text-[#8F99A9] text-[10px]">Country</p>
                     <p className="text-sm text-[#4B5C79]">
-                      {data.regionData.country == "United Arab Emirates"
+                      {data.regionData?.region?.country == "United Arab Emirates"
                         ? "UAE"
-                        : data.regionData.country}
+                        : data.regionData?.region?.country}
                     </p>
                   </div>
                 </div>
@@ -374,7 +346,7 @@ function RegionView({}: Props) {
               </div>
               </div>
              
-              {data?.regionAreaData?.regionManager?.userName && (
+              {data?.regionData?.regionManager?.userName && (
                 <>
                  <hr className="w-full" />
   <div className="space-y-1 w-full text-xs mt-2">
@@ -384,10 +356,10 @@ function RegionView({}: Props) {
     <div className="flex flex-col w-full">
       <div className="flex justify-between items-center w-full mt-2">
         <div className="flex items-center gap-1">
-          {data?.regionAreaData?.regionManager.userImage ? (
+          {data?.regionData?.regionManager.userImage ? (
             <img
               className="w-10 h-10 rounded-full"
-              src={data?.regionAreaData?.regionManager.userImage}
+              src={data?.regionData?.regionManager.userImage}
               alt="User Image"
             />
           ) : (
@@ -398,7 +370,7 @@ function RegionView({}: Props) {
           <div className="flex flex-col space-y-1">
             <p className="text-[11px] text-[#8F99A9]">Name</p>
             <p className="text-xs">
-              {data?.regionAreaData?.regionManager.userName ?? 'N/A'}
+              {data?.regionData?.regionManager.userName ?? 'N/A'}
             </p>
           </div>
         </div>
@@ -424,7 +396,7 @@ function RegionView({}: Props) {
             <div className="flex flex-col space-y-1">
               <p className="text-[11px] text-[#8F99A9]">Email Address</p>
               <p className="text-xs">
-                {data?.regionAreaData?.regionManager.email ?? 'N/A'}
+                {data?.regionData?.regionManager.email ?? 'N/A'}
               </p>
             </div>
           </div>
@@ -435,7 +407,7 @@ function RegionView({}: Props) {
             <div className="flex flex-col space-y-1">
               <p className="text-[11px] text-[#8F99A9]">Phone Number</p>
               <p className="text-xs">
-                {data?.regionAreaData?.regionManager.phoneNo ?? 'N/A'}
+                {data?.regionData?.regionManager.phoneNo ?? 'N/A'}
               </p>
             </div>
           </div>
@@ -483,7 +455,7 @@ function RegionView({}: Props) {
         className="w-[35%]"
       >
         <RegionForm
-          editId={data.regionData._id}
+          editId={id}
           onClose={() => handleModalToggle()}
         />
       </Modal>

@@ -53,7 +53,9 @@ const RegionForm: React.FC<RegionFormProps> = ({ onClose, editId }) => {
             `${endPoints.REGION}/${editId}`
           );
           if (response && !error) {
-            setFormValues(response.data);
+            const {region}=response.data
+            
+            setFormValues(region);
           } else {
             toast.error(error.response.data.message);
           }

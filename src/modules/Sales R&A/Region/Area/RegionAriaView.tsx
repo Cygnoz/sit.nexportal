@@ -18,7 +18,6 @@ type Props = {
 };
 
 const RegionAriaView = ({ regionData, regionAreaData }: Props) => {
-  console.log(regionData);
 
   const navigate = useNavigate();
 

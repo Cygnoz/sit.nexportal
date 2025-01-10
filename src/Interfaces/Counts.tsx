@@ -10,4 +10,5 @@ export interface TotalCounts{
     totalTrial:number
     totalLead:number
     totalLicensor:number
+    activeLicensor:number
 }
