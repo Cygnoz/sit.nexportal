@@ -17,10 +17,10 @@ import UAELogo from "../../../assets/image/UAELogo.webp";
 import Modal from "../../../components/modal/Modal";
 import { endPoints } from "../../../services/apiEndpoints";
 import AreaForm from "../Area/AreaForm";
-import RegionAriaView from "./RegionAriaView";
+import RegionAriaView from "./Area/RegionAriaView";
 import RegionForm from "./RegionForm";
-import RegionPerformanceView from "./RegionPerformanceView";
-import RegionTeamView from "./RegionTeamView";
+import RegionPerformanceView from "./PerformanceAnalysing/RegionPerformanceView";
+import RegionTeamView from "./Team/RegionTeamView";
 import UserIcon from "../../../assets/icons/UserIcon";
 import Trash from "../../../assets/icons/Trash";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
@@ -67,11 +67,6 @@ function RegionView({}: Props) {
       return newState;
     });
   };
-  // const handleModalToggle = (editId?:any) => {
-  //   setEditId(editId)
-  //   setIsModalOpen((prev) => !prev);
-  //   getAllTeam()
-  // };
   const { id } = useParams();
   const { request: getRegion } = useApi("get", 3003);
   const [data, setData] = useState<{
@@ -93,7 +88,6 @@ function RegionView({}: Props) {
       const { response, error } = await getRegion(`${endPoints.REGION}/${id}`);
 
       if (response && !error) {
-        // setFormValues(response.data);
         setData((prevData) => ({
           ...prevData,
           regionData: response.data,
@@ -473,8 +467,9 @@ function RegionView({}: Props) {
               </div>
             ))}
           </div>
+         
 
-          <div style={{zIndex:2}}  className="absolute">
+          <div style={{zIndex:2}}  className="absolute w-full ">
             {activeTab === "Area" && <RegionAriaView regionAreaData={data.regionAreaData}  regionData={data.regionData} />}
             {activeTab === "Team" && <RegionTeamView teamData={teamData} handleModalToggle={handleModalToggle} setData={setData}  />}
             {activeTab === "Performance Analytics" && <RegionPerformanceView />}

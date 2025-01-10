@@ -1,34 +1,19 @@
 import { useState } from 'react';
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
-  Cell,
   Legend,
   Line,
   LineChart,
   Tooltip,
   XAxis, YAxis
 } from 'recharts';
+import LeadConvertionRateRegion from './Graphs/LeadConvertionRateRegion';
 
 type Props = {}
 
 const RegionPerformanceView = ({}: Props) => {
 const [selectedMonth,setSelectedMonth]=useState()
-  const leadConversionData = [
-    { name: 'Area 1', uv: 40, },
-    { name: 'Area 2', uv: 20, },
-    { name: 'Area 3', uv: 60, },
-    { name: 'Area 4', uv: 50, },
-    { name: 'Area 5', uv: 30, },
-    { name: 'Area 6', uv: 80, },
-    { name: 'Area 7', uv: 70, },
-    { name: 'Area 8', uv: 90, },
-    { name: 'Area 9', uv: 100, },
-    { name: 'Area 10', uv: 55, },
-  ];
-
-  const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
+ 
 
   const CustomLegend = () => {
     return (
@@ -202,112 +187,84 @@ const [selectedMonth,setSelectedMonth]=useState()
   ];
 
   return (
-   <div>
-     <div className="flex flex-col gap-2 mt-5 w-full">
-      <div className="p-3 bg-white space-y-2 rounded-lg w-full">
-                <h2 className='font-bold'>Lead Conversion Rate Per Area</h2>
-                <h3 className='text-xs'>Area 9</h3>
-                <h1 className='text-2xl font-medium'>80 Percentage</h1>
-        
-                <div >
-                <BarChart width={1000} height={280} data={leadConversionData}>
-                <CartesianGrid   strokeDasharray="3 3" vertical={false}/>
-            
-            {/* Hide axis lines but keep labels visible */}
-            <XAxis dataKey="name" axisLine={false} tickLine={false} />
-            <YAxis axisLine={false} tickLine={false} />
-            
-            {/* Remove the legend for 'uv' */}
-            <Tooltip />
-            
-            <Bar barSize={55} dataKey="uv" radius={10} >
-              {
-                leadConversionData.map((data, index) => (
-                  <Cell key={`cell-${data.name}`} fill={colors[index]} />
-                ))
-              }
-            </Bar>
-          </BarChart>
-                </div>
-            
-                </div>
-      <div className="bg-white w-full">
-                 <div className="py-1 ms-2 flex justify-between">
-                   <h2 className="font-bold">License Over Time By Area</h2>
-                   <div className="">
-                     <label htmlFor="month-select"></label>
-                     <select
-                       className="bg-[#FEFDFA] rounded-lg"
-                       id="month-select"
-                       value={selectedMonth}
-                       onChange={(e:any) => setSelectedMonth(e.target.value)}
-                       style={{ padding: "5px", border: "1px solid #ccc" }}
-                     >
-                       {Object.keys(datass).map((month) => (
-                         <option key={month} value={month}>
-                           {month}
-                         </option>
-                       ))}
-                     </select>
-                   </div>
-                 </div>
-                 <div className="mt-5">
-                   <LineChart
-                     width={1000}
-                     height={400}
-                     data={datas}
-                     margin={{
-                       top: 5,
-                       right: 30,
-                       left: 20,
-                       bottom: 5,
-                     }}
+    <div className='flex flex-col space-y-3 mt-2'>
+    <LeadConvertionRateRegion/>
+    <div className="bg-white w-full p-2">
+               <div className="py-1 ms-2 flex justify-between">
+                 <h2 className="font-bold">License Over Time By Area</h2>
+                 <div className="">
+                   <label htmlFor="month-select"></label>
+                   <select
+                     className="bg-[#FEFDFA] rounded-lg"
+                     id="month-select"
+                     value={selectedMonth}
+                     onChange={(e:any) => setSelectedMonth(e.target.value)}
+                     style={{ padding: "5px", border: "1px solid #ccc" }}
                    >
-                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                     <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                     <YAxis axisLine={false} tickLine={false} />
-                     <Tooltip />
-                     <Legend content={<CustomLegend />} />
-                     <Line
-                       type="monotone"
-                       dataKey="Area1"
-                       stroke="#e2b0ff"
-                       strokeWidth={3}
-                       dot={false}
-                     />
-                     <Line
-                       type="monotone"
-                       dataKey="Area2"
-                       stroke="#8884d8"
-                       strokeWidth={3}
-                       dot={false}
-                     />
-                     <Line
-                       type="monotone"
-                       dataKey="Area3"
-                       stroke="#82ca9d"
-                       strokeWidth={3}
-                       dot={false}
-                     />
-                     <Line
-                       type="monotone"
-                       dataKey="Area4"
-                       stroke="#d86a57"
-                       strokeWidth={3}
-                       dot={false}
-                     />
-                     <Line
-                       type="monotone"
-                       dataKey="Area5"
-                       stroke="#6ab6ff"
-                       strokeWidth={3}
-                       dot={false}
-                     />
-                   </LineChart>
+                     {Object.keys(datass).map((month) => (
+                       <option key={month} value={month}>
+                         {month}
+                       </option>
+                     ))}
+                   </select>
                  </div>
                </div>
+               <div className="mt-5">
+                 <LineChart
+                   width={1000}
+                   height={400}
+                   data={datas}
+                   margin={{
+                     top: 5,
+                     right: 30,
+                     left: 20,
+                     bottom: 5,
+                   }}
+                 >
+                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                   <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                   <YAxis axisLine={false} tickLine={false} />
+                   <Tooltip />
+                   <Legend content={<CustomLegend />} />
+                   <Line
+                     type="monotone"
+                     dataKey="Area1"
+                     stroke="#e2b0ff"
+                     strokeWidth={3}
+                     dot={false}
+                   />
+                   <Line
+                     type="monotone"
+                     dataKey="Area2"
+                     stroke="#8884d8"
+                     strokeWidth={3}
+                     dot={false}
+                   />
+                   <Line
+                     type="monotone"
+                     dataKey="Area3"
+                     stroke="#82ca9d"
+                     strokeWidth={3}
+                     dot={false}
+                   />
+                   <Line
+                     type="monotone"
+                     dataKey="Area4"
+                     stroke="#d86a57"
+                     strokeWidth={3}
+                     dot={false}
+                   />
+                   <Line
+                     type="monotone"
+                     dataKey="Area5"
+                     stroke="#6ab6ff"
+                     strokeWidth={3}
+                     dot={false}
+                   />
+                 </LineChart>
+               </div>
+             </div>
     </div>
-   </div>
   )
 }
 

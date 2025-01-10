@@ -90,15 +90,17 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
       (async () => {
         try {
           const { response, error } = await getArea(`${endPoints.AREA}/${editId}`);
-          console.log("res", response);
           if (response && !error) {
+            const { area } = response.data;
             const regionValue = {
-              label: response.data.region.regionName,
-              value: String(response.data.region._id), // Ensure this matches the Select options structure
+              label: area?.region?.regionName,
+              value: String(area?.region?._id),
             };
-            setValue("region", regionValue.value); // Set the region field's value
-            const { region, ...otherFields } = response.data; 
-          setFormValues(otherFields); // Populate other form fields
+  
+            setFormValues({
+              ...area,
+              region: regionValue.value, // Set region as { label, value }
+            });
           } else {
             toast.error(error.response.data.message);
           }
@@ -108,6 +110,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
       })();
     }
   }, [editId]);
+  
 
  const handleInputChange = (field: keyof AreaData) => {
      clearErrors(field); // Clear the error for the specific field when the user starts typing
