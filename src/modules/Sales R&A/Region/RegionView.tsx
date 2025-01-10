@@ -5,7 +5,7 @@ import useApi from "../../../Hooks/useApi";
 import ChevronDown from "../../../assets/icons/ChevronDown";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import ChevronUp from "../../../assets/icons/ChevronUp";
-import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
+// import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
 import EmailIcon from "../../../assets/icons/EmailIcon";
 import PhoneIcon from "../../../assets/icons/PhoneIcon";
@@ -26,7 +26,7 @@ import Trash from "../../../assets/icons/Trash";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import type{ RegionView } from "../../../Interfaces/RegionView";
 import AMForm from "../../SalesTeams/AreaManager/AMForm";
-import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+// import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 
 type Props = {};
 const initialRegionAreaData: RegionView = {
@@ -342,7 +342,7 @@ function RegionView({}: Props) {
                   </p>
                 </div>
 
-                <div
+                {/* <div
               onClick={() => handleModalToggle(false, false,false,false, true)}
               className="flex flex-col items-center space-y-1 cursor-pointer"
             >
@@ -366,7 +366,7 @@ function RegionView({}: Props) {
               <p className="text-center ms-2">
                 {data?.regionData?.status === "Active" ? "Deactivate" : "Activate"}
               </p>
-            </div>
+            </div> */}
 
                 <div onClick={() => handleModalToggle(false,false,true,false,false)}  className="cursor-pointer">
                 <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">

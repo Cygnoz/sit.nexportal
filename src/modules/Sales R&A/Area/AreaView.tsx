@@ -36,7 +36,7 @@ const AreaView = ({ }: // status,
   const { id } = useParams();
   const navigate = useNavigate()
   const { request: getArea } = useApi('get', 3003)
-  const { request: deactivationArea } = useApi('put', 3003)
+  // const { request: deactivationArea } = useApi('put', 3003)
   const [area, setArea] = useState<any>()
   const tabs = [
     "Team Overview",
@@ -95,31 +95,31 @@ const AreaView = ({ }: // status,
     }
   };
 
-  const handleDeactivate = async () => {
-    try {
-      const endpoint = area?.status === "Active"
-        ? `${endPoints.DEACTIVATE_AREA}/${id}` // Deactivate endpoint
-        : `${endPoints.DEACTIVATE_AREA}/${id}`; // Activate endpoint (ensure this exists in backend)
+  // const handleDeactivate = async () => {
+  //   try {
+  //     const endpoint = area?.status === "Active"
+  //       ? `${endPoints.DEACTIVATE_AREA}/${id}` // Deactivate endpoint
+  //       : `${endPoints.DEACTIVATE_AREA}/${id}`; // Activate endpoint (ensure this exists in backend)
   
-      const { response, error } = await deactivationArea(endpoint);
-      console.log("res",response);
-      console.log("err",error);
-      if (response && !error) {  
-        console.log(response.data);
-        toast.success(response.data.message);
-        setTimeout(() => {
-          navigate("/areas");
-        }, 2000); // 2-second delay before navigation
-      }
-       else {
-        console.log(error?.response?.data?.message);
-        toast.error(error?.response?.data?.message || "An error occurred");
-      }
-    } catch (err) {
-      console.error("Deactivate/Activate error:", err);
-      toast.error("Failed to update the area status.");
-    }
-  };
+  //     const { response, error } = await deactivationArea(endpoint);
+  //     console.log("res",response);
+  //     console.log("err",error);
+  //     if (response && !error) {  
+  //       console.log(response.data);
+  //       toast.success(response.data.message);
+  //       setTimeout(() => {
+  //         navigate("/areas");
+  //       }, 2000); // 2-second delay before navigation
+  //     }
+  //      else {
+  //       console.log(error?.response?.data?.message);
+  //       toast.error(error?.response?.data?.message || "An error occurred");
+  //     }
+  //   } catch (err) {
+  //     console.error("Deactivate/Activate error:", err);
+  //     toast.error("Failed to update the area status.");
+  //   }
+  // };
 
     return (
     <>
@@ -259,7 +259,7 @@ const AreaView = ({ }: // status,
         />
       </Modal>
 
-      <Modal
+      {/* <Modal
         open={isModalOpen.deactivateArea}
         align="center"
         onClose={() => handleModalToggle()}
@@ -274,7 +274,7 @@ const AreaView = ({ }: // status,
           }
           onClose={() => handleModalToggle()}
         />
-      </Modal>
+      </Modal> */}
 
     </>
   );
