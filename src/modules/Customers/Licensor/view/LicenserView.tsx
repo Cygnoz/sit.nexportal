@@ -241,7 +241,7 @@ function LicenserView({ }: Props) {
         </div>
         <div className="w-[86%] space-y-3">
           <div className="h-[130px] relative flex flex-col  bg-white rounded-lg">
-           {licenseData?.image? <img src={licenseData?.image} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>:
+           {licenseData?.image && licenseData?.image>50 ? <img src={licenseData?.image} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>:
               <p className="rounded-full absolute top-8 left-5 border-2 flex items-center justify-center border-white bg-black w-[61px] h-[61px]"  >
               <UserIcon color="white" size={35} />
             </p>
@@ -291,18 +291,6 @@ function LicenserView({ }: Props) {
 
                 </div>
 
-                {/* <div className="flex flex-col  items-center space-y-2">
-                  <div onClick={() => handleModalToggle(false,false,true)} className="w-6 h-6 mb-2 cursor-pointer rounded-full">
-                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2">
-                    <Trash size={18} color="red" />
-                  </div>
-                    </div>
-                    
-                  </div>
-                  <p className="text-center font-medium  text-white text-[10px] ms-3">Delete</p>
-
-                </div> */}
 
 
               </div>
@@ -310,7 +298,7 @@ function LicenserView({ }: Props) {
             <div className="h-[65px] py-3 bg-white rounded-b-lg px-2">
   <div className="ms-28 space-x-6 flex justify-end">
     {licenser.map((data) => (
-      <div className="text-[12px]" key={data.key}>
+      <div className="text-[12px]">
         <p className="text-[#8F99A9]">{data.label}</p>
         <p className="text-[#303F58] font-medium">{data.key}</p>
       </div>

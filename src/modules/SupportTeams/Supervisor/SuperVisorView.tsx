@@ -341,14 +341,14 @@ const SuperVisorView = ({}: Props) => {
           >
             <div className="rounded-full flex my-2 justify-between">
               <div className="flex">
-              {getData.svData?.user?.userImage ? (
+              {getData.svData?.user?.userImage && getData.svData?.user?.userImage>50 ? (
                 <img
                   className="w-16 h-16 rounded-full"
                   src={getData.svData?.user?.userImage}
                   alt=""
                 />
               ) : (
-                <p className="w-16 h-16    bg-black rounded-full flex justify-center items-center">
+                <p className="w-16 h-16 bg-black rounded-full flex justify-center items-center">
                   <UserIcon color="white" size={35} />
                 </p>
               )}

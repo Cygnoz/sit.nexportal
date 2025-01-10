@@ -2,7 +2,6 @@ import { useNavigate } from "react-router-dom";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import Licensor from "../../../assets/icons/Licensor";
-import UserIcon from "../../../assets/icons/UserIcon";
 import Table from "../../../components/ui/Table"
 import ViewCard from "../../../components/ui/ViewCard";
 
@@ -31,18 +30,21 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
   
 
   const viewCardData = [
-    { icon: <UserIcon />, number: "189", title: "Total Area Manager", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
-    { icon: <AreaManagerIcon />, number: insideAmData?.totalBdaCount || "N/A", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
+    // { icon: <UserIcon />, number: "189", title: "Total Area Manager", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+    { icon: <AreaManagerIcon />, number: insideAmData?.totalBdaCount || 0, title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
+    { icon: <LeadsCardIcon />, number:  insideAmData?.totalLeads || 0, title: "Total Leads", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+
   ];
 
   const SecondCard = [
-    { icon: <LeadsCardIcon />, number:  insideAmData?.totalLeads || "N/A", title: "Total Leads", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
-    { icon: <Licensor />, number: insideAmData?.totalLicensers || "N/A", title: "Total Licensers", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
+    { icon: <Licensor />, number: insideAmData?.totalLicensers || 0, title: "Total Licensers", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
+    { icon: <LeadsCardIcon />, number:  insideAmData?.areaManagerDetails?.areaManagerConversionRate  || 0, title: "Lead Conversion rate", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+
   ];
-  const ThirdCard = [
-    // { icon: <LeadsCardIcon />, number: "147", title: "Lead Conversion rate", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
-    { icon: <Licensor />, number: "147", title: "Closed Licenses", iconFrameColor: '#DD8686', iconFrameBorderColor: '#E9CBCBCC' },
-  ];
+  // const ThirdCard = [
+  //   // { icon: <LeadsCardIcon />, number: "147", title: "Lead Conversion rate", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+  //   { icon: <Licensor />, number: "147", title: "Closed Licenses", iconFrameColor: '#DD8686', iconFrameBorderColor: '#E9CBCBCC' },
+  // ];
 
   // Data for the table
   // const data: AMViewData[] = [
@@ -100,7 +102,7 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
               />
             ))}
           </div>
-          <div className="py-2 w-full mt-2 ">
+          {/* <div className="py-2 w-full mt-2 ">
             {ThirdCard.map((card, index) => (
               <ViewCard
                 iconFrameColor={card.iconFrameColor}
@@ -112,7 +114,7 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
               />
             ))}
           </div>
-
+ */}
         </div>
         <div className="col-span-8">
           {/* Table Section */}

@@ -332,7 +332,7 @@ const TrialView = ({ }: Props) => {
             <div className="flex gap-4">
               <div className="w-14 h-14 rounded-full overflow-hidden">
                 <img
-                  src={customerData?.image ? customerData?.image : profileImage} // Replace with the actual image URL
+                  src={customerData?.image && customerData?.image>50 ? customerData?.image : profileImage} // Replace with the actual image URL
                   alt="Profile"
                   className="w-full h-full object-cover"
                 />
