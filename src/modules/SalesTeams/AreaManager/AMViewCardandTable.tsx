@@ -16,9 +16,10 @@ interface AMViewData {
 
 type Props = {
   bdaDetails:Array<any>;
+  insideAmData: any;
 }
 
-const AMViewCardandTable = ({bdaDetails }: Props) => {
+const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
 
   const navigate= useNavigate()
   const handleView = (id: any) => {
@@ -27,14 +28,16 @@ const AMViewCardandTable = ({bdaDetails }: Props) => {
     }
   }
 
+  
+
   const viewCardData = [
     { icon: <UserIcon />, number: "189", title: "Total Area Manager", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
-    { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
+    { icon: <AreaManagerIcon />, number: insideAmData?.totalBdaCount || "N/A", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
   ];
 
   const SecondCard = [
-    { icon: <LeadsCardIcon />, number: "46", title: "Total Leads", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
-    { icon: <Licensor />, number: "147", title: "Total Licensers", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
+    { icon: <LeadsCardIcon />, number:  insideAmData?.totalLeads || "N/A", title: "Total Leads", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
+    { icon: <Licensor />, number: insideAmData?.totalLicensers || "N/A", title: "Total Licensers", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
   ];
   const ThirdCard = [
     // { icon: <LeadsCardIcon />, number: "147", title: "Lead Conversion rate", iconFrameColor: '#1A9CF9', iconFrameBorderColor: '#BBD8EDCC' },
