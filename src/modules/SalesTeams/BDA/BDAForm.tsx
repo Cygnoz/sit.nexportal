@@ -84,6 +84,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
   } = useForm<BDAData>({
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
+  const {request:checkBda}=useApi("put",3002)
 
   const [isModalOpen, setIsModalOpen] = useState({
     viewBusinesscard: false,
@@ -130,6 +131,38 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
     }
   };
 
+  const checkBDA=async()=>{
+    try{
+      const body={
+        regionId:watch("region"),
+        areaId:watch("area")
+      }
+      const {response,error}=await checkBda(endPoints.CHECK_BDA,body)
+      console.log("res",response);
+      console.log("err",error);
+      
+      
+      if(response && !error){
+        return true
+      }else{
+        
+        if(
+          toast.error(error.response.data.message)
+        )
+        
+        if(error?.response?.data?.message==="Area is already assigned to another Area Manager. Try adding another Area." ||"Region Manager not found for the provided region.")
+          {
+          return false
+        }else{
+          return true
+        }
+      }
+    }catch(err){
+      console.log(err);
+      
+    }
+  }
+
   const tabs = [
     "Personal Information",
     "Company Information",
@@ -142,6 +175,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
+    let canProceed = true; // Default to true, modify if checkBDA fails
+
     if (tab === "Personal Information") {
       fieldsToValidate = ["userName", "phoneNo","personalEmail"];
     } else if (tab === "Company Information") {
@@ -152,8 +187,17 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
         "region",
         "area",
         "workEmail"
+      
       ];
+      const bdaCheck = await checkBDA(); // Call check function
+      
+      if (!bdaCheck) {
+        canProceed = false;
+        // Replace with your preferred method for showing a message
+      }
     }
+
+    console.log("can proceed",canProceed);
     const isValid = fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
