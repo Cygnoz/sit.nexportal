@@ -64,21 +64,63 @@ exports.addRegion = async (req, res, next) => {
   }
 };
 
+// exports.getRegion = async (req, res) => {
+//   try {
+//     const { regionId } = req.params;
+
+//     const region = await Region.findById(regionId);
+//     if (!region) {
+//       return res.status(404).json({ message: "Region not found" });
+//     }
+
+//     res.status(200).json(region);
+//   } catch (error) {
+//     console.error("Error fetching region:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+
 exports.getRegion = async (req, res) => {
   try {
     const { regionId } = req.params;
 
+    // Fetch the region by ID
     const region = await Region.findById(regionId);
     if (!region) {
       return res.status(404).json({ message: "Region not found" });
     }
 
-    res.status(200).json(region);
+    // Fetch the region manager for the given regionId
+    const regionManager = await RegionManager.findOne({ region: regionId }).populate({
+      path: "user",
+      select: "userName email phoneNo",
+    });
+
+    // Prepare the response
+    const response = {
+      region,
+    };
+
+    // Add regionManager details if it exists
+    if (regionManager) {
+      response.regionManager = {
+        userName: regionManager.user.userName,
+        email: regionManager.user.email,
+        phoneNo: regionManager.user.phoneNo,
+      };
+    }
+
+    // Send the response
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching region:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 
 exports.getAllRegions = async (req, res) => {
   try {
