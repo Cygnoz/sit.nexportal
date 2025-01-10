@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from "recharts";
 import useApi from "../../../../../Hooks/useApi";
-import SelectDropdown from "../../../../../components/ui/SelectDropdown";
 import { useRegularApi } from "../../../../../context/ApiContext";
 import { endPoints } from "../../../../../services/apiEndpoints";
-import { useParams } from "react-router-dom";
 
 type Props = {};
 

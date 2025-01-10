@@ -2,14 +2,26 @@ import LeadsCardIcon from "../../../../assets/icons/LeadsCardIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
 // import Button from "../../../components/ui/Button";
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Tooltip,
+  XAxis, YAxis
+} from 'recharts';
 import useApi from "../../../../Hooks/useApi";
+import { LeadData } from "../../../../Interfaces/Lead";
 import AwardIcon from "../../../../assets/icons/AwardIcon";
 import ChevronRight from "../../../../assets/icons/ChevronRight";
 import DeActivateIcon from "../../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../../assets/icons/EditIcon";
+import Trash from "../../../../assets/icons/Trash";
 import ViewRoundIcon from "../../../../assets/icons/ViewRoundIcon";
 import backGroundView from '../../../../assets/image/BDAView.png';
+import ConfirmModal from "../../../../components/modal/ConfirmModal";
 import Modal from "../../../../components/modal/Modal";
 import LicensersTable from "../../../../components/ui/LicensersTable";
 import Table from "../../../../components/ui/Table";
@@ -19,28 +31,8 @@ import BDAForm from "../BDAForm";
 import GraphTable from "../GraphTable";
 import BDAViewAward from "./BDAViewAward";
 import BDAViewForm from "./BDAViewForm";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Tooltip,
-  XAxis, YAxis
-} from 'recharts';
-import Trash from "../../../../assets/icons/Trash";
-import ConfirmModal from "../../../../components/modal/ConfirmModal";
-import toast from "react-hot-toast";
-import { LeadData } from "../../../../Interfaces/Lead";
 
-interface BDAViewData {
-  leadId:string;
-  leadName: string;
-  phoneNo: string;
-  email: string;
-  origin:string;
-  assignedDate:string;
-  status: string;
-}
+
 
 interface Licencer {
   name: string;

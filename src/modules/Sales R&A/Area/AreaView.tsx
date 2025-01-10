@@ -1,13 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 //import CalenderDays from "../../../assets/icons/CalenderDays";
 //import RegionIcon from "../../../assets/icons/RegionIcon";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
+import Trash from "../../../assets/icons/Trash";
+import UserIcon from "../../../assets/icons/UserIcon";
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 import region from "../../../assets/image/Ellipse 14 (1).png";
-import person1 from "../../../assets/image/Ellipse 14.png";
-import person2 from "../../../assets/image/Ellipse 43.png";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
 import Modal from "../../../components/modal/Modal";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
@@ -15,11 +18,6 @@ import AreaForm from "./AreaForm";
 import LeadAndLisence from "./LeadAndLisence";
 import ResendActivity from "./ResendActivity";
 import TeamOverview from "./TeamOverview";
-import toast from "react-hot-toast";
-import ConfirmModal from "../../../components/modal/ConfirmModal";
-import Trash from "../../../assets/icons/Trash";
-import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
-import UserIcon from "../../../assets/icons/UserIcon";
 
 type Props = {};
 

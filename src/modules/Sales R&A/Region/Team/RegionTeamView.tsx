@@ -1,29 +1,21 @@
 import { useEffect, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  LabelList,
-  YAxis
-} from "recharts";
 import AreaIcon from "../../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../../assets/icons/CalenderDays";
 import EditIcon from "../../../../assets/icons/EditIcon";
 import RegionIcon from "../../../../assets/icons/RegionIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
-import profileImage from "../../../../assets/image/AvatarImg.png";
 // import person from "../../../assets/image/Ellipse 14 (3).png";
 import { useNavigate, useParams } from "react-router-dom";
+import No_Data_found from '../../../../assets/image/NO_DATA.png';
 import Button from "../../../../components/ui/Button";
 import HomeCard from "../../../../components/ui/HomeCards";
 import SearchBar from "../../../../components/ui/SearchBar";
 import Table from "../../../../components/ui/Table";
-import No_Data_found from '../../../../assets/image/NO_DATA.png';
-import TopPerformingAM from "./Graphs/TopPerformingAM";
-import TopPerformingBDA from "./Graphs/TopPerformingBDA";
 import useApi from "../../../../Hooks/useApi";
 import { endPoints } from "../../../../services/apiEndpoints";
+import TopPerformingAM from "./Graphs/TopPerformingAM";
+import TopPerformingBDA from "./Graphs/TopPerformingBDA";
 
 interface TeamData {
   employeeID: string;
