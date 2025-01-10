@@ -62,7 +62,7 @@ router.get('/area-manager/:id/details',verifyToken,checkPermission('View Area Ma
 // Area manager
 router.put("/bda-check",verifyToken,checkPermission('Add BDA'), bdaController.bdaCheck);
 
-router.get("/bda-details/:id",verifyToken,checkPermission('View BDA'), bdaController.getBdaDetails);
+// router.get("/bda-details/:id",verifyToken,checkPermission('View BDA'), bdaController.getBdaDetails);
 
 router.get("/bda-details/:id/customers",verifyToken,checkPermission('View BDA'), bdaController.getLeadDetails);
 

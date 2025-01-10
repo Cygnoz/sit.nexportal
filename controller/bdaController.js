@@ -515,22 +515,130 @@ Best regards,
 // NexPortal
 // Support: notify@cygnonex.com
 
-exports.getBdaDetails = async (req, res) => {
-  try {
-    const { id } = req.params;
+// exports.getBdaDetails = async (req, res) => {
+//   try {
+//     const { id } = req.params;
 
+//     // Fetch BDA details
+//     const bda = await Bda.findById(id)
+//   .select("user region area commission") // Only fetch these fields from the bda collection
+//   .populate([
+//     { path: "user", select: "userName phoneNo userImage email employeeId" },
+//     { path: "region", select: "regionName regionCode" },
+//     { path: "area", select: "areaName areaCode" },
+//     { path: "commission", select: "profileName" },
+//   ]);
+
+//     if (!bda) {
+//       return res.status(404).json({ message: "BDA not found" });
+//     }
+
+//     // Decrypt sensitive fields (if necessary)
+//     const decryptField = (field) => (field ? decrypt(field) : field);
+//     bda.adhaarNo = decryptField(bda.adhaarNo);
+//     bda.panNo = decryptField(bda.panNo);
+//     if (bda.bankDetails) {
+//       bda.bankDetails.bankAccountNo = decryptField(bda.bankDetails.bankAccountNo);
+//     }
+
+//     // Get total leads assigned
+//     const totalLeadsAssigned = await Leads.countDocuments({ bdaId: id });
+
+//     // Get total licenses sold
+//     const totalLicensesSold = await Leads.countDocuments({
+//       bdaId: id,
+//       customerStatus: "Licenser",
+//     });
+
+//     // Get pending tasks
+//     const leads = await Leads.find({ bdaId: id }, "_id");
+//     const leadIds = leads.map((lead) => lead._id);
+
+//     const pendingTasks = await Activity.countDocuments({
+//       leadId: { $in: leadIds },
+//       activityType: "Task",
+//       taskStatus: { $ne: "In Progress" },
+//     });
+
+//     // Get lead by status
+//     const leadByStatus = {
+//       open: await Leads.countDocuments({ bdaId: id, leadStatus: "Contacted" }),
+//       inProgress: await Leads.countDocuments({ bdaId: id, leadStatus: "In Progress" }),
+//       converted: await Leads.countDocuments({ bdaId: id, customerStatus: { $ne: "Lead" } }),
+//       dropped: await Leads.countDocuments({ bdaId: id, leadStatus: "Lost" }),
+//     };
+
+//     // Send response
+//     res.status(200).json({
+//       bda,
+//       totalLeadsAssigned,
+//       totalLicensesSold,
+//       pendingTasks,
+//       leadByStatus,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching BDA details:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+// exports.getLeadDetails = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     // Fetch LeadDetails
+//     const leadDetails = await Leads.find(
+//       { bdaId: id, customerStatus: "Lead" },
+//       "_id customerId firstName phone email leadSource createdAt leadStatus"
+//     );
+
+//     // Fetch TrialDetails
+//     const trialDetails = await Leads.find(
+//       { bdaId: id, customerStatus: "Trial" },
+//       "_id customerId firstName trialStatus startDate endDate"
+//     );
+
+//     // Fetch LicenserDetails
+//     const licenserDetails = await Leads.find(
+//       { bdaId: id, customerStatus: "Licenser" },
+//       "_id firstName licensorStatus startDate endDate"
+//     );
+
+//     // Check if no details found
+//     if (!leadDetails.length && !trialDetails.length && !licenserDetails.length) {
+//       return res.status(404).json({ message: "No details found for this BDA" });
+//     }
+
+//     // Send response
+//     res.status(200).json({
+//       LeadDetails: leadDetails,
+//       TrialDetails: trialDetails,
+//       LicenserDetails: licenserDetails,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching details:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
+
+// Helper function to get BDA details
+const getBdaDetails = async (id) => {
+  try {
     // Fetch BDA details
     const bda = await Bda.findById(id)
-  .select("user region area commission") // Only fetch these fields from the bda collection
-  .populate([
-    { path: "user", select: "userName phoneNo userImage email employeeId" },
-    { path: "region", select: "regionName regionCode" },
-    { path: "area", select: "areaName areaCode" },
-    { path: "commission", select: "profileName" },
-  ]);
+      .select("user region area commission")
+      .populate([
+        { path: "user", select: "userName phoneNo userImage email employeeId" },
+        { path: "region", select: "regionName regionCode" },
+        { path: "area", select: "areaName areaCode" },
+        { path: "commission", select: "profileName" },
+      ]);
 
     if (!bda) {
-      return res.status(404).json({ message: "BDA not found" });
+      return { error: "BDA not found", status: 404 };
     }
 
     // Decrypt sensitive fields (if necessary)
@@ -568,24 +676,31 @@ exports.getBdaDetails = async (req, res) => {
       dropped: await Leads.countDocuments({ bdaId: id, leadStatus: "Lost" }),
     };
 
-    // Send response
-    res.status(200).json({
+    return {
       bda,
       totalLeadsAssigned,
       totalLicensesSold,
       pendingTasks,
       leadByStatus,
-    });
+    };
   } catch (error) {
     console.error("Error fetching BDA details:", error);
-    res.status(500).json({ message: "Internal server error" });
+    return { error: "Internal server error", status: 500 };
   }
 };
 
-
+// Controller function to get Lead details along with BDA details
 exports.getLeadDetails = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Call the getBdaDetails function
+    const bdaDetails = await getBdaDetails(id);
+
+    // Handle error from getBdaDetails
+    if (bdaDetails.error) {
+      return res.status(bdaDetails.status).json({ message: bdaDetails.error });
+    }
 
     // Fetch LeadDetails
     const leadDetails = await Leads.find(
@@ -612,6 +727,7 @@ exports.getLeadDetails = async (req, res) => {
 
     // Send response
     res.status(200).json({
+      bdaDetails,
       LeadDetails: leadDetails,
       TrialDetails: trialDetails,
       LicenserDetails: licenserDetails,
