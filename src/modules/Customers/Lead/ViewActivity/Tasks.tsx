@@ -87,6 +87,7 @@ const Tasks = ({leadData}: Props) => {
             }
             }}
             noAction
+            getTask={getTask}
         />
     </div>
     </div>
