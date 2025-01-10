@@ -106,7 +106,7 @@ const TasksForm = ({ onClose }: Props) => {
                             /> */}
                             <p className="text-[#303F58] text-sm font-normal">Task Description</p>
                             <textarea
-                                className="w-full border border-[#CECECE]"
+                                className="w-full border border-[#CECECE] p-1 h-10"
                                 {...register("taskDescription")}
                                 value={watch("taskDescription")}
                             >

@@ -23,7 +23,8 @@ const validationSchema = Yup.object().shape({
     addNotes: Yup.string(),
     meetingType: Yup.string(),
     dueDate: Yup.string(),
-    time: Yup.string(),
+    timeFrom: Yup.string(),
+    timeTo:Yup.string(),
     meetingLocation: Yup.string(),
     location: Yup.string(),
     landMark: Yup.string(),
@@ -115,7 +116,7 @@ const MeetingForm = ({ onClose }: Props) => {
                             /> */}
                             <p className="text-[#303F58] text-sm font-normal">Add Notes</p>
                             <textarea
-                                className="w-full border border-[#CECECE] p-1 h-10"
+                                className="w-full border border-[#CECECE] p-1"
                             >
 
                             </textarea>
@@ -149,8 +150,8 @@ const MeetingForm = ({ onClose }: Props) => {
                                     <Input
                                         label="Time"
                                         placeholder="7:28"
-                                        {...register("time")}
-                                        value={watch("time")}
+                                        {...register("timeFrom")}
+                                        value={watch("timeFrom")}
                                     />
                                     <p className="mt-9 ms-4">to</p>
 
@@ -162,6 +163,8 @@ const MeetingForm = ({ onClose }: Props) => {
                                     <Input
                                         label=""
                                         placeholder="7:28 "
+                                        {...register("timeTo")}
+                                        value={watch("timeTo")}
                                     />
                                 </div>
                             </div>

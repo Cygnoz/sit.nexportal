@@ -6,14 +6,42 @@ import Tasks from "./Tasks";
 import Meetings from "./Meetings";
 
 
-type Props = {}
+type Props = {
+  leadData:any
+}
 
-const ViewActivities = ({}: Props) => {
+const ViewActivities = ({leadData}: Props) => {
     const tabs=["Activity Timeline","Mails", "Notes","Task","Meetings"]
     const [activeTab, setActiveTab] = useState<string>("Activity Timeline");
      // Data for the table
   
-  
+    //  const {request : getLeadActivity}=useApi('get',3001)
+    //  const [activityData, setActivityData]=useState<any[]>([])
+
+    //    const {id}=useParams()
+    //        const getActivity = async()=>{
+    //            try{
+    //                const {response, error}= await getLeadActivity(`${endPoints.GET_ALL_LEAD_ACTIVITIES}/${id}`)
+    //                console.log(response);
+    //                console.log(error);
+    //                if(response && !error){
+    //                    console.log(response.data.activities);
+    //                    setActivityData(response.data.activities)               
+    //                }           
+    //                else{
+    //                    console.log(error.response.data.message);               
+    //                }
+    //            }
+    //            catch(err){
+    //                console.log(err, "error message");
+                   
+    //            }
+    //        }
+    //        useEffect(()=>{
+    //         getActivity()
+    //        },[])
+    //        console.log(activityData);
+        
   return (
     <div>
       <div className="flex gap-14 text-base font-bold my-5 border-b border-gray-200">
@@ -39,7 +67,7 @@ const ViewActivities = ({}: Props) => {
     )}
 
     {activeTab==="Mails"&&(
-    <Mails/>
+    <Mails leadData={leadData} />
     )}
 
     {activeTab==="Notes"&&(
@@ -47,7 +75,7 @@ const ViewActivities = ({}: Props) => {
     )}
 
     {activeTab==="Task"&&(
-    <Tasks/>
+    <Tasks leadData={leadData} />
     )}
 
     {activeTab==="Meetings"&&(
