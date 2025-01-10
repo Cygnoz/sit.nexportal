@@ -16,6 +16,8 @@ import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { useUser } from "../../../context/UserContext";
+import OrganisationForm from "../../../components/modal/ConvertionModal/OrganisationForm";
+import Modal from "../../../components/modal/Modal";
 
 
 type Props = {
@@ -39,6 +41,13 @@ const validationSchema = Yup.object({
 });
 
 function LicenserForm({ onClose ,editId}: Props) {
+  const [isOrgModalOpen, setIsOrgModalOpen] = useState(false);
+  const handleModalToggle = ()=>{
+    setIsOrgModalOpen((prev)=>!prev)
+    onClose()
+}
+
+  
   const {user}=useUser()
   const {request:addLicenser}=useApi('post',3001)
   const {request:editLicenser}=useApi('put',3001)
@@ -75,43 +84,42 @@ function LicenserForm({ onClose ,editId}: Props) {
 
  
 
-  const onSubmit: SubmitHandler<LicenserData> = async (data:any, event) => {
-    event?.preventDefault(); // Prevent default form submission behavior
+  const onSubmit: SubmitHandler<LicenserData> = async (data: any, event) => {
+    event?.preventDefault(); // Prevent default form submission
     console.log("Form Data", data);
+  
     try {
-      const fun = editId ? editLicenser : addLicenser; // Select the appropriate function based on editId
+      const fun = editId ? editLicenser : addLicenser; // Select function
       let response, error;
+  
       if (editId) {
-        // Call updateLead if editId exists (editing a lead)
         ({ response, error } = await fun(`${endPoints.LICENSER}/${editId}`, data));
       } else {
-        // Call addLead if editId does not exist (adding a new lead)
         ({ response, error } = await fun(endPoints.LICENSER, data));
       }
+  
       console.log("Response:", response);
       console.log("Error:", error);
-      
+  
       if (response && !error) {
-        //console.log(response.data);
+        toast.success(response.data.message); // Show success message
+        handleModalToggle()
         
-         toast.success(response.data.message); // Show success toast
-         onClose()
-        //  setTimeout(() => {
-        //   setIsOpenOrg(true)
-        //  }, 1500);
       } else {
-        toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
+        toast.error(error.response?.data?.message || "An error occurred.");
       }
     } catch (err) {
       console.error("Error submitting license data:", err);
-      toast.error("An unexpected error occurred."); // Handle unexpected errors
+      toast.error("An unexpected error occurred.");
     }
   };
+  
 
   
   
 
-
+  console.log(isOrgModalOpen);
+  
 
 
   const salutation = [
@@ -488,23 +496,34 @@ function LicenserForm({ onClose ,editId}: Props) {
         
         </div>
         <div className="bottom-0 left-0 w-full pt-2 ps-2 bg-white flex gap-2 justify-end">
-          <Button
-            variant="tertiary"
-            className="h-8 text-sm border rounded-lg"
-            size="xl"
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            className="h-8 text-sm border rounded-lg"
-            size="xl"
-            type="submit"
-          >
-            Done
-          </Button>
-        </div>
+      <Button
+        variant="tertiary"
+        className="h-8 text-sm border rounded-lg"
+        size="xl"
+        onClick={onClose}
+      >
+        Cancel
+      </Button>
+      <Button
+        variant="primary"
+        className="h-8 text-sm border rounded-lg"
+        size="xl"
+        type="submit"
+      
+      >
+        Done
+      </Button>
+
+      {/* Organisation Form Modal */}
+     <Modal
+        open={isOrgModalOpen}
+        onClose={() => handleModalToggle()}
+        className="w-[35%]"
+      >
+        <OrganisationForm onClose={() => handleModalToggle()} />
+      </Modal>
+
+    </div>
         </div>
      
      

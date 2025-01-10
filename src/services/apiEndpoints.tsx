@@ -40,7 +40,7 @@ export const endPoints = {
 
   // BDA
   BDA: "/bda",
-  BDA_DETAILS:'/bda-details',
+  CHECK_BDA:'/bda-check',
 
   //SuperVisor
   SUPER_VISOR: "/supervisor",
