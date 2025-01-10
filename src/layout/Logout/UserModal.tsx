@@ -59,7 +59,7 @@ const UserModal = ({ onClose }: Props) => {
         <div>
             <div className="w-64 h-fit bg-[#FFFFFF] p-4 rounded-lg">
                 <div className="flex gap-4 my-2">
-                    {user?.userImage
+                    {user?.userImage && user?.userImage.length>50
                         ?
                         <div>
                             <img className="rounded-full w-8 h-8" src={user?.userImage} alt="" />

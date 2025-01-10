@@ -11,6 +11,7 @@ import {
 } from "recharts";
 import { BarChart, Bar, LabelList } from 'recharts';
 import profileImage from '../../../assets/image/AvatarImg.png'
+import { useNavigate } from "react-router-dom";
 interface BDAData {
   employeeId: string;
   bdaName: string;
@@ -21,121 +22,127 @@ interface BDAData {
   totalLeads: string;
   leadsClosed: string;
 }
-type Props = {};
+type Props = {
+  totalBdas:Array<any>;
+};
 
-const RMViewBDAandGraph = ({}: Props) => {
-  const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
-    if (viewId) {
-      // navigate(`/leadView/${viewId}`)
-      console.log(viewId);
+
+
+const RMViewBDAandGraph = ({totalBdas}: Props) => {
+  const navigate=useNavigate()
+  console.log("total bda",totalBdas);
+  
+  const handleView = (id:any) => {
+    if (id) {
+      navigate(`/bda/${id}`)
+      
     }
-    console.log(editId);
-    console.log(deleteId);
+
   };
 
   const [selectedMonth, setSelectedMonth] = useState("January"); // State for dropdown selection
   // Data for the table
-  const data: BDAData[] = [
-    {
-      employeeId: "BDA111",
-      bdaName: "Subii",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "90",
-      leadsClosed: "78",
-    },
-    {
-      employeeId: "BDA111",
-      bdaName: "Subii",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "90",
-      leadsClosed: "78",
-    },
-    {
-      employeeId: "BDA222",
-      bdaName: "Subii",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "90",
-      leadsClosed: "18",
-    },
-    {
-      employeeId: "BDA111",
-      bdaName: "Subii",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "95",
-      leadsClosed: "78",
-    },
-    {
-      employeeId: "BDA222",
-      bdaName: "Unni",
-      phoneNo: "000999888",
-      emailAdrees: "unnii@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "90",
-      leadsClosed: "88",
-    },
-    {
-      employeeId: "BDA111",
-      bdaName: "Subii",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "950",
-      leadsClosed: "78",
-    },
-    {
-      employeeId: "BDA333",
-      bdaName: "kuttu",
-      phoneNo: "000999888",
-      emailAdrees: "kuttu@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "590",
-      leadsClosed: "78",
-    },
-    {
-      employeeId: "BDA111",
-      bdaName: "Subii",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "90",
-      leadsClosed: "78",
-    },
-    {
-      employeeId: "BDA111",
-      bdaName: "Subii",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "90",
-      leadsClosed: "58",
-    },
-    {
-      employeeId: "BDA111",
-      bdaName: "kuttu",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "90",
-      leadsClosed: "78",
-    },
-    {
-      employeeId: "BDA111",
-      bdaName: "Subii",
-      phoneNo: "000999888",
-      emailAdrees: "subi@gmail.com",
-      dateOfJoining: "5/30/14",
-      totalLeads: "90",
-      leadsClosed: "78",
-    },
-  ];
+  // const data: BDAData[] = [
+  //   {
+  //     employeeId: "BDA111",
+  //     bdaName: "Subii",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "90",
+  //     leadsClosed: "78",
+  //   },
+  //   {
+  //     employeeId: "BDA111",
+  //     bdaName: "Subii",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "90",
+  //     leadsClosed: "78",
+  //   },
+  //   {
+  //     employeeId: "BDA222",
+  //     bdaName: "Subii",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "90",
+  //     leadsClosed: "18",
+  //   },
+  //   {
+  //     employeeId: "BDA111",
+  //     bdaName: "Subii",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "95",
+  //     leadsClosed: "78",
+  //   },
+  //   {
+  //     employeeId: "BDA222",
+  //     bdaName: "Unni",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "unnii@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "90",
+  //     leadsClosed: "88",
+  //   },
+  //   {
+  //     employeeId: "BDA111",
+  //     bdaName: "Subii",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "950",
+  //     leadsClosed: "78",
+  //   },
+  //   {
+  //     employeeId: "BDA333",
+  //     bdaName: "kuttu",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "kuttu@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "590",
+  //     leadsClosed: "78",
+  //   },
+  //   {
+  //     employeeId: "BDA111",
+  //     bdaName: "Subii",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "90",
+  //     leadsClosed: "78",
+  //   },
+  //   {
+  //     employeeId: "BDA111",
+  //     bdaName: "Subii",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "90",
+  //     leadsClosed: "58",
+  //   },
+  //   {
+  //     employeeId: "BDA111",
+  //     bdaName: "kuttu",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "90",
+  //     leadsClosed: "78",
+  //   },
+  //   {
+  //     employeeId: "BDA111",
+  //     bdaName: "Subii",
+  //     phoneNo: "000999888",
+  //     emailAdrees: "subi@gmail.com",
+  //     dateOfJoining: "5/30/14",
+  //     totalLeads: "90",
+  //     leadsClosed: "78",
+  //   },
+  // ];
 
 
 
@@ -153,6 +160,8 @@ const RMViewBDAandGraph = ({}: Props) => {
       </div>
     );
   };
+
+  
 
   const datass = {
     January: [
@@ -321,6 +330,20 @@ const RMViewBDAandGraph = ({}: Props) => {
     { key: "leadsClosed", label: "Leads Closed" },
   ];
 
+  const bdaData = totalBdas.map((bda: any) => ({
+    ...bda,
+    employeeId: bda.employeeId, // or any unique identifier
+    bdaName: bda.userName || "N/A", // Adjust according to your data structure
+    phoneNo: bda.phoneNo || "N/A",
+    emailAdrees: bda.email || "N/A",
+    dateOfJoining: bda.dateOfJoining
+    ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
+    : "N/A",
+    totalLeads: bda.totalLeads || 0,
+    leadsClosed: bda.leadsClosed || 0,
+  }));
+
+
   
   // Chart Data
   const ChartData = [
@@ -342,11 +365,6 @@ const RMViewBDAandGraph = ({}: Props) => {
     ...entry,
     uv: (entry?.uv / maxValue) * 100,
   }));
-  
-
-  
-  
-  
   
   // Custom Bubble Component
   const CustomBubble = (props:any) => {
@@ -397,12 +415,14 @@ const RMViewBDAandGraph = ({}: Props) => {
       </>
     );
   };
+  console.log("BDA",bdaData);
+  
   return (
     <div>
       {/* Table Section */}
       <div>
         <Table<BDAData>
-          data={data}
+          data={bdaData}
           columns={columns}
           headerContents={{
             title: "BDA,S",
@@ -411,14 +431,13 @@ const RMViewBDAandGraph = ({}: Props) => {
                 "Search Invoice by client name, invoice number, or date",
             },
           }}
-          actionList={[{ label: "view", function: handleEditDeleteView }]}
+          actionList={[{ label:"view", function: handleView }]}
         />
       </div>
 
       {/* Graph Section*/}
 
       <div className="grid grid-cols-12 gap-3 mt-4">
-        {/* Table Section */}
         <div className="col-span-7">
           <div className="py-3 bg-white p-2">
             <div className="py-1 ms-2 flex justify-between">

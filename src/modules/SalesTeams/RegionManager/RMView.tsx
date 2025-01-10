@@ -132,76 +132,76 @@ const RMView = () => {
   ];
 
   // Data for the table
-  const data: AreaData[] = [
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 1",
-      region: "Region 1",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 2",
-      region: "Region 2",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 3",
-      region: "Region 3",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 4",
-      region: "Region 4",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 5",
-      region: "Region 5",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 6",
-      region: "Region 6",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 7",
-      region: "Region 7",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 8",
-      region: "Region 8",
-      areaManagers: "ILorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 9",
-      region: "Region 9",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 10",
-      region: "Region 10",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 11",
-      region: "Region 11",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-  ];
+  // const data: AreaData[] = [
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 1",
+  //     region: "Region 1",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 2",
+  //     region: "Region 2",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 3",
+  //     region: "Region 3",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 4",
+  //     region: "Region 4",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 5",
+  //     region: "Region 5",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 6",
+  //     region: "Region 6",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 7",
+  //     region: "Region 7",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 8",
+  //     region: "Region 8",
+  //     areaManagers: "ILorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 9",
+  //     region: "Region 9",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 10",
+  //     region: "Region 10",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 11",
+  //     region: "Region 11",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  // ];
   // Define the columns with strict keys
-  const columns: { key: keyof AreaData; label: string }[] = [
+  const columns: { key:any; label: string }[] = [
     { key: "areaCode", label: "Area Code" },
     { key: "areaName", label: "Area Name" },
     { key: "region", label: "Region" },
@@ -209,6 +209,49 @@ const RMView = () => {
   ];
 
   // const { id } = useParams();
+
+  const {request:getRMInside}=useApi('get',3002)
+  const [totalAreaManaged, setTotalAreaManaged] = useState([]);
+  const [totalAreaManagers, setTotalAreaManagers] = useState([]);
+  const [totalBdas, setTotalBdas] = useState([]);
+
+  const getRMInsides = async () => {
+    try {
+      const { response, error } = await getRMInside(`${endPoints.RM}/${id}/details`);
+      console.log(response, "res");
+      console.log(error, "err");
+
+      if (response && !error) {
+        const data = response.data;
+        console.log("dTAA",data.totalBdas);
+
+        
+
+        // Set the values for each key separately
+        const rawData = response.data.totalAreaManaged || [];
+        const processedData = rawData.map((item: any) => ({
+          areaCode: item.areaCode,
+          areaName: item.areaName,
+          region: item.region || "N/A", // Default to "N/A" if region is missing
+          areaManagers: item.areaManagerName, // Assuming areaManagerName is a single name
+        }));
+        setTotalAreaManaged(processedData);
+        setTotalAreaManagers(data.totalAreaManagers || []);
+        setTotalBdas(data.totalBdas || []);
+      } else {
+        console.log(error.response.data.message);
+      }
+    } catch (err) {
+      console.log(err, "error");
+    }
+  };
+
+  useEffect(() => {
+    getRMInsides();
+  }, []);
+
+  // For debugging
+  console.log({ totalAreaManaged, totalAreaManagers, totalBdas });
 
   return (
     <>
@@ -430,7 +473,7 @@ const RMView = () => {
           <div className="col-span-7 py-6 ">
             <div>
               <Table<AreaData>
-                data={data}
+                data={totalAreaManaged}
                 columns={columns}
                 headerContents={{
                   title: "Total Area Managed",
@@ -442,12 +485,12 @@ const RMView = () => {
             </div>
           </div>
           <div className="col-span-5 py-6">
-            <RMViewAriaManagers />
+            <RMViewAriaManagers totalAreaManagers={totalAreaManagers} />
           </div>
         </div>
 
         <div>
-          <RMViewBDAandGraph />
+          <RMViewBDAandGraph totalBdas={totalBdas} />
         </div>
       </div>
       {/* Modal controlled by state */}

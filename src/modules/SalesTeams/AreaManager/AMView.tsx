@@ -144,27 +144,77 @@ const AMView = ({ }: Props) => {
   }
 
   const handleView = (id: any) => {
+    if(id){
+      navigate(`/licenser/${id}`)
+    }
     console.log(id);
   }
 
-  const data: AMData[] = [
-    { name: "Devid Billie", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
-    { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-    { name: "Kathryn Murphy", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: "2/12/2024" },
-    { name: "Darrell Steward", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-    { name: "Ronald Richards", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: " 2/12/2024" },
-    { name: "Jane Cooper", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
-    { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-  ];
+  // const data: AMData[] = [
+  //   { name: "Devid Billie", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
+  //   { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
+  //   { name: "Kathryn Murphy", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: "2/12/2024" },
+  //   { name: "Darrell Steward", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
+  //   { name: "Ronald Richards", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: " 2/12/2024" },
+  //   { name: "Jane Cooper", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
+  //   { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
+  // ];
   // Define the columns with strict keys
 
   const columns: { key: any; label: string }[] = [
-    { key: "name", label: "Name" },
-    { key: "plan", label: "Plan" },
-    { key: "status", label: "Phone No" },
+    { key: "firstName", label: "Name" },
+    { key: "licensorStatus", label: "Status" },
     { key: "startDate", label: "Start Date" },
     { key: "endDate", label: "End Date" },
   ];
+  const { request: getInsideAM } = useApi('get', 3002);
+  const [insideAmData, setInsideAmData] = useState();
+  const [bdaDetails, setBdaDetails] = useState([]);
+  const [licenserDetails, setLicenserDetails] = useState([]);
+
+  const getInsideViewAM = async () => {
+    try {
+      const { response, error } = await getInsideAM(`${endPoints.AM}/${id}/details`);
+      if (response && !error) {
+        console.log(response.data);
+        // const rawData= response.data.bdaDetails || []
+        // const processessData=rawData.map((item:any)=>({
+        //   ...item,
+        //   bdaName:item.bdaName,
+        //   leadAssigned:item.leadAssigned,
+        //   conversionRate:item.conversionRate,
+        //   status:item.status,
+        //   area:item.area,
+        // }))
+        setInsideAmData(response.data);
+        // Extract bdaDetails and licenserDetails separately
+        setBdaDetails(response.data.bdaDetails || []);
+        const licenserData = response.data.licenserDetails || []
+        const processData = licenserData.map((item:any)=>({
+          ...item,
+          firstName:item.firstName,
+          licensorStatus:item.licensorStatus,
+          startDate:item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A',
+          endDate:item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'
+
+        }))
+        setLicenserDetails(processData);
+      } else {
+        console.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.error("Error fetching AM data:", err);
+    }
+  };
+
+  useEffect(() => {
+    getInsideViewAM();
+  }, []);
+
+  console.log("Inside AM Data:", insideAmData);
+  console.log("BDA Details:", bdaDetails);
+  console.log("Licenser Details:", licenserDetails);
+
 
 
 
@@ -551,7 +601,7 @@ const AMView = ({ }: Props) => {
 
       </div>
       {/* Card & table */}
-      <AMViewCardandTable />
+      <AMViewCardandTable bdaDetails={bdaDetails} />
       {/* Charts */}
       <div className="grid grid-cols-12 py-12 gap-4">
         <div className="col-span-4 h-full">
@@ -655,7 +705,7 @@ const AMView = ({ }: Props) => {
 
       <div>
         <LicensersTable<AMData>
-          data={data}
+          data={licenserDetails}
           columns={columns}
           headerContents={{
             title: 'Licensers',
