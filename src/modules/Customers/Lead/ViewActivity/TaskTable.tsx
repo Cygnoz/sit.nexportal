@@ -36,9 +36,9 @@ interface TableProps<T> {
       sortHead: string;
       sortList: { label: string; icon: React.ReactNode; action?: () => void }[];
     }[];
-    button?:{
-        buttonHead:string;
-    }
+    button?: {
+      buttonHead: string;
+    };
   };
   actionList?: {
     label: "view" | "edit" | "delete";
@@ -47,8 +47,10 @@ interface TableProps<T> {
   noAction?: boolean;
   noPagination?: boolean;
   maxHeight?: string;
-  skeltonCount?:number
+  skeltonCount?: number;
+  getTask?: () => void;  // Add getTask to the props
 }
+
 
 const TaskTable = <T extends object>({
   data,
@@ -58,7 +60,8 @@ const TaskTable = <T extends object>({
   noAction,
   noPagination,
   maxHeight,
-  skeltonCount=5
+  skeltonCount = 5,
+  getTask,
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -175,11 +178,10 @@ const TaskTable = <T extends object>({
   // Render table header
   const renderHeader = () => (
     <div
-      className={`flex  ${
-        headerContents.search && !headerContents.title && !headerContents.sort
+      className={`flex  ${headerContents.search && !headerContents.title && !headerContents.sort
           ? "justify-start"
           : "justify-between"
-      } items-center mb-4`}
+        } items-center mb-4`}
     >
       {headerContents.title && (
         <h2 className="text-[#303F58] text-sm font-bold p-2">{headerContents.title}</h2>
@@ -193,16 +195,22 @@ const TaskTable = <T extends object>({
           />
         </div>
       )}
-        <div className="flex gap-2">
-          {/* {headerContents.sort.map((sort, index) => (
+      <div className="flex gap-2">
+        {/* {headerContents.sort.map((sort, index) => (
             <SortBy key={index} sort={sort} />
           ))} */}
-          {headerContents.button && (
-            <div>
-                <Button onClick={handleModalToggle} className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148] -mt-1" variant="secondary">+<span className="text-xs">Add Tasks</span></Button>
-            </div>
-          )}
-        </div>
+        {headerContents.button && (
+          <div>
+            <Button
+              onClick={() => handleModalToggle(getTask)}  // Pass getTask function here
+              className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148] -mt-1"
+              variant="secondary"
+            >
+              +<span className="text-xs">Add Tasks</span>
+            </Button>
+          </div>
+        )}
+      </div>
     </div>
   );
 
@@ -239,7 +247,7 @@ const TaskTable = <T extends object>({
 
   const renderSkeletonLoader = () => (
     <tr>
-      <td colSpan={noAction?columns?.length+1:columns?.length + 2}>
+      <td colSpan={noAction ? columns?.length + 1 : columns?.length + 2}>
         <div className="flex flex-col   gap-2 mt-2">
           {Array.from({ length: skeltonCount }).map((_, index) => (
             <div key={index} className="flex gap-2 animate-pulse">
@@ -270,27 +278,30 @@ const TaskTable = <T extends object>({
     return () => clearTimeout(timeout);
   }, [data]);
 
-      // State to manage modal visibility
-      const [isModalOpen, setIsModalOpen] = useState(false);
-      // Function to toggle modal visibility
-      const handleModalToggle = () => {
-          setIsModalOpen((prev) => !prev);
-      };  
+  // State to manage modal visibility
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Function to toggle modal visibility
+  // Update handleModalToggle to accept getTask function as parameter
+  const handleModalToggle = (getTask?: () => void) => {
+    setIsModalOpen((prev) => !prev);
+    if (getTask) {
+      getTask();  // Call the getTask function
+    }
+  };
 
   return (
     <div className="w-full  bg-white rounded-lg p-5">
       {renderHeader()}
 
       <div
-      style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
-         className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
+        style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
+        className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
         <table
           style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
-       
-          className={`w-full border-collapse border-[#e7e6e6] border text-left  ${
-            maxHeight && "table-fixed"
-          }`}
+
+          className={`w-full border-collapse border-[#e7e6e6] border text-left  ${maxHeight && "table-fixed"
+            }`}
         >
           <thead
             className={` bg-[#F6F9FC] w-full  ${maxHeight && "z-40 sticky top-0"}`}
@@ -302,12 +313,11 @@ const TaskTable = <T extends object>({
               {columns.map((col: any) => (
                 <th
                   key={String(col.key)}
-                  className={`border border-[#e7e6e6]  p-4 text-sm  text-[#303F58] font-medium ${
-                    col.key == "convert"
+                  className={`border border-[#e7e6e6]  p-4 text-sm  text-[#303F58] font-medium ${col.key == "convert"
                       ? "w-48 text-center"
                       : col.key?.toLowerCase().includes("status") &&
-                        "text-center min-w-[120px]"
-                  }`}
+                      "text-center min-w-[120px]"
+                    }`}
                 >
                   {col.key == "convert" ? "Convert" : col.label}
                 </th>
@@ -325,7 +335,7 @@ const TaskTable = <T extends object>({
             {noDataFound ? (
               <tr>
                 <td
-                  colSpan={noAction?columns?.length+1:columns?.length + 2}
+                  colSpan={noAction ? columns?.length + 1 : columns?.length + 2}
                   className="text-center py-4 text-gray-500"
                 >
                   <div className="flex justify-center flex-col items-center">
@@ -339,108 +349,107 @@ const TaskTable = <T extends object>({
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr
-                onClick={() =>
-                  actionList?.find((data) => data.label === "view")?.function(row?._id)
-                }
-                key={rowIndex}
-                className="hover:bg-gray-50 z-10 cursor-pointer"
-              >
-                <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
-                  {(currentPage - 1) * rowsPerPage + rowIndex + 1}
-                </td>
-                {columns.map((col: any) => (
-                  <td
-                    key={col.key}
-                    className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
-                  >
-                    <div
-                      className={`flex ${
-                        col.key.toLowerCase().includes("status") || col?.key == "convert"
-                          ? "justify-center"
-                          : "justify-start"
-                      } items-center gap-2`}
+                  onClick={() =>
+                    actionList?.find((data) => data.label === "view")?.function(row?._id)
+                  }
+                  key={rowIndex}
+                  className="hover:bg-gray-50 z-10 cursor-pointer"
+                >
+                  <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
+                    {(currentPage - 1) * rowsPerPage + rowIndex + 1}
+                  </td>
+                  {columns.map((col: any) => (
+                    <td
+                      key={col.key}
+                      className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
                     >
-                      {col.key === "country" ? (
-                        countryLogo(getNestedValue(row, col.key))
-                      ) : ["userName", "user.userName", "leadName", "firstName"].includes(
+                      <div
+                        className={`flex ${col.key.toLowerCase().includes("status") || col?.key == "convert"
+                            ? "justify-center"
+                            : "justify-start"
+                          } items-center gap-2`}
+                      >
+                        {col.key === "country" ? (
+                          countryLogo(getNestedValue(row, col.key))
+                        ) : ["userName", "user.userName", "leadName", "firstName"].includes(
                           col.key
                         ) ? (
-                        renderImageAndLabel(row)
-                      ) : col.key.toLowerCase().includes("status") ? (
-                        <p className={getStatusClass(row[col.key])}>{row[col.key]}</p>
-                      ) : col?.key == "convert" ? (
-                        row["leadStatus"] == "Won" ? (
-                          <Button
-                            onClick={(e) =>{
-                              e.stopPropagation()
-                               col.label(row._id)
-                            }}
-                            variant="tertiary"
-                            className="h-8 text-sm  text-[#565148]  border border-[#565148] rounded-xl"
-                          >
-                            Convert to Trial
-                            <ArrowRight />
-                          </Button>
-                        ) : (
-                          ""
-                        )
-                      ) : (
-                        getNestedValue(row, col.key) || "N/A"
-                      )}
-                    </div>
-                  </td>
-                ))}
-                <td className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
-                    <div>
-                        <Button variant="tertiary"> 
-                            <div className="flex gap-1">
-                                <div className="p-[2px]"><TickIcon size={12} color="#565148"/></div>
-                                <p className="text-[#565148] text-xs font-medium">Mark as Completed</p>
-                            </div>
-                        </Button>
-                    </div>
-
-                </td>
-                <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
-                    <div>
-                        <EllipsisVerticalIcon color="#768294"/>
-                    </div>
-
-                </td>
-                {!noAction && (
-                  <td
-                    className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
-                    onClick={(e) => e.stopPropagation()} // Stop propagation for action cells
-                  >
-                    <div className="flex justify-center gap-2">
-                      {actionList?.map((action, index) => {
-                        if (["edit", "view", "delete"].includes(action.label)) {
-                          return (
-                            <p
-                              key={index}
-                              className="cursor-pointer"
+                          renderImageAndLabel(row)
+                        ) : col.key.toLowerCase().includes("status") ? (
+                          <p className={getStatusClass(row[col.key])}>{row[col.key]}</p>
+                        ) : col?.key == "convert" ? (
+                          row["leadStatus"] == "Won" ? (
+                            <Button
                               onClick={(e) => {
-                                e.stopPropagation(); // Prevent triggering the `tr` onClick
-                                action.function(row?._id);
+                                e.stopPropagation()
+                                col.label(row._id)
                               }}
+                              variant="tertiary"
+                              className="h-8 text-sm  text-[#565148]  border border-[#565148] rounded-xl"
                             >
-                              {action.label === "edit" ? (
-                                <PencilLine color="#4B5C79" size={16} />
-                              ) : action.label === "view" ? (
-                                <Eye color="#4B5C79" size={16} />
-                              ) : (
-                                <Trash color="#4B5C79" size={16} />
-                              )}
-                            </p>
-                          );
-                        }
-                        return null;
-                      })}
+                              Convert to Trial
+                              <ArrowRight />
+                            </Button>
+                          ) : (
+                            ""
+                          )
+                        ) : (
+                          getNestedValue(row, col.key) || "N/A"
+                        )}
+                      </div>
+                    </td>
+                  ))}
+                  <td className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
+                    <div>
+                      <Button variant="tertiary">
+                        <div className="flex gap-1">
+                          <div className="p-[2px]"><TickIcon size={12} color="#565148" /></div>
+                          <p className="text-[#565148] text-xs font-medium">Mark as Completed</p>
+                        </div>
+                      </Button>
                     </div>
+
                   </td>
-                )}
-              </tr>
-              
+                  <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
+                    <div>
+                      <EllipsisVerticalIcon color="#768294" />
+                    </div>
+
+                  </td>
+                  {!noAction && (
+                    <td
+                      className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
+                      onClick={(e) => e.stopPropagation()} // Stop propagation for action cells
+                    >
+                      <div className="flex justify-center gap-2">
+                        {actionList?.map((action, index) => {
+                          if (["edit", "view", "delete"].includes(action.label)) {
+                            return (
+                              <p
+                                key={index}
+                                className="cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent triggering the `tr` onClick
+                                  action.function(row?._id);
+                                }}
+                              >
+                                {action.label === "edit" ? (
+                                  <PencilLine color="#4B5C79" size={16} />
+                                ) : action.label === "view" ? (
+                                  <Eye color="#4B5C79" size={16} />
+                                ) : (
+                                  <Trash color="#4B5C79" size={16} />
+                                )}
+                              </p>
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+                    </td>
+                  )}
+                </tr>
+
               ))
             ) : null}
           </tbody>
@@ -488,8 +497,8 @@ const TaskTable = <T extends object>({
         </div>
       )}
 
-<Modal className="w-[45%]" open={isModalOpen} onClose={handleModalToggle}>
-      <TasksForm  onClose={handleModalToggle}/>
+      <Modal className="w-[45%]" open={isModalOpen} onClose={handleModalToggle}>
+        <TasksForm onClose={handleModalToggle} />
       </Modal>
 
     </div>
