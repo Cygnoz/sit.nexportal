@@ -48,7 +48,7 @@ exports.addActivity = async (req, res, next) => {
  
  
 // Get Single Activity by ID
-exports.getActivity = async (req, res, next) => {
+exports.getActivity = async (req, res) => {
     try {
       const { id } = req.params; // Extract activity ID from request parameters
  
@@ -71,7 +71,7 @@ exports.getActivity = async (req, res, next) => {
   };
  
  
-  exports.getAllActivities = async (req, res, next) => {
+  exports.getAllActivities = async (req, res) => {
     try {
       const { activityType } = req.query; // Optional query parameter for filtering by activity type
       const { leadId } = req.params; // Extract leadId from request parameters
@@ -108,7 +108,7 @@ exports.getActivity = async (req, res, next) => {
  
  
  
-  exports.editActivity = async (req, res) => {
+  exports.editActivity = async (req, res, next) => {
     try {
       const { id: activityId } = req.params; // Extract activity ID from request parameters
       const { activityType, ...rawActivityData } = req.body; // Extract activityType and other data
@@ -155,7 +155,7 @@ exports.getActivity = async (req, res, next) => {
   };
  
  
-  exports.deleteActivity = async (req, res) => {
+  exports.deleteActivity = async (req, res,next) => {
     try {
       const { activityId } = req.params; // Extract activityId from request parameters
  

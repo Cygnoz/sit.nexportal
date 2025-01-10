@@ -156,7 +156,8 @@ exports.getAllLeads = async (req, res) => {
   try {
     const userId = req.user.id;
     const query = await filterByRole(userId);
-
+    console.log(query);
+    
     // Add customerStatus filter
     query.customerStatus = "Lead";
 
@@ -231,41 +232,56 @@ if (!existingLead) {
 };
 
 
-
 exports.deleteLead = async (req, res, next) => {
   try {
     const { leadId } = req.params;
-
+ 
     // Validate if leadId is a valid ObjectId
     if (!mongoose.Types.ObjectId.isValid(leadId)) {
       return res.status(400).json({ message: "Invalid lead ID." });
     }
-
+ 
     // Check if the lead exists
     const lead = await Leads.findById(leadId);
     if (!lead) {
       return res.status(404).json({ message: "Lead not found." });
     }
-
-    // Check if leadId is referenced in Tickets collection
-    const ticket = await Ticket.findOne({ customerId: leadId });
-    if (ticket) {
+ 
+    // Check if leadStatus is "New", only then allow deletion
+    if (lead.leadStatus !== "New") {
       return res.status(400).json({
-        message: "Cannot delete lead because it is referenced in Tickets collection.",
+        message: "Cannot delete lead because it is not in 'New' status.",
       });
     }
-
+ 
+    // Check if the lead has customerStatus "Lead"
+    if (lead.customerStatus !== "Lead") {
+      return res.status(400).json({
+        message: "Cannot delete lead because the customer status is not 'Lead'.",
+      });
+    }
+ 
+    // Check if the leadId is referenced in the Activity collection
+    const activity = await Activity.findOne({ leadId:leadId });
+    if (activity) {
+      return res.status(400).json({
+        message: "Cannot delete lead because it is referenced in Activity collection.",
+      });
+    }
+ 
+ 
+ 
     // Delete the lead
     const deletedLead = await Leads.findByIdAndDelete(leadId);
-
+ 
     res.status(200).json({ message: "Lead deleted successfully." });
-    ActivityLog(req, "Successfully", updatedLead._id);
-    next()
+    ActivityLog(req, "Successfully", deletedLead._id);
+    next();
   } catch (error) {
     console.error("Error deleting lead:", error.message || error);
     res.status(500).json({ message: "Internal server error." });
     ActivityLog(req, "Failed");
-   next();
+    next();
   }
 };
 
