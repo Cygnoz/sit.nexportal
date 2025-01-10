@@ -21,9 +21,9 @@ import { useNavigate } from "react-router-dom";
 
 type Props = {
   onClose: () => void;
-  type:"lead"|"trial";
+  type?:"lead"|"trial";
   orgData?:any
-  getLeads:()=>void
+  getLeads?:()=>void
 };
 
 const validationSchema = Yup.object({
@@ -66,7 +66,7 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
         if(response && !error){
             toast.success(response.data.message)
             navigate(type==='lead'?'/lead':'/trial'); // Trigger navigation first
-            getLeads()
+            getLeads?.()
             onClose()
             
         }else{

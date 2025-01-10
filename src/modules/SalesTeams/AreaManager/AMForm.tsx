@@ -73,7 +73,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
-  const {request:checkAm}=useApi("get",3002)
+  const {request:checkAm}=useApi("put",3002)
   const [isModalOpen, setIsModalOpen] = useState({
     viewBusinesscard: false,
     viewIdcard: false,
@@ -92,6 +92,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   const { request: editAM } = useApi("put", 3002);
   const { request: getAM } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
+  
   const { dropDownAreas, dropdownRegions, allCountries, allWc } = useRegularApi();
 
   const [data, setData] = useState<{
@@ -141,7 +142,11 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
 
   const checkAM=async()=>{
     try{
-      const {response,error}=await checkAm(`${endPoints.CHECK_AM}/${watch("area")}`)
+      const body={
+        regionId:watch("region"),
+        areaId:watch("area")
+      }
+      const {response,error}=await checkAm(endPoints.CHECK_AM,body)
       console.log("res",response);
       console.log("err",error);
       
@@ -150,9 +155,12 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
         return true
       }else{
         
+        if(
+          toast.error(error.response.data.message)
+        )
         
-        
-        if(error?.response?.data?.message==="Area is already assigned to another Area Manager. Try adding another Area."){
+        if(error?.response?.data?.message==="Area is already assigned to another Area Manager. Try adding another Area." ||"Region Manager not found for the provided region.")
+          {
           return false
         }else{
           return true
@@ -195,7 +203,6 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
       if (!rmCheck) {
         canProceed = false;
         // Replace with your preferred method for showing a message
-        toast.error("Area is already assigned to another Area Manager. Try adding another Area."); 
       }
     }
 

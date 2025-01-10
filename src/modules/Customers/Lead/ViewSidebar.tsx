@@ -23,6 +23,7 @@ import ConfirmModal from "../../../components/modal/ConfirmModal";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import Calender from "./ViewModals/Calender";
+import { getStatusClass } from "../../../components/ui/GetStatusClass";
 type Props = {
   leadData: any;
   getLead: () => void;
@@ -73,28 +74,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
     setConvLicModalOpen((prev) => !prev);
   };
 
-  const getStatusClass = (status: string | undefined) => {
-    switch (status) {
-      case "New":
-        return "bg-blue-500 text-white py-1 px-2 w-fit rounded-full";
-      case "Contacted":
-        return "bg-cyan-800 text-white py-1 px-2 rounded-full";
-      case "In progress":
-        return "bg-yellow-100 text-black py-1 px-2 rounded-full";
-      case "Extended":
-        return "bg-violet-500 text-center text-white py-1 px-2 rounded-lg";
-      case "Expired":
-        return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
-      case "Proposal":
-        return "bg-violet-300 text-black py-1 px-2 rounded-full";
-      case "Lost":
-        return "bg-red-500 text-white py-1 px-2 rounded-full";
-      case "Won":
-        return "bg-green-500 text-white  py-1 px-2 w-fit rounded-full";
-      default:
-        return "";
-    }
-  };
+ 
 
   const handleDelete = async () => {
     try {
