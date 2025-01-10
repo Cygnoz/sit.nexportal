@@ -222,9 +222,7 @@ exports.addAreaManagerCheck = async (req, res) => {
   try {
     const {regionId , areaId } = req.body
     
-    const [regionManager] = await Promise.all([
-      RegionManager.findOne({ region: regionId })
-    ]);
+    const regionManager = await RegionManager.findOne({ region: regionId });
     
     // Send specific error responses based on missing data
     if (!regionManager) {
@@ -541,7 +539,7 @@ exports.getAreaManagerDetails = async (req, res) => {
     const convertedLeads = await Leads.countDocuments({
       // areaManager: id,
       areaId,
-      customerStatus: { $ne: "Lead" }, // Non-leads are considered converted
+      // customerStatus: { $ne: "Lead" }, // Non-leads are considered converted
     });
  
     // Step 4: Calculate total licensers
