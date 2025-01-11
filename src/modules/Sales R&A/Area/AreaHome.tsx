@@ -54,6 +54,8 @@ const AreaHome = () => {
         
         // Then set the transformed regions into state
         setAllAreas(transformedAreas);
+        console.log("areas",transformedAreas);
+        
       }else{
         console.log(error.response.data.message)
       }
