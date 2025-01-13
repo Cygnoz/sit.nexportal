@@ -441,3 +441,106 @@ Best regards,
 // The CygnoNex Team
 // NexPortal
 // Support: notify@cygnonex.com
+
+
+exports.getSupervisorDetails = async (req, res) => {
+  try {
+    const { id } = req.params; // Supervisor ID
+ 
+    // Step 1: Fetch the Supervisor
+    const supervisor = await Supervisor.findById(id).populate("user region");
+    if (!supervisor) {
+      return res.status(404).json({ message: "Supervisor not found" });
+    }
+ 
+    // Step 2: Get Supervisor Details
+    const supervisorName = supervisor.user?.userName || "N/A";
+    const regionId = supervisor.region?._id;
+ 
+    // Step 3: Find Support Agents in the Same Region
+    const supportAgents = await SupportAgent.find({ region: regionId }).populate("user");
+ 
+    let totalResolvedTickets = 0;
+    let totalTicketsForResolutionRate = 0;
+ 
+    // Step 4: Fetch Ticket Details for Each Support Agent
+    const supportAgentDetails = await Promise.all(
+      supportAgents.map(async (agent) => {
+        const agentUser = agent.user; // This is the populated user object
+ 
+        // Total Tickets for the Support Agent
+        const totalTickets = await Ticket.countDocuments({ supportAgentId: agent._id });
+ 
+        // Resolved Tickets for the Support Agent
+        const resolvedTickets = await Ticket.countDocuments({
+          supportAgentId: agent._id,
+          status: "Resolved",
+        });
+ 
+        // Open Tickets for the Support Agent
+        const openTickets = await Ticket.countDocuments({
+          supportAgentId: agent._id,
+          status: "Open",
+        });
+ 
+        // Fetch the detailed ticket information for each support agent
+        const ticketDetails = await Ticket.find({ supportAgentId: agent._id })
+          .select("ticketId subject status priority") // Only select relevant fields
+          .lean();
+ 
+        // Calculate Resolution Rate for the Support Agent
+        const resolutionRate =
+          totalTickets > 0 ? ((resolvedTickets / totalTickets) * 100).toFixed(2) : "0";
+ 
+        // Accumulate total resolved tickets and total tickets for overall calculation
+        totalResolvedTickets += resolvedTickets;
+        totalTicketsForResolutionRate += totalTickets;
+ 
+        return {
+          supportAgentId: agent._id,
+          supportAgentName: agentUser?.userName || "N/A",
+          employeeId: agentUser?.employeeId || "N/A", // Correct employeeId from the user schema
+          resolutionRate: `${resolutionRate}%`,
+          resolvedTicketsCount: resolvedTickets, // Added resolved tickets count
+          ticketDetails,
+        };
+      })
+    );
+ 
+    // Step 5: Overall Resolution Rate for All Support Agents under the Supervisor
+    const overallResolutionRate =
+      totalTicketsForResolutionRate > 0
+        ? ((totalResolvedTickets / totalTicketsForResolutionRate) * 100).toFixed(2)
+        : "0";
+ 
+    // Step 6: Total Ticket Summary for the Region
+    const totalTickets = await Ticket.countDocuments({ region: regionId });
+    const resolvedTickets = await Ticket.countDocuments({
+      region: regionId,
+      status: "Resolved",
+    });
+    const openTickets = await Ticket.countDocuments({
+      region: regionId,
+      status: "Open",
+    });
+ 
+    // Step 7: Respond with Supervisor and Support Agent Details
+    res.status(200).json({
+      supervisorDetails: {
+        supervisorName,
+        regionId,
+        totalSupportAgents: supportAgents.length,
+        overallResolutionRate: `${overallResolutionRate}%`, // Include the overall resolution rate
+      },
+      supportAgentDetails,
+      ticketSummary: {
+        totalTickets,
+        resolvedTickets,
+        openTickets,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching Supervisor details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

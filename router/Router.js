@@ -98,6 +98,7 @@ router.put("/supervisor/:id",verifyToken,checkPermission('Edit Supervisor'), sup
 
 router.delete("/supervisor/:id",verifyToken,checkPermission('Delete Supervisor'), supervisorController.deleteSupervisor,ActivityLogGeneration('Delete Supervisor'));
 
+router.get("/supervisor/:id/details",verifyToken,checkPermission('View Supervisor'), supervisorController.getSupervisorDetails);
 // Support Agent
 router.post('/supportAgent',verifyToken,checkPermission('Add Support Agent'),supportAgentController.addSupportAgent,ActivityLogGeneration('Add Support Agent'))
 

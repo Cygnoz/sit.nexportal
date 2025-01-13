@@ -10,6 +10,7 @@ const { ObjectId } = require("mongoose").Types;
 const nodemailer = require("nodemailer");
 const Praise = require('../database/model/praise')
 
+
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
 
@@ -248,7 +249,34 @@ exports.getSupportAgent = async (req, res) => {
 
 exports.getAllSupportAgent = async (req, res) => {
   try {
-    const supportAgent = await SupportAgent.find({}).populate([
+
+    const userId = req.user.id;
+
+    // Fetch user's role in a single query with selected fields
+    const user = await User.findById(userId).select("role");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const { role } = user;
+
+    // Base query to find Bda
+    let Query = {};
+
+    if (["Super Admin", "Sales Admin", "Support Admin"].includes(role)) {
+      // No additional filters for these roles
+    } else if (role === "Supervisor") {
+      // Fetch region ID in a single query
+      const supervisor = await Supervisor.findOne({ user: userId }).select("region");
+      if (!supervisor) {
+        return res.status(404).json({ message: "Supervisor data not found" });
+      }
+      Query.region = supervisor.region;
+    } else {
+      return res.status(403).json({ message: "Unauthorized role" });
+    }
+
+    const supportAgent = await SupportAgent.find(Query).populate([
       { path: "user", select: "userName phoneNo userImage email" },
       { path: "region", select: "regionName" },
       { path: "commission", select: "profileName" },
@@ -258,7 +286,48 @@ exports.getAllSupportAgent = async (req, res) => {
       return res.status(404).json({ message: "No Support Agent found" });
     }
 
-    res.status(200).json({ supportAgent });
+    const totalSupportAgent = supportAgent.length;
+
+
+    let query = {};
+
+    if (["Super Admin", "Sales Admin", "Support Admin"].includes(role)) {
+      // No additional filters for these roles
+    }else if (role === "Supervisor") {
+      // Fetch region ID in a single query
+      const supervisor = await Supervisor.findOne({ user: userId }).select("_id");
+      if (!supervisor) {
+        return res.status(404).json({ message: "Supervisor data not found" });
+      }
+      query.supervisor = supervisor._id;
+    }else if (role === "Support Agent") {
+      // Fetch region ID in a single query
+      const supportAgent = await SupportAgent.findOne({ user: userId }).select("_id");
+      if (!supportAgent) {
+        return res.status(404).json({ message: "Support Agent data not found" });
+      }
+      query.supportAgentId = supportAgent._id;
+    }  else {
+      return res.status(403).json({ message: "Unauthorized role" });
+    }
+
+     // Fetch Licensers
+     const tickets = await Ticket.find(query)
+
+   if (!tickets.length) return res.status(404).json({ message: "No Leads found." });
+
+   const totalTickets = tickets.length;
+   const resolvedTickets = tickets.filter((ticket) => ticket.status === "Resolved").length;
+
+
+
+
+    res.status(200).json({ 
+      supportAgent,
+      totalSupportAgent,
+      totalTickets,
+      resolvedTickets
+     });
   } catch (error) {
     console.error("Error fetching all Support Agent:", error);
     res.status(500).json({ message: "Internal server error" });
