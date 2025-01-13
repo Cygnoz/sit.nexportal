@@ -156,7 +156,6 @@ exports.getAllLeads = async (req, res) => {
   try {
     const userId = req.user.id;
     const query = await filterByRole(userId);
-    console.log(query);
     
     // Add customerStatus filter
     query.customerStatus = "Lead";
