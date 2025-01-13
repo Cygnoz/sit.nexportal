@@ -9,6 +9,9 @@ const Lead = require("../database/model/leads");
 const filterByRole = require("../services/filterByRole");
  
 
+const Ticket = require("../database/model/ticket");
+const SupportAgent = require("../database/model/supportAgent");
+const ActivityLogg = require("../database/model/activityLog");
  
 const dataExist = async (regionId, areaId, bdaId) => {
   const [regionExists, areaExists, bdaExists] = await Promise.all([
@@ -419,3 +422,77 @@ const ActivityLog = (req, status, operationId = null) => {
   const validLicenserStatus = ["New", "Contacted", "Inprogress", "Lost", "Won"];
  
  
+
+
+exports.getLicenserDetails = async (req, res) => {
+  try {
+    const { id } = req.params; // id is the Licenser ID
+    
+    // Step 1: Fetch startDate and endDate from Leads collection for the given Licenser ID
+    const licenser = await Leads.findById(id).select("startDate endDate");
+    if (!licenser) {
+      return res.status(404).json({ message: "Licenser not found" });
+    }
+    const { startDate, endDate } = licenser;
+
+    // Step 2: Fetch open tickets (status != "Resolved") from the Ticket collection
+    const openTicketsCount = await Ticket.countDocuments({
+      customerId: id,
+      status: { $ne: "Resolved" },
+    });
+
+    // Step 3: Fetch closed tickets (status == "Resolved") from the Ticket collection
+    const closedTicketsCount = await Ticket.countDocuments({
+      customerId: id,
+      status: "Resolved",
+    });
+
+    // Step 4: Fetch support tickets for the given Licenser ID
+    const supportTickets = await Ticket.find({ customerId: id })
+      .select("ticketId priority status openingDate supportAgentId")
+      .populate({
+        path: "supportAgentId",
+        select: "user",
+        populate: {
+          path: "user",
+          select: "userName",
+        },
+      });
+
+    // Format the supportTickets response
+    const formattedSupportTickets = supportTickets.map((ticket) => ({
+      ticketId: ticket.ticketId,
+      priority: ticket.priority,
+      status: ticket.status,
+      openingDate: ticket.openingDate,
+      supportAgent: ticket.supportAgentId?.user?.userName || "N/A",
+    }));
+
+    // Step 5: Fetch recent activities for the given Licenser ID (operationId)
+    const recentActivities = await ActivityLogg.find({ operationId: id })
+      .sort({ timestamp: -1 }) // Sort by timestamp in descending order
+      .limit(10); // Limit the result to a maximum of 10 documents
+
+    const formattedRecentActivities = recentActivities.map((activity) => ({
+      activityId: activity._id,
+      action: activity.action,
+      timestamp: activity.timestamp,
+      details: activity.details,
+    }));
+
+    // Step 6: Send the response with all the gathered details
+    res.status(200).json({
+      licenserDetails: {
+        startDate,
+        endDate,
+        openTickets: openTicketsCount,
+        closedTickets: closedTicketsCount,
+        supportTickets: formattedSupportTickets,
+        recentActivities: formattedRecentActivities,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching Licenser details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

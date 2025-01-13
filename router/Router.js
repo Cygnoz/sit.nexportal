@@ -51,6 +51,9 @@ router.get('/licenser',verifyToken,checkPermission('View Licenser'),licenserCont
 router.get('/licenser/:licenserId',verifyToken,checkPermission('View Licenser'),licenserController.getLicenser)
  
 router.put('/licenser/:id',verifyToken,checkPermission('Edit Licenser'),licenserController.editLicenser,ActivityLogGeneration('Edit Licenser'))
+
+router.get('/licenser/:id/details',verifyToken,checkPermission('View Licenser'),licenserController.getLicenserDetails)
+
  
 // router.delete('/licenser/:licenserId',verifyToken,checkPermission('Delete Licenser'),leadController.deleteLead,ActivityLogGeneration('Delete Licenser'))
 

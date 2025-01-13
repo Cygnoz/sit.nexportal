@@ -4,7 +4,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const ticketSchema = new Schema(
-  {
+  {    
+    ticketId:{type:String},
     customerId: { type: String },
     supportAgentId: { type: String },
     requestor: { type: String }, // The person who raised the ticket
