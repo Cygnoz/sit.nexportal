@@ -8,7 +8,7 @@ const activitySchema = new Schema({
  
     leadId:{type:String},
     activityType:{type:String},
- 
+    taskStatus:{type:String},
     //email
     emailTo:{type:String},
     emailFrom:{type:String},
