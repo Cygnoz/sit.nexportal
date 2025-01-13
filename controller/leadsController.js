@@ -15,6 +15,7 @@ const filterByRole = require("../services/filterByRole");
 
 
 
+
 const dataExist = async (regionId, areaId, bdaId) => {
   const [regionExists, areaExists, bdaExists] = await Promise.all([
     Region.find({ _id: regionId }, { _id: 1, regionName: 1 }),
@@ -49,7 +50,8 @@ exports.addLead = async (req, res , next ) => {
    
     const { firstName, email, phone, regionId, areaId , bdaId } = cleanedData;
  
- 
+   console.log(cleanedData.email);
+   
  
    // Check for duplicate user details
    const duplicateCheck = await checkDuplicateUser(firstName,email, phone);
@@ -149,6 +151,7 @@ exports.getLead = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 
@@ -630,50 +633,62 @@ const ActivityLog = (req, status, operationId = null) => {
 
 
 
-  // const checkDuplicateUser = async (firstName, email, phone) => {
+  const checkDuplicateUser = async (firstName, email, phone, excludeId) => {
+    // Build the dynamic query condition
+    const conditions = [];
+    if (firstName) conditions.push({ firstName });
+    if (email) conditions.push({ email });
+    if (phone) conditions.push({ phone });
+  
+    if (conditions.length === 0) return null; // No fields to check
+  
+    // Query to find existing user excluding the given ID
+    const existingUser = await Leads.findOne({
+      _id: { $ne: excludeId },
+      $or: conditions,
+    });
+  
+    if (!existingUser) return null;
+  
+    // Build the duplicate messages based on matching fields
+    const duplicateMessages = [];
+    if (firstName && existingUser.firstName === firstName)
+      duplicateMessages.push("First name already exists");
+    if (email && existingUser.email === email)
+      duplicateMessages.push("Email already exists");
+    if (phone && existingUser.phone === phone)
+      duplicateMessages.push("Phone number already exists");
+  
+    return duplicateMessages.join(". ");
+  };
+  
+
+  // const checkDuplicateUser = async (firstName, email, phone, excludeId) => {
   //   const existingUser = await Leads.findOne({
-  //     $or: [{ firstName }, { email }, { phone }],
+  //     $and: [
+  //       { _id: { $ne: excludeId } }, // Exclude the current document
+  //       {
+  //         $or: [
+  //           { firstName },
+  //           { email },
+  //           { phone },
+  //         ],
+  //       },
+  //     ],
   //   });
   
   //   if (!existingUser) return null;
   
   //   const duplicateMessages = [];
   //   if (existingUser.firstName === firstName)
-  //     duplicateMessages.push("Full name already exists");
+  //     duplicateMessages.push("First already exists");
   //   if (existingUser.email === email)
-  //     duplicateMessages.push("Login email already exists");
+  //     duplicateMessages.push(" Email already exists");
   //   if (existingUser.phone === phone)
   //     duplicateMessages.push("Phone number already exists");
   
   //   return duplicateMessages.join(". ");
   // };
-
-  const checkDuplicateUser = async (firstName, email, phone, excludeId) => {
-    const existingUser = await Leads.findOne({
-      $and: [
-        { _id: { $ne: excludeId } }, // Exclude the current document
-        {
-          $or: [
-            { firstName },
-            { email },
-            { phone },
-          ],
-        },
-      ],
-    });
-  
-    if (!existingUser) return null;
-  
-    const duplicateMessages = [];
-    if (existingUser.firstName === firstName)
-      duplicateMessages.push("First already exists");
-    if (existingUser.email === email)
-      duplicateMessages.push(" Email already exists");
-    if (existingUser.phone === phone)
-      duplicateMessages.push("Phone number already exists");
-  
-    return duplicateMessages.join(". ");
-  };
 
 
    //Clean Data 
