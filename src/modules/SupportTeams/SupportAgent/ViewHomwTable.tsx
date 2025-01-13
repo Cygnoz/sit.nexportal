@@ -20,9 +20,10 @@ interface SupportAgentViewData {
   
 type Props = {
   getData: any
+  tickets:any;
 }
 
-const ViewHomwTable = ({getData}: Props) => {
+const ViewHomwTable = ({getData, tickets}: Props) => {
   const { request: getaAWARD } = useApi('get', 3004)
   const { id } = useParams()
   const [getAwards, setGetDatas] = useState<any>([])
@@ -73,6 +74,11 @@ const ViewHomwTable = ({getData}: Props) => {
           { key: "priority", label: "Status" },
           { key: "status", label: "Priority" },
         ];
+        
+        // const ticketData= tickets.map((ticket:any)=>({
+        //   ...ticket,
+        //   ticketNo:ticket.ticketNo,
+        // }))
   
   return (
     <div>
