@@ -311,7 +311,7 @@ exports.getAllBda = async (req, res) => {
     } else {
       return res.status(403).json({ message: "Unauthorized role" });
     }
-
+  
     // Fetch Bda data based on the filtered query
     const bda = await Bda.find(Query).populate([
       { path: "user", select: "userName phoneNo userImage email employeeId" },
@@ -320,17 +320,17 @@ exports.getAllBda = async (req, res) => {
       { path: "commission", select: "profileName" },
     ]);
 
-    if (!bda || bda.length === 0) {
-      return res.status(404).json({ message: "No BDA found" });
-    }
+    // if (!bda || bda.length === 0) {
+    //   return res.status(404).json({ message: "No BDA found" });
+    // }
 
     // Fetch Licensers
     const query = await filterByRole(userId);
     const leads = await Leads.find(query);
 
-    if (!leads.length) {
-      return res.status(404).json({ message: "No Leads found." });
-    }
+    // if (!leads.length) {
+    //   return res.status(404).json({ message: "No Leads found." });
+    // }
 
     // Calculate total counts
     const totalBda = bda.length;
