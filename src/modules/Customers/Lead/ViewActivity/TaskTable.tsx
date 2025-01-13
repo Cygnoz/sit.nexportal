@@ -322,8 +322,10 @@ const TaskTable = <T extends object>({
                   {col.key == "convert" ? "Convert" : col.label}
                 </th>
               ))}
-              <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
-              <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
+              {data&&data?.length>0&&<>
+                <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
+                <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
+              </>}
               {!noAction && (
                 <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium">
                   Action
@@ -335,7 +337,7 @@ const TaskTable = <T extends object>({
             {noDataFound ? (
               <tr>
                 <td
-                  colSpan={noAction ? columns?.length + 1 : columns?.length + 2}
+                  colSpan={noAction ? columns?.length + 2 : columns?.length + 0}
                   className="text-center py-4 text-gray-500"
                 >
                   <div className="flex justify-center flex-col items-center">
@@ -399,10 +401,10 @@ const TaskTable = <T extends object>({
                       </div>
                     </td>
                   ))}
-                  <td className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
-                    <div>
-                      <Button variant="tertiary">
-                        <div className="flex gap-1">
+                  <td className="border border-[#e7e6e6] w-44 p-2 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex justify-center">
+                      <Button variant="tertiary" className="rounded-xl">
+                        <div className="flex gap-1 ">
                           <div className="p-[2px]"><TickIcon size={12} color="#565148" /></div>
                           <p className="text-[#565148] text-xs font-medium">Mark as Completed</p>
                         </div>
@@ -411,7 +413,7 @@ const TaskTable = <T extends object>({
 
                   </td>
                   <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
-                    <div>
+                    <div className="flex justify-center">
                       <EllipsisVerticalIcon color="#768294" />
                     </div>
 
