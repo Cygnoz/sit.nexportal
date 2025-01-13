@@ -1,7 +1,5 @@
 import LeadsCardIcon from "../../../../assets/icons/LeadsCardIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
-import No_Data_found from "../../../../assets/image/NO_DATA.png";
-// import Button from "../../../components/ui/Button";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
@@ -25,6 +23,7 @@ import backGroundView from '../../../../assets/image/BDAView.png';
 import ConfirmModal from "../../../../components/modal/ConfirmModal";
 import Modal from "../../../../components/modal/Modal";
 import LicensersTable from "../../../../components/ui/LicensersTable";
+import NoRecords from "../../../../components/ui/NoRecords";
 import Table from "../../../../components/ui/Table";
 import ViewCard from "../../../../components/ui/ViewCard";
 import { endPoints } from "../../../../services/apiEndpoints";
@@ -32,7 +31,6 @@ import BDAForm from "../BDAForm";
 import GraphTable from "../GraphTable";
 import BDAViewAward from "./BDAViewAward";
 import BDAViewForm from "./BDAViewForm";
-import NoRecords from "../../../../components/ui/NoRecords";
 
 
 

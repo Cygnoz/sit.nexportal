@@ -1,11 +1,10 @@
 import React, { useMemo, useState } from "react";
 import NextIcon from "../../assets/icons/NextIcon";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
-import SearchBar from "./SearchBar";
-import No_Data_found from "../../assets/image/NO_DATA.png";
 import UserIcon from "../../assets/icons/UserIcon";
 import Button from "./Button";
 import NoRecords from "./NoRecords";
+import SearchBar from "./SearchBar";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
