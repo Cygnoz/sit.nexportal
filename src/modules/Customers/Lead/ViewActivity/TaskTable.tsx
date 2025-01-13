@@ -202,7 +202,7 @@ const TaskTable = <T extends object>({
         {headerContents.button && (
           <div>
             <Button
-              onClick={() => handleModalToggle(getTask)}  // Pass getTask function here
+              onClick={() => handleModalToggle()}  // Pass getTask function here
               className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148] -mt-1"
               variant="secondary"
             >
@@ -282,11 +282,9 @@ const TaskTable = <T extends object>({
   const [isModalOpen, setIsModalOpen] = useState(false);
   // Function to toggle modal visibility
   // Update handleModalToggle to accept getTask function as parameter
-  const handleModalToggle = (getTask?: () => void) => {
+  const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
-    if (getTask) {
-      getTask();  // Call the getTask function
-    }
+      getTask?.();  // Call the getTask function
   };
 
   return (
