@@ -5,9 +5,9 @@ const mongoose = require('mongoose');
 const Bda = require("../database/model/bda");
 const User = require("../database/model/user");
 const ActivityLogg = require('../database/model/activityLog');
+const AreaManager = require("../database/model/areaManager");
+const RegionManager = require("../database/model/regionManager");
 
-
-const AreaManager = require('../database/model/areaManager')
 
 // exports.addArea = async (req, res, next) => {
 //     try {
@@ -134,13 +134,54 @@ exports.getArea = async (req, res) => {
 
 exports.getAllAreas = async (req, res) => {
     try {
-      const areas = await Area.find({}).populate('region', 'regionCode regionName');
-  
-      if (areas.length === 0) {
-        return res.status(404).json({ message: "No areas found" });
+
+      const userId = req.user.id;
+
+      // Fetch user's role in a single query with selected fields
+      const user = await User.findById(userId).select("role");
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
       }
   
-      res.status(200).json({ message: "Areas retrieved successfully", areas });
+      const { role } = user;
+  
+      // Base query to find Bda
+      let Query = {};
+      let query = {} 
+      if (["Super Admin", "Sales Admin", "Support Admin"].includes(role)) {
+        // No additional filters for these roles
+      } else if (role === "Region Manager") {
+        // Fetch region ID in a single query
+        const regionManager = await RegionManager.findOne({ user: userId }).select("region");
+        if (!regionManager) {
+          return res.status(404).json({ message: "Region Manager data not found" });
+        }
+        Query.region = regionManager.region;
+        query.regionId = Query.region
+      } else {
+        return res.status(403).json({ message: "Unauthorized role" });
+      }
+
+      
+      const areas = await Area.find(Query).populate('region', 'regionCode regionName');
+
+      // if (areas.length === 0) {
+      //   return res.status(404).json({ message: "No areas found" });
+      // }
+      const totalArea = areas.length;
+      const totalAreaManagers = (await AreaManager.find(Query)).length;
+      const totalBda = (await Bda.find(Query)).length;
+      const totalLeads = (await Leads.find(query)).length;
+      
+
+
+      res.status(200).json({ 
+        areas,
+        totalArea,
+        totalAreaManagers,
+        totalBda,
+        totalLeads
+       });
     } catch (error) {
       console.error("Error fetching all areas:", error);
       res.status(500).json({ message: "Internal server error" });

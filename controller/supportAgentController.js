@@ -282,9 +282,9 @@ exports.getAllSupportAgent = async (req, res) => {
       { path: "commission", select: "profileName" },
     ]);
 
-    if (supportAgent.length === 0) {
-      return res.status(404).json({ message: "No Support Agent found" });
-    }
+    // if (supportAgent.length === 0) {
+    //   return res.status(404).json({ message: "No Support Agent found" });
+    // }
 
     const totalSupportAgent = supportAgent.length;
 
@@ -314,7 +314,7 @@ exports.getAllSupportAgent = async (req, res) => {
      // Fetch Licensers
      const tickets = await Ticket.find(query)
 
-   if (!tickets.length) return res.status(404).json({ message: "No Leads found." });
+  //  if (!tickets.length) return res.status(404).json({ message: "No Leads found." });
 
    const totalTickets = tickets.length;
    const resolvedTickets = tickets.filter((ticket) => ticket.status === "Resolved").length;
