@@ -24,7 +24,6 @@ import { endPoints } from "../../../services/apiEndpoints";
 import AwardIcon from "../../../assets/icons/AwardIcon";
 import SVViewAward from "./SVViewAward";
 import SupervisorForm from "./SupervisorForm";
-import RatingStar from "../../../components/ui/RatingStar";
 import person1 from "../../../assets/image/Ellipse 14.png";
 import person2 from "../../../assets/image/Ellipse 43.png";
 import Trash from "../../../assets/icons/Trash";
@@ -73,7 +72,14 @@ const SuperVisorView = ({}: Props) => {
     }));
     getASV();
   };
+  
+  const { request: getInsideSv } = useApi('get', 3003);
+  const [insideSvData, setInsideSvData] =  useState<any>();
+  const [supervisorDetails, setSupervisorDetails] = useState([]);
+const [supportAgentDetails, setSupportAgentDetails] = useState([]);
+const [ticketSummary, setTicketSummary] = useState([]);
 
+  
   const {request:deleteaSV}=useApi('delete',3003)
   const { request: getaSV } = useApi("get", 3003);
   const { id } = useParams();
@@ -120,11 +126,48 @@ const SuperVisorView = ({}: Props) => {
 
   const navigate=useNavigate()
 
+  
+  const getInsideViewSV = async () => {
+    try {
+      const { response, error } = await getInsideSv(`${endPoints.SUPER_VISOR}/${id}/details`);
+      
+      
+      if (response && !error) {
+        console.log(response.data);
+        setInsideSvData(response.data);
+
+         // Extract recentActivities & supportTickets
+      if (response.data) {
+        setSupervisorDetails(response.data.supervisorDetails || []);
+        setSupportAgentDetails(response.data.supportAgentDetails || []);
+        setTicketSummary(response.data.ticketSummary || []);
+
+      }
+  
+      } else {
+        console.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.error("Error fetching SV data:", err);
+    }
+  };
+  
+  useEffect(() => {
+    getInsideViewSV();
+  }, [id]);
+  
+  console.log("SV Data:", insideSvData);
+  console.log("Supervisor Details:", supervisorDetails);
+  console.log("SupportAgent Details:", supportAgentDetails);
+  console.log("Recent Activities:", ticketSummary);
+
+
+
   // Data for HomeCards
   const SuperVisorCardData = [
     {
       icon: <AreaIcon size={24} />,
-      number: "167",
+      number:  insideSvData?.supervisorDetails?.totalSupportAgents || 0,
       title: "Total Agent Supervised",
       subTitle: "look loo",
       images: [
@@ -136,128 +179,33 @@ const SuperVisorView = ({}: Props) => {
     },
     {
       icon: <UserIcon size={24} />,
-      number: "86%",
+      number:  insideSvData?.supervisorDetails?.overallResolutionRate || 0,
+      
       title: " Tasks completed by the team",
       subTitle: "look loo",
     },
-    {
-      icon: <AreaManagerIcon size={24} />,
-      number: "4.5/4",
-      title: "Customer Feedback",
-      subTitle: "look loo",
-      rating:<RatingStar size={14} count={3}/>
-    },
+    
   ];
 
-  // Data for the table
-  const data: any[] = [
-    {
-      memberID: "001",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={3} />,
-    },
-    {
-      memberID: "002",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={3} />,
-    },
-    {
-      memberID: "003",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "004",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={5} />,
-    },
-    {
-      memberID: "005",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={2} />,
-    },
-    {
-      memberID: "006",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "007",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={1} />,
-    },
-    {
-      memberID: "008",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={3} />,
-    },
-    {
-      memberID: "009",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "010",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={2} />,
-    },
-    {
-      memberID: "011",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "012",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={5} />,
-    },
-    {
-      memberID: "013",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "014",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={3} />,
-    },
-  ];
+ 
+ 
   // Define the columns with strict keys
-  const columns: { key: keyof SupervisorData; label: string }[] = [
-    { key: "memberID", label: "Member ID" },
-    { key: "supervisorName", label: " Name" },
-    { key: "ticketsResolved", label: "Tickets Resolved" },
-    { key: "time", label: "Avg.Resolution Time" },
-    { key: "rating", label: "Rating" },
+  const columns: { key: any; label: string }[] = [
+    { key: "employeeId", label: "Member ID" },
+    { key: "supportAgentName", label: " Name" },
+    { key: "resolvedTicketsCount", label: "Tickets Resolved" },
+   // { key: "time", label: "Avg.Resolution Time" },
+    
   ];
+  const SVData = supportAgentDetails.map((support: any) => ({
+    ...support,
+    employeeId: support.employeeId || "N/A",
+    supportAgentName: support.supportAgentName, // or any unique identifier
+    resolvedTicketsCount: support.resolvedTicketsCount || 0, // Adjust according to your data structure
+  
+    
+  }));
+ 
 
   return (
     <>
@@ -290,7 +238,7 @@ const SuperVisorView = ({}: Props) => {
                   title={card.title}
                   subTitle={card.subTitle}
                   images={card.images}
-                  rating={card.rating}
+                  
                 />
               ))}
             </div>
@@ -298,7 +246,7 @@ const SuperVisorView = ({}: Props) => {
             {/* Table Section */}
             <div>
               <Table<SupervisorData>
-                data={data}
+                data={SVData}
                 columns={columns}
                 headerContents={{
                   title: "Support Team Members",

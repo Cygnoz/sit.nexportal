@@ -7,7 +7,7 @@ import RegionIcon from "../../../assets/icons/RegionIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import UserIcon from "../../../assets/icons/UserIcon";
 import CalenderClock from "../../../assets/icons/CalenderClock";
-import No_Data_found from '../../../assets/image/NO_DATA.png';
+import NoRecords from "../../../components/ui/NoRecords";
 
 type Props = {};
 
@@ -50,10 +50,8 @@ const ResendActivity = ({}: Props) => {
 
   {data.length === 0 ? (
     // No Data Found Message
-    <div className="flex justify-center items-center h-full flex-col">
-      <img width={70} src={No_Data_found} alt="No Data Found" />
-      <p className="font-bold text-red-700">No Achievements Found!</p>
-    </div>
+    <NoRecords text="No Records Found" parentHeight="430px" imgSize={90} textSize="lg"/>
+
   ) : (
     // Scrollable Activity List
     data.map((activity) => (

@@ -25,6 +25,7 @@ import SupportTicketTable from "./SupportTicketTable";
 import { getStatusClass } from "../../../../components/ui/GetStatusClass";
 
 type Props = {
+  insideLicenserData:any;
 
 };
 
@@ -107,6 +108,44 @@ function LicenserView({ }: Props) {
           }
         };
         
+        const { request: getInsideLicenser } = useApi('get', 3001);
+const [insideLicenserData, setInsideLicenserData] =  useState<any>();
+const [recentActivities, setRecentActivities] = useState([]);
+const [supportTickets, setSupportTickets] = useState([]);
+
+const getInsideViewLICENSER = async () => {
+  try {
+    const { response, error } = await getInsideLicenser(`${endPoints.LICENSER}/${id}/details`);
+    
+    if (response && !error) {
+      console.log(response.data);
+      setInsideLicenserData(response.data);
+
+      // Extract recentActivities & supportTickets
+      if (response.data.licenserDetails) {
+        setRecentActivities(response.data.licenserDetails.recentActivities || []);
+        setSupportTickets(response.data.licenserDetails.supportTickets || []);
+      }
+      
+    } else {
+      console.error(error.response.data.message);
+    }
+  } catch (err) {
+    console.error("Error fetching LICENSER data:", err);
+  }
+};
+
+useEffect(() => {
+  getInsideViewLICENSER();
+}, [id]);
+
+console.log("Licenser Data:", insideLicenserData);
+console.log("Recent Activities:", recentActivities);
+console.log("Support Tickets:", supportTickets);
+
+        
+
+
 
   // Function to toggle modal visibility
 
@@ -121,28 +160,37 @@ function LicenserView({ }: Props) {
     },
     {
       icon: <TicketCheck />,
-      number: "100",
+      number:  insideLicenserData?.licenserDetails?.openTickets || 0,
       title: "Open Tickets",
       iconFrameColor: "#30B777",
       iconFrameBorderColor: "#B3F0D3CC",
     },
     {
       icon: <RegionIcon size={24} />,
-      number: "526",
+      number: insideLicenserData?.licenserDetails?.closedTickets || 0,
       title: "Closed Tickets",
       iconFrameColor: "#51BFDA",
       iconFrameBorderColor: "#C1E7F1CC",
     },
     {
       icon: <RegionIcon size={24} />,
-      number: "12Oct23",
+      number: insideLicenserData?.licenserDetails?.startDate 
+        ? new Date(insideLicenserData.licenserDetails.startDate)
+            .toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" })
+            .toUpperCase()
+        : "N/A",
       title: "Start Date",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
+    
     {
       icon: <RegionIcon size={24} />,
-      number: "12Oct24",
+      number: insideLicenserData?.licenserDetails?.endDate 
+      ? new Date(insideLicenserData.licenserDetails.endDate)
+          .toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" })
+          .toUpperCase()
+      : "N/A",
       title: "End Date",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
@@ -237,7 +285,11 @@ function LicenserView({ }: Props) {
 
 
           </div>
-          <RecentActivityView />
+          <RecentActivityView 
+          insideLicenserData={insideLicenserData}
+          recentActivities={recentActivities}
+
+          />
         </div>
         <div className="w-[86%] space-y-3">
           <div className="h-[130px] relative flex flex-col  bg-white rounded-lg">
@@ -307,7 +359,8 @@ function LicenserView({ }: Props) {
 </div>
 
           </div>
-          <SupportTicketTable />
+          <SupportTicketTable 
+          supportTickets={supportTickets}/>
           <PaymentTable />
         </div>
       </div>
