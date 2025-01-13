@@ -73,15 +73,6 @@ const Tasks = ({leadData}: Props) => {
             headerContents={{
             title: "Tasks",
             search: { placeholder: "Search" },
-            // sort: [
-            //       {
-            //         sortHead: "Filter",
-            //         sortList: [
-            //           { label: "Sort by Date", icon: <PackageCheck size={14} color="#4B5C79"/> },
-            //           { label: "Sort by Status", icon: <Boxes size={14} color="#4B5C79"/> }
-            //         ]
-            //       }
-            //     ],
             button:{
               buttonHead:"Add Task"
             }

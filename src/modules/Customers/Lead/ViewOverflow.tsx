@@ -41,7 +41,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
     const current: any = dropdownRef.current
     if (current && !current.contains(event.target)) {
       setIsOpen(false);
-      setLead((prev: any) => ({ ...prev, leadStatus: lead?.leadStatus }));
+      setLead((prev: any) => ({ ...prev, leadStatus: leadData?.leadStatus }));
     }
   };
   

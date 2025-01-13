@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { endPoints } from '../../../services/apiEndpoints';
 import useApi from '../../../Hooks/useApi';
 import UserIcon from '../../../assets/icons/UserIcon';
-import No_Data_found from '../../../assets/image/NO_DATA.png';
+import NoRecords from '../../../components/ui/NoRecords';
 
 type Props = {
     onClose: () => void;
@@ -98,10 +98,8 @@ const RMViewAward = ({ getData, onClose }: Props) => {
                             </div>
                         ))
                     ) : (
-                        <div className="flex justify-center flex-col items-center h-full">
-                            <img width={70} src={No_Data_found} alt="No Data Found" />
-                            <p className="font-bold text-red-700">No Achievements Found!</p>
-                        </div>
+                        <NoRecords text="No Achievments Found" parentHeight="430px" imgSize={90} textSize="lg"/>
+
                     )}
                 </div>
             </div>

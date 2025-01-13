@@ -2,7 +2,7 @@
 import Input from "../../form/Input";
 //import Select from "../../../components/form/Select";
 import Button from "../../ui/Button";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, set } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import InputPasswordEye from "../../form/InputPasswordEye";
@@ -60,12 +60,15 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
     console.log("Form Data:", data);
     try{
         const fun=type=="lead"?leadToTrial:trialToLicenser
-        const {response,error}=await fun(`${type==="lead"?endPoints.TRIAL:endPoints.TRIALS}/${customerData._id}`,data)
-        console.log(error);
+        const {response,error}=await fun(`${type==="lead"?endPoints.TRIAL:endPoints.TRIALS}/${customerData._id?customerData._id:customerData?.licenserId}`,data)
+        console.log("err",error);
+        console.log("orgForm",response);
         
         if(response && !error){
-            toast.success(response.data.message)
-            navigate(type==='lead'?'/lead':'/trial'); // Trigger navigation first
+            toast.success(customerData?.licenserId?"Organization created Successfully":response.data.message)
+             if(!customerData?.licenserId){
+              navigate(type==='lead'?'/lead':'/trial');
+             }
             getLeads?.()
             onClose()
             
@@ -76,6 +79,8 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
         console.log(err)   
     }
   };
+  
+  console.log(errors);
   
 
 
@@ -92,7 +97,8 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
        setValue("organizationName",orgData?.organizationName?orgData?.organizationName:customerData?.companyName)
        setValue("contactNum",orgData?.primaryContactNum?orgData?.primaryContactNum:customerData?.phone )
        setValue("email",orgData?.primaryContactEmail?orgData?.primaryContactEmail:customerData?.email)
-  
+       setValue("startDate",orgData?.startDate?orgData?.startDate:customerData?.startDate)
+       setValue("endDate",orgData?.endDate?orgData?.endDate:customerData?.endDate)
    },[orgData,customerData])
 
   useEffect(() => {
@@ -111,6 +117,9 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
   }, [watch("startDate"), type, setValue]);
   
     
+
+  console.log("err",errors);
+  
 
   return (
     <div className="p-1 bg-white rounded shadow-md space-y-2">

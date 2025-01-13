@@ -40,7 +40,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
  const {request:getAllCustomersCounts}=useApi('get',3001);
   const { request: getAllCountries } = useApi("get", 3003);
   const { request: getAllDropdown } = useApi("get", 3003);
-
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);

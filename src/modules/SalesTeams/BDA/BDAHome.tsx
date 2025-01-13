@@ -19,10 +19,12 @@ import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import BDAForm from "./BDAForm";
 
+
+
 const BDAHome = () => {
   const {totalCounts}=useRegularApi()
   const { request: getAllBDA } = useApi("get", 3002);
-  const [allBDA, setAllBDA] = useState<any[]>([]);
+  const [allBDA, setAllBDA] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId, setEditId] = useState('');
   const handleModalToggle = () => {
@@ -44,28 +46,28 @@ const BDAHome = () => {
   const homeCardData = [
     {
       icon: <AreaManagerIcon />,
-      number: totalCounts?.totalBdas,
+      number: allBDA?.res?.totalBda,
       title: "Total BDA'S",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
     },
     {
       icon: <LeadsCardIcon />,
-      number: totalCounts?.totalLead,
+      number: allBDA?.res?.totalLead,
       title: "Total Leads (Handled by BDA'S)",
       iconFrameColor: "#9C75D3",
       iconFrameBorderColor: "#DAC9F1",
     },
     {
       icon: <TrialIcon width={26} height={26} />,
-      number:totalCounts?.totalTrial,
+      number:allBDA?.res?.totalTrial,
       title: "Total Trails (Handled by BDA'S)",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
     },
     {
       icon: <Licensor />,
-      number: totalCounts?.totalLicensor,
+      number: allBDA?.res?.totalLicensors,
       title: "Total Licensers(Handled by BDA'S)",
       iconFrameColor: "#8695DD",
       iconFrameBorderColor: "#CAD1F1CC",
@@ -86,6 +88,8 @@ const BDAHome = () => {
     try {
       const { response, error } = await getAllBDA(endPoints.BDA);
       if (response && !error) {
+        console.log("res",response.data);
+        const {bda,...res}=response.data
         const transformedBDA =
           response.data.bda?.map((bda:any) => ({
             ...bda,
@@ -98,8 +102,8 @@ const BDAHome = () => {
             regionName:bda?.region?.regionName,
             areaName:bda?.area?.areaName
           })) || [];
-        setAllBDA(transformedBDA);
-        console.log(transformedBDA);
+          const bdaData={transformedBDA,res}
+        setAllBDA(bdaData);
         
       } else {
         console.log(error?.response?.data?.message || "Failed to fetch data.");
@@ -122,22 +126,22 @@ const BDAHome = () => {
         const handleFilter = ({ options }: { options: string }) => {
           if (options === "Name") {
             // Create a new sorted array to avoid mutating the original state
-            const sortedAms = [...allBDA].sort((a, b) =>
+            const sortedAms = [...allBDA?.transformedBDA].sort((a, b) =>
               b?.userName?.localeCompare(a?.userName)
             );
             setAllBDA(sortedAms);
           } else if (options === "Region") {
-            const sortedAms = [...allBDA].sort((a, b) =>
+            const sortedAms = [...allBDA?.transformedBDA].sort((a, b) =>
               b?.regionName?.localeCompare(a?.regionName)
             );
             setAllBDA(sortedAms)
           } else if(options=='Email') {
-            const sortedAms = [...allBDA].sort((a, b) =>
+            const sortedAms = [...allBDA?.transformedBDA].sort((a, b) =>
               b?.loginEmail?.localeCompare(a?.loginEmail)
             );
             setAllBDA(sortedAms);
           }else{
-            const sortedAms = [...allBDA].sort((a, b) =>
+            const sortedAms = [...allBDA?.transformedBDA].sort((a, b) =>
               b?.areaName?.localeCompare(a?.areaName)
             );
             setAllBDA(sortedAms);
@@ -176,7 +180,7 @@ const BDAHome = () => {
       {/* Table Section */}
       <div>
         <Table<BDAData>
-          data={allBDA}
+          data={allBDA?.transformedBDA}
           columns={columns}
           headerContents={{
             // title:'Region',

@@ -11,7 +11,7 @@ import { themes } from "../../../Interfaces/Praise"
 import { achievements } from "../../../Interfaces/Praise"
 import { endPoints } from "../../../services/apiEndpoints"
 import useApi from "../../../Hooks/useApi"
-import No_Data_found from '../../../assets/image/NO_DATA.png'
+import NoRecords from "../../../components/ui/NoRecords"
 
 type Props = {}
 
@@ -204,10 +204,8 @@ const PraiseHome = ({ }: Props) => {
     ))
   ) : (
     // Show No Data Found when fetching is complete but no praises exist
-    <div className="flex justify-center flex-col items-center col-span-2 mt-24 h-full">
-      <img width={90} src={No_Data_found} alt="No Data Found" />
-      <p className="font-bold text-red-700">No Praise Found!</p>
-    </div>
+    <NoRecords text="No Praise Found" parentHeight="430px" imgSize={90} textSize="lg"/>
+
   )}
 </div>
 
