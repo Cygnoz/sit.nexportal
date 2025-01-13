@@ -4,11 +4,11 @@ import { endPoints } from "../../../../services/apiEndpoints";
 import useApi from "../../../../Hooks/useApi";
 import { useParams } from "react-router-dom";
 import UserIcon from "../../../../assets/icons/UserIcon";
-import No_Data_found from '../../../../assets/image/NO_DATA.png';
 import AreaIcon from "../../../../assets/icons/AreaIcon";
 import RegionIcon from "../../../../assets/icons/RegionIcon";
 import CalenderClock from "../../../../assets/icons/CalenderClock";
 import AreaManagerIcon from "../../../../assets/icons/AreaMangerIcon";
+import NoRecords from "../../../../components/ui/NoRecords";
 
 
 // Timeline Component
@@ -130,10 +130,8 @@ const RecentActivityView: React.FC = () => {
     </div>
   ) : (
     /* No Data Screen */
-    <div className="flex justify-center items-center h-96 flex-col">
-      <img width={70} src={No_Data_found} alt="No Data Found" />
-      <p className="font-bold text-red-700">No Achievements Found!</p>
-    </div>
+    <NoRecords text="No Achievments Found" parentHeight="430px" imgSize={90} textSize="lg"/>
+
   )}
 
 
