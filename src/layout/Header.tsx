@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { NavList } from "../components/list/NavLists";
 import Modal from "../components/modal/Modal";
 import UserModal from "./Logout/UserModal";
+import NoImage from "../components/ui/NoImage";
 
 interface HeaderProps {
   searchValue: string;
@@ -147,9 +148,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
               alt=""
             />
           ) : (
-            <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-black rounded-full flex justify-center items-center">
-              <UserIcon color="white" />
-            </p>
+            <NoImage roundedSize={34} iconSize={18}/>
           )}
         </p>
       </div>

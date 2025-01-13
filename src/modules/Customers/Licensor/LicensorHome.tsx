@@ -67,8 +67,7 @@ const LicensorHome = () => {
           }catch(err){
             console.log(err);
           }
-        }
-        console.log(allLicenser);
+      }
         
         useEffect(()=>{
           getLicensers()

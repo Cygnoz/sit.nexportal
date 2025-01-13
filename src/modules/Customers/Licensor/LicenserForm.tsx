@@ -18,6 +18,7 @@ import Trash from "../../../assets/icons/Trash";
 import { useUser } from "../../../context/UserContext";
 import OrganisationForm from "../../../components/modal/ConvertionModal/OrganisationForm";
 import Modal from "../../../components/modal/Modal";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 type Props = {
@@ -41,13 +42,13 @@ const validationSchema = Yup.object({
 });
 
 function LicenserForm({ onClose ,editId}: Props) {
-  const [isOrgModalOpen, setIsOrgModalOpen] = useState(false);
-  const handleModalToggle = ()=>{
-    setIsOrgModalOpen((prev)=>!prev)
-    onClose()
+  const [isOrgModal, setIsOrgModal] = useState(false);
+  const handleModalToggle = (close=false)=>{
+    setIsOrgModal((prev)=>!prev)
+     close&&onClose()
 }
 
-  
+  const {setCustomerData}=useResponse()
   const {user}=useUser()
   const {request:addLicenser}=useApi('post',3001)
   const {request:editLicenser}=useApi('put',3001)
@@ -102,8 +103,13 @@ function LicenserForm({ onClose ,editId}: Props) {
       console.log("Error:", error);
   
       if (response && !error) {
+        const customerData={
+          ...data,
+          licenserId:response.data.licenserId
+        }
+        setCustomerData(customerData)
         toast.success(response.data.message); // Show success message
-        handleModalToggle()
+        editId?onClose():handleModalToggle()
         
       } else {
         toast.error(error.response?.data?.message || "An error occurred.");
@@ -118,7 +124,7 @@ function LicenserForm({ onClose ,editId}: Props) {
   
   
 
-  console.log(isOrgModalOpen);
+
   
 
 
@@ -203,7 +209,6 @@ function LicenserForm({ onClose ,editId}: Props) {
     }, [dropDownBdas,watch("areaId")]);
 
     useEffect(()=>{
-      console.log("allBDA",dropDownBdas);
       
       if(user?.role=="BDA"){
         const filteredBDA:any = dropDownBdas?.find(
@@ -279,9 +284,6 @@ function LicenserForm({ onClose ,editId}: Props) {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-  // const orgFormClose=()=>{
-  //   setIsOpenOrg(false)
-  // }
 
   return (
     <>
@@ -514,14 +516,6 @@ function LicenserForm({ onClose ,editId}: Props) {
         Done
       </Button>
 
-      {/* Organisation Form Modal */}
-     <Modal
-        open={isOrgModalOpen}
-        onClose={() => handleModalToggle()}
-        className="w-[35%]"
-      >
-        <OrganisationForm onClose={() => handleModalToggle()} />
-      </Modal>
 
     </div>
         </div>
@@ -529,14 +523,14 @@ function LicenserForm({ onClose ,editId}: Props) {
      
         </form>
     </div>
-    {/* <Modal
-                open={isOpenOrg}
+    <Modal
+                open={isOrgModal}
                 align="center"
-                onClose={orgFormClose}
+                onClose={()=>handleModalToggle(true)}
                 className="w-[35%]"
             >
-                <OrganisationForm licenserId={licenserId}  licenserData={watch()}   type="licenser"  onClose={orgFormClose} />
-            </Modal> */}
+                <OrganisationForm type="trial"   onClose={()=>handleModalToggle(true)} />
+            </Modal>
     </>
   );
 }
