@@ -4,11 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import ChevronRight from "../../../assets/icons/ChevronRight";
-import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
 import Trash from "../../../assets/icons/Trash";
 import UserIcon from "../../../assets/icons/UserIcon";
-import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 import region from "../../../assets/image/Ellipse 14 (1).png";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import Modal from "../../../components/modal/Modal";
@@ -164,26 +162,26 @@ const AreaView = ({ }: // status,
             </div>
           </div>
 
-          <div className="flex justify-end items-center gap-6 text-[10px] py-2">
+          <div className="flex justify-end items-center gap-8 text-[10px] py-2">
             {/* Right Section: Managers and Actions */}
             <div onClick={()=>navigate(`/area-manager/${area?.areaManagers[0]._id}`)}  className="flex items-center   ">
               {/* Sales Managers */}
-            
+                {area?.areaManagers[0]&&<> 
                 <p className="text-sm me-5">Area Manager</p>
-                <div className="flex flex-col item-center  justify-center space-y-1 cursor-pointer">
-                <div className="flex justify-center">
-                {
-                  area?.areaManagers[0].user?.userImage?
-                  <img className="w-9  h-9 rounded-full mb-1" src={area?.areaManagers[0].user?.userImage} alt="" />:
-                  <p className="w-9  h-9 border mb-2 border-[#E7E8EB] bg-black rounded-full flex justify-center items-center">
+                <div  className="flex flex-col items-center  space-y-1 cursor-pointer">
+              <div className="w-8 h-8 mb-2 rounded-full">
+              {
+                  area?.areaManagers[0]?.user?.userImage?
+                  <img className="w-10  h-9 rounded-full" src={area?.areaManagers[0]?.user?.userImage} alt="" />:
+                  <p className="w-9  h-9 border  border-[#E7E8EB] bg-black rounded-full flex justify-center items-center">
               <UserIcon color="white" />
             </p>
                 }
-                </div>
-                 <p className="text-center ms-1">{area?.areaManagers[0].user?.userName}</p>
-                </div>
-  
-             
+              </div>
+              <p className="text-center ms-2">{area?.areaManagers[0]?.user?.userName}</p>
+            </div>
+                </> }  
+               
                
 
              
@@ -198,7 +196,7 @@ const AreaView = ({ }: // status,
               </div>
               <p className="text-center ms-2">Edit</p>
             </div>
-            <div
+            {/* <div
               onClick={() => handleModalToggle(false, false, true)}
               className="flex flex-col items-center space-y-1 cursor-pointer"
             >
@@ -222,7 +220,7 @@ const AreaView = ({ }: // status,
               <p className="text-center ms-2">
                 {area?.status === "Active" ? "Deactivate" : "Activate"}
               </p>
-            </div>
+            </div> */}
             <div onClick={() => handleModalToggle(false, true, false)} className="cursor-pointer">
               <div className="rounded-full bg-[#D52B1E4D] h-9 w-9 border border-white mb-2">
                 <div className="ms-2 mt-2 ">

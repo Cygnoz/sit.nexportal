@@ -1,19 +1,19 @@
 import React, { useEffect, useMemo, useState } from "react";
+import ArrowRight from "../../assets/icons/ArrowRight";
 import Eye from "../../assets/icons/Eye";
 import NextIcon from "../../assets/icons/NextIcon";
 import PencilLine from "../../assets/icons/PencilLine";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
 import Trash from "../../assets/icons/Trash";
-import SearchBar from "./SearchBar";
-import SortBy from "./SortBy";
+import UserIcon from "../../assets/icons/UserIcon";
 import IndiaLogo from "../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
-import UserIcon from "../../assets/icons/UserIcon";
-import No_Data_found from "../../assets/image/NO_DATA.png";
 import Button from "./Button";
-import ArrowRight from "../../assets/icons/ArrowRight";
 import { getStatusClass } from "./GetStatusClass";
+import NoRecords from "./NoRecords";
+import SearchBar from "./SearchBar";
+import SortBy from "./SortBy";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -217,7 +217,7 @@ const Table = <T extends object>({
   }, [data]);
 
   return (
-    <div className="w-full  bg-white rounded-lg p-4">
+    <div className="w-full  bg-white rounded-lg p-4 mb-4">
       {renderHeader()}
 
       <div
@@ -265,10 +265,7 @@ const Table = <T extends object>({
                   colSpan={noAction?columns?.length+1:columns?.length + 2}
                   className="text-center py-4 text-gray-500"
                 >
-                  <div className="flex justify-center flex-col items-center">
-                    <img width={70} src={No_Data_found} alt="No Data Found" />
-                    <p className="font-bold text-red-700">No Records Found!</p>
-                  </div>
+                  <NoRecords imgSize={70} textSize="md"/>
                 </td>
               </tr>
             ) : data?.length === 0 ? (
@@ -366,47 +363,48 @@ const Table = <T extends object>({
           </tbody>
         </table>
       </div>
+      
+      {data&&data.length > 10 && !noPagination && (
+  <div className="flex justify-between items-center mt-4">
+    <div className="text-xs text-[#71736B] font-medium flex gap-2">
+      Showing {currentPage} of {totalPages || 1}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+          disabled={currentPage === 1}
+        >
+          <PreviousIcon size={20} color="#71736B" />
+        </button>
+        <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
+          {currentPage}
+        </button>
+        <button
+          onClick={() =>
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+          }
+          disabled={currentPage === totalPages || totalPages === 0}
+        >
+          <NextIcon size={20} color="#71736B" />
+        </button>
+      </div>
+    </div>
+    <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
+      Rows per page
+      <select
+        value={rowsPerPage}
+        onChange={handleRowsPerPageChange}
+        className="border border-gray-300 rounded-md p-1 text-sm"
+      >
+        {[5, 10, 20, 50].map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    </div>
+  </div>
+)}
 
-      {!noPagination && (
-        <div className="flex justify-between items-center mt-4">
-          <div className="text-xs text-[#71736B] font-medium flex gap-2">
-            Showing {currentPage} of {totalPages || 1}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                disabled={currentPage === 1}
-              >
-                <PreviousIcon size={20} color="#71736B" />
-              </button>
-              <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
-                {currentPage}
-              </button>
-              <button
-                onClick={() =>
-                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                disabled={currentPage === totalPages || totalPages === 0}
-              >
-                <NextIcon size={20} color="#71736B" />
-              </button>
-            </div>
-          </div>
-          <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
-            Rows per page
-            <select
-              value={rowsPerPage}
-              onChange={handleRowsPerPageChange}
-              className="border border-gray-300 rounded-md p-1 text-sm"
-            >
-              {[5, 10, 20, 50].map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

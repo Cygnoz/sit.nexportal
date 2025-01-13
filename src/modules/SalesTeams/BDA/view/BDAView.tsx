@@ -1,6 +1,5 @@
 import LeadsCardIcon from "../../../../assets/icons/LeadsCardIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
-// import Button from "../../../components/ui/Button";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
@@ -24,6 +23,7 @@ import backGroundView from '../../../../assets/image/BDAView.png';
 import ConfirmModal from "../../../../components/modal/ConfirmModal";
 import Modal from "../../../../components/modal/Modal";
 import LicensersTable from "../../../../components/ui/LicensersTable";
+import NoRecords from "../../../../components/ui/NoRecords";
 import Table from "../../../../components/ui/Table";
 import ViewCard from "../../../../components/ui/ViewCard";
 import { endPoints } from "../../../../services/apiEndpoints";
@@ -45,9 +45,10 @@ interface Licencer {
 
 interface BDAViewDetails {
   TransformedLead:[]
-  LicenserDetails:[]
-  TrialDetails:[]
+  TransformedLicenser:[]
+  TransformedTrial:[]
   bdaDetails:any
+  leadConversionData: [], 
 }
 
 
@@ -72,9 +73,10 @@ const BDAView = ({}: Props) => {
     bdaData: {},
     bdaViewDetails: {
       TransformedLead: [],
-      LicenserDetails: [],
-      TrialDetails: [],
-      bdaDetails:{}
+      TransformedLicenser: [],
+      TransformedTrial: [],
+      bdaDetails:{},
+      leadConversionData: [], 
     },
   });
   
@@ -106,18 +108,14 @@ const BDAView = ({}: Props) => {
     getOneBDA();
   };
   const handleView=(id:any)=>{
-    console.log(id);
+    navigate(`/lead/${id}`)
    }
 
-  const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
-    if (viewId) {
-      // navigate(`/amView/${viewId}`)
-      console.log(viewId);
-
-    }
-    console.log(editId);
-    console.log(deleteId);
+  const  handleLicenserView=(id:any)=>{
+    navigate(`/licenser/${id}`)
   }
+
+ 
   // Data for the table
  
   // Define the columns with strict keys
@@ -131,21 +129,10 @@ const BDAView = ({}: Props) => {
   ];
 
 
-  
 
-  const LicencerData:Licencer[] = [
-    { name: "Albert Flores", plan: "Plan 1", status: "Active", startDate: "2023-01-01", endDate: "2024-01-01", action: "Renew" },
-    { name: "Devon Lane", plan: "Plan 1", status: "Expired", startDate: "2023-01-01", endDate: "2024-01-01", action: "Upgrade" },
-    { name: "Theresa Webb", plan: "Plan 3", status: "Upcoming Renewal", startDate: "2023-01-01", endDate: "2024-01-01", action: "Upgrade" },
-    { name: "Devon Lane", plan: "Plan 1", status: "Expired", startDate: "2023-01-01", endDate: "2024-01-01", action: "Upgrade" },
-    { name: "Theresa Webb", plan: "Plan 2", status: "Upcoming Renewal", startDate: "2023-01-01", endDate: "2024-01-01", action: "Upgrade" },
-    { name: "Albert Flores", plan: "Plan 1", status: "Active", startDate: "2023-01-01", endDate: "2024-01-01", action: "Renew" }
-  ];
-
-  const licenserColumns: { key: keyof Licencer; label: string }[] = [
-    { key: "name", label: "Name" },
-    { key: "plan", label: "Plan" },
-    { key: "status", label: "Status" },
+  const licenserColumns: { key:any; label: string }[] = [
+    { key: "firstName", label: "Name" },
+    { key: "licensorStatus", label: "Status" },
     { key: "startDate", label: "Start Date" },
     { key: "endDate", label: "End Date" },
     { key: "action", label: "Action" }
@@ -194,19 +181,42 @@ const BDAView = ({}: Props) => {
     try {
       const { response, error } = await getBDAViewDetails(`${endPoints.BDA_DETAILS}/${id}/customers`);
       if (response && !error) {
-        console.log("res",response.data);
-        const { LeadDetails, LicenserDetails, TrialDetails,bdaDetails } = response.data;
+        console.log("res", response.data);
+        const { LeadDetails, LicenserDetails, TrialDetails, bdaDetails } = response.data;
   
         const TransformedLead = LeadDetails?.map((lead: any) => ({
           ...lead,
           createdAt: new Date(lead.createdAt).toLocaleDateString("en-GB"), // Format date
         }));
+        const TransformedTrial=TrialDetails?.map((trial:any)=>({
+          ...trial,
+          startDate:new Date(trial.startDate).toLocaleDateString("en-GB")
+        }))
+
+        const TransformedLicenser=LicenserDetails?.map((license:any)=>({
+          ...license,
+          startDate:new Date(license.startDate).toLocaleDateString("en-GB"),
+          endDate:new Date(license.startDate).toLocaleDateString("en-GB")
+        }))
   
-        const TransformData = { TransformedLead, LicenserDetails, TrialDetails,bdaDetails };
+        // Transform leadByStatus into chart-compatible data with uppercase names
+        const leadByStatus = bdaDetails?.leadByStatus || {};
+        const leadConversionData = Object.keys(leadByStatus).map((key) => ({
+          status: key.charAt(0).toUpperCase() + key.slice(1), // Capitalize the first letter
+          value: leadByStatus[key], // Use the value (count) as 'uv'
+        }));
   
-        setData((prev) => ({
+        const TransformData = { 
+          TransformedLead, 
+          TransformedLicenser, 
+          TransformedTrial,
+          bdaDetails,
+          leadConversionData // Add the transformed data for chart
+        };
+  
+        setData((prev: any) => ({
           ...prev,
-          bdaViewDetails:TransformData
+          bdaViewDetails: TransformData,
         }));
       } else {
         console.error("Error response from API:", error);
@@ -217,8 +227,7 @@ const BDAView = ({}: Props) => {
   };
   
   
-
-
+  
   useEffect(() => {
     getOneBDA()
     getBDAViewData()
@@ -231,13 +240,6 @@ const BDAView = ({}: Props) => {
 
 
 
-  const leadConversionData = [
-    { name: 'Area 1', uv: 35, },
-    { name: 'Area 2', uv: 20, },
-    { name: 'Area 3', uv: 10, },
-    { name: 'Area 4', uv: 30, },
-    { name: 'Area 5', uv: 30, },
-  ];
 
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
 
@@ -267,35 +269,38 @@ const BDAView = ({}: Props) => {
           </div>
 
         </div>
-          <div className="col-span-6">
-          <div className="p-3 bg-white w-full space-y-2 rounded-lg">
-                       <h2 className='font-bold'>Lead By Status</h2>
-                       <h2>Converted Leads</h2>
-                       <h1 className='text-2xl font-medium'>567</h1>
-               
-                       <div className='-ms-7 mt-2'>
-                       <BarChart width={650} height={360} data={leadConversionData}>
-                       <CartesianGrid   strokeDasharray="3 3" vertical={false}/>
-                   
-                   {/* Hide axis lines but keep labels visible */}
-                   <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                   <YAxis axisLine={false} tickLine={false} />
-                   
-                   {/* Remove the legend for 'uv' */}
-                   <Tooltip />
-                   
-                   <Bar barSize={90} dataKey="uv" radius={10} >
-                     {
-                       leadConversionData.map((data, index) => (
-                         <Cell key={`cell-${data.name}`} fill={colors[index]} />
-                       ))
-                     }
-                   </Bar>
-                 </BarChart>
-                       </div>
-                   
-                       </div>
-          </div>
+        <div className="col-span-6">
+  <div className="p-3 bg-white w-full space-y-2 rounded-lg">
+    <h2 className="font-bold">Lead By Status</h2>
+    
+    {data.bdaViewDetails?.leadConversionData?.some((item: any) => item.value > 0) ? (
+  <>
+  <h2>Converted Leads</h2>
+    <h1 className="text-2xl font-medium">
+      {data.bdaViewDetails?.bdaDetails?.leadByStatus?.converted || 0}
+    </h1>
+
+    <div className="-ms-7 mt-2">
+      <BarChart width={690} height={360} data={data.bdaViewDetails?.leadConversionData || []}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis dataKey="status" axisLine={false} tickLine={false} />
+        <YAxis axisLine={false} tickLine={false} />
+        <Tooltip />
+        <Bar barSize={90} dataKey="value" radius={10}>
+          {(data.bdaViewDetails?.leadConversionData || []).map((entry: any, index: number) => (
+            <Cell key={`cell-${entry.status}`} fill={colors[index % colors.length]} />
+          ))}
+        </Bar>
+      </BarChart>
+    </div>
+  </>
+) : (
+  <NoRecords text="No Lead Status Available" parentHeight="430px" imgSize={90} textSize="lg"/>
+)}
+
+  </div>
+</div>
+
         <div className="col-span-4 rounded-xl bg-cover"  style={{backgroundImage:`url(${backGroundView})`}}>
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
@@ -423,23 +428,23 @@ const BDAView = ({}: Props) => {
           search: { placeholder: 'Search BDA by Name' },
         }}
         actionList={[
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'view', function: handleView },
         ]} />
       </div>
 
       {/* Graph & Table */}
-      <GraphTable/>
+      <GraphTable bdaData={data.bdaViewDetails}/>
 
         {/* Licenser Card */}
         <div>
         <LicensersTable<Licencer>
-          data={LicencerData}
+          data={data.bdaViewDetails.TransformedLicenser}
           columns={licenserColumns}
           headerContents={{
             title: 'Licensers',
             search: { placeholder: 'Search License by Name or Holder Name' },
           }}
-          handleView={handleView}
+          handleView={handleLicenserView}
         />
         
       </div>
