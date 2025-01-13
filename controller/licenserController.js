@@ -477,7 +477,8 @@ exports.getLicenserDetails = async (req, res) => {
       activityId: activity._id,
       action: activity.action,
       timestamp: activity.timestamp,
-      details: activity.details,
+      details: activity.activity,
+      screen:activity.screen
     }));
 
     // Step 6: Send the response with all the gathered details
