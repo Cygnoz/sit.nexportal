@@ -4,7 +4,7 @@ import RegionIcon from "../../../../assets/icons/RegionIcon";
 import AreaManagerIcon from "../../../../assets/icons/AreaMangerIcon";
 import React from "react";
 import CalenderClock from "../../../../assets/icons/CalenderClock";
-import No_Data_found from '../../../../assets/image/NO_DATA.png';
+import NoRecords from "../../../../components/ui/NoRecords";
  
 type Props = {
   insideLicenserData:Array<any>;
@@ -100,10 +100,8 @@ const screenIcons = [
       </div>
       ) : (
         /* No Data Screen */
-        <div className="flex justify-center items-center h-96 flex-col">
-          <img width={70} src={No_Data_found} alt="No Data Found" />
-          <p className="font-bold text-red-700">No Achievements Found!</p>
-        </div>
+        <NoRecords text="No Achievments Found" parentHeight="430px" imgSize={90} textSize="lg"/>
+
       )}
    
     </div>

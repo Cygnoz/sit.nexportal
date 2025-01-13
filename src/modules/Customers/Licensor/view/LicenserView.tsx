@@ -113,7 +113,7 @@ const [insideLicenserData, setInsideLicenserData] =  useState<any>();
 const [recentActivities, setRecentActivities] = useState([]);
 const [supportTickets, setSupportTickets] = useState([]);
 
-const getInsideViewAM = async () => {
+const getInsideViewLICENSER = async () => {
   try {
     const { response, error } = await getInsideLicenser(`${endPoints.LICENSER}/${id}/details`);
     
@@ -131,12 +131,12 @@ const getInsideViewAM = async () => {
       console.error(error.response.data.message);
     }
   } catch (err) {
-    console.error("Error fetching AM data:", err);
+    console.error("Error fetching LICENSER data:", err);
   }
 };
 
 useEffect(() => {
-  getInsideViewAM();
+  getInsideViewLICENSER();
 }, [id]);
 
 console.log("Licenser Data:", insideLicenserData);
