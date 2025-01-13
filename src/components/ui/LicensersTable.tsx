@@ -5,6 +5,7 @@ import SearchBar from "./SearchBar";
 import No_Data_found from "../../assets/image/NO_DATA.png";
 import UserIcon from "../../assets/icons/UserIcon";
 import Button from "./Button";
+import NoRecords from "./NoRecords";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -43,7 +44,7 @@ const LicensersTable = <T extends object>({
     );
   }, [data, searchValue]);
 
-  console.log("xz",data);
+
   
 
   // Paginate the filtered data
@@ -175,7 +176,7 @@ const LicensersTable = <T extends object>({
   };
 
   return (
-    <div className="w-full  bg-white rounded-lg p-4">
+    <div className="w-full  bg-white rounded-lg p-4 mb-4">
       {renderHeader()}
 
       <div
@@ -254,7 +255,7 @@ const LicensersTable = <T extends object>({
                             {row[col.key]}
                           </p>
                         ) : (
-                          getNestedValue(row, col.key) || "Null"
+                          getNestedValue(row, col.key) 
                         )}
                       </div>
                     </td>
@@ -275,10 +276,7 @@ const LicensersTable = <T extends object>({
                 colSpan={columns?.length + 2}
                 className="text-center py-4 text-gray-500"
               >
-                <div className="flex justify-center flex-col items-center">
-                  <img width={70} src={No_Data_found} alt="No Data Found" />
-                  <p className="font-bold text-red-700">No Records Found!</p>
-                </div>
+               <NoRecords imgSize={70} textSize="md"/>
               </td>
             </tr>
             )}
@@ -287,7 +285,7 @@ const LicensersTable = <T extends object>({
       </div>
 
 
-      <div className="flex justify-between items-center mt-4">
+     { data&&data.length > 10 &&<div className="flex justify-between items-center mt-4">
         <div className="text-xs text-[#71736B] font-medium flex gap-2">
           Showing {currentPage} of {totalPages || 1}
           <div className="flex gap-2">
@@ -324,7 +322,7 @@ const LicensersTable = <T extends object>({
             ))}
           </select>
         </div>
-      </div>
+      </div>}
 
     </div>
   );
