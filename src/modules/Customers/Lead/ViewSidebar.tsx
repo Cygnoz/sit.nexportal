@@ -117,7 +117,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
           </div>
           <div className="flex gap-4 w-full ">
             <div className="w-14 h-14 rounded-full overflow-hidden">
-              {leadData?.image.length > 50 ? (
+              {leadData?.image?.length > 50 ? (
                 <img
                   src={leadData?.image} // Replace with the actual image URL
                   alt="Profile"
@@ -299,13 +299,6 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
               />
               <div className="flex justify-center">
                 <div className="space-y-4">
-                  {/* // <div key={role.name} className="flex items-center justify-between w-72 space-x-3">
-        //   <div className="flex items-center gap-2">
-        //     <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
-        //     <span className="text-gray-800 font-medium text-xs">{role.name}</span>
-        //   </div>
-        //   <span className="ml-auto text-gray-600 text-xs">{role.count}</span>
-        // </div> */}
 
                   <div className="grid grid-cols-2 w-72 gap-3">
                     {roles.map((role) => (
