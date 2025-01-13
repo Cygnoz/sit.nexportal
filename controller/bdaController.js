@@ -276,6 +276,7 @@ exports.getBda = async (req, res) => {
   }
 };
 
+
 exports.getAllBda = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -289,7 +290,7 @@ exports.getAllBda = async (req, res) => {
     const { role } = user;
 
     // Base query to find Bda
-    let query = {};
+    let Query = {};
 
     if (["Super Admin", "Sales Admin", "Support Admin"].includes(role)) {
       // No additional filters for these roles
@@ -299,20 +300,20 @@ exports.getAllBda = async (req, res) => {
       if (!regionManager) {
         return res.status(404).json({ message: "Region Manager data not found" });
       }
-      query.region = regionManager.region;
+      Query.region = regionManager.region;
     } else if (role === "Area Manager") {
       // Fetch area ID in a single query
       const areaManager = await AreaManager.findOne({ user: userId }).select("area");
       if (!areaManager) {
         return res.status(404).json({ message: "Area Manager data not found" });
       }
-      query.area = areaManager.area;
+      Query.area = areaManager.area;
     } else {
       return res.status(403).json({ message: "Unauthorized role" });
     }
 
     // Fetch Bda data based on the filtered query
-    const bda = await Bda.find(query).populate([
+    const bda = await Bda.find(Query).populate([
       { path: "user", select: "userName phoneNo userImage email employeeId" },
       { path: "region", select: "regionName" },
       { path: "area", select: "areaName" },
@@ -323,12 +324,97 @@ exports.getAllBda = async (req, res) => {
       return res.status(404).json({ message: "No BDA found" });
     }
 
-    res.status(200).json({ bda });
+    // Fetch Licensers
+    const query = await filterByRole(userId);
+    const leads = await Leads.find(query);
+
+    if (!leads.length) {
+      return res.status(404).json({ message: "No Leads found." });
+    }
+
+    // Calculate total counts
+    const totalBda = bda.length;
+    const totalLead = leads.filter((lead) => lead.customerStatus === "Lead").length;
+    const totalTrial = leads.filter((lead) => lead.customerStatus === "Trial").length;
+    const totalLicensors = leads.filter((lead) => lead.customerStatus === "Licenser").length;
+
+    // Send the response
+    res.status(200).json({
+      bda,
+      totalBda,
+      totalLead,
+      totalTrial,
+      totalLicensors,
+    });
   } catch (error) {
     console.error("Error fetching Bda data:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
+// exports.getAllBda = async (req, res) => {
+//   try {
+//     const userId = req.user.id;
+
+//     // Fetch user's role in a single query with selected fields
+//     const user = await User.findById(userId).select("role");
+//     if (!user) {
+//       return res.status(404).json({ message: "User not found" });
+//     }
+
+//     const { role } = user;
+
+//     // Base query to find Bda
+//     let Query = {};
+
+//     if (["Super Admin", "Sales Admin", "Support Admin"].includes(role)) {
+//       // No additional filters for these roles
+//     } else if (role === "Region Manager") {
+//       // Fetch region ID in a single query
+//       const regionManager = await RegionManager.findOne({ user: userId }).select("region");
+//       if (!regionManager) {
+//         return res.status(404).json({ message: "Region Manager data not found" });
+//       }
+//       Query.region = regionManager.region;
+//     } else if (role === "Area Manager") {
+//       // Fetch area ID in a single query
+//       const areaManager = await AreaManager.findOne({ user: userId }).select("area");
+//       if (!areaManager) {
+//         return res.status(404).json({ message: "Area Manager data not found" });
+//       }
+//       Query.area = areaManager.area;
+//     } else {
+//       return res.status(403).json({ message: "Unauthorized role" });
+//     }
+
+//     // Fetch Bda data based on the filtered query
+//     const bda = await Bda.find(Query).populate([
+//       { path: "user", select: "userName phoneNo userImage email employeeId" },
+//       { path: "region", select: "regionName" },
+//       { path: "area", select: "areaName" },
+//       { path: "commission", select: "profileName" },
+//     ]);
+
+//     if (!bda || bda.length === 0) {
+//       return res.status(404).json({ message: "No BDA found" });
+//     }
+
+//     const query = await filterByRole(userId);
+// console.log(query);
+
+//     // Fetch Licensers
+//     const leads = await Leads.find(query)
+
+//     if (!leads.length) return res.status(404).json({ message: "No Leads found." });
+
+//     res.status(200).json({ bda,leads });
+//   } catch (error) {
+//     console.error("Error fetching Bda data:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
 
 // exports.getAllBda = async (req, res) => {
 //   try {
