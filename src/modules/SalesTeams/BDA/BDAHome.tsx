@@ -15,14 +15,12 @@ import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import BDAForm from "./BDAForm";
 
 
 
 const BDAHome = () => {
-  const {totalCounts}=useRegularApi()
   const { request: getAllBDA } = useApi("get", 3002);
   const [allBDA, setAllBDA] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
