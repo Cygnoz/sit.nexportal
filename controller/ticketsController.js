@@ -134,7 +134,7 @@ exports.addTicket = async (req, res, next) => {
     cleanedData.supervisor = supervisor._id;
  
     // Create the ticket using the createTicket function
-    const savedTicket = await createTicket(
+    const savedTicket = await createNewTicket(
       cleanedData,
       customerId,
       supportAgentId,
@@ -561,19 +561,25 @@ const createNewTicket = async (data, customerId, supportAgentId, userId, userNam
       // Format the new ticket ID
       const ticketId = `TCKTID-${nextId.toString().padStart(4, "0")}`;
    
-      // Create the ticket data
-      const newTicketData = {
-        ...rest,
-        ticketId, // Add the generated ticketId
+ 
+   
+      // Save the new ticket
+      const savedTicket = await createNewTickets(
+ 
+        {...rest,ticketId},
         customerId,
         supportAgentId,
         userId,
         userName,
-        status: "Open", // Default status for a new ticket
-      };
-   
-      // Save the new ticket
-      const savedTicket = await new Ticket(newTicketData).save();
-   
+      )    
       return savedTicket; // Return the saved ticket
     }
+   
+ 
+     // Create New ticket
+  function createNewTickets( data,   customerId, supportAgentId, userId, userName ) {
+    const newTickets = new Leads({ ...data,  customerId,supportAgentId, userId, userName , status:'Open'
+ 
+    });
+    return newTickets.save();
+  }
