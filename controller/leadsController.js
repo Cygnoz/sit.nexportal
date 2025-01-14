@@ -942,7 +942,7 @@ exports.getStatistics = async (req, res) => {
   try {
     const userId = req.user.id;
     const query = await filterByRole(userId);
-
+    
     // Fetch all leads that match the query
     const leads = await Leads.find(query);
 
