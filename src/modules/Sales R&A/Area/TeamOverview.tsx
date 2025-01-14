@@ -81,7 +81,7 @@ const TeamOverview = ({ id }: Props) => {
       iconFrameBorderColor: "#CAD1F1CC",
     },
     {
-      icon: <RupeeIcon size={50} />,
+      icon: <RupeeIcon size={20} />,
       number: "2898",
       title: "Revenue Generated",
       iconFrameColor: "#FCB23E",
@@ -207,7 +207,6 @@ const TeamOverview = ({ id }: Props) => {
         `${endPoints.GET_AREAS}/${id}/overview`
       );
       if (response && !error) {
-        console.log(response.data);
         const {bdas,statistics}=response.data
         const filteredBdas=bdas.map((bda:any)=>({
           ...bda,
@@ -229,7 +228,6 @@ const TeamOverview = ({ id }: Props) => {
     getTeamDetails();
   }, [id]);
 
-  console.log(teamData);
   
 
   return (

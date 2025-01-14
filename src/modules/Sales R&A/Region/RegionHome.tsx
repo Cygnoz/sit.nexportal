@@ -67,7 +67,7 @@ const RegionHome = () => {
     getAllRegions();
   }, []);
 
-  console.log(allRegion);
+ 
   
   // Data for HomeCards
   const homeCardData = [

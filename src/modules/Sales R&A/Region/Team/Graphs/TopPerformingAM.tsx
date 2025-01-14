@@ -31,7 +31,7 @@ function TopPerformingAM({ graphData }: Props) {
      
      <div className="mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
        {/* Wrapper for dynamic width */}
-       <div style={{ width: '100%' }}>
+       <div style={{ width: '100%' }} className="-ms-4">
          <BarChart
            width={chartData?.length > 0 ? Math.max(chartData?.length * 55, 530) : 500}
            height={280}
