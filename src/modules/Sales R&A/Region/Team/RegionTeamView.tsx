@@ -88,13 +88,8 @@ const RegionTeamView = ({teamData,handleModalToggle,setData}: Props) => {
   
   const getPerformers=async()=>{
    try{
-    const {response,error}=await getPerformance(`${endPoints.TOP_PERFORMANCE}/${id}`)
-    console.log("res",response);
-    console.log("err",error);
-    
-    
+    const {response,error}=await getPerformance(`${endPoints.TOP_PERFORMANCE}/${id}`)  
     if(response && !error){
-      console.log("res",response);
       setTopPerformance((prev)=>({
         ...prev,
         areaMangers:response.data.areaManagers,
@@ -111,7 +106,7 @@ const RegionTeamView = ({teamData,handleModalToggle,setData}: Props) => {
     getPerformers()
   },[id])
 
-  console.log(topPerformance);
+  
   
   
   return (
@@ -211,7 +206,7 @@ const RegionTeamView = ({teamData,handleModalToggle,setData}: Props) => {
     ) : (
       <div className="flex justify-center flex-col items-center h-full w-full mt-4">
         <img width={70} src={No_Data_found} alt="No Data Found" />
-        <p className="font-bold text-red-700">No Achievements Found!</p>
+        <p className="font-bold text-red-700">No Area Manager Found</p>
       </div>
     )}
   </div>

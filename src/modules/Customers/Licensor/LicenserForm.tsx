@@ -529,7 +529,7 @@ function LicenserForm({ onClose ,editId}: Props) {
                 onClose={()=>handleModalToggle(true)}
                 className="w-[35%]"
             >
-                <OrganisationForm type="trial"   onClose={()=>handleModalToggle(true)} />
+                <OrganisationForm type="lead"   onClose={()=>handleModalToggle(true)} />
             </Modal>
     </>
   );

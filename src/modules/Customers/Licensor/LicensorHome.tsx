@@ -50,7 +50,7 @@ const LicensorHome = () => {
             console.log("res",response);
             
             if(response && !error){
-              console.log(response.data.licensers);
+              console.log(response.data);
              const transformLicense= response.data.licensers?.map((license:any) => ({
                 ...license,
                 startDate: license.startDate

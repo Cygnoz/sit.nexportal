@@ -51,6 +51,8 @@ function TicketsHome({ }: Props) {
 
       if (response && !error) {
         const currentTime = new Date();
+        console.log("tickets",response.data);
+        
         const transformTicket = response.data?.map((tickets: any) => ({
           ...tickets,
           name: tickets?.

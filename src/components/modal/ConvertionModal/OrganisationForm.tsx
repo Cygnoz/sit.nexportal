@@ -57,12 +57,9 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
   });
 
   const onSubmit: SubmitHandler<Conversion> =async (data) => {
-    console.log("Form Data:", data);
     try{
         const fun=type=="lead"?leadToTrial:trialToLicenser
         const {response,error}=await fun(`${type==="lead"?endPoints.TRIAL:endPoints.TRIALS}/${customerData._id?customerData._id:customerData?.licenserId}`,data)
-        console.log("err",error);
-        console.log("orgForm",response);
         
         if(response && !error){
             toast.success(customerData?.licenserId?"Organization created Successfully":response.data.message)

@@ -325,7 +325,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         `${endPoints.GET_ALL_RM}/${editId}`
       );
       if (response && !error) {
-        const RM: any = response.data; // Return the fetched data
+        const RM: any = response.data.regionManager; // Return the fetched data
         console.log("Fetched RM data:", RM);
         const { user, _id, ...rm } = RM;
         const transformedRM = RM

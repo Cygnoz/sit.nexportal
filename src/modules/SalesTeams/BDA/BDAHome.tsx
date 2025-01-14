@@ -22,7 +22,6 @@ import BDAForm from "./BDAForm";
 
 
 const BDAHome = () => {
-  const {totalCounts}=useRegularApi()
   const { request: getAllBDA } = useApi("get", 3002);
   const [allBDA, setAllBDA] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,29 +123,27 @@ const BDAHome = () => {
         const area ="Area";
       
         const handleFilter = ({ options }: { options: string }) => {
-          if (options === "Name") {
-            // Create a new sorted array to avoid mutating the original state
-            const sortedAms = [...allBDA?.transformedBDA].sort((a, b) =>
-              b?.userName?.localeCompare(a?.userName)
-            );
-            setAllBDA(sortedAms);
-          } else if (options === "Region") {
-            const sortedAms = [...allBDA?.transformedBDA].sort((a, b) =>
-              b?.regionName?.localeCompare(a?.regionName)
-            );
-            setAllBDA(sortedAms)
-          } else if(options=='Email') {
-            const sortedAms = [...allBDA?.transformedBDA].sort((a, b) =>
-              b?.loginEmail?.localeCompare(a?.loginEmail)
-            );
-            setAllBDA(sortedAms);
-          }else{
-            const sortedAms = [...allBDA?.transformedBDA].sort((a, b) =>
-              b?.areaName?.localeCompare(a?.areaName)
-            );
-            setAllBDA(sortedAms);
-          }
+          const sortedAms =
+            [...allBDA.transformedBDA].sort((a, b) => {
+              if (options === "Name") {
+                return a?.userName?.localeCompare(b?.userName);
+              } else if (options === "Region") {
+                return a?.regionName?.localeCompare(b?.regionName);
+              } else if (options === "Email") {
+                return a?.loginEmail?.localeCompare(b?.loginEmail);
+              } else if (options === "Area") {
+                return a?.areaName?.localeCompare(b?.areaName);
+              }
+              return 0;
+            });
+        
+          // Update only the transformedBDA property
+          setAllBDA((prev:any) => ({
+            ...prev,
+            transformedBDA: sortedAms,
+          }));
         };
+        
   
   return (
     <>
