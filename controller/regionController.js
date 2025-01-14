@@ -364,7 +364,7 @@ exports.getAreasByRegion = async (req, res) => {
     // Fetch Licensers with specified fields
     const licensers = await Leads.find(
       { customerStatus: "Licenser", regionId },
-      { customerId: 1, firstName: 1, trialStatus: 1, image:1 }
+      { customerId: 1, firstName: 1, licensorStatus: 1, image:1 }
     );
 
     // Get the current month's start and end dates
