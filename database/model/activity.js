@@ -8,11 +8,13 @@ const activitySchema = new Schema({
  
     leadId:{type:String},
     activityType:{type:String},
-    taskStatus:{type:String},
+    description:{type:String},
+ 
     //email
     emailTo:{type:String},
     emailFrom:{type:String},
     emailSubject:{type:String},
+    emailMessage:{type:String},
     emailFile:{type:String},
  
     //note
@@ -30,6 +32,7 @@ const activitySchema = new Schema({
     meetingLocation:{type:String},
     location:{type:String},
     landMark:{type:String},
+    meetingStatus:{type:String},
  
     //task
     taskTitle:{type:String},
@@ -37,6 +40,10 @@ const activitySchema = new Schema({
     taskType:{type:String},
     dueDate:{type:String},
     time:{type:String},
+    taskStatus:{type:String},
+ 
+    userName: { type: String },
+    userRole: { type: String},
 },
     { timestamps: true } ,
    

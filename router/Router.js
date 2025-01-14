@@ -68,6 +68,8 @@ router.put("/activity/:id",verifyToken,checkPermission('Edit Activity'),activity
  
 router.delete("/activity/:activityId",verifyToken,checkPermission('Delete Activity'), activityController.deleteActivity,ActivityLogGeneration('Delete Activity'));
  
+router.get('/activities/:leadId',verifyToken,checkPermission('View Activity'),activityController.getLeadsActivityDetails);
+ 
  
  
 module.exports = router
