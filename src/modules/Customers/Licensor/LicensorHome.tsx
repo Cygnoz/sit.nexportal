@@ -48,7 +48,7 @@ const LicensorHome = () => {
           try{
             const {response,error}=await getAllLicenser(endPoints.LICENSER)
             console.log("res",response);
-            
+            console.log("err",error);
             if(response && !error){
               console.log(response.data);
              const transformLicense= response.data.licensers?.map((license:any) => ({
