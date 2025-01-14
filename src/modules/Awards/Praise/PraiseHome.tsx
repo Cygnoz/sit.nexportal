@@ -12,6 +12,7 @@ import { achievements } from "../../../Interfaces/Praise"
 import { endPoints } from "../../../services/apiEndpoints"
 import useApi from "../../../Hooks/useApi"
 import NoRecords from "../../../components/ui/NoRecords"
+import partyPopper from '../../../assets/image/partyPopper.png'
 
 type Props = {}
 
@@ -195,11 +196,14 @@ const PraiseHome = ({ }: Props) => {
               <p className="text-[#000000] text-sm font-normal mb-1">{praise.notes}</p>
             </div>
           </div>
-          <div className="flex justify-between px-8 -mt-4">
-            <p className="text-[#000000] text-sm font-normal">
-              {praise.openingDate ? new Date(praise?.openingDate).toLocaleDateString() : 'N/A'}
-            </p>
-            <p className="text-[#000000] text-sm font-normal">From {praise.userId}</p>
+          <div className="">
+            <img className="w-full h-48 -rotate-90" src={comfetti} alt="Confetti" />
+            <img className="w-20 h-20 -mt-24 ms-10" src={partyPopper} alt="" />
+          </div>
+          <div className="p-8">
+            <p className="text-[#000000] text-sm font-normal my-1">{praise.achievement}</p>
+            <p className="text-[#000000] text-sm font-semibold mb-1">{praise.userDetails[0]?.userName}</p>
+            <p className="text-[#000000] text-sm font-normal mb-1">{praise.notes}</p>
           </div>
         </div>
       ))}

@@ -25,8 +25,6 @@ import SupportTicketTable from "./SupportTicketTable";
 import { getStatusClass } from "../../../../components/ui/GetStatusClass";
 
 type Props = {
-  insideLicenserData:any;
-
 };
 
 function LicenserView({ }: Props) {
