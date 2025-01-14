@@ -1,43 +1,45 @@
 import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import Table from "../../../components/ui/Table";
-
+ 
 import { useEffect, useState } from "react";
 import CreateWCommission from "./WCommissionForm";
 import useApi from "../../../Hooks/useApi";
 import { WCData } from "../../../Interfaces/WC";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
-
+import ConfirmModal from "../../../components/modal/ConfirmModal";
+ 
 const WCommisionHome = () => {
   const { request: getALLWC } = useApi("get", 3003);
   const { request: deleteWC } = useApi("delete", 3003);
   const [allWC, setAllWC] = useState<WCData[]>([]);
   const [editId, setEditId] = useState<string | null>(null);
-
+ 
   // State to manage delete confirmation modal
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+ 
   // State to manage main modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
-
+ 
   // Function to toggle main modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getWC();
   };
-
+ 
   const openDeleteModal = (id: string) => {
     setDeleteId(id);
     setIsDeleteModalOpen(true);
+    handleDelete()
   };
-
+ 
   const closeDeleteModal = () => {
     setDeleteId(null);
     setIsDeleteModalOpen(false);
   };
-
+ 
   const handleDelete = async () => {
     if (!deleteId) return;
     try {
@@ -57,12 +59,12 @@ const WCommisionHome = () => {
       closeDeleteModal(); // Close delete modal after operation
     }
   };
-
+ 
   const handleEdit = (id: string) => {
     handleModalToggle();
     setEditId(id);
   };
-
+ 
   const getWC = async () => {
     try {
       const { response, error } = await getALLWC(endPoints.WC);
@@ -82,11 +84,11 @@ const WCommisionHome = () => {
       // console.log(err);
     }
   };
-
+ 
   useEffect(() => {
     getWC();
   }, []);
-
+ 
   // Define the columns with strict keys
   const columns: { key: keyof WCData; label: string }[] = [
     { key: "profileName", label: "ProfileName" },
@@ -94,14 +96,14 @@ const WCommisionHome = () => {
     { key: "thresholdAmount", label: "Threshold Amt" },
     { key: "createdAt", label: "Created Date" },
   ];
-
+ 
   return (
     <div>
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">
           Worker Commission Profile
         </h1>
-
+ 
         <Button
           variant="primary"
           size="sm"
@@ -112,7 +114,7 @@ const WCommisionHome = () => {
         >
           <span className="text-xl font-bold">+</span> Add Commission Profile
         </Button>
-
+ 
         {/* Main Modal */}
         <Modal
           open={isModalOpen}
@@ -122,7 +124,7 @@ const WCommisionHome = () => {
           <CreateWCommission editId={editId} onClose={handleModalToggle} />
         </Modal>
       </div>
-
+ 
       {/* Table Section */}
       <div className="py-2 mt-3">
         <Table<WCData>
@@ -137,28 +139,23 @@ const WCommisionHome = () => {
           ]}
         />
       </div>
-
+ 
       {/* Delete Confirmation Modal */}
       <Modal
         open={isDeleteModalOpen}
         className="w-[30%]"
         onClose={closeDeleteModal}
       >
-        <div className="p-4">
-          <h2 className="text-xl font-semibold">Confirm Delete</h2>
-          <p>Are you sure you want to delete this commission profile?</p>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button variant="secondary" onClick={closeDeleteModal}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={handleDelete}>
-              Delete
-            </Button>
-          </div>
-        </div>
+       
+          <ConfirmModal
+          action={handleDelete}
+          prompt="Are you sure want to delete this commission?"
+          onClose={() => closeDeleteModal()}
+        />
       </Modal>
     </div>
   );
 };
-
+ 
 export default WCommisionHome;
+ 
