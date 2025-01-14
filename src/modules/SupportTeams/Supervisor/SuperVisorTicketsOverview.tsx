@@ -18,6 +18,25 @@ interface SupervisorData {
     Priority:string;
    
   }
+// type Props = {
+//   ticketSummary:any;
+// }
+
+// const SuperVisorTicketsOverview = ({ticketSummary}: Props) => {
+
+    // const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
+    //     if(viewId){
+         
+    //       //navigate(`/supervisor/${viewId}`)
+    //       console.log(viewId);
+    //     }else if(editId){
+    //       console.log(editId)
+    //       // setId({...id,edit:editId})
+    //     }else{
+    //       console.log(deleteId)
+    //       // setId({...id,delete:deleteId})
+    //     }
+    //   }
 
 type Props = {
   supportAgentDetails:any
@@ -37,35 +56,82 @@ const SuperVisorTicketsOverview = ({supportAgentDetails,ticketSummary,insideSvDa
 };
  
  // Data for HomeCards
- const SuperVisorCardData = [
-  {
+//  const SuperVisorCardData = [
+//   {
       
-    number: ticketSummary?.totalTickets || 0,
-      title: "Total Tickets",
-      subTitle: "The total Tickets",
-      images: [
-        <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
-        <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
-        <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
-        <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
-    ],
-  },
-  {
+//     number: ticketSummary?.totalTickets || 0,
+//       title: "Total Tickets",
+//       subTitle: "The total Tickets",
+//       images: [
+//         <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
+//         <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
+//         <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
+//         <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
+//     ],
+//   },
+//   {
     
-    number: ticketSummary?.openTickets || 0,
-      title: "Open Tickets",
-      subTitle: "In Percentage"
-  },
-  {
+//     number: ticketSummary?.openTickets || 0,
+//       title: "Open Tickets",
+//       subTitle: "In Percentage"
+//   },
+//   {
       
-    number: ticketSummary?.resolvedTickets || 0,
-      title: "Tickets Resolved",
-      subTitle: "customer satisfaction rating for tickets resolved by the team"
-  },
+//     number: ticketSummary?.resolvedTickets || 0,
+//       title: "Tickets Resolved",
+//       subTitle: "customer satisfaction rating for tickets resolved by the team"
+//   },
 
-];
+// ];
 
    
+      // const SuperVisorCardData = [
+      //   {
+      //     title: "Total Tickets",
+      //     subTitle: "Overall ticket count",
+      //     number: ticketSummary?.totalTickets || 0,
+      //   },
+      //   {
+      //     title: "Resolved Tickets",
+      //     subTitle: "Tickets resolved successfully",
+      //     number: ticketSummary?.resolvedTickets || 0,
+      //   },
+      //   {
+      //     title: "Open Tickets",
+      //     subTitle: "Tickets currently open",
+      //     number: ticketSummary?.openTickets || 0,
+      //   },
+      // ];
+
+      const SuperVisorCardData = [
+        {
+            
+          number: ticketSummary?.totalTickets || 0,
+            title: "Total Tickets",
+            subTitle: "Lorem ipsum dolor sit amet consectetur.",
+            images: [
+              <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
+              <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
+              <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
+              <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
+          ],
+        },
+        {
+          
+          number: ticketSummary?.openTickets || 0,
+            title: "Open Tickets",
+            subTitle: "In Percentage"
+        },
+        {
+            
+          number: ticketSummary?.resolvedTickets || 0,
+            title: "Tickets Resolved",
+            subTitle: "customer satisfaction rating for tickets resolved by the team"
+        },
+    
+    ];
+    
+      
 
         // Define the columns with strict keys
         const columns: { key: any; label: string }[] = [
