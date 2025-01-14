@@ -6,5 +6,6 @@ export interface Conversion {
     password: string;
     confirmPassword:string
     startDate: string;
+    customerStatus?:string
     endDate: string;
 }

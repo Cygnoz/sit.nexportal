@@ -105,7 +105,7 @@ function LicenserForm({ onClose ,editId}: Props) {
       if (response && !error) {
         const customerData={
           ...data,
-          licenserId:response.data.licenserId
+          licenserId:response.data.savedLicenser._id
         }
         setCustomerData(customerData)
         toast.success(response.data.message); // Show success message
@@ -529,7 +529,7 @@ function LicenserForm({ onClose ,editId}: Props) {
                 onClose={()=>handleModalToggle(true)}
                 className="w-[35%]"
             >
-                <OrganisationForm type="lead"   onClose={()=>handleModalToggle(true)} />
+                <OrganisationForm type="licenser"   onClose={()=>handleModalToggle(true)} />
             </Modal>
     </>
   );

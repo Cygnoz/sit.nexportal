@@ -21,7 +21,7 @@ import { useNavigate } from "react-router-dom";
 
 type Props = {
   onClose: () => void;
-  type?:"lead"|"trial";
+  type?:"lead"|"trial" |"licenser";
   orgData?:any
   getLeads?:()=>void
 };
@@ -54,30 +54,51 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
     formState: { errors },
   } = useForm<Conversion>({
     resolver: yupResolver(validationSchema),
+    defaultValues:{
+      customerStatus:type=="lead"?'Lead':type==="licenser"?'Licenser':''
+    }
   });
 
-  const onSubmit: SubmitHandler<Conversion> =async (data) => {
-    try{
-        const fun=type=="lead"?leadToTrial:trialToLicenser
-        const {response,error}=await fun(`${type==="lead"?endPoints.TRIAL:endPoints.TRIALS}/${customerData._id?customerData._id:customerData?.licenserId}`,data)
-        
-        if(response && !error){
-            toast.success(customerData?.licenserId?"Organization created Successfully":response.data.message)
-             if(!customerData?.licenserId){
-              navigate(type==='lead'?'/lead':'/trial');
-             }
-            getLeads?.()
-            onClose()
-            
-        }else{
-            toast.error(error.response.data.error.message)
+  const onSubmit: SubmitHandler<Conversion> = async (data) => {
+    try {
+        const fun = type === "lead" || type === "licenser" ? leadToTrial : trialToLicenser;
+
+        const customerId = customerData?._id || customerData?.licenserId;
+        if (!customerId) {
+            throw new Error("Customer ID is required");
         }
-    }catch(err){
-        console.log(err)   
+
+        const { response, error } = await fun(
+            `${type === "lead" || type === "licenser" ? endPoints.TRIAL : endPoints.TRIALS}/${customerId}`, 
+            data
+        );
+
+        if (response && !error) {
+            toast.success(
+                customerData?.licenserId 
+                    ? "Organization created Successfully" 
+                    : response.data.message
+            );
+            if (!customerData?.licenserId) {
+                navigate(type === "lead" ? "/lead" : "/trial");
+            }
+            getLeads?.();
+            onClose?.();
+        } else {
+            toast.error(error?.response?.data?.error?.message || "An unexpected error occurred.");
+        }
+    } catch (err: any) {
+        toast.error(err.message || "An unexpected error occurred.");
+        console.error(err);
     }
-  };
+};
+
   
   console.log(errors);
+
+
+  console.log("cus",customerData);
+  
   
 
 
@@ -206,14 +227,14 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
             </div>
           
           <div className=" flex justify-end gap-2 mt-3 me-3">
-            <Button
+           {type!=="licenser"&& <Button
               variant="tertiary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
               onClick={onClose}
             >
               Cancel
-            </Button>
+            </Button>}
             <Button
               variant="primary"
               className="h-8 text-sm border rounded-lg"
