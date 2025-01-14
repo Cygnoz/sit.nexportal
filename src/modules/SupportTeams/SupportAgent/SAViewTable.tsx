@@ -232,11 +232,7 @@ const SAViewTable = <T extends object>({
         <div className="w-full  bg-white rounded-lg p-4 mb-4">
             {renderHeader()}
 
-            <div
-                style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
-                className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
-            >
-                <div className="flex rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
+            <div className="flex rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
                     {tabs.map((tab:any) => (
                         <div
                             key={tab}
@@ -251,6 +247,11 @@ const SAViewTable = <T extends object>({
                     ))}
 
                 </div>
+
+            <div
+                style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
+                className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
+            >
                 <table
                     style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
 
