@@ -232,32 +232,37 @@ exports.getCustomers = async (req, res) => {
 exports.updateTicket = async (req, res, next) => {
   try {
     const { ticketId } = req.params;
- 
-    // Extract fields dynamically from req.body
     const updateFields = { ...req.body };
  
-    // Update the ticket
-    const updatedTicket = await Ticket.findByIdAndUpdate(
-      ticketId,
-      updateFields, // Dynamically apply fields from req.body
-      { new: true } // Return the updated document
-    );
+    // Check if the status is being updated to 'Resolved'
+    if (updateFields.status === 'Resolved') {
+      const ticket = await Ticket.findById(ticketId);
+      const openingDate = new Date(ticket.openingDate);  // Assuming openingDate is a string, convert it to Date object
  
-    // Log the successful update activity
+      const currentDate = new Date();
+      const resolutionTime = Math.abs(currentDate - openingDate); // Time difference in milliseconds
+ 
+      // Convert milliseconds to a human-readable format (e.g., hours and minutes)
+      const hours = Math.floor(resolutionTime / (1000 * 60 * 60));
+      const minutes = Math.floor((resolutionTime % (1000 * 60 * 60)) / (1000 * 60));
+ 
+      updateFields.resolutionTime = `${hours} hours ${minutes} minutes`;
+    }
+ 
+    // Update the ticket in the database
+    const updatedTicket = await Ticket.findByIdAndUpdate(ticketId, updateFields, { new: true });
+ 
     ActivityLog(req, "Successfully updated ticket", updatedTicket?._id);
-    next()
-    // Send success response
+    next();
+ 
     return res.status(200).json({
       message: "Ticket updated successfully",
       ticket: updatedTicket,
     });
   } catch (error) {
     console.error("Error updating ticket:", error);
- 
-    // Log the error activity
     ActivityLog(req, "Failed to update ticket");
-    nexr()
-    // Send error response
+    next();
     return res.status(500).json({ message: "Internal server error" });
   }
 };

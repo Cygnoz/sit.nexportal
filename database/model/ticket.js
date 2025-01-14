@@ -6,6 +6,7 @@ const { Schema } = mongoose;
 const ticketSchema = new Schema(
   {
     ticketId:{type:String},
+    resolutionTime: { type: String },
     customerId: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead'},
     region: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead'},
     supervisor:{ type: mongoose.Schema.Types.ObjectId, ref: 'Supervisor'},
