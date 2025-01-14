@@ -499,8 +499,7 @@ exports.getActivityLogByAreaId = async (req, res) => {
 console.log(id);
 
     // Step 1: Find activity logs where operationId matches the provided Area ID
-    const areaLogs = await ActivityLogg.find({ operationId: id });
-console.log("area log",areaLogs);
+    const areaLogs = await ActivityLogg.find({ operationId: id }).populate('userId', 'userName userImage');
 
     // Step 2: Query AreaManager to get documents where area matches the provided id
     const areaManagers = await AreaManager.find({ area: id });
