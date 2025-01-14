@@ -239,7 +239,7 @@ exports.getAllAreas = async (req, res) => {
   };
   
 
-  exports.deleteArea = async (req, res) => {
+  exports.deleteArea = async (req, res,next) => {
     try {
       const { areaId } = req.params;
   
