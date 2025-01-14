@@ -24,9 +24,9 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
   
 
   const navigate= useNavigate()
-  const handleView = (bdaId: any) => {
-    if (bdaId) {
-       navigate(`/bda/${bdaId}`)
+  const handleView = (id: any) => {
+    if (id) {
+       navigate(`/bda/${id}`)
     }
   }
 
@@ -74,7 +74,7 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
     bdaConversionRate:bda.bdaConversionRate,
     status:bda.status?bda.status:'N/A',
     areaName:bda.areaName,
-    bdaId:bda.bdaId
+    _id:bda.bdaId
   }))
 
 

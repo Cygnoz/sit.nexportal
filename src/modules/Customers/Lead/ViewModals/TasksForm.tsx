@@ -22,6 +22,7 @@ const validationSchema = Yup.object().shape({
     taskType: Yup.string(),
     dueDate: Yup.string(),
     time: Yup.string(),
+    taskStatus: Yup.string()
 });
 
 
@@ -50,35 +51,35 @@ const TasksForm = ({ onClose }: Props) => {
         clearErrors(field); // Clear the error for the specific field when the user starts typing
     };
 
-    const {request : addLeadTask}=useApi('post',3001)
+    const { request: addLeadTask } = useApi('post', 3001)
 
     console.log(errors);
-    
+
 
     const onSubmit: SubmitHandler<LeadTaskData> = async (data: any, event) => {
 
-        
+
         event?.preventDefault(); // Prevent default form submission behavior
         console.log("Data", data);
-    // if (submit) {
+        // if (submit) {
         try {
-         const {response , error} = await addLeadTask(endPoints.LEAD_ACTIVITY, data)
-          console.log(response);
-          console.log(error);
-    
-          if (response && !error) {
-            console.log(response.data)     
-            toast.success(response.data.message); // Show success toast
-            onClose(); // Close the form/modal
-          } else {
-            console.log(error.response.data.message);           
-            toast.error(error.response.data.message); // Show error toast
-          }
+            const { response, error } = await addLeadTask(endPoints.LEAD_ACTIVITY, data)
+            console.log(response);
+            console.log(error);
+
+            if (response && !error) {
+                console.log(response.data)
+                toast.success(response.data.message); // Show success toast
+                onClose(); // Close the form/modal
+            } else {
+                console.log(error.response.data.message);
+                toast.error(error.response.data.message); // Show error toast
+            }
         } catch (err) {
-          console.error("Error submitting lead task data:", err);
-          toast.error("An unexpected error occurred."); // Handle unexpected errors
+            console.error("Error submitting lead task data:", err);
+            toast.error("An unexpected error occurred."); // Handle unexpected errors
         }
-      }
+    }
 
     return (
         <div>
@@ -113,7 +114,7 @@ const TasksForm = ({ onClose }: Props) => {
 
                             </textarea>
 
-                            <div className="grid grid-cols-3 gap-4">
+                            <div className="grid grid-cols-4 gap-4">
                                 <Select
                                     label="Task Type"
                                     placeholder="Select Type"
@@ -121,12 +122,12 @@ const TasksForm = ({ onClose }: Props) => {
                                     onChange={(selectedValue) => {
                                         setValue("taskType", selectedValue);
                                         handleInputChange("taskType");
-                                      }}
+                                    }}
                                     options={[
                                         { value: "Urgent", label: "Urgent" },
                                         { value: "Normal", label: "Normal" },
                                     ]}
-                            />
+                                />
                                 <Input
                                     label="Due Date"
                                     placeholder="Enter Date"
@@ -141,6 +142,20 @@ const TasksForm = ({ onClose }: Props) => {
                                     {...register("time")}
                                     value={watch("time")}
                                 />
+                                <Select
+                                    label="Task Status"
+                                    placeholder="Select status"
+                                    value={watch("taskStatus")}
+                                    onChange={(selectedValue) => {
+                                        setValue("taskStatus", selectedValue);
+                                        handleInputChange("taskStatus");
+                                    }}
+                                    options={[
+                                        { value: "Pending", label: "Pending" },
+                                        { value: "Completed", label: "Completed" },
+                                    ]}
+                                />
+
                             </div>
 
                         </div>
