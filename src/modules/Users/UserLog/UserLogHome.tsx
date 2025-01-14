@@ -122,11 +122,13 @@ function UserLogHome({}: Props) {
       ];
 
       const actionColorMap: { [key: string]: string } = {
-        Add: "text-green-700",      // Green for "Add"
-        Edit: "text-orange-400",    // Orange for "Edit"
-        Delete: "text-red-700",     // Red for "Delete"
-        Login: "text-blue-600",
-        View: "text-yellow-800",      // Rose color for "Login"
+        Add: "text-green-600",       // A slightly softer green for "Add"
+        Edit: "text-yellow-500",     // A balanced yellow for "Edit"
+        Delete: "text-red-600",      // A strong but not overwhelming red for "Delete"
+        Login: "text-blue-500",      // A professional shade of blue for "Login"
+        View: "text-teal-600",       // A calm teal for "View"
+        Logout: "text-gray-500",     // A subtle gray for "Logout"
+        Convert: "text-emerald-500", // A fresh emerald green for "Convert"
       };
       
 
@@ -154,6 +156,8 @@ function UserLogHome({}: Props) {
     { label: "Edit", value: "Edit" },
     { label: "Login", value: "Login" },
     { label: "View", value: "View" },
+    { label: "Logout", value: "Logout" },
+    { label: "Convert", value: "Convert" },
   ];
 
   const screenList = [
@@ -165,6 +169,8 @@ function UserLogHome({}: Props) {
     { label: 'Logout', value: 'Logout' },
     { label: 'User', value: 'User' },
     { label: 'Region', value: 'Region' },
+    { label: 'Ticket', value: 'Ticket' },
+    { label: 'Prise', value: 'Prise' },
     { label: 'Area Manager', value: 'Area Manager' },
     { label: 'Commission', value: 'Commission' },
     { label: 'Supervisor', value: 'Supervisor' },

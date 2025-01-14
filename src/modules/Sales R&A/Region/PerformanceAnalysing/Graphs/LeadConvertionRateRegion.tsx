@@ -23,9 +23,7 @@ function LeadConversionRate({}: Props) {
     try {
       const endPoint =  `${endPoints.CONVERSION_RATE}/${id}` 
       const { response, error } = await getConvertionRate(endPoint);
-      console.log("res",response);
-      
-      if (response && !error) {
+          if (response && !error) {
         // Transform the response data to match chart format
         const {areas,regionConversionRate}=response.data
         const transformedArea = areas.map((area: any) => ({

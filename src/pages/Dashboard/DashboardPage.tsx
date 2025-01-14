@@ -22,8 +22,6 @@ const DashboardPage = () => {
   const { totalCounts } = useRegularApi();
   const { request: getSolveTickets } = useApi("get", 3003);
   const [solvedTickets, setSolvedTickets] = useState([]);
-  console.log("dssd",totalCounts);
-  
   const homeCardData = [
     {
       icon: <RegionIcon size={24} />,

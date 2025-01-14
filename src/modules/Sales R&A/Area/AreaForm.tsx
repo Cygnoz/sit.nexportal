@@ -20,6 +20,7 @@ interface RegionData {
 interface NewAreaProps {
   onClose: () => void; // Prop for handling modal close
   editId?: any;
+  regionId?:any
 }
 
 const validationSchema = Yup.object({
@@ -28,7 +29,7 @@ const validationSchema = Yup.object({
   region: Yup.string().required("Region is required"),
 });
 
-const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
+const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId,regionId }) => {
   const {request:addArea}=useApi('post',3003)
   const {request:editArea}=useApi('put',3003)
   const {allRegions}=useRegularApi()
@@ -77,7 +78,10 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
       value: String(region._id), // Ensure `value` is a string
     }));
     setRegionData(filteredRegions)
-  },[allRegions])
+    if(regionId){
+      setValue("region",regionId)
+    }
+  },[allRegions,regionId])
 
   const setFormValues = (data: AreaData) => {
     Object.keys(data).forEach((key) => {
@@ -160,6 +164,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId }) => {
           required
           label="Region"
           placeholder="Select Region"
+          readOnly={regionId?true:false}
           value={watch("region")}
           error={errors.region?.message}
           options={regionData}

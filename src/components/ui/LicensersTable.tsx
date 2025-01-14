@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import NextIcon from "../../assets/icons/NextIcon";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
 import UserIcon from "../../assets/icons/UserIcon";
@@ -22,18 +22,20 @@ interface TableProps<T> {
   };
   maxHeight?: string;
   handleView:(id:any)=>void 
+  skeltonCount?:number
 }
 const LicensersTable = <T extends object>({
   data,
   columns,
   headerContents,
   maxHeight,
+  skeltonCount=5,
   handleView
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-
+  const [noDataFound, setNoDataFound] = useState(false);
   // Filter data based on the search value
   const filteredData = useMemo(() => {
     return data?.filter((row) =>
@@ -174,6 +176,40 @@ const LicensersTable = <T extends object>({
     return "N/A";
   };
 
+   const renderSkeletonLoader = () => (
+      <tr>
+        <td colSpan={columns?.length+1}>
+          <div className="flex flex-col   gap-2 mt-2">
+            {Array.from({ length: skeltonCount }).map((_, index) => (
+              <div key={index} className="flex gap-2 animate-pulse">
+                {columns.map((_, colIndex) => (
+                  <div
+                    key={colIndex}
+                    className="h-6 w-full bg-gray-200 rounded-lg skeleton"
+                  ></div>
+                ))}
+               
+                  <div className="h-6 w-full bg-gray-200 skeleton"></div>
+                
+              </div>
+            ))}
+          </div>
+        </td>
+      </tr>
+    );
+  
+    
+    useEffect(() => {
+      const timeout = setTimeout(() => {
+        if (data?.length === 0) {
+          setNoDataFound(true);
+        } else {
+          setNoDataFound(false);
+        }
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }, [data]);
+
   return (
     <div className="w-full  bg-white rounded-lg p-4 mb-4">
       {renderHeader()}
@@ -186,30 +222,20 @@ const LicensersTable = <T extends object>({
           className={`w-full ${maxHeight && "table-fixed"
             }`}
         >
-          {/* <thead
-            className={` bg-[#F6F9FC]  ${maxHeight && "z-40 sticky top-0"}`}
-          >
-            <tr>
-              <th className="border p-4 text-sm  text-[#303F58] font-medium">
-                SI No.
-              </th>
-              {columns.map((col) => (
-                <th
-                  key={String(col.key)}
-                  className={`border p-4 text-sm  text-[#303F58] font-medium ${col.key=='status'&&'text-center'}`}
-                >
-                  {col.label}
-                </th>
-              ))}
-              
-                <th className="border p-4 text-sm text-[#303F58] text-center font-medium">
-                  Action
-                </th>
-              
-            </tr>
-          </thead> */}
           <tbody>
-            {paginatedData?.length > 0 ? (
+          {noDataFound ? (
+              <tr>
+                <td
+                  colSpan={columns?.length+1}
+                  className="text-center py-4 text-gray-500"
+                >
+                  <NoRecords imgSize={70} textSize="md"/>
+                </td>
+              </tr>
+            ) : data?.length === 0 ? (
+              renderSkeletonLoader()
+            ) : 
+            paginatedData?.length > 0 && (
               paginatedData?.map((row: any, rowIndex: number) => (
                 <tr key={rowIndex} className="hover:bg-gray-50 z-10">
                   <td className="p-4 text-xs text-[#4B5C79] font-medium border-b-8 border-y-white bg-[#F7FBFE] rounded-lg">
@@ -269,16 +295,8 @@ const LicensersTable = <T extends object>({
                   </td>
                 </tr>
               ))
-            ) : (
-              <tr>
-              <td
-                colSpan={columns?.length + 2}
-                className="text-center py-4 text-gray-500"
-              >
-               <NoRecords imgSize={70} textSize="md"/>
-              </td>
-            </tr>
-            )}
+            )
+            }
           </tbody>
         </table>
       </div>
