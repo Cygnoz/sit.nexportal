@@ -291,7 +291,7 @@ exports.convertLeadToTrial = async (req, res, next) => {
   try {
 
     const { leadId } = req.params; // Get the lead ID from request parameters
-    const { organizationName, contactName, contactNum, email, password ,startDate,endDate} = req.body;
+    const { organizationName,customerStatus, contactName, contactNum, email, password ,startDate,endDate} = req.body;
 
 
     // Validate request body
@@ -331,7 +331,7 @@ exports.convertLeadToTrial = async (req, res, next) => {
         const updatedLead = await Leads.findByIdAndUpdate(
           leadId,
           {
-            customerStatus: "Trial",
+            customerStatus: customerStatus,
             trialStatus: "In Progress",
             startDate, // Save formatted date
             endDate,    // Save formatted date
