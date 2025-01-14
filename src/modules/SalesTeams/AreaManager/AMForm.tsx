@@ -140,37 +140,48 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
     }
   };
 
-  const checkAM=async()=>{
-    try{
-      const body={
-        regionId:watch("region"),
-        areaId:watch("area")
+  const checkAM = async () => {
+    const region = watch("region");
+    const area = watch("area");
+  
+    // Ensure values are defined
+    if (!region && !area) return false;
+  
+    try {
+      const body = {
+        regionId: region,
+        areaId: area,
+      };
+  
+      const { response, error } = await checkAm(endPoints.CHECK_AM, body);
+      console.log("Response:", response);
+      console.log("Error:", error);
+  
+      if (response && !error) {
+        return true;
       }
-      const {response,error}=await checkAm(endPoints.CHECK_AM,body)
-      console.log("res",response);
-      console.log("err",error);
-      
-      
-      if(response && !error){
-        return true
-      }else{
-        
-        if(
-          toast.error(error.response.data.message)
-        )
-        
-        if(error?.response?.data?.message==="Area is already assigned to another Area Manager. Try adding another Area." ||"Region Manager not found for the provided region.")
-          {
-          return false
-        }else{
-          return true
+  
+      if (error?.response?.data?.message) {
+        const errorMessage = error.response.data.message;
+  
+        if (
+          errorMessage ===
+            "Area is already assigned to another Area Manager. Try adding another Area." ||
+          errorMessage ===
+            "Region Manager not found for the provided region."
+        ) {
+          toast.error(errorMessage);
+          return false;
         }
       }
-    }catch(err){
-      console.log(err);
-      
+    } catch (err) {
+      console.error("Unexpected Error:", err);
     }
-  }
+  
+    return false;
+  };
+  
+  
 
   const tabs = [
     "Personal Information",
@@ -182,44 +193,48 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
 
-  const handleNext = async (tab: string) => {
-    const currentIndex = tabs.indexOf(activeTab);
-    let fieldsToValidate: any[] = [];
-    let canProceed = true; // Default to true, modify if checkRM fails
-  
-    if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
-    } else if (tab === "Company Information") {
-      fieldsToValidate = [
-        !editId && "email",
-        !editId && "password",
-        !editId && "confirmPassword",
-        "region",
-        "area",
-        "workEmail",
-      ];
-      const rmCheck = await checkAM(); // Call checkRM function
-      
-      if (!rmCheck) {
+ const handleNext = async (tab: string) => {
+  const currentIndex = tabs.indexOf(activeTab);
+  let fieldsToValidate: any[] = [];
+  let canProceed = true;
+
+  if (tab === "Personal Information") {
+    fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
+  } else if (tab === "Company Information") {
+    fieldsToValidate = [
+      ...(editId ? [] : ["email", "password", "confirmPassword"]),
+      "region",
+      "area",
+      "workEmail",
+    ];
+
+    if (!editId) {
+      const amCheck = await checkAM(); // Call checkAM function
+
+      if (!amCheck && (watch("region") || watch("area"))) {
         canProceed = false;
-        // Replace with your preferred method for showing a message
       }
     }
+  }
 
-    console.log("can proceed",canProceed);
-    
-  
-    // Validate fields only if canProceed is true
-    const isValid = canProceed && fieldsToValidate.length
-      ? await trigger(fieldsToValidate)
-      : true;
-    
-    // If validation passes and we can proceed, move to the next tab
-    if (isValid && canProceed && currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1]);
-      clearErrors();
+  // Validate fields only if canProceed is true
+  if (canProceed && fieldsToValidate.length > 0) {
+    const isValid = await trigger(fieldsToValidate);
+
+    // If validation fails, stop here
+    if (!isValid) {
+
+      return;
     }
-  };
+  }
+
+  // If validation passes and we can proceed, move to the next tab
+  if (canProceed && currentIndex < tabs.length - 1) {
+    setActiveTab(tabs[currentIndex + 1]);
+    clearErrors();
+  }
+};
+
 
   const handleBack = () => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -386,7 +401,9 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   }, [errors]);
 
   useEffect(() => {
-    getOneAM();
+    if(editId){
+      getOneAM();
+    }
   }, [editId]); // Trigger the effect when editId changes
 
   return (

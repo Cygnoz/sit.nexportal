@@ -87,16 +87,14 @@ const TrialHome = () => {
   useEffect(()=>{
     getTrials()
   },[])
-  console.log(allTrials);
+
   
   return (
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-[#303F58] text-xl font-bold">Trial</h1>
-        {/* <Button variant="primary" size="sm" onClick={handleModalToggle}>
-          + Create Trial
-        </Button> */}
+
       </div>
 
       {/* HomeCards Section */}
@@ -123,11 +121,6 @@ const TrialHome = () => {
             { label: 'view', function: handleView },
           ]} />
       </div>
-
-      {/* Modal Section */}
-      {/* <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <NewBDAForm onClose={handleModalToggle} />
-      </Modal> */}
     </div>
   )
 }

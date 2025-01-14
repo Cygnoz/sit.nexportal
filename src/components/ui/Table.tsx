@@ -79,6 +79,9 @@ const Table = <T extends object>({
     setCurrentPage(1);
   };
 
+  console.log("tData",data);
+  
+
   
 
   // Function to determine row styles based on `status`
