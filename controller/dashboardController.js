@@ -61,7 +61,9 @@ exports.getDocumentCounts = async (req, res) => {
         totalTrial,
         totalLead,
         totalLicensor,
-        activeLicensor
+        activeLicensor,
+        totalTickets,
+        resolvedTickets
       ] = await Promise.all([
         Area.countDocuments(),
         Region.countDocuments(),
@@ -74,7 +76,9 @@ exports.getDocumentCounts = async (req, res) => {
         Leads.countDocuments({ customerStatus: "Trial" }),
         Leads.countDocuments({ customerStatus: "Lead" }),
         Leads.countDocuments({ customerStatus: "Licenser" }),
-        Leads.countDocuments({ customerStatus: "Licenser",licensorStatus:"Active" })
+        Leads.countDocuments({ customerStatus: "Licenser",licensorStatus:"Active" }),
+        Ticket.countDocuments(),
+        Ticket.countDocuments({ status: "Resolved" }),
       ]);
   
       // Send response
@@ -90,7 +94,9 @@ exports.getDocumentCounts = async (req, res) => {
         totalTrial,
         totalLead,
         totalLicensor,
-        activeLicensor
+        activeLicensor,
+        totalTickets,
+        resolvedTickets
       });
     } catch (error) {
       console.error("Error fetching document counts:", error);
