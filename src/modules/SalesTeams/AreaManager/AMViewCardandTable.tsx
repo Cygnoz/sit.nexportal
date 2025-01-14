@@ -20,10 +20,13 @@ type Props = {
 
 const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
 
+  console.log(bdaDetails);
+  
+
   const navigate= useNavigate()
-  const handleView = (id: any) => {
-    if (id) {
-       navigate(`/bda/${id}`)
+  const handleView = (bdaId: any) => {
+    if (bdaId) {
+       navigate(`/bda/${bdaId}`)
     }
   }
 
@@ -61,6 +64,8 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
     { key: "status", label: "Status" },
     { key: "areaName", label: "Area" },
   ];
+  console.log(bdaDetails);
+  
 
   const bdaData =bdaDetails.map((bda:any)=>({
     ...bda,
@@ -68,7 +73,8 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
     leadsAssigned:bda.leadsAssigned,
     bdaConversionRate:bda.bdaConversionRate,
     status:bda.status?bda.status:'N/A',
-    areaName:bda.areaName
+    areaName:bda.areaName,
+    bdaId:bda.bdaId
   }))
 
 

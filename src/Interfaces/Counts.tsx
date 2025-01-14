@@ -11,4 +11,6 @@ export interface TotalCounts{
     totalLead:number
     totalLicensor:number
     activeLicensor:number
+    totalTickets:number
+    resolvedTickets:number
 }

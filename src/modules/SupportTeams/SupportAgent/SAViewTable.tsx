@@ -48,9 +48,9 @@ interface TableProps<T> {
     noPagination?: boolean;
     maxHeight?: string;
     skeltonCount?: number;
-    tabs?:any;
-    activeTab?:any;
-    setActiveTab?:any;
+    tabs?: any;
+    activeTab?: any;
+    setActiveTab?: any;
 }
 
 const SAViewTable = <T extends object>({
@@ -232,13 +232,13 @@ const SAViewTable = <T extends object>({
         <div className="w-full  bg-white rounded-lg p-4 mb-4">
             {renderHeader()}
 
-            <div className="flex rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
+            {/* <div className="flex rounded-xl px-4 py-2 text-base bg-[#FFFFFF] font-bold border-b border-gray-200">
                     {tabs.map((tab:any) => (
                         <div
                             key={tab}
                             onClick={() => setActiveTab(tab)}
                             className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
-                                ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
+                                ? "text-[#303F58] text-sm font-bold border-b-2 rounded-md border-deepStateBlue"
                                 : "text-gray-400"
                                 }`}
                         >
@@ -246,7 +246,23 @@ const SAViewTable = <T extends object>({
                         </div>
                     ))}
 
-                </div>
+                    
+                </div> */}
+            <div className="flex gap-20 px-2 text-base bg-[#FFFFFF] rounded-xl font-bold border-b border-gray-200">
+                {tabs.map((tab: any) => (
+                    <div
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
+                            ? "text-[#303F58] border-b-2 border-deepStateBlue mb-1"
+                            : "text-gray-400"
+                            }`}
+                    >
+                        {tab}
+                    </div>
+                ))}
+            </div>
+
 
             <div
                 style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
