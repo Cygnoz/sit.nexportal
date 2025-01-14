@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-
 import { endPoints } from "../../../../services/apiEndpoints";
 import useApi from "../../../../Hooks/useApi";
 import { useParams } from "react-router-dom";

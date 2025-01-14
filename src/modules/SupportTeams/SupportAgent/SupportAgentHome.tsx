@@ -13,7 +13,7 @@ import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import { useRegularApi } from "../../../context/ApiContext";
+// import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import SupportAgentForm from "./SupportAgentForm";
 
@@ -21,7 +21,7 @@ import SupportAgentForm from "./SupportAgentForm";
 
   
 const SupportAgentHome = () => {
-  const {totalCounts}=useRegularApi()
+  // const {totalCounts}=useRegularApi()
   const { request: getAllSA } = useApi("get", 3003);
   const [allSA, setAllSA] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,7 +42,58 @@ const SupportAgentHome = () => {
     handleModalToggle()
   };
 
-  // Data for HomeCards
+  const [totalCounts, setTotalCounts] = useState({
+    totalSupportAgents: 0,
+    totalTickets: 0,
+    totalResolvedTickets: 0,
+    totalEscalatedTickets: 0, // Assuming escalated tickets can also be included if data is available
+  });
+  
+  const getSAs = async () => {
+    try {
+      const { response, error } = await getAllSA(endPoints.SUPPORT_AGENT);
+      console.log("res", response);
+      console.log("err", error);
+      if (response && !error) {
+        console.log(response);
+  
+        // Transform support agents
+        const transformedSA =
+          response.data?.supportAgent?.map((SA: any) => ({
+            ...SA,
+            dateOfJoining: SA.dateOfJoining
+              ? new Date(SA.dateOfJoining).toLocaleDateString("en-GB")
+              : "N/A",
+            loginEmail: SA?.user?.email,
+            userName: SA?.user?.userName,
+            userImage: SA?.user?.userImage,
+            regionName: SA?.region?.regionName,
+          })) || [];
+        setAllSA(transformedSA);
+  
+        // Set total counts
+        setTotalCounts({
+          totalSupportAgents: response.data.totalSupportAgent || 0,
+          totalTickets: response.data.totalTickets || 0,
+          totalResolvedTickets: response.data.resolvedTickets || 0,
+          totalEscalatedTickets: response.data.escalatedTickets || 0, // Adjust if your API includes this data
+        });
+  
+        console.log(transformedSA);
+      } else {
+        console.log(error?.response?.data?.message || "Failed to fetch data.");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      toast.error("An unexpected error occurred.");
+    }
+  };
+  
+  useEffect(() => {
+    getSAs();
+  }, []);
+  
+  // Updated homeCardData with dynamic values
   const homeCardData = [
     {
       icon: <UserIcon />,
@@ -53,27 +104,27 @@ const SupportAgentHome = () => {
     },
     {
       icon: <TicketCardIcon size={40} />,
-      number: "46",
+      number: totalCounts?.totalTickets,
       title: "Total Tickets",
       iconFrameColor: "#51BFDA",
       iconFrameBorderColor: "#C1E7F1CC",
     },
     {
       icon: <EscalatedTicket />,
-      number: "86",
+      number: totalCounts?.totalEscalatedTickets,
       title: "Total Escalated Tickets",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
     {
       icon: <ResolvedTicket />,
-      number: "498",
+      number: totalCounts?.totalResolvedTickets,
       title: "Total Resolved Tickets",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
     },
   ];
-
+  
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
     { key: "user.userName", label: "Name" },
@@ -82,41 +133,6 @@ const SupportAgentHome = () => {
     { key: "region.regionName", label: "Region" },
     { key: "dateOfJoining", label: "Date Of Joining" },
   ];
-
-  const getSAs = async () => {
-    try {
-      const { response, error } = await getAllSA(endPoints.SUPPORT_AGENT);
-      console.log("res",response);
-      console.log("err",error);
-      if (response && !error) {
-        console.log(response);
-        
-        const transformedSA =
-          response.data?.supportAgent?.map((SA:any) => ({
-            ...SA,
-            dateOfJoining: SA.dateOfJoining
-              ? new Date(SA.dateOfJoining).toLocaleDateString("en-GB")
-              : "N/A",
-              loginEmail: SA?.user?.email,
-              userName: SA?.user?.userName,
-              userImage:SA?.user?.userImage,
-              regionName: SA?.region?.regionName,
-          })) || [];
-        setAllSA(transformedSA);
-        console.log(transformedSA);
-        
-      } else {
-        console.log(error?.response?.data?.message || "Failed to fetch data.");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      toast.error("An unexpected error occurred.");
-    }
-  };
-
-  useEffect(() => {
-    getSAs();
-  }, []);
 
   const name = "Name";
   const email = "Email";

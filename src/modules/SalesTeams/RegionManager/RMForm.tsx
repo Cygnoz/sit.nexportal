@@ -331,9 +331,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         const transformedRM = RM
           ? {
               ...rm,
-              dateOfJoining: new Date(RM?.dateOfJoining)
-                ?.toISOString()
-                ?.split("T")[0], // Format as 'YYYY-MM-DD'
+              dateOfJoining:RM?.dateOfJoining ? new Date(RM?.dateOfJoining).toLocaleDateString() : 'N/A',
               userName: user?.userName,
               phoneNo: user?.phoneNo,
               email: user?.email,

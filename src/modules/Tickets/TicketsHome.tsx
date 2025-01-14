@@ -23,7 +23,7 @@ interface TicketsData extends BaseTicketsData {
 
 function TicketsHome({ }: Props) {
   const { request: getAllTickets } = useApi("get", 3004);
-  const [allTickets, setAllTickets] = useState<any[]>([]);
+ const [allTickets, setAllTickets] = useState<any[]>([]);
   const navigate = useNavigate();
 
   // State to manage modal visibility
@@ -45,29 +45,39 @@ function TicketsHome({ }: Props) {
     navigate(`/ticket/${id}`);
   };
 
+  const [allTicketss, setAllTicketss] = useState({
+    unResolvedTickets: 0,
+    resolvedTickets: 0,
+    totalTickets: 0,
+  });
+  
   const getTickets = async () => {
     try {
       const { response, error } = await getAllTickets(endPoints.GET_TICKETS);
-
+  
       if (response && !error) {
         const currentTime = new Date();
-        console.log("tickets",response.data);
-        
-        const transformTicket = response.data?.map((tickets: any) => ({
-          ...tickets,
-          name: tickets?.
-            supportAgentId
-            ?.user?.userName,
-          openingDate: tickets?.openingDate,
-          timeAgo: calculateTimeAgo(new Date(tickets?.openingDate), currentTime),
+  
+        // Extract ticket data and other metrics
+        const transformTicket = response.data?.tickets?.map((ticket: any) => ({
+          ...ticket,
+          name: ticket?.supportAgentId?.user?.userName,
+          openingDate: ticket?.openingDate,
+          timeAgo: calculateTimeAgo(new Date(ticket?.openingDate), currentTime),
         })) || [];
         setAllTickets(transformTicket)
+        setAllTicketss({
+          
+          unResolvedTickets: response.data?.unResolvedTickets || 0,
+          resolvedTickets: response.data?.resolvedTickets || 0,
+          totalTickets: response.data?.totalTickets || 0,
+        });
       }
     } catch (err) {
       console.log(err);
     }
   };
-
+  
   const calculateTimeAgo = (date: Date, currentTime: Date) => {
     const diffInSeconds = Math.floor((currentTime.getTime() - date.getTime()) / 1000);
     if(diffInSeconds==0) return `Just now`
@@ -119,7 +129,6 @@ function TicketsHome({ }: Props) {
 useEffect(() => {
   getTickets(); // Fetch tickets initially when the component mounts
 }, []);
-
 
 
 
@@ -206,31 +215,34 @@ useEffect(() => {
 
 
         <div className="grid grid-cols-12 gap-3">
-          <div className="col-span-3">
-            <div className="flex justify-between  mt-5 bg-[#E7EDF2] py-4 px-3">
-              <p>Unresolved Tickets</p>
-              <p>21</p>
-            </div>
-            <div className="flex justify-between py-4 px-3">
-              <p>Unassigned Tickets</p>
-              <p>28</p>
-            </div> <div className="flex justify-between py-4 px-3">
-              <p>All Unresolved Tickets</p>
-              <p>22</p>
-            </div>
-            <div className="flex justify-between py-4 px-3">
-              <p>Recently Updated Tickets</p>
-              <p>11</p>
-            </div> <div className="flex justify-between py-4 px-3">
-              <p>Pending Tickets</p>
-              <p>20</p>
-            </div> <div className="flex justify-between  py-4 px-3">
-              <p>Recently Solved Tickets</p>
-              <p>218</p>
-            </div>
+        <div className="col-span-3">
+  <div className="flex justify-between mt-5 bg-[#E7EDF2] py-4 px-3">
+    <p>Unresolved Tickets</p>
+    <p>{allTicketss?.unResolvedTickets || 0}</p>
+  </div>
+  <div className="flex justify-between py-4 px-3">
+    <p>Total Tickets</p>
+    <p>{allTicketss?.totalTickets || 0}</p>
+  </div>
+  <div className="flex justify-between py-4 px-3">
+    <p>Unassigned Tickets</p>
+    <p>0</p>
+  </div>
+ 
+  <div className="flex justify-between py-4 px-3">
+    <p>Recently Updated Tickets</p>
+    <p>0</p>
+  </div>
+  <div className="flex justify-between py-4 px-3">
+    <p>Pending Tickets</p>
+    <p>0</p>
+  </div>
+  <div className="flex justify-between py-4 px-3">
+    <p>Recently Solved Tickets</p>
+    <p>{allTicketss?.resolvedTickets || 0}</p>
+  </div>
+</div>
 
-
-          </div>
           <div className="col-span-9 w-[100%]">
             {/* Table Section */}
             <div >

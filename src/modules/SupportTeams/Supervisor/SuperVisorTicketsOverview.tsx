@@ -6,6 +6,7 @@ import SuperVisorCards from "../../../components/ui/SuperVisorCards";
 import Table from "../../../components/ui/Table";
 import person1 from "../../../assets/image/Ellipse 14.png";
 import person2 from "../../../assets/image/Ellipse 43.png";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -17,87 +18,81 @@ interface SupervisorData {
     Priority:string;
    
   }
+
+type Props = {
+  supportAgentDetails:any
+  ticketSummary:any
+  insideSvData:any
+}
+  
+const SuperVisorTicketsOverview = ({supportAgentDetails,ticketSummary,insideSvData}: Props) => {
+  const navigate=useNavigate()
+  console.log(insideSvData);
+  
+  const handleView = (id:any) => {
+    if (id) {
+      navigate(`/ticket/${id}`);
+      console.log(id);
+       }
+};
+ 
  // Data for HomeCards
  const SuperVisorCardData = [
-    {
-        
-        number: "3454",
-        title: "Total Tickets",
-        subTitle: "Lorem ipsum dolor sit amet consectetur.",
-        images: [
-          <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
-          <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
-          <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
-          <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
-      ],
-    },
-    {
+  {
       
-        number: "1678",
-        title: "Open Tickets",
-        subTitle: "In Percentage"
-    },
-    {
-        
-        number: "889",
-        title: "Tickets Resolved",
-        subTitle: "customer satisfaction rating for tickets resolved by the team"
-    },
+    number: ticketSummary?.totalTickets || 0,
+      title: "Total Tickets",
+      subTitle: "The total Tickets",
+      images: [
+        <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
+        <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
+        <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
+        <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
+    ],
+  },
+  {
+    
+    number: ticketSummary?.openTickets || 0,
+      title: "Open Tickets",
+      subTitle: "In Percentage"
+  },
+  {
+      
+    number: ticketSummary?.resolvedTickets || 0,
+      title: "Tickets Resolved",
+      subTitle: "customer satisfaction rating for tickets resolved by the team"
+  },
 
 ];
 
-type Props = {}
-
-const SuperVisorTicketsOverview = ({
-
-}: Props) => {
-
-    const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-         
-          //navigate(`/supervisor/${viewId}`)
-          console.log(viewId);
-        }else if(editId){
-          console.log(editId)
-          // setId({...id,edit:editId})
-        }else{
-          console.log(deleteId)
-          // setId({...id,delete:deleteId})
-        }
-      }
-
    
 
-    // Data for the table
-    const data: SupervisorData[] = [
-
-        {ticketsNumber:"TN-MH22", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH23", supportAgent:"olmoo",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH24", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH25", supportAgent:"suni",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH26", supportAgent:"Dani",status:"Pending", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH27", supportAgent:"ajeesh",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH28", supportAgent:"Dani",status:"Pending", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH29", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH30", supportAgent:"Dani",status:"Pending", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH31", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH32", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
-        {ticketsNumber:"TN-MH33", supportAgent:"Dani",status:"Open", issue:"Billing issue",Priority:"High"},
-      
-
-    ];
         // Define the columns with strict keys
-        const columns: { key: keyof SupervisorData; label: string }[] = [
-          { key: "ticketsNumber", label: "Tickets Number" },
-          { key: "supportAgent", label: "Support Agent" },
+        const columns: { key: any; label: string }[] = [
+          { key: "ticketId", label: "Tickets Number" },
+          { key: "supportAgentName", label: "Support Agent" },
           { key: "status", label: "Status" },
-          { key: "issue", label: "Issue" },
-          { key: "Priority", label: "Priority" },
+          { key: "subject", label: "Subject" },
+          { key: "priority", label: "Priority" },
       
 
         ];
-      
+        const updatedTicketDetails = supportAgentDetails.flatMap((support: any) =>
+          (Array.isArray(support.ticketDetails) ? support.ticketDetails : []).map((ticket: any) => ({
+            subject: ticket.subject || "N/A",
+            priority: ticket.priority || "N/A",
+            status: ticket.status || "N/A",
+            ticketId: ticket.ticketId || "N/A",
+            _id:ticket._id,
+            supportAgentName: support.supportAgentName, // Keeping only the required fields
+          }))
+        );
+        
+        console.log("Updated Ticket Details:", updatedTicketDetails);
+        
+        
 
+        
 
   return (
     <div>
@@ -106,7 +101,7 @@ const SuperVisorTicketsOverview = ({
            
       {/* Table Section */}
       <div>
-        <Table<SupervisorData> data={data} columns={columns} headerContents={{
+        <Table<SupervisorData> data={updatedTicketDetails} columns={columns} headerContents={{
           title:'Supervisor Overview',
           search:{placeholder:'Search Supervisor'},
           sort: [
@@ -122,9 +117,8 @@ const SuperVisorTicketsOverview = ({
           ]
         }}
         actionList={[
-          { label: 'edit', function:handleEditDeleteView },
-          { label: 'delete', function: handleEditDeleteView },
-          { label: 'view', function: handleEditDeleteView },
+         
+          { label: 'view', function: handleView },
         ]}  />
       </div>
             </div>

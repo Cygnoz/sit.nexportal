@@ -159,7 +159,7 @@ const [ticketSummary, setTicketSummary] = useState([]);
   console.log("SV Data:", insideSvData);
   console.log("Supervisor Details:", supervisorDetails);
   console.log("SupportAgent Details:", supportAgentDetails);
-  console.log("Recent Activities:", ticketSummary);
+  console.log("Ticket Summary:", ticketSummary);
 
 
 
@@ -169,7 +169,7 @@ const [ticketSummary, setTicketSummary] = useState([]);
       icon: <AreaIcon size={24} />,
       number:  insideSvData?.supervisorDetails?.totalSupportAgents || 0,
       title: "Total Agent Supervised",
-      subTitle: "look loo",
+      subTitle: "A good boss is a good teacher",
       images: [
         <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
         <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
@@ -182,7 +182,7 @@ const [ticketSummary, setTicketSummary] = useState([]);
       number:  insideSvData?.supervisorDetails?.overallResolutionRate || 0,
       
       title: " Tasks completed by the team",
-      subTitle: "look loo",
+      subTitle: "Mission accomplished",
     },
     
   ];
@@ -457,7 +457,10 @@ const [ticketSummary, setTicketSummary] = useState([]);
           </div>
         </div>
 
-        <SuperVisorTicketsOverview />
+        <SuperVisorTicketsOverview 
+        ticketSummary={ticketSummary}
+        supportAgentDetails= {supportAgentDetails}
+        insideSvData={insideSvData}/>
       </div>
 
       {/* Modal controlled by state */}
