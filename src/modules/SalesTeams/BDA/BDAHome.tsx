@@ -176,7 +176,7 @@ const BDAHome = () => {
       {/* Table Section */}
       <div>
         <Table<BDAData>
-          data={allBDA?.transformedBDA}
+          data={allBDA?.transformedBDA===undefined?[]:allBDA?.transformedBDA}
           columns={columns}
           headerContents={{
             // title:'Region',

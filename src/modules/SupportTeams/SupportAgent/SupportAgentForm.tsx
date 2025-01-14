@@ -515,7 +515,6 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                 />
                 <Input
                   label="PAN No"
-                  type="number"
                   placeholder="Enter Pan Number"
                   error={errors.panNo?.message}
                   {...register("panNo")}

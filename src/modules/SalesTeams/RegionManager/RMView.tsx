@@ -251,7 +251,8 @@ const RMView = () => {
   }, []);
 
   // For debugging
-  console.log({ totalAreaManaged, totalAreaManagers, totalBdas });
+ console.log("rmViewData",getData.rmData);
+ 
 
   return (
     <>
@@ -371,13 +372,11 @@ const RMView = () => {
                       <p className="text-xs text-[#D4D4D4] py-2">
                         Joining Date
                       </p>
-                      <p className="text-xs ">
-                        {getData?.rmData?.regionManager?.dateOfJoining
-                          ? new Date(
-                              getData.rmData.dateOfJoining
-                            ).toLocaleDateString()
-                          : "N/A"}
-                      </p>
+                      <p className="text-xs">
+  {getData?.rmData?.regionManager?.dateOfJoining
+    ? new Date(getData.rmData.regionManager.dateOfJoining).toLocaleDateString("en-GB")
+    : "N/A"}
+</p>
                     </div>
                   </div>
 

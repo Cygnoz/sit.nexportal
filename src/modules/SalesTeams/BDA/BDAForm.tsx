@@ -132,6 +132,11 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
   };
 
   const checkBDA=async()=>{
+    const region = watch("region");
+    const area = watch("area");
+  
+    // Ensure values are defined
+    if (!region && !area) return false;
     try{
       const body={
         regionId:watch("region"),
@@ -147,10 +152,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
       }else{
         
         if(
-          toast.error(error.response.data.message)
+          toast.error(error.response.data.message=='Internal server error'?'Select region or area':error.response.data.message)
         )
         
-        if(error?.response?.data?.message==="Area is already assigned to another Area Manager. Try adding another Area." ||"Region Manager not found for the provided region.")
+        if(error?.response?.data?.message==="Area Manager not found for the provided area." ||"Region Manager not found for the provided region.")
           {
           return false
         }else{
@@ -175,36 +180,42 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
-    let canProceed = true; // Default to true, modify if checkBDA fails
-
+    let canProceed = true;
+  
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo","personalEmail"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
-        !editId && "email",
-        !editId && "password",
-        !editId && "confirmPassword",
+        ...(editId ? [] : ["email", "password", "confirmPassword"]),
         "region",
         "area",
-        "workEmail"
-      
+        "workEmail",
       ];
-      const bdaCheck = await checkBDA(); // Call check function
+  
+  
+        const amCheck = await checkBDA(); // Call checkAM function
+  
+        if (!amCheck && (watch("region") || watch("area"))) {
+          canProceed = false;
+        }
       
-      if (!bdaCheck) {
-        canProceed = false;
-        // Replace with your preferred method for showing a message
+    }
+  
+    // Validate fields only if canProceed is true
+    if (canProceed && fieldsToValidate.length > 0) {
+      const isValid = await trigger(fieldsToValidate);
+  
+      // If validation fails, stop here
+      if (!isValid) {
+  
+        return;
       }
     }
-
-    console.log("can proceed",canProceed);
-    const isValid = fieldsToValidate.length
-      ? await trigger(fieldsToValidate)
-      : true;
-    if (isValid && currentIndex < tabs.length - 1) {
+  
+    // If validation passes and we can proceed, move to the next tab
+    if (canProceed && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
-      
     }
   };
   const handleBack = () => {

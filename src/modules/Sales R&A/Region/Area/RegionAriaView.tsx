@@ -72,12 +72,12 @@ const RegionAriaView = ({  regionAreaData }: Props) => {
   ];
 
   
-  const columns1: { key: keyof regionLicenserData; label: string }[] = [
+  const columns1: { key: any; label: string }[] = [
     { key: "customerId", label: "Licenser ID" },
     { key: "firstName", label: "Licenser Name" },
     { key: "leadSource", label: "Lead Source" },
     { key: "totalRevenue", label: "Total Revenue" },
-    { key: "trialStatus", label: "Status" },
+    { key: "licensorStatus", label: "Status" },
   ];
 
   // Define the columns with strict keys
@@ -288,8 +288,8 @@ const RegionAriaView = ({  regionAreaData }: Props) => {
           data={regionAreaData?.licensers ?? []} // Convert undefined to null
           columns={columns1}
           headerContents={{
-            title: "Licensers by Area",
-            search: { placeholder: "Search Area By Name,Manager" },
+            title: "Licensers",
+            search: { placeholder: "Search licenser..." },
           }}
           noPagination
           maxHeight="370px"
