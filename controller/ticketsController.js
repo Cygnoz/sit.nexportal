@@ -185,11 +185,15 @@ exports.getAllTickets = async (req, res) => {
       return res.status(404).json({ message: 'Ticket not found' });
     }
     const totalTickets = tickets.length;
+    const resolvedTickets = tickets.filter((ticket) => ticket.status === "Resolved").length;
+    const unResolvedTickets = tickets.length - resolvedTickets;
 
     // Send the ticket in the response
     res.status(200).json({
       tickets,
-      totalTickets
+      totalTickets,
+      resolvedTickets,
+      unResolvedTickets
     });
  
  
@@ -225,7 +229,6 @@ exports.getCustomers = async (req, res) => {
   }
 };
  
- 
 exports.updateTicket = async (req, res, next) => {
   try {
     const { ticketId } = req.params;
@@ -240,33 +243,24 @@ exports.updateTicket = async (req, res, next) => {
       { new: true } // Return the updated document
     );
  
-    if (!updatedTicket) {
-      // Return early if the ticket isn't found
-      ActivityLog(req, "Failed: Ticket not found");
-      return res.status(404).json({ message: "Ticket not found" });
-    }
- 
-    
-
-    return res.status(200).json({ message: "Ticket updated successfully", ticket: updatedTicket });
-
-    // Pass operation details to middleware
-    ActivityLog(req, "Successfully updated", updatedTicket._id);
-    next();
- 
+    // Log the successful update activity
+    ActivityLog(req, "Successfully updated ticket", updatedTicket?._id);
+    next()
     // Send success response
+    return res.status(200).json({
+      message: "Ticket updated successfully",
+      ticket: updatedTicket,
+    });
   } catch (error) {
     console.error("Error updating ticket:", error);
  
     // Log the error activity
-    ActivityLog(req, "Failed to update");
-    next();
- 
+    ActivityLog(req, "Failed to update ticket");
+    nexr()
     // Send error response
     return res.status(500).json({ message: "Internal server error" });
   }
 };
- 
  
  
 exports.deleteTicket = async (req, res) => {

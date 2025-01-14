@@ -21,8 +21,7 @@ router.get('/ticket/:ticketId',verifyToken,checkPermission('View Ticket'),Ticket
 
 router.get('/getCustomers',TicketController.getCustomers)
 
-router.put('/ticket/:ticketId',verifyToken,checkPermission('Edit Ticket'),TicketController.updateTicket)
-
+router.put('/ticket/:ticketId',verifyToken,checkPermission('Edit Ticket'),TicketController.updateTicket,ActivityLogGeneration('Edit Ticket'))
 // router.delete('/delete-ticket/:ticketId',verifyToken,checkPermission('Delete Ticket'),TicketController.deleteTicket)
 
 router.post('/Praise',verifyToken,checkPermission('Add Praise'),PraiseController.addPraise,ActivityLogGeneration('Add Praise'))

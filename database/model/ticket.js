@@ -18,7 +18,8 @@ const ticketSchema = new Schema(
     notes:{type : String},
     openingDate:{type:String}
   }
-);
+  ,
+  { timestamps: true });
 
 const Ticket = mongoose.model("Ticket", ticketSchema);
 
