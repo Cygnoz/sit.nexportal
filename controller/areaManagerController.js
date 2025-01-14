@@ -574,28 +574,38 @@ exports.getAreaManagerDetails = async (req, res) => {
     const areaManagerName = areaManager.user?.userName || "N/A";
  
     // Step 3: Calculate total leads (only 'Lead' status) and converted leads
-    const totalLeads = await Leads.countDocuments({
+    const totalCustomers = await Leads.countDocuments({
       areaId,
-      customerStatus: "Lead", // Only count leads with 'Lead' status
+      // customerStatus: "Lead", // Only count leads with 'Lead' status
     });
+ 
+    const totalLeads = await Leads.countDocuments({
+      // areaId,
+      customerStatus: { $nin: ["Trial", "Licenser"] }, // Exclude "Trial" and "Licenser"
+    });
+   
+ 
  
     const convertedLeads = await Leads.countDocuments({
       // areaManager: id,
       areaId,
-      // customerStatus: { $ne: "Lead" }, // Non-leads are considered converted
+      customerStatus: "Lead" , // Non-leads are considered converted
     });
  
+    // console.log('covertedLeads:',convertedLeads)
+    // console.log('totalLeads:',totalLeads)
     // Step 4: Calculate total licensers
     const totalLicensers = await Leads.countDocuments({
       // areaManager: id,
       areaId,
       customerStatus: "Licenser",
     });
-   
+ 
+ 
     const areaManagerConversionRate =
-    totalLeads > 0
-      ? Math.min(((convertedLeads / totalLeads) * 100).toFixed(2), 100)
-      : "0";
+    totalCustomers > 0 ? ((convertedLeads / totalCustomers) * 100).toFixed(2) : "0";
+ 
+ 
  
     // Step 5: Fetch BDAs under the given area
     const bdas = await Bda.find({ area: areaId });
@@ -613,7 +623,10 @@ exports.getAreaManagerDetails = async (req, res) => {
           bdaId: bda._id,
           customerStatus: { $ne: "Lead" }, // Non-leads are considered converted
         });
-   
+ 
+ 
+    console.log('convertedLeadsForBda:',convertedLeadsForBda)
+    console.log('totalLeadsForBda:',totalLeadsForBda)
         // Adjust the conversion rate to cap at 100%
         const bdaConversionRate =
           totalLeadsForBda > 0
@@ -643,6 +656,7 @@ exports.getAreaManagerDetails = async (req, res) => {
     }).select("firstName licensorStatus startDate endDate");
  
     const licenserDetails = licensers.map((licenser) => ({
+      _id: licenser._id,
       firstName: licenser.firstName,
       licensorStatus: licenser.licensorStatus,
       startDate: licenser.startDate,
@@ -660,6 +674,7 @@ exports.getAreaManagerDetails = async (req, res) => {
         areaManagerConversionRate: `${areaManagerConversionRate}%`,
       },
       totalLeads,
+      totalCustomers,
       totalLicensers,
       totalBdaCount,
       bdaDetails,
@@ -670,3 +685,4 @@ exports.getAreaManagerDetails = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+ 
