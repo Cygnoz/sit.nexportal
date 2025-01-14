@@ -5,7 +5,6 @@ import useApi from "../../../Hooks/useApi";
 import ChevronDown from "../../../assets/icons/ChevronDown";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import ChevronUp from "../../../assets/icons/ChevronUp";
-// import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
 import EmailIcon from "../../../assets/icons/EmailIcon";
 import PhoneIcon from "../../../assets/icons/PhoneIcon";
@@ -26,7 +25,7 @@ import Trash from "../../../assets/icons/Trash";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import type{ RegionView } from "../../../Interfaces/RegionView";
 import AMForm from "../../SalesTeams/AreaManager/AMForm";
-// import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+
 
 type Props = {};
 const initialRegionAreaData: RegionView = {
@@ -153,7 +152,6 @@ function RegionView({}: Props) {
       const { response, error } = await getTeam(`${endPoints.GET_REGIONS}/${id}/details`);
 
       if (response && !error) {
-        console.log(response.data);
 
         const { bdas = [], areaManagers = [], ...restData } = response?.data || {};
 
@@ -170,7 +168,6 @@ function RegionView({}: Props) {
         }));
 
         const transformedData = { transformedBdas, areaManagers, ...restData };
-        console.log(transformedData);
         setTeamData(transformedData);
       } else {
         console.log(error?.response?.data?.message || "Unknown error occurred");
@@ -231,7 +228,7 @@ function RegionView({}: Props) {
   };
 
 
-  console.log("data",data.regionData);
+
   
 
 
@@ -464,7 +461,7 @@ function RegionView({}: Props) {
         onClose={() => handleModalToggle()}
         className="w-[35%] "
       >
-        <AreaForm onClose={() => handleModalToggle()} />
+        <AreaForm regionId={id}  onClose={() => handleModalToggle()} />
       </Modal>
 
       <Modal

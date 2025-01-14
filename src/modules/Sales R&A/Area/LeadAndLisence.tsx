@@ -83,8 +83,6 @@ const LeadAndLisence = ({id}: Props) => {
             `${endPoints.GET_AREAS}/${id}/lead`
           );
           if (response && !error) {
-            console.log(response.data);
-            // setTeamData(response.data);
             const {leads,licensors,activeLicenses, expiredLicenses, leadConversionRate}=response.data
             const filteredlicesor=licensors.map((licensor:any)=>({
               ...licensor,

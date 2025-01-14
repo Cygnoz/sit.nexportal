@@ -5,6 +5,7 @@ import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import No_Data_found from "../../../assets/image/NO_DATA.png";
+import NoRecords from "../../../components/ui/NoRecords";
 
 type Props = {}
 
@@ -94,7 +95,7 @@ function TopBreakDownByRegion({}: Props) {
 
         {/* Only show the pie chart and breakdown if totalStaffCount > 0 */}
         {totalStaffCount > 0 ? (
- <div className="relative ">
+ <div className="relative -mt-3">
  <VictoryPie
    innerRadius={55}
    padAngle={4}
@@ -142,10 +143,8 @@ function TopBreakDownByRegion({}: Props) {
 
 
 ) : (
-  <div className="flex justify-center -mt-5 flex-col items-center h-full">
-  <img width={100} src={No_Data_found} alt="No Data Found" />
-  <p className="font-bold text-red-700 text-lg mt-2">No Records Found!</p>
-</div>
+ 
+<NoRecords parentHeight="450px" imgSize={100} textSize="lg"/>
 )}
 
       </div>

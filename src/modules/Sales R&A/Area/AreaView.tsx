@@ -1,6 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-//import CalenderDays from "../../../assets/icons/CalenderDays";
-//import RegionIcon from "../../../assets/icons/RegionIcon";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import ChevronRight from "../../../assets/icons/ChevronRight";
@@ -14,7 +12,7 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import AreaForm from "./AreaForm";
 import LeadAndLisence from "./LeadAndLisence";
-import ResendActivity from "./ResendActivity";
+import ResendActivity from "./RecentActivity";
 import TeamOverview from "./TeamOverview";
 
 type Props = {};
@@ -25,6 +23,9 @@ const AreaView = ({ }: // status,
   Props) => {
   const { request: deleteArea } = useApi('delete', 3003)
   const topRef = useRef<HTMLDivElement>(null);
+  const { request: getActivities } = useApi("get", 3003);
+  const [activityData, setActivityData] = useState<any[]>([]);
+  const [activityloading, setActivityLoading] = useState<boolean>(true);
 
   useEffect(() => {
     // Scroll to the top of the referenced element
@@ -56,12 +57,12 @@ const AreaView = ({ }: // status,
       deactivateArea,
     }));
     getAreas();
+  getRecentActivities()
   };
 
   const getAreas = async () => {
     try {
       const { response, error } = await getArea(`${endPoints.AREA}/${id}`);
-      console.log("ressssssssssssssssssssssss", response);
       if (response && !error) {
         setArea(response.data);
       } else {
@@ -92,31 +93,42 @@ const AreaView = ({ }: // status,
     }
   };
 
-  // const handleDeactivate = async () => {
-  //   try {
-  //     const endpoint = area?.status === "Active"
-  //       ? `${endPoints.DEACTIVATE_AREA}/${id}` // Deactivate endpoint
-  //       : `${endPoints.DEACTIVATE_AREA}/${id}`; // Activate endpoint (ensure this exists in backend)
-  
-  //     const { response, error } = await deactivationArea(endpoint);
-  //     console.log("res",response);
-  //     console.log("err",error);
-  //     if (response && !error) {  
-  //       console.log(response.data);
-  //       toast.success(response.data.message);
-  //       setTimeout(() => {
-  //         navigate("/areas");
-  //       }, 2000); // 2-second delay before navigation
-  //     }
-  //      else {
-  //       console.log(error?.response?.data?.message);
-  //       toast.error(error?.response?.data?.message || "An error occurred");
-  //     }
-  //   } catch (err) {
-  //     console.error("Deactivate/Activate error:", err);
-  //     toast.error("Failed to update the area status.");
-  //   }
-  // };
+  const getRecentActivities = async () => {
+    try {
+      const { response, error } = await getActivities(`${endPoints.RECENT_ACTIVITY}/${id}`);
+
+      if (response && !error) {
+        const modifiedData = response.data.map((item: any) => {
+          const [day, month, year] = item.timestamp.split(" ")[0].split("/");
+          const formattedDate: any = new Date(`${month}/${day}/${year}`);
+
+          return {
+            ...item,
+            formattedDate: !isNaN(formattedDate)
+              ? formattedDate.toLocaleDateString("en-US", {
+                  month: "long",
+                  day: "numeric",
+                  year: "numeric",
+                })
+              : "Invalid Date",
+          };
+        });
+
+        setActivityData(modifiedData);
+      } else {
+        console.log(error.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setActivityLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getRecentActivities();
+  }, []);
+
 
     return (
     <>
@@ -252,7 +264,7 @@ const AreaView = ({ }: // status,
 
         {activeTab === "Lead and License Data" && <LeadAndLisence id={id} />}
 
-        {activeTab === "Recend Activity Feed" && <ResendActivity />}
+        {activeTab === "Recend Activity Feed" && <ResendActivity recentActData={activityData} loading={activityloading}/>}
       </div>
       <Modal open={isModalOpen.editArea} onClose={() => handleModalToggle()} className="w-[35%]">
         <AreaForm editId={id} onClose={() => handleModalToggle()} />
