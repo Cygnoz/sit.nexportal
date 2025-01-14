@@ -74,11 +74,10 @@ const SuperVisorView = ({}: Props) => {
   };
   
   const { request: getInsideSv } = useApi('get', 3003);
-  const [insideSvData, setInsideSvData] =  useState<any>();
+  const [insideSvData, setInsideSvData] = useState<any>();
   const [supervisorDetails, setSupervisorDetails] = useState([]);
-const [supportAgentDetails, setSupportAgentDetails] = useState([]);
-const [ticketSummary, setTicketSummary] = useState([]);
-
+  const [supportAgentDetails, setSupportAgentDetails] = useState([]);
+  const [ticketSummary, setTicketSummary] = useState<any>({});
   
   const {request:deleteaSV}=useApi('delete',3003)
   const { request: getaSV } = useApi("get", 3003);
@@ -130,22 +129,18 @@ const [ticketSummary, setTicketSummary] = useState([]);
   const getInsideViewSV = async () => {
     try {
       const { response, error } = await getInsideSv(`${endPoints.SUPER_VISOR}/${id}/details`);
-      
-      
+  
       if (response && !error) {
         console.log(response.data);
         setInsideSvData(response.data);
-
-         // Extract recentActivities & supportTickets
-      if (response.data) {
-        setSupervisorDetails(response.data.supervisorDetails || []);
-        setSupportAgentDetails(response.data.supportAgentDetails || []);
-        setTicketSummary(response.data.ticketSummary || []);
-
-      }
   
+        if (response.data) {
+          setSupervisorDetails(response.data.supervisorDetails || []);
+          setSupportAgentDetails(response.data.supportAgentDetails || []);
+          setTicketSummary(response.data.ticketSummary || {});
+        }
       } else {
-        console.error(error.response.data.message);
+        console.error(error.response?.data?.message || "Failed to fetch supervisor data.");
       }
     } catch (err) {
       console.error("Error fetching SV data:", err);
@@ -155,7 +150,7 @@ const [ticketSummary, setTicketSummary] = useState([]);
   useEffect(() => {
     getInsideViewSV();
   }, [id]);
-  
+
   console.log("SV Data:", insideSvData);
   console.log("Supervisor Details:", supervisorDetails);
   console.log("SupportAgent Details:", supportAgentDetails);
@@ -457,7 +452,7 @@ const [ticketSummary, setTicketSummary] = useState([]);
           </div>
         </div>
 
-        <SuperVisorTicketsOverview />
+        <SuperVisorTicketsOverview ticketSummary={ticketSummary} />
       </div>
 
       {/* Modal controlled by state */}

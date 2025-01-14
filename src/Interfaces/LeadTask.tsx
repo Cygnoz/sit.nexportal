@@ -6,4 +6,5 @@ export interface LeadTaskData{
     taskType?:string;
     dueDate?:string;
     time?:string;
+    taskStatus?:string;
 }
