@@ -12,6 +12,7 @@ import useApi from "../../../../Hooks/useApi"
 import { endPoints } from "../../../../services/apiEndpoints"
 import { useParams } from "react-router-dom"
 import PlaneIcon from "../../../../assets/icons/PlaneIcon"
+import NoRecords from "../../../../components/ui/NoRecords"
 
 type Props = {}
 
@@ -48,10 +49,10 @@ const Meetings = ({ }: Props) => {
             console.log(error);
             if (response && !error) {
                 console.log(response.data);
-                const taskActivities = response.data.activities.filter((activity:any) => activity?.activityType === 'Meeting');
+                const taskActivities = response.data.activities.filter((activity: any) => activity?.activityType === 'Meeting');
                 setMeetingData(taskActivities.reverse())
                 console.log(taskActivities);
-                
+
             }
             else {
                 console.log(error.response.data.message);
@@ -82,51 +83,68 @@ const Meetings = ({ }: Props) => {
                     {/* <SearchBar placeholder="Search" searchValue="" onSearchChange={} /> */}
                     <Button onClick={() => handleModalToggle(true, false)} className="text-[#565148] text-base rounded-lg w-fit h-9 bg-[#FEFDFA] border-[#565148]" variant="secondary">+<span className="text-xs">Add Meeting</span></Button>
                 </div>
-                {meetingData.map((meeting) => (
-                    <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5 py-3">
-                        <div className="flex justify-between p-5">
-                            <div className="flex gap-3">
-                                <PanelTopIcon size={36} />
-                                <p className="mt-1 text-[#303F58] text-xs font-semibold">{meeting.meetingTitle ? meeting.meetingTitle: 'N/A'}</p>
+                {meetingData.length > 0 ? (
+                    meetingData.map((meeting) => (
+                        <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5 py-3" key={meeting.id || meeting.meetingTitle}>
+                            <div className="flex justify-between p-5">
+                                <div className="flex gap-3">
+                                    <PanelTopIcon size={36} />
+                                    <p className="mt-1 text-[#303F58] text-xs font-semibold">
+                                        {meeting.meetingTitle ? meeting.meetingTitle : 'N/A'}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p className="text-[#4B5C79] text-xs font-semibold">
+                                        {new Date(meeting?.updatedAt).toLocaleString("en-US", {
+                                            month: "long",
+                                            day: "numeric",
+                                            year: "numeric",
+                                            hour: "numeric",
+                                            minute: "2-digit",
+                                            hour12: true,
+                                        })}
+                                    </p>
+                                </div>
                             </div>
-                            <div>
-                                <p className="text-[#4B5C79] text-xs font-semibold">
-                                    {new Date(meeting?.updatedAt).toLocaleString("en-US", {
-                                        month: "long",
-                                        day: "numeric",
-                                        year: "numeric",
-                                       hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                    })}
-                                   </p>
+                            <div className="flex justify-between px-5 ms-4">
+                                <div className="flex gap-2">
+                                    <MeetingIcon />
+                                    <p className="text-[#4B5C79] text-xs font-medium">
+                                        Meeting Type: <span className="text-[#303F58] text-xs font-semibold">{meeting?.meetingType ? meeting?.meetingType : 'N/A'}</span>
+                                    </p>
+                                </div>
+                                <div className="bg-[#54B86DE0] w-fit h-6 py-1 px-4 rounded-2xl">
+                                    <p className="text-[#FFFFFF] text-xs font-semibold">Scheduled</p>
+                                </div>
+                            </div>
+                            <div className="my-3 px-5 ms-4 flex gap-2">
+                                <ClockIcon size={14} />
+                                <p className="text-[#4B5C79] text-xs font-medium">
+                                    Time: <span className="text-[#303F58] text-xs font-semibold">{meeting?.timeFrom ? meeting?.timeFrom : "N/A"} - {meeting?.timeTo ? meeting?.timeTo : "N/A"}</span>
+                                </p>
+                            </div>
+                            <div className="flex justify-between px-5 ms-4">
+                                <div className="flex gap-2">
+                                    <PlaneIcon size={14} />
+                                    <p className="text-[#4B5C79] text-xs font-medium">
+                                        Location: <span className="text-[#303F58] text-xs font-semibold">{meeting.location ? meeting.location : 'N/A'}, {meeting.meetingLocation ? meeting.meetingLocation : 'N/A'}</span>
+                                    </p>
+                                </div>
+                                <div onClick={() => handleModalToggle(false, true)} className="-mt-3 cursor-pointer">
+                                    <PlusCircle color="#303F58" />
+                                    <p className="-ms-6 text-[#303F58] text-xs font-normal mt-1">Add Notes</p>
+                                </div>
                             </div>
                         </div>
-                        <div className="flex justify-between px-5 ms-4">
-                            <div className="flex gap-2">
-                                <MeetingIcon />
-                                <p className=" text-[#4B5C79] text-xs font-medium">Meeting Type: <span className="text-[#303F58] text-xs font-semibold">{meeting?.meetingType ? meeting?.meetingType : 'N/A'}</span></p>
-                            </div>
-                            <div className="bg-[#54B86DE0] w-fit h-6 py-1 px-4 rounded-2xl">
-                                <p className="text-[#FFFFFF] text-xs font-semibold">Scheduled</p>
-                            </div>
-                        </div>
-                        <div className="my-3 px-5 ms-4 flex gap-2">
-                            <ClockIcon size={14} />
-                            <p className="text-[#4B5C79] text-xs font-medium">Time: <span className="text-[#303F58] text-xs font-semibold">{meeting?.timeFrom ? meeting?.timeFrom:"N/A"} - {meeting?.timeTo ? meeting?.timeTo:"N/A"}</span></p>
-                        </div>
-                        <div className="flex justify-between px-5 ms-4">
-                            <div className="flex gap-2">
-                                <PlaneIcon size={14} />
-                                <p className="text-[#4B5C79] text-xs font-medium">Location: <span className="text-[#303F58] text-xs font-semibold">{meeting.location?meeting.location:'N/A'}, {meeting.meetingLocation?meeting.meetingLocation:'N/A'}</span></p>
-                            </div>
-                            <div onClick={() => handleModalToggle(false, true)} className="-mt-3 cursor-pointer">
-                                <PlusCircle color="#303F58" />
-                                <p className="-ms-6 text-[#303F58] text-xs font-normal mt-1">Add Notes</p>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    // <div className="flex justify-center flex-col items-center col-span-2 mt-24 h-full">
+                    //     <img width={90} src={No_Data_found} alt="No Data Found" />
+                    //     <p className="font-bold text-red-700">No Meetings Found!</p>
+                    // </div>
+                    <NoRecords text="No Meeting Found" imgSize={90} textSize="md"/>
+                )}
+
 
 
 

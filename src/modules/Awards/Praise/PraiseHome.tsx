@@ -12,6 +12,7 @@ import { achievements } from "../../../Interfaces/Praise"
 import { endPoints } from "../../../services/apiEndpoints"
 import useApi from "../../../Hooks/useApi"
 import NoRecords from "../../../components/ui/NoRecords"
+import partyPopper from '../../../assets/image/partyPopper.png'
 
 type Props = {}
 
@@ -152,66 +153,66 @@ const PraiseHome = ({ }: Props) => {
         </div>
 
         <div>
-  <div className="py-4">
-    <p className="text-[#303F58] text-base font-bold">Praise History</p>
-  </div>
-  
+          <div className="py-4">
+            <p className="text-[#303F58] text-base font-bold">Praise History</p>
+          </div>
+          <div className="grid grid-cols-2 gap-10">
   {isLoading ? (
-    <div className="grid grid-cols-2 gap-10">
-      {[...Array(4)].map((_, index) => (
-        <div key={index} className="mb-4">
-          {renderSkelton()}
-        </div>
-      ))}
-    </div>
+    // Show Skeleton Loader while data is loading
+    [...Array(4)].map((_, index) => (
+      <div key={index} className="mb-4">
+        {renderSkelton()}
+      </div>
+    ))
   ) : allPraise.length > 0 ? (
-    <div className="grid grid-cols-2 gap-10">
-      {allPraise.map((praise) => (
-        <div
-          key={praise.id || praise.userId}
-          className={`${
-            themes.find((theme) => theme.name === praise.theme)?.bgColor || ''
-          } rounded-lg justify-between w-full h-52`}
-        >
-          <div className="flex justify-between">
-            <div className="bg-[#F3F3F3] rounded-2xl w-fit h-12 p-3 ms-4 mt-4 flex gap-2">
-              <div className="bg-[#EDE7FB] rounded-full w-8 h-8 -mt-1">
-                <div className="p-[6px] ms-[2px]">
-                  {achievements.find((achievement) => achievement.name === praise.achievement)?.icon || ''}
-                </div>
-              </div>
-              <div>
-                <p className="text-center">
-                  {achievements.find((achievement) => achievement.name === praise.achievement)?.name || ''}
-                </p>
+    // Render Praise Cards
+    allPraise.map((praise) => (
+      <div
+        key={praise.id || praise.userId}
+        className={`${
+          themes.find((theme) => theme.name === praise.theme)?.bgColor || ''
+        } rounded-lg justify-between w-full h-52`}
+      >
+        <div className="flex justify-between">
+          <div className="bg-[#F3F3F3] rounded-2xl w-fit h-12 p-3 ms-4 mt-4 flex gap-2">
+            <div className="bg-[#EDE7FB] rounded-full w-8 h-8 -mt-1">
+              <div className="p-[6px] ms-[2px]">
+                {achievements.find((achievement) => achievement.name === praise.achievement)?.icon || ''}
               </div>
             </div>
             <div>
-              <img className="w-full h-48 -rotate-90" src={comfetti} alt="Confetti" />
-            </div>
-            <div className="p-8">
-              <p className="text-[#000000] text-sm font-normal my-1">{praise.achievement}</p>
-              <p className="text-[#000000] text-sm font-semibold mb-1">{praise.userDetails[0]?.userName}</p>
-              <p className="text-[#000000] text-sm font-normal mb-1">{praise.notes}</p>
+              <p className="text-center">
+                {achievements.find((achievement) => achievement.name === praise.achievement)?.name || ''}
+              </p>
             </div>
           </div>
-          <div className="flex justify-between px-8 -mt-4">
-            <p className="text-[#000000] text-sm font-normal">
-              {praise.openingDate ? new Date(praise?.openingDate).toLocaleDateString() : 'N/A'}
-            </p>
-            <p className="text-[#000000] text-sm font-normal">From {praise.userId}</p>
+          <div className="">
+            <img className="w-full h-48 -rotate-90" src={comfetti} alt="Confetti" />
+            <img className="w-20 h-20 -mt-24 ms-10" src={partyPopper} alt="" />
+          </div>
+          <div className="p-8">
+            <p className="text-[#000000] text-sm font-normal my-1">{praise.achievement}</p>
+            <p className="text-[#000000] text-sm font-semibold mb-1">{praise.userDetails[0]?.userName}</p>
+            <p className="text-[#000000] text-sm font-normal mb-1">{praise.notes}</p>
           </div>
         </div>
-      ))}
-    </div>
+        <div className="flex justify-between px-8 -mt-4">
+          <p className="text-[#000000] text-sm font-normal">
+            {praise.openingDate ? new Date(praise?.openingDate).toLocaleDateString() : 'N/A'}
+          </p>
+          <p className="text-[#000000] text-sm font-normal">From {praise.userId}</p>
+        </div>
+      </div>
+    ))
   ) : (
-    // Center the NoRecords component
-    <div className="flex flex-col items-center justify-center h-[430px]">
-      <NoRecords text="No Praise Found" imgSize={90} textSize="lg" />
-    </div>
+    // Show No Data Found when fetching is complete but no praises exist
+    <NoRecords text="No Praise Found" parentHeight="430px" imgSize={90} textSize="lg"/>
+
   )}
 </div>
 
+
+        </div>
 
       </div>
       {/* Modal Section */}
