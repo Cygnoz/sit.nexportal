@@ -171,8 +171,8 @@ exports.getAllAreas = async (req, res) => {
       const totalArea = areas.length;
       const totalAreaManagers = (await AreaManager.find(Query)).length;
       const totalBda = (await Bda.find(Query)).length;
-      const totalLeads = (await Leads.find(query)).length;
-      
+      const leads = (await Leads.find(query))
+      const totalLeads = leads.filter((Lead) => Lead.customerStatus === "Lead").length;
 
 
       res.status(200).json({ 
