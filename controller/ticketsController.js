@@ -184,9 +184,13 @@ exports.getAllTickets = async (req, res) => {
     if (!tickets) {
       return res.status(404).json({ message: 'Ticket not found' });
     }
- 
+    const totalTickets = tickets.length;
+
     // Send the ticket in the response
-    res.status(200).json(tickets);
+    res.status(200).json({
+      tickets,
+      totalTickets
+    });
  
  
   } catch (error) {
