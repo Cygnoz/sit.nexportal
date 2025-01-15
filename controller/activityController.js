@@ -257,71 +257,71 @@ exports.getActivity = async (req, res) => {
   exports.getLeadsActivityDetails = async (req, res, next) => {
     try {
       const { leadId } = req.params;
-      const { activityType, dateFilter } = req.query; // Extract filters from query parameters
+      const { activityType, dateFilter } = req.query;
  
-      // Validate leadId
       if (!leadId) {
         return res.status(400).json({ message: "Lead ID is required" });
       }
  
-      // Base query to find activities for a specific lead
+      // Base query
       let query = { leadId };
+      if (activityType) query.activityType = activityType;
  
-      // Add filter for activityType if provided
-      if (activityType) {
-        query.activityType = activityType;
-      }
+      // Handle date filtering for Task or Meeting
+      if (["Task", "Meeting"].includes(activityType) && dateFilter) {
+        const currentDate = new Date();
+        let startDate, endDate;
  
-      // Handle date filtering
-      const currentDate = new Date();
-      let startDate, endDate;
+        switch (dateFilter) {
+          case "tomorrow":
+            startDate = new Date();
+            startDate.setDate(currentDate.getDate() + 1);
+            startDate.setHours(0, 0, 0, 0);
  
-      switch (dateFilter) {
-        case "tomorrow":
-          startDate = new Date(currentDate);
-          startDate.setDate(startDate.getDate() + 1);
-          startDate.setHours(0, 0, 0, 0);
+            endDate = new Date(startDate);
+            endDate.setHours(23, 59, 59, 999);
+            break;
  
-          endDate = new Date(startDate);
-          endDate.setHours(23, 59, 59, 999);
-          break;
+          case "next7days":
+            startDate = new Date();
+            startDate.setDate(currentDate.getDate() + 1);
+            startDate.setHours(0, 0, 0, 0);
  
-        case "next7days":
-          startDate = new Date(currentDate);
-          startDate.setDate(startDate.getDate() + 1);
-          startDate.setHours(0, 0, 0, 0);
+            endDate = new Date();
+            endDate.setDate(currentDate.getDate() + 7);
+            endDate.setHours(23, 59, 59, 999);
+            break;
  
-          endDate = new Date(currentDate);
-          endDate.setDate(endDate.getDate() + 7);
-          endDate.setHours(23, 59, 59, 999);
-          break;
+          case "next30days":
+            startDate = new Date();
+            startDate.setDate(currentDate.getDate() + 1);
+            startDate.setHours(0, 0, 0, 0);
  
-        case "next30days":
-          startDate = new Date(currentDate);
-          startDate.setDate(startDate.getDate() + 1);
-          startDate.setHours(0, 0, 0, 0);
+            endDate = new Date();
+            endDate.setDate(currentDate.getDate() + 30);
+            endDate.setHours(23, 59, 59, 999);
+            break;
  
-          endDate = new Date(currentDate);
-          endDate.setDate(endDate.getDate() + 30);
-          endDate.setHours(23, 59, 59, 999);
-          break;
+          case "yesterday":
+            startDate = new Date();
+            startDate.setDate(currentDate.getDate() - 1);
+            startDate.setHours(0, 0, 0, 0);
  
-        case "yesterday":
-          startDate = new Date(currentDate);
-          startDate.setDate(startDate.getDate() - 1);
-          startDate.setHours(0, 0, 0, 0);
+            endDate = new Date(startDate);
+            endDate.setHours(23, 59, 59, 999);
+            break;
  
-          endDate = new Date(startDate);
-          endDate.setHours(23, 59, 59, 999);
-          break;
+          default:
+            break;
+        }
  
-        default:
-          break;
-      }
- 
-      // If date range is determined, add to the query
-      if (startDate && endDate) {
-        query.createdAt = { $gte: startDate, $lte: endDate };
+        // If startDate and endDate are defined, filter `dueDate`
+        if (startDate && endDate) {
+          query.dueDate = {
+            $gte: startDate.toISOString().split("T")[0], // Convert to 'YYYY-MM-DD'
+            $lte: endDate.toISOString().split("T")[0],
+          };
+        }
       }
  
       // Fetch activities matching the query
@@ -334,7 +334,7 @@ exports.getActivity = async (req, res) => {
         note: 1,
         meetingTitle: 1,
         activityType: 1,
-      }).sort({ createdAt: -1 }); // Sort by the most recent activity
+      }).sort({ createdAt: -1 });
  
       // Map data for response
       const activityDetails = activities.map(activity => {
