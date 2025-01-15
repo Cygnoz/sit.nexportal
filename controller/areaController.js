@@ -348,7 +348,6 @@ exports.deactivateArea = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-
 // overview
 exports.getAreaDetails = async (req, res) => {
   try {
