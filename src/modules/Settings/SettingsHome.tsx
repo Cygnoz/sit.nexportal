@@ -54,7 +54,7 @@ const SettingsHome: FC<SettingsHomeProps> = ({
   }, [location]);
 
   return (
-    <div className="grid grid-cols-12 text-[#303F58]">
+    <div className="grid grid-cols-12 pb-12 h-full text-[#303F58]">
       {/* Sidebar */}
       <div className="col-span-2 ">
         <div className="bg-white w-60 h-screen fixed p-6">
@@ -97,7 +97,7 @@ const SettingsHome: FC<SettingsHomeProps> = ({
       </div>
 
       {/* Main Content */}
-      <div className="col-span-10 p-4">
+      <div className="col-span-10 p-5 h-full   overflow-y-auto static  hide-scrollbar">
         <Outlet />
       </div>
     </div>
