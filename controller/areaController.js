@@ -305,11 +305,15 @@ exports.deactivateArea = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid status value. Use 'Activate' or 'Deactivate'." });
     }
  
-    // Check if the area is referenced in the AreaManager collection
+    // Check if the area is referenced in AreaManager or Bda collections
     if (status === "Deactivate") {
-      const areaInUse = await AreaManager.exists({ area: areaId });
-      if (areaInUse) {
-        return res.status(400).json({ message: "Area cannot be deactivated as it is referenced in AreaManager." });
+      const areaInUseInAreaManager = await AreaManager.exists({ area: areaId });
+      const areaInUseInBda = await Bda.exists({ area: areaId });
+ 
+      if (areaInUseInAreaManager || areaInUseInBda) {
+        return res.status(400).json({
+          message: "Area cannot be deactivated as it is referenced in AreaManager or Bda."
+        });
       }
     }
  
@@ -332,13 +336,13 @@ exports.deactivateArea = async (req, res, next) => {
     });
  
     // Log the operation
-    logOperation(req, `Successfully `, updatedArea._id);
+    logOperation(req, `Successfully ${status.toLowerCase()}d area`, updatedArea._id);
     next();
   } catch (error) {
     console.error(`Error toggling area status:`, error.message || error);
  
     // Log the failure
-    logOperation(req, `Failed`);
+    logOperation(req, `Failed to toggle area status`);
     next();
  
     res.status(500).json({ message: "Internal server error" });

@@ -271,13 +271,13 @@ exports.deactivateRegion = async (req, res, next) => {
     const { status } = req.body; // Get the desired status from the request body
  
     // Validate the provided status
-    const validStatuses = ["Activate", "Deactivate"];
+    const validStatuses = ["Active", "Deactive"];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: "Invalid status value. Use 'Activate' or 'Deactivate'." });
+      return res.status(400).json({ message: "Invalid status value. Use 'Active' or 'Deactive'." });
     }
  
     // Check if the region is referenced in RegionManager, Supervisor, Bda, or SupportAgent collections before deactivation
-    if (status === "Deactivate") {
+    if (status === "Deactive") {
       const isReferenced = await Promise.any([
         RegionManager.exists({ region: regionId }),
         AreaManager.exists({ region: regionId }),
