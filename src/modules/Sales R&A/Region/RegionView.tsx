@@ -253,33 +253,38 @@ function RegionView({}: Props) {
           <div className="h-auto w-full bg-[#FFFFFF] rounded-lg p-3">
             <div className="space-y-2 flex flex-col justify-center items-center">
               <div className="rounded-full">
-                <img className="w-16 h-16 rounded-full" src={src} alt="" />
+                <img className="w-16 h-16 rounded-full" src={region} alt="" />
               </div>
               <p className="font-bold text-[#303F58]">
                 {data.regionData?.region?.regionName}
               </p>
               <div className="grid grid-cols-2">
                 <div className="border-r pe-3">
-                  <div className="w-fit flex justify-center items-center flex-col">
+                  <div className="w-fit flex justify-center items-center flex-col space-y-1">
                     <p className="text-[#8F99A9] text-[10px]">Region Status</p>
                     <h3
-                  className={`p-2 rounded-full text-xs font-medium ${data?.regionData?.region?.status === "Active"
+                  className={`px-2 py-1 rounded-full text-xs font-medium ${data?.regionData?.region?.status === "Active"
                     ? "bg-[#6AAF681A] text-[#6AAF68]"
-                    : "bg-[#6AAF681A] text-orange-500"
+                    : "bg-[#ff1d1d28] text-orange-500"
                     }`}
                 >
-                  {data?.regionData?.region?.status}
+                 <p className="text-[10px]"> {data?.regionData?.region?.status}</p>
                 </h3>
                   </div>
                 </div>
                 <div className="ps-3">
-                  <div className="w-fit flex justify-center items-center flex-col">
+                  <div className="w-fit flex justify-center items-center flex-col space-y-1">
                     <p className="text-[#8F99A9] text-[10px]">Country</p>
+                    <div className="flex justify-between items-center gap-1">
+                    <div className="rounded-full">
+                <img className="w-4 h-4 rounded-full -mt-1" src={src} alt="" />
+              </div>
                     <p className="text-sm text-[#4B5C79]">
                       {data.regionData?.region?.country == "United Arab Emirates"
                         ? "UAE"
                         : data.regionData?.region?.country}
                     </p>
+                    </div>
                   </div>
                 </div>
               </div>

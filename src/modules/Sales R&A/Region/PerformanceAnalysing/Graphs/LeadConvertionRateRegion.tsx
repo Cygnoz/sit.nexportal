@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import useApi from "../../../../../Hooks/useApi";
 import { useRegularApi } from "../../../../../context/ApiContext";
 import { endPoints } from "../../../../../services/apiEndpoints";
@@ -72,9 +72,10 @@ function LeadConversionRate({}: Props) {
   <div className="mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
     {/* Wrapper for dynamic width */}
     <div style={{ width: '100%' }} className="-ms-8">
+      <ResponsiveContainer minWidth={950} minHeight={280}>
       <BarChart
-        width={chartData?.transformedArea?.length > 0 ? Math.max(chartData?.transformedArea?.length * 55, 1150) : 1150}
-        height={280}
+        // width={chartData?.transformedArea?.length > 0 ? Math.max(chartData?.transformedArea?.length * 55, 1150) : 1150}
+        // height={280}
         data={chartData?.transformedArea}
       >
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
@@ -87,6 +88,7 @@ function LeadConversionRate({}: Props) {
           ))}
         </Bar>
       </BarChart>
+      </ResponsiveContainer>
     </div>
   </div>
 </div>

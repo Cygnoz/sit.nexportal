@@ -1,4 +1,4 @@
-import { Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import profileImage from "../../../../../assets/image/AvatarImg.png";
 
 type Props = {
@@ -32,8 +32,8 @@ function TopPerformingAM({ graphData }: Props) {
      <div className="mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
        {/* Wrapper for dynamic width */}
        <div style={{ width: '100%' }} className="-ms-4">
+         <ResponsiveContainer minWidth={500} minHeight={280}>
          <BarChart
-           width={chartData?.length > 0 ? Math.max(chartData?.length * 55, 530) : 500}
            height={280}
            data={chartData}
          >
@@ -47,6 +47,7 @@ function TopPerformingAM({ graphData }: Props) {
              ))}
            </Bar>
          </BarChart>
+         </ResponsiveContainer>
        </div>
      </div>
    </div>

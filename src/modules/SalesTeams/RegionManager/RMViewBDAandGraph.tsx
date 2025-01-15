@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  ResponsiveContainer,
 } from "recharts";
 import { BarChart, Bar, LabelList } from 'recharts';
 import profileImage from '../../../assets/image/AvatarImg.png'
@@ -41,108 +42,7 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
   };
 
   const [selectedMonth, setSelectedMonth] = useState("January"); // State for dropdown selection
-  // Data for the table
-  // const data: BDAData[] = [
-  //   {
-  //     employeeId: "BDA111",
-  //     bdaName: "Subii",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "90",
-  //     leadsClosed: "78",
-  //   },
-  //   {
-  //     employeeId: "BDA111",
-  //     bdaName: "Subii",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "90",
-  //     leadsClosed: "78",
-  //   },
-  //   {
-  //     employeeId: "BDA222",
-  //     bdaName: "Subii",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "90",
-  //     leadsClosed: "18",
-  //   },
-  //   {
-  //     employeeId: "BDA111",
-  //     bdaName: "Subii",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "95",
-  //     leadsClosed: "78",
-  //   },
-  //   {
-  //     employeeId: "BDA222",
-  //     bdaName: "Unni",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "unnii@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "90",
-  //     leadsClosed: "88",
-  //   },
-  //   {
-  //     employeeId: "BDA111",
-  //     bdaName: "Subii",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "950",
-  //     leadsClosed: "78",
-  //   },
-  //   {
-  //     employeeId: "BDA333",
-  //     bdaName: "kuttu",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "kuttu@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "590",
-  //     leadsClosed: "78",
-  //   },
-  //   {
-  //     employeeId: "BDA111",
-  //     bdaName: "Subii",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "90",
-  //     leadsClosed: "78",
-  //   },
-  //   {
-  //     employeeId: "BDA111",
-  //     bdaName: "Subii",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "90",
-  //     leadsClosed: "58",
-  //   },
-  //   {
-  //     employeeId: "BDA111",
-  //     bdaName: "kuttu",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "90",
-  //     leadsClosed: "78",
-  //   },
-  //   {
-  //     employeeId: "BDA111",
-  //     bdaName: "Subii",
-  //     phoneNo: "000999888",
-  //     emailAdrees: "subi@gmail.com",
-  //     dateOfJoining: "5/30/14",
-  //     totalLeads: "90",
-  //     leadsClosed: "78",
-  //   },
-  // ];
+  
 
 
 
@@ -437,29 +337,15 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
 
       {/* Graph Section*/}
 
-      <div className="grid grid-cols-12 gap-3 mt-4">
+      <div className="grid grid-cols-12 gap-3 my-4">
         <div className="col-span-7">
           <div className="py-3 bg-white p-2">
             <div className="py-1 ms-2 flex justify-between">
               <h2 className="font-bold">Lead Conversion Rate per Region</h2>
-              <div className="">
-                <label htmlFor="month-select"></label>
-                <select
-                  className="bg-[#FEFDFA] rounded-lg"
-                  id="month-select"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  style={{ padding: "5px", border: "1px solid #ccc" }}
-                >
-                  {Object.keys(datass).map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select>
-              </div>
+             
             </div>
             <div className="mt-5">
+                <ResponsiveContainer width="100%" minHeight={345}>
               <LineChart
                 width={720}
                 height={400}
@@ -512,6 +398,7 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
                   dot={false}
                 />
               </LineChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
@@ -521,6 +408,7 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
       <p className='text-[#4B5C79] text-xs font-normal p-2'>Based on lead Conversion Performance Metric</p>
 
       <div className="relative">
+      <ResponsiveContainer width="100%" minHeight={300}>
       <BarChart
   className="h-fit"
   barGap={44}
@@ -554,6 +442,7 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
 </Bar>
 
 </BarChart>
+</ResponsiveContainer>
 <div className='flex ms-20 gap-[23px] -mt-2'>
 {ChartData.map((chart)=>(
   <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
