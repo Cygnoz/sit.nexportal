@@ -1,7 +1,6 @@
-import rightArrow from '../../../../assets/image/right-arrow.png'
 import EditIcon from '../../../../assets/icons/EditIcon'
 import profileImage from '../../../../assets/image/AvatarImg.png'
-import SelectDropdown from '../../../../components/ui/SelectDropdown'
+import rightArrow from '../../../../assets/image/right-arrow.png'
 
 type Props = {}
 
