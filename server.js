@@ -10,10 +10,19 @@ const Router = require("./router/Router")
 
 require('./database/connection/connection')
 
-server.use(cors())
-
-server.use(express.json())
-
+server.use(cors({
+    origin: "*",
+    methods: "GET, POST, PUT, DELETE, OPTIONS",
+    allowedHeaders: "Content-Type, Authorization"
+}));
+ 
+// Handle preflight requests
+server.options('*', (req, res) => {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+    res.sendStatus(200);
+});
 // Increase the limit for JSON payloads
 server.use(express.json({ limit: '10mb' })); // Set limit to 10MB
 
