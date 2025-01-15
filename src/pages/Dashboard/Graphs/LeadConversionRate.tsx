@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Bar, BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import useApi from "../../../Hooks/useApi";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
 import { useRegularApi } from "../../../context/ApiContext";
@@ -85,19 +85,25 @@ function LeadConversionRate({}: Props) {
 
         <div className=" mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
       {/* Add wrapper for the chart */}
-      <div style={{ width: chartData?.transformedArea?.length * 55 }} className="-ms-7"> {/* Ensure enough space for all bars */}
-        <BarChart width={chartData?.transformedArea.length>15?chartData?.transformedArea * 55:955} height={280} data={chartData?.transformedArea}>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-          <XAxis dataKey="name" axisLine={false} tickLine={false} />
-          <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
-          <Tooltip />
-          <Bar barSize={55} dataKey="CR" radius={10}>
-            {chartData?.transformedArea?.map((entry:any, index:any) => (
-              <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
-            ))}
-          </Bar>
-        </BarChart>
-      </div>
+      <div style={{ width: '100%' }} className="-ms-7">
+  {/* Ensure enough space for all bars */}
+  <ResponsiveContainer minWidth={950} minHeight={280}>
+    <BarChart     
+      data={chartData?.transformedArea}
+    >
+      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+      <XAxis dataKey="name" axisLine={false} tickLine={false} />
+      <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
+      <Tooltip />
+      <Bar barSize={55} dataKey="CR" radius={10}>
+        {chartData?.transformedArea?.map((entry:any, index:any) => (
+          <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
+        ))}
+      </Bar>
+    </BarChart>
+  </ResponsiveContainer>
+</div>
+
     </div>
 
 

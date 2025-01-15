@@ -26,9 +26,9 @@ const Sidebar = ({ setSearchValue, sidebarRef }: { setSearchValue: React.Dispatc
 
   return (
     <aside
-      ref={sidebarRef} // Pass the ref to the sidebar
-      className="sidebar bg-primary min-h-screen overflow-y-auto hide-scrollbar w-[13%] pb-2"
-    >
+  ref={sidebarRef} // Pass the ref to the sidebar
+  className="sidebar bg-primary min-h-screen overflow-y-auto hide-scrollbar w-[13%]   pb-2"
+>
       <div className="flex p-5 items-center gap-3">
         <img src={BillBizz} alt="billbizz logo" className="w-6" />
         <h1 className="text-secondary">NEX PORTAL</h1>
@@ -37,7 +37,7 @@ const Sidebar = ({ setSearchValue, sidebarRef }: { setSearchValue: React.Dispatc
       <Link onClick={() => setSearchValue("")} to="/dashboard">
         <div className="mt-4 pl-1">
           <div
-            className={`w-[190px] px-3 py-2 rounded-3xl items-center flex gap-3 ${
+            className={`min-w-[150px] me-1 px-3 py-2 rounded-3xl items-center flex gap-3 ${
               isActiveRoute('/dashboard') ? 'bg-[#5A0000] active' : ''
             }`}
           >
@@ -69,7 +69,7 @@ const Sidebar = ({ setSearchValue, sidebarRef }: { setSearchValue: React.Dispatc
                           navigate(route);
                           setSearchValue("");
                         }}
-                        className={`text-secondary text-sm my-2 cursor-pointer -ml-3 w-[190px] font-medium px-3 py-2 rounded-3xl items-center flex ${
+                        className={`text-secondary text-sm my-2 cursor-pointer -ml-3 min-w-[150px] me-1 font-medium px-3 py-2 rounded-3xl items-center flex ${
                           isActiveRoute(route)||(route.startsWith("/settings")&& isSettingsRoute) ? 'bg-[#5A0000] active' : ''
                         }`}
                       >

@@ -11,6 +11,7 @@ import {
   CartesianGrid,
   Cell,
   LabelList,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
@@ -254,17 +255,6 @@ const TeamOverview = ({ id }: Props) => {
           headerContents={{
             title: "BDA,s",
             search: { placeholder: "Search BDA By Name" },
-            // sort: [
-            //       {
-            //         sortHead: "Filter",
-            //         sortList: [
-            //           { label: "Sort by Name", icon: <UserIcon size={14} color="#4B5C79"/> },
-            //           { label: "Sort by Age", icon: <RegionIcon size={14} color="#4B5C79"/> },
-            //           { label: "Sort by Name", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-            //           { label: "Sort by Age", icon: <CalenderDays size={14} color="#4B5C79"/> }
-            //         ]
-            //       }
-            // ]
           }}
           actionList={[{ label: "view", function: handleEditDeleteView }]}
         />
@@ -281,6 +271,7 @@ const TeamOverview = ({ id }: Props) => {
               <h2 className="text-md font-medium text-2xl">₹ 76,789,87</h2>
             </div>
             <div>
+            <ResponsiveContainer width="100%" minHeight={300}>
               <BarChart
                 width={700}
                 height={300}
@@ -313,6 +304,7 @@ const TeamOverview = ({ id }: Props) => {
                   ))}
                 </Bar>
               </BarChart>
+              </ResponsiveContainer>
             </div>
           </div>
         </div>
@@ -326,6 +318,7 @@ const TeamOverview = ({ id }: Props) => {
             </p>
 
             <div className="relative">
+              <ResponsiveContainer minWidth={500} minHeight={295}>
               <BarChart
                 className="h-fit"
                 barGap={54}
@@ -365,7 +358,8 @@ const TeamOverview = ({ id }: Props) => {
                   />
                 </Bar>
               </BarChart>
-              <div className="flex ms-20 gap-[34px] -mt-2">
+              </ResponsiveContainer>
+              <div className="flex ms-[100px]  gap-[34px] -mt-2">
                 {ChartData.map((chart) => (
                   <img
                     className="w-5 h-5 rounded-full"
