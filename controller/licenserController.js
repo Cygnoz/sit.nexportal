@@ -461,6 +461,7 @@ exports.getLicenserDetails = async (req, res) => {
 
     // Format the supportTickets response
     const formattedSupportTickets = supportTickets.map((ticket) => ({
+      _id:ticket._id,
       ticketId: ticket.ticketId,
       priority: ticket.priority,
       status: ticket.status,
