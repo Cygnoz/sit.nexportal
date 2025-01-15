@@ -300,13 +300,13 @@ exports.deactivateArea = async (req, res, next) => {
     const { status } = req.body; // Get the desired status from the request body
  
     // Validate the provided status
-    const validStatuses = ["Activate", "Deactivate"];
+    const validStatuses = ["Active", "Deactive"];
     if (!validStatuses.includes(status)) {
-      return res.status(400).json({ message: "Invalid status value. Use 'Activate' or 'Deactivate'." });
+      return res.status(400).json({ message: "Invalid status value. Use 'Active' or 'Deactive'." });
     }
  
     // Check if the area is referenced in AreaManager or Bda collections
-    if (status === "Deactivate") {
+    if (status === "Deactive") {
       const areaInUseInAreaManager = await AreaManager.exists({ area: areaId });
       const areaInUseInBda = await Bda.exists({ area: areaId });
  
@@ -336,13 +336,13 @@ exports.deactivateArea = async (req, res, next) => {
     });
  
     // Log the operation
-    logOperation(req, `Successfully ${status.toLowerCase()}d area`, updatedArea._id);
+    logOperation(req, `Successfully `, updatedArea._id);
     next();
   } catch (error) {
     console.error(`Error toggling area status:`, error.message || error);
  
     // Log the failure
-    logOperation(req, `Failed to toggle area status`);
+    logOperation(req, `Failed `);
     next();
  
     res.status(500).json({ message: "Internal server error" });
