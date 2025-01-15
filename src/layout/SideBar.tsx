@@ -1,12 +1,9 @@
-// Sidebar Component
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { getSidebarOptions } from "../util/getSidebarOptions";
-import BillBizz from "../assets/logo/BillBizzLogo.png";
-import { sidebarRoutes, sidebarIcons } from "../types/rolePermissions";
 import DashboardIcon from "../assets/icons/DashboardIcon";
-import Settings from "../assets/icons/Settings";
+import BillBizz from "../assets/logo/BillBizzLogo.png";
 import { useUser } from "../context/UserContext";
-
+import { sidebarIcons, sidebarRoutes } from "../types/rolePermissions";
+import { getSidebarOptions } from "../util/getSidebarOptions";
 
 const Sidebar = ({ setSearchValue, sidebarRef }: { setSearchValue: React.Dispatch<React.SetStateAction<string>>, sidebarRef: React.RefObject<HTMLDivElement> }) => {
   const { user } = useUser();
@@ -19,7 +16,13 @@ const Sidebar = ({ setSearchValue, sidebarRef }: { setSearchValue: React.Dispatc
   }
 
   const sidebarOptions = getSidebarOptions(user?.role);
+
+  // Check if the current path starts with a specific route
   const isActiveRoute = (route: string) => location.pathname.startsWith(route);
+  
+  // Check if the current route is in settings
+  const isSettingsRoute = location.pathname.startsWith("/settings");
+
 
   return (
     <aside
@@ -44,50 +47,44 @@ const Sidebar = ({ setSearchValue, sidebarRef }: { setSearchValue: React.Dispatc
         </div>
       </Link>
 
-      {sidebarOptions &&
-        Object.entries(sidebarOptions).map(([category, options]) =>
-          options.length > 0 ? (
-            <div key={category} className="sidebar-category pl-4">
-              <h3 className="text-[#d8cab6] text-xs mb-2 mt-3 cursor-default">
-                {category}
-              </h3>
-              <ul>
-                {options.map((option) => {
-                  const Icon = sidebarIcons[option];
-                  const route = sidebarRoutes[option];
-                  return (
-                    <li
-                      key={option}
-                      onClick={() => {
-                        navigate(route);
-                        setSearchValue("");
-                      }}
-                      className={`text-secondary text-sm my-2 cursor-pointer -ml-3 w-[190px] font-medium px-3 py-2 rounded-3xl items-center flex ${
-                        isActiveRoute(route) ? 'bg-[#5A0000] active' : ''
-                      }`}
-                    >
-                      <div className="flex gap-3 items-center">
-                        <Icon />
-                        <p>{option}</p>
-                      </div>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : null
-        )}
-
-      <Link onClick={() => setSearchValue("")} to="/settings">
-        <div
-          className={`w-[190px] px-3 py-2 rounded-3xl ml-1 items-center flex gap-3 ${
-            isActiveRoute('/settings') ? 'bg-[#5A0000] active' : ''
-          }`}
-        >
-          <Settings />
-          <h3 className="text-secondary text-sm font-medium">Settings</h3>
-        </div>
-      </Link>
+      {/* Settings Tab Styling */}
+      
+        {sidebarOptions &&
+          Object.entries(sidebarOptions).map(([category, options]) =>
+            options.length > 0 ? (
+              <div key={category} className="sidebar-category pl-4">
+                <h3 className="text-[#d8cab6] text-xs mb-2 mt-3 cursor-default">
+                  {category}
+                </h3>
+                <ul>
+                  {options.map((option) => {
+                    const Icon = sidebarIcons[option];
+                    const route = sidebarRoutes[option];
+                    console.log(route);
+                    
+                    return (
+                      <li
+                        key={option}
+                        onClick={() => {
+                          navigate(route);
+                          setSearchValue("");
+                        }}
+                        className={`text-secondary text-sm my-2 cursor-pointer -ml-3 w-[190px] font-medium px-3 py-2 rounded-3xl items-center flex ${
+                          isActiveRoute(route)||(route.startsWith("/settings")&& isSettingsRoute) ? 'bg-[#5A0000] active' : ''
+                        }`}
+                      >
+                        <div className="flex gap-3 items-center">
+                          <Icon />
+                          <p>{option}</p>
+                        </div>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            ) : null
+          )}
+      
     </aside>
   );
 };

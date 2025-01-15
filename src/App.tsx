@@ -39,6 +39,8 @@ import PayrollHome from './modules/Expense/Payroll/PayrollHome';
 import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';
 import PayrollView from './modules/Expense/Payroll/PayrollView';
 import PayrollView2 from './modules/Expense/Payroll/PayrollView2';
+import BusinessCard from './modules/Settings/BusinessCard';
+import Target from './modules/Settings/Target/Target';
 //import AreaView from './modules/SaleArea&Region/Area/AreaView';
 
 const App: React.FC = () => {
@@ -64,13 +66,15 @@ const App: React.FC = () => {
     { path: "licenser/:id", element: <LicenserView /> },
     { path: "region-manager", element: <RMHome /> },
     { path: "region-manager/:id", element: <RMView /> },
-    { path: "users", element: <UserHome /> },
-    { path: "worker-commission", element: <WCommisionHome /> },
+    { path: "settings/users", element: <UserHome /> },
+    { path: "settings/worker-commission", element: <WCommisionHome /> },
     { path: "ticket", element: <TicketsHome /> },
     { path: "ticket/:id", element: <TicketsView /> },
-    { path: "user-log", element: <UserLogHome /> },
+    { path: "settings/user-log", element: <UserLogHome /> },
+    { path: "settings/business-card", element: <BusinessCard /> },
+    { path: "settings/target", element: <Target /> },
     { path: "prises", element: <PraiseHome /> },
-    { path: "settings", element: <SettingsHome /> },
+    { path: "settings/target", element: <SettingsHome /> },
     { path: "payroll", element: <PayrollHome /> },
     { path: "payroll-slip", element: <PayrollSlip /> },
     { path: "payroll-view", element: <PayrollView /> },

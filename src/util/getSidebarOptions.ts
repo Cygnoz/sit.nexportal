@@ -7,9 +7,9 @@ const teamCategories = {
     "SUPPORT TEAM": ["Supervisor", "Support Agent"],
     CUSTOMERS: ["Lead", "Trial", "Licenser"],
     TICKETS: ["Tickets"],
-    USERS:["User","User Log","Worker Commission"],
     EXPENSE:["Expense","Payroll"],
     AWARDS:['Praise'],
+    SETTINGS:['Settings']
     
 };
 
@@ -24,9 +24,9 @@ export function getSidebarOptions(role: Role): Record<string, string[]> {
         "SUPPORT TEAM": [],
         CUSTOMERS: [],
         TICKETS: [],
-        USERS:[],
         EXPENSE:[],
-        AWARDS:[]
+        AWARDS:[],
+        SETTINGS:[]
     };
 
     options.forEach(option => {
