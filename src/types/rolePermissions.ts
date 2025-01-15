@@ -1,4 +1,3 @@
-// import { Route } from 'react-router-dom';
 import AreaIcon from '../assets/icons/AreaIcon'
 import AreaManagerIcon from '../assets/icons/AreaMangerIcon';
 import UserIcon from '../assets/icons/UserIcon';
@@ -10,6 +9,7 @@ import RegionIcon from '../assets/icons/RegionIcon';
 import TrialIcon from '../assets/icons/TrialIcon';
 import Licensor from '../assets/icons/Licensor';
 import Trophy from '../assets/icons/Trophy';
+import Settings from '../assets/icons/Settings';
 
 // Define the available roles
 export type Role =
@@ -46,6 +46,7 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
     "User Log": UserIcon,
     "Worker Commission":UserIcon,
     "Praise":Trophy,
+    "Settings":Settings
 
   };
 
@@ -64,11 +65,11 @@ const sidebarRoutes: { [key: string]: string } = {
     "Tickets": "/ticket",
     "Expense": "/expense",
     "Payroll":"/payroll",
-    "User": "/users",
-    "User Log": "/user-log",
-    "Worker Commission":'/worker-commission',
+    "User": "/settings/users",
+    "User Log": "/settings/user-log",
+    "Worker Commission":'/settings/worker-commission',
     "Praise":'/prises',
-    
+    "Settings":'/settings/target'
     
   };
 
@@ -92,6 +93,7 @@ const rolePermissions: RolePermissions = {
     "User Log",
     "Worker Commission",
     "Praise",
+    "Settings"
   ],
   'Sales Admin': [
     "Region",
