@@ -92,6 +92,7 @@ export const endPoints = {
   // LEAD ACTIVITY
   LEAD_ACTIVITY:"/activity",
   GET_ALL_LEAD_ACTIVITIES:"/activitys",
+  ACTIVITY_TIMELINE:'/activities',
 
   //LOGOUT
   LOGOUT:"/logout", 
