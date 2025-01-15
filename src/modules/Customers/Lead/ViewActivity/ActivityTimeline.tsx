@@ -1,7 +1,6 @@
-import rightArrow from '../../../../assets/image/right-arrow.png'
 import EditIcon from '../../../../assets/icons/EditIcon'
 import profileImage from '../../../../assets/image/AvatarImg.png'
-import SelectDropdown from '../../../../components/ui/SelectDropdown'
+import rightArrow from '../../../../assets/image/right-arrow.png'
 
 type Props = {}
 
@@ -14,19 +13,19 @@ const ActivityTimeline = ({}: Props) => {
                 <div className="w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
           
              <div className="flex gap-4">
-             <SelectDropdown
+             {/* <SelectDropdown
             placeholder="All Activities"
             searchPlaceholder="Search Activities"
             width="w-44"
-          />
+          /> */}
 
-<SelectDropdown
+{/* <SelectDropdown
            
             placeholder="All Timelines"
            
             searchPlaceholder="Search Timelines"
             width="w-44"
-          />
+          /> */}
 
       </div>
             <p className="text-[#303F58] text-sm font-bold mt-3">Today, November 21,2024</p>

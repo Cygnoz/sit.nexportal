@@ -245,7 +245,7 @@ const SuperVisorView = ({}: Props) => {
                 columns={columns}
                 headerContents={{
                   title: "Support Team Members",
-                  search: { placeholder: "Search Supervisor" },
+                  search: { placeholder: "Search Support Agent" },
                   sort: [
                     {
                       sortHead: "Filter",
@@ -272,6 +272,7 @@ const SuperVisorView = ({}: Props) => {
                 }}
                 noAction
                 maxHeight="450px"
+                skeltonCount={11}
               />
             </div>
           </div>

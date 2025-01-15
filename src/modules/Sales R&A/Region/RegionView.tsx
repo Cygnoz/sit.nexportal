@@ -25,6 +25,8 @@ import Trash from "../../../assets/icons/Trash";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import type{ RegionView } from "../../../Interfaces/RegionView";
 import AMForm from "../../SalesTeams/AreaManager/AMForm";
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 
 
 type Props = {};
@@ -202,16 +204,20 @@ function RegionView({}: Props) {
   };
 
 
+
   const handleDeactivate = async () => {
+    const body={
+      status:data?.regionData?.region?.status==='Active'?'Deactive':'Active'
+    }
     try {
-      const { response, error } = await deactivateRegion(`${endPoints.DEACTIVATION}/${id}`);
+      const { response, error } = await deactivateRegion(`${endPoints.DEACTIVATE_REGION}/${id}`,body);
       console.log(response);
       console.log(error, "error message");
       
       
       if (response) {
-       console.log(response.data);
        toast.success(response.data.message);
+       getARegion()
        navigate("/regions");
        
       } else {
@@ -305,12 +311,12 @@ function RegionView({}: Props) {
                   </p>
                 </div>
 
-                {/* <div
+                <div
               onClick={() => handleModalToggle(false, false,false,false, true)}
               className="flex flex-col items-center space-y-1 cursor-pointer"
             >
               <div className="w-8 h-8 mb-2 rounded-full">
-              {data?.regionData?.status === "Active" ?
+              {data?.regionData?.region?.status === "Active" ?
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
                       <DeActivateIcon size={18} color="#D52B1E4D" />
@@ -326,10 +332,10 @@ function RegionView({}: Props) {
                   }
 
               </div>
-              <p className="text-center ms-2">
-                {data?.regionData?.status === "Active" ? "Deactivate" : "Activate"}
+              <p className="text-center font-medium  text-xs ms-2">
+                {data?.regionData?.region?.status === "Active" ? "Deactivate" : "Activate"}
               </p>
-            </div> */}
+            </div>
 
                 <div onClick={() => handleModalToggle(false,false,true,false,false)}  className="cursor-pointer">
                 <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
@@ -486,9 +492,9 @@ function RegionView({}: Props) {
         <ConfirmModal
           action={handleDeactivate}
           prompt={
-            data?.regionData?.status === "Active"
-              ? "Are you sure you want to deactivate this area?"
-              : "Are you sure you want to activate this area?"
+            data?.regionData?.region?.status === "Active"
+              ? "Are you sure you want to deactivate this Region?"
+              : "Are you sure you want to activate this Region?"
           }
           onClose={() => handleModalToggle()}
         />

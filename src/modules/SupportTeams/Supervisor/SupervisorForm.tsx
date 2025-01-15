@@ -179,12 +179,14 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
         "region",
         "workEmail",
       ];
-      const rmCheck = await checkSV(); // Call checkRM function
+      if(!editId){
+        const rmCheck = await checkSV(); // Call checkRM function
       
       if (!rmCheck) {
         canProceed = false;
         // Replace with your preferred method for showing a message
         toast.error("Region is already assigned to another Supervisor . Try adding another region."); 
+      }
       }
     }
   

@@ -38,9 +38,13 @@ const ticketColumns: { key: any; label: string }[] = [
     : "N/A",
     
   }));
+  console.log("support",supportTickets);
+  
 
   const handleView=(id:any)=>{
-    navigate(`/trialView/${id}`)
+    console.log("id",id);
+    
+    navigate(`/ticket/${id}`)
   }
   
 
@@ -56,6 +60,7 @@ const ticketColumns: { key: any; label: string }[] = [
       ]}
      noPagination
      maxHeight='450px'
+     skeltonCount={10}
     />
   </div>
    </>

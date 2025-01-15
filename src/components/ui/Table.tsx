@@ -79,8 +79,7 @@ const Table = <T extends object>({
     setCurrentPage(1);
   };
 
-  console.log("tData",data);
-  
+
 
   
 
