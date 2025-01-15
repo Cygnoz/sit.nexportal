@@ -280,6 +280,7 @@ exports.deactivateRegion = async (req, res, next) => {
     if (status === "Deactivate") {
       const isReferenced = await Promise.any([
         RegionManager.exists({ region: regionId }),
+        AreaManager.exists({ region: regionId }),
         Supervisor.exists({ region: regionId }),
         Bda.exists({ region: regionId }),
         SupportAgent.exists({ region: regionId }),
@@ -323,7 +324,6 @@ exports.deactivateRegion = async (req, res, next) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
-  
 
 exports.getAreasByRegion = async (req, res) => {
   try {
