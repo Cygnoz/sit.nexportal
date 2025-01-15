@@ -168,8 +168,8 @@ const SuperVisorTicketsOverview = ({supportAgentDetails,ticketSummary,insideSvDa
       {/* Table Section */}
       <div>
         <Table<SupervisorData> data={updatedTicketDetails} columns={columns} headerContents={{
-          title:'Supervisor Overview',
-          search:{placeholder:'Search Supervisor'},
+          title:'Tickets Overview',
+          search:{placeholder:'Search Tickets'},
           sort: [
                 {
                   sortHead: "Filter",
