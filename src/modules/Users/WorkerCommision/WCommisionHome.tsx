@@ -89,6 +89,8 @@ const WCommisionHome = () => {
     getWC();
   }, []);
  
+ // console.log(getWC);
+  
   // Define the columns with strict keys
   const columns: { key: keyof WCData; label: string }[] = [
     { key: "profileName", label: "ProfileName" },

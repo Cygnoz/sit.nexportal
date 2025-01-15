@@ -5,8 +5,8 @@ import LionIcon from "../assets/icons/LionIcon";
 import PraiseIcon from "../assets/icons/PraiseIcon";
 import rewardWithRibbon from '../assets/image/rewardWitRibbon.png'
 import partyPopper from '../assets/image/partyPopper.png'
-import firstMedal from '../assets/image/firstWon.png'
-import staryTwinkle from '../assets/image/StaryTwinkle.png'
+import AchieverIcon from "../assets/icons/AchieverIcon";
+import ThanksIcon from "../assets/icons/ThanksIcon";
 
 export interface PraiseData{
     usersId:string;
@@ -31,42 +31,42 @@ export  const themes = [
 
   export   const achievements = [
     {
-      icon: <img className="w-8 h-8 rotate-12" src={firstMedal} alt="Achiever Icon" />,
+      icon: <AchieverIcon />,
       name: "Achiever",
       bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
     },
     {
-      icon: <PraiseIcon size={20} />,
+      icon: <PraiseIcon  />,
       name: "Congratulations",
       bgImage: <img className="w-14 h-14 mt-20 ms-12" src={partyPopper} alt="" />
     },
     {
-      icon: <BulbIcon size={18} />,
+      icon: <BulbIcon />,
       name: "Problem Solver",
       bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
     },
     {
-      icon: <img className="w-6 h-6 text-center" src={staryTwinkle} alt="Thank You Icon" />,
+      icon: <ThanksIcon/>,
       name: "Thank You",
       bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
     },
     {
-      icon: <CupIcon size={20} />,
+      icon: <CupIcon  />,
       name: "Awesome",
       bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
     },
     {
-      icon: <LionIcon size={18} />,
+      icon: <LionIcon />,
       name: "Courage",
       bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
     },
     {
-      icon: <HeartIcon size={20} />,
+      icon: <HeartIcon/>,
       name: "Kind Heart",
       bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
     },
     {
-      icon: <HeartIcon size={20} />, // Replace with your actual icon
+      icon: <HeartIcon />, // Replace with your actual icon
       name: "Team Player",
       bgImage: <img className="w-14 h-14 mt-20 ms-16" src={rewardWithRibbon} alt="" />,
     },

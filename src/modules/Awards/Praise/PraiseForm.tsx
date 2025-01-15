@@ -1,12 +1,9 @@
 import Button from "../../../components/ui/Button";
-// import comfetti from '../../../assets/image/confetti.png'
 import { useEffect, useRef, useState } from "react";
 import useApi from "../../../Hooks/useApi";
-// import { UserData } from "../../../Interfaces/User";
 import Input from "../../../components/form/Input";
 import { endPoints } from "../../../services/apiEndpoints";
-// import { PraiseData } from "../../../Interfaces/Praise";
-// import { SubmitHandler } from "react-hook-form";
+
 import toast from "react-hot-toast";
 import { achievements, themes } from "../../../Interfaces/Praise";
 
@@ -38,10 +35,7 @@ const PraiseForm = ({ onClose }: Props) => {
       console.log(response)
       console.log(error)
       if (response && !error) {
-        // toast.success(response.data.message)
-        // const transformedUser = response.data.AllUsers?.map((users: any) => ({
-        //   ...users,
-        // }));
+        
 
         // setAllUsers(response.data.AllUsers);
         setAllUsers(response.data.AllUsers);
@@ -81,29 +75,34 @@ const PraiseForm = ({ onClose }: Props) => {
       achievement: achievements[index].name,
     }));
   };
-
-  const handleSubmit= async()=>{
+  const validateForm = () => {
+    if (!prise.usersId) {
+      toast.error("Please select a user.");
+      return false;
+    }
+    return true;
+  };
+  
+  const handleSubmit = async () => {
+    if (!validateForm()) return; // Prevent submission if validation fails
+  
     try {
-      // Call addLicenser function for adding a new licenser
       const { response, error } = await addPraise(endPoints.PRAISE, prise);
- 
-      console.log("Response:", response);
-      console.log("Error:", error);
- 
+      
       if (response && !error) {
-        console.log(response.data);
+        toast.success(response.data.message);
+        onClose();
         
-        toast.success(response.data.message); // Show success toast
-        onClose(); // Close the form/modal
       } else {
-        toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
+        toast.error(error.response?.data?.message || "An error occurred.");
       }
     } catch (err) {
-      console.error("Error submitting tickets data:", err);
-      toast.error("An unexpected error occurred."); // Handle unexpected errors
+      console.error("Error submitting data:", err);
+      toast.error("An unexpected error occurred.");
     }
-
-  }
+  };
+  
+ 
 
   // const ribbonBg = comfetti;
 
@@ -172,6 +171,7 @@ const PraiseForm = ({ onClose }: Props) => {
               onFocus={() => setShowDropdown(true)}
               onChange={(event) => setSearch(event.target.value)} // Update the input value
               style={{ appearance: "none" }} // Remove default icon
+              required
             />
         
             {/* Custom Dropdown */}
@@ -209,68 +209,7 @@ const PraiseForm = ({ onClose }: Props) => {
 
         </div>
 
-        {/* <div className="mt-2 mb-6 flex gap-2">
-          <div className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 mt-4 flex gap-2">
-            <div className="bg-gradient-to-r from-[#EDE7FB] to-[#B5DBDB] rounded-full w-8 h-8 -mt-1">
-              <img className="w-8 h-8 rotate-12" src={firstMedal} alt="" />
-            </div>
-            <div>
-              <p className="text-center text-[#495160] text-xs font-normal mt-1 ms-1">Achiever</p>
-            </div>
-          </div>
-          <div className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 mt-4 flex gap-2">
-            <div className="bg-gradient-to-r from-[#EDE7FB] to-[#B5DBDB] rounded-full w-8 h-8 -mt-1">
-              <div className="p-1 ms-[3px] mt-[2px]">
-                <PraiseIcon size={20} />
-              </div>
-            </div>
-            <div>
-              <p className="text-center text-[#495160] text-xs font-normal mt-1 ms-1">Congratulations</p>
-            </div>
-          </div>
-          <div className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 mt-4 flex gap-2">
-            <div className="bg-gradient-to-r from-[#EDE7FB] to-[#B5DBDB] rounded-full w-8 h-8 -mt-1">
-              <div className="p-1 ms-[5px] mt-[2px]">
-                <BulbIcon size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-center text-[#495160] text-xs font-normal mt-1 ms-1">Problem Solver</p>
-            </div>
-          </div>
-          <div className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 mt-4 flex gap-2">
-            <div className="bg-gradient-to-r from-[#EDE7FB] to-[#B5DBDB] rounded-full w-8 h-8 -mt-1">
-              <img className="w-6 h-6 ms-[6px] mt-1" src={staryTwinkle} alt="" />
-            </div>
-            <div>
-              <p className="text-center text-[#495160] text-xs font-normal mt-1 ms-1">Thank You</p>
-            </div>
-          </div>
-          <div className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 mt-4 flex gap-2">
-            <div className="bg-gradient-to-r from-[#EDE7FB] to-[#B5DBDB] rounded-full w-8 h-8 -mt-1">
-              <div className="p-1 ms-[3px] mt-[2px]">
-                <CupIcon size={20} />
-              </div>
-            </div>
-            <div>
-              <p className="text-center text-[#495160] text-xs font-normal mt-1 ms-1">Awesome</p>
-            </div>
-          </div>
-          <div className="bg-[#F3F3F3] rounded-2xl w-40 h-12 p-3 mt-4 flex gap-2">
-            <div className="bg-gradient-to-r from-[#EDE7FB] to-[#B5DBDB] rounded-full w-8 h-8 -mt-1">
-              <div className="p-1 ms-[3px] mt-1">
-                <LionIcon size={18} />
-              </div>
-            </div>
-            <div>
-              <p className="text-center text-[#495160] text-xs font-normal mt-1 ms-1">Courage</p>
-            </div>
-          </div>
-
-
-
-
-        </div> */}
+    
         <div className="flex flex-wrap gap-4 mt-6 cursor-pointer">
           {achievements.map((achievement, index) => (
             <div
@@ -286,33 +225,10 @@ const PraiseForm = ({ onClose }: Props) => {
             </div>
           ))}
         </div>
-        {/* <div className="mt-6">
-        <p className="text-lg">
-          Selected Achievement: <span className="font-bold">{prise.achievement}</span>
-        </p>
-      </div> */}
+      
 
         <p className="my-3">Select Background</p>
-        {/* <div className="flex mb-6 gap-2">
-          <div className="bg-gradient-to-r from-[#F86C6C2B] to-[#F9DBA0A8] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 1</p>
-          </div>
-          <div className="bg-gradient-to-r from-[#EDE7FB] to-[#CCB7FE] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 2</p>
-          </div>
-          <div className="bg-gradient-to-r from-[#EDE7FB] to-[#DEFFDBA6] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 3</p>
-          </div>
-          <div className="bg-gradient-to-r from-[#FFC9B182] to-[#FCCF7447] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 4</p>
-          </div>
-          <div className="bg-gradient-to-r from-[#EDE7FB] to-[#D786DD4D] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 5</p>
-          </div>
-          <div className="bg-gradient-to-r from-[#D52B1E45] to-[#FCCF741F] rounded-2xl w-40 h-12 p-3 flex gap-2">
-            <p className="text-center ms-10 mt-1 text-[#495160] text-xs font-normal">Theme 6</p>
-          </div>
-        </div> */}
+       
         <div className="flex mb-6 gap-2 flex-wrap cursor-pointer">
           {themes.map((item, index) => (
             <div
@@ -329,16 +245,13 @@ const PraiseForm = ({ onClose }: Props) => {
             </div>
           ))}
         </div>
-        {/* <div className="mt-4">
-          <p className="text-lg">Selected Theme: {prise.theme}</p>
-        </div> */}
+      
 
 
         <div className="bg-[#F3F3F3] border border-[#EAECF0] rounded-2xl p-6">
           <p className="gap-2 my-2">Add Notes </p>
           <div className="bg-[#FFFFFFA1] rounded-lg">
-            {/* <p className="text-[#2C3E50A3] text-xs font-normal mb-4">Lorem ipsum dolor sit amet consectetur. Egestas amet purus.Lorem ipsum <br /> dolor sit amet consectetur. Egestas amet purus.</p>
-            <p className="text-end text-[#495160A1] text-[10px] font-semibold">200/500</p> */}
+          
             <textarea onChange={(e) => setPrise((prevData: any) => ({
               ...prevData,
               notes:e.target.value,
