@@ -6,14 +6,14 @@ import Tasks from "./Tasks";
 import Meetings from "./Meetings";
 
 
-type Props = {}
+type Props = {
+  leadData:any
+}
 
-const ViewActivities = ({}: Props) => {
+const ViewActivities = ({leadData}: Props) => {
     const tabs=["Activity Timeline","Mails", "Notes","Task","Meetings"]
     const [activeTab, setActiveTab] = useState<string>("Activity Timeline");
-     // Data for the table
-  
-  
+   
   return (
     <div>
       <div className="flex gap-14 text-base font-bold my-5 border-b border-gray-200">
@@ -39,7 +39,7 @@ const ViewActivities = ({}: Props) => {
     )}
 
     {activeTab==="Mails"&&(
-    <Mails/>
+    <Mails leadData={leadData} />
     )}
 
     {activeTab==="Notes"&&(
@@ -47,7 +47,7 @@ const ViewActivities = ({}: Props) => {
     )}
 
     {activeTab==="Task"&&(
-    <Tasks/>
+    <Tasks leadData={leadData} />
     )}
 
     {activeTab==="Meetings"&&(

@@ -5,11 +5,12 @@ import person from "../../assets/image/Ellipse 14 (2).png"
 import Input from "../../components/form/Input"
 import pic from "../../assets/image/IndiaLogo.png"
 import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import useApi from "../../Hooks/useApi"
 import { endPoints } from "../../services/apiEndpoints"
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill styles
+import ChevronRight from "../../assets/icons/ChevronRight"
 type Props = {}
 
  
@@ -21,6 +22,7 @@ const TicketsView = ({ }: Props) => {
     setContent(value);
   };
 
+  const navigate=useNavigate()
  
 
 
@@ -98,18 +100,23 @@ const TicketsView = ({ }: Props) => {
   return (
     <>
       <div>
+      <div className="flex items-center text-[16px] space-x-2">
+       <p onClick={()=>navigate('/ticket')} className="font-bold cursor-pointer text-[#820000] ">Ticket</p>
+        <ChevronRight color="#4B5C79" size={18}/>
+        <p className="font-bold text-[#303F58] ">{ticketData?.customerId?.firstName}</p>
+      </div>
         <div className="grid grid-cols-12 mt-5 max-h-full">
           <div className="col-span-2 p-2 bg-white max-h-full">
             <h1 className="font-normal text-[#303F58] text-sm">Requester</h1>
             <div className="rounded-full flex my-3">
               <img className="w-6 h-6 mt-1" src={person} alt="" />
-              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.customerDetails?.firstName}</h2>
+              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.customerId?.firstName}</h2>
             </div>
             <hr />
             <h1 className="font-normal text-[#303F58] text-sm mt-3">Assignee</h1>
             <div className="rounded-full flex my-3">
               <img className="w-6 h-6 mt-1" src={person} alt="" />
-              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.supportAgentDetails?.name}</h2>
+              <h2 className="font-medium text-sm text-[#4B5C79] mt-2 ms-3">{ticketData?.supportAgentId?.user?.userName}</h2>
             </div>
             
            

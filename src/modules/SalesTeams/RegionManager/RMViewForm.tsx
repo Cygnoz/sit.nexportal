@@ -68,7 +68,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
           <div className="px-2 ">
             <h1 className="font-bold text-sm">Region Manager Info</h1>
             <p className="text-xs mt-2 font-normal text-[#8F99A9]">A manager is not a person who can do the work better than his men</p>
-
+           
           </div>
           <button
             type="button"

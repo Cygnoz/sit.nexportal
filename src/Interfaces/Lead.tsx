@@ -3,7 +3,7 @@ export interface LeadData {
     image?:string;
     firstName: string;
     lastName?: string;
-    email: string;
+    email?: string;
     phone: string;
     website?: string;
     leadSource?: string;
@@ -21,4 +21,7 @@ export interface LeadData {
     endDate?:string
     assignedBDA?:string
     trialStatus?:string
+    age?:string;
+    address?:string;
+    regionDetails?:{regionName:string};
   }

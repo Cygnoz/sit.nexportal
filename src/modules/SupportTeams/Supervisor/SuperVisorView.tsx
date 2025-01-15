@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import CalenderDays from "../../../assets/icons/CalenderDays";
@@ -24,9 +24,12 @@ import { endPoints } from "../../../services/apiEndpoints";
 import AwardIcon from "../../../assets/icons/AwardIcon";
 import SVViewAward from "./SVViewAward";
 import SupervisorForm from "./SupervisorForm";
-import RatingStar from "../../../components/ui/RatingStar";
 import person1 from "../../../assets/image/Ellipse 14.png";
 import person2 from "../../../assets/image/Ellipse 43.png";
+import Trash from "../../../assets/icons/Trash";
+import toast from "react-hot-toast";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
+
 
 
 interface SupervisorData {
@@ -41,26 +44,42 @@ interface SupervisorData {
 type Props = {};
 
 const SuperVisorView = ({}: Props) => {
+  const topRef = useRef<HTMLDivElement>(null);
+    
+      useEffect(() => {
+        // Scroll to the top of the referenced element
+        topRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, []);
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
     editSV: false,
     viewSV: false,
     awardSV: false,
+    confirm: false,
   });
   const handleModalToggle = (
     editSV = false,
     viewSV = false,
-    awardSV = false
+    awardSV = false,
+    confirm=false,
   ) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editSV: editSV,
       viewSV: viewSV,
       awardSV: awardSV,
+      confirm: confirm,
     }));
     getASV();
   };
-
+  
+  const { request: getInsideSv } = useApi('get', 3003);
+  const [insideSvData, setInsideSvData] = useState<any>();
+  const [supervisorDetails, setSupervisorDetails] = useState([]);
+  const [supportAgentDetails, setSupportAgentDetails] = useState([]);
+  const [ticketSummary, setTicketSummary] = useState<any>({});
+  
+  const {request:deleteaSV}=useApi('delete',3003)
   const { request: getaSV } = useApi("get", 3003);
   const { id } = useParams();
   const [getData, setGetData] = useState<{
@@ -87,17 +106,65 @@ const SuperVisorView = ({}: Props) => {
   useEffect(() => {
     getASV();
   }, [id]);
+
+  const handleDelete = async () => {
+    try {
+      const { response, error } = await deleteaSV(`${endPoints.SUPER_VISOR}/${id}`);
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/supervisor");
+      } else {
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete the SuperVisor.");
+    }
+  };
   
 
   const navigate=useNavigate()
+
+  
+  const getInsideViewSV = async () => {
+    try {
+      const { response, error } = await getInsideSv(`${endPoints.SUPER_VISOR}/${id}/details`);
+  
+      if (response && !error) {
+        console.log(response.data);
+        setInsideSvData(response.data);
+  
+        if (response.data) {
+          setSupervisorDetails(response.data.supervisorDetails || []);
+          setSupportAgentDetails(response.data.supportAgentDetails || []);
+          setTicketSummary(response.data.ticketSummary || {});
+        }
+      } else {
+        console.error(error.response?.data?.message || "Failed to fetch supervisor data.");
+      }
+    } catch (err) {
+      console.error("Error fetching SV data:", err);
+    }
+  };
+  
+  useEffect(() => {
+    getInsideViewSV();
+  }, [id]);
+
+  console.log("SV Data:", insideSvData);
+  console.log("Supervisor Details:", supervisorDetails);
+  console.log("SupportAgent Details:", supportAgentDetails);
+  console.log("Ticket Summary:", ticketSummary);
+
+
 
   // Data for HomeCards
   const SuperVisorCardData = [
     {
       icon: <AreaIcon size={24} />,
-      number: "167",
+      number:  insideSvData?.supervisorDetails?.totalSupportAgents || 0,
       title: "Total Agent Supervised",
-      subTitle: "look loo",
+      subTitle: "A good boss is a good teacher",
       images: [
         <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
         <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
@@ -107,132 +174,37 @@ const SuperVisorView = ({}: Props) => {
     },
     {
       icon: <UserIcon size={24} />,
-      number: "86%",
+      number:  insideSvData?.supervisorDetails?.overallResolutionRate || 0,
+      
       title: " Tasks completed by the team",
-      subTitle: "look loo",
+      subTitle: "Mission accomplished",
     },
-    {
-      icon: <AreaManagerIcon size={24} />,
-      number: "4.5/4",
-      title: "Customer Feedback",
-      subTitle: "look loo",
-      rating:<RatingStar size={14} count={3}/>
-    },
+    
   ];
 
-  // Data for the table
-  const data: any[] = [
-    {
-      memberID: "001",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={3} />,
-    },
-    {
-      memberID: "002",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={3} />,
-    },
-    {
-      memberID: "003",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "004",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={5} />,
-    },
-    {
-      memberID: "005",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={2} />,
-    },
-    {
-      memberID: "006",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "007",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={1} />,
-    },
-    {
-      memberID: "008",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={3} />,
-    },
-    {
-      memberID: "009",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "010",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={2} />,
-    },
-    {
-      memberID: "011",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "012",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={5} />,
-    },
-    {
-      memberID: "013",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={4} />,
-    },
-    {
-      memberID: "014",
-      supervisorName: "subi",
-      ticketsResolved: "33",
-      time: "3hrs",
-      rating: <RatingStar size={14} count={3} />,
-    },
-  ];
+ 
+ 
   // Define the columns with strict keys
-  const columns: { key: keyof SupervisorData; label: string }[] = [
-    { key: "memberID", label: "Member ID" },
-    { key: "supervisorName", label: " Name" },
-    { key: "ticketsResolved", label: "Tickets Resolved" },
-    { key: "time", label: "Avg.Resolution Time" },
-    { key: "rating", label: "Rating" },
+  const columns: { key: any; label: string }[] = [
+    { key: "employeeId", label: "Member ID" },
+    { key: "supportAgentName", label: " Name" },
+    { key: "resolvedTicketsCount", label: "Tickets Resolved" },
+   // { key: "time", label: "Avg.Resolution Time" },
+    
   ];
+  const SVData = supportAgentDetails.map((support: any) => ({
+    ...support,
+    employeeId: support.employeeId || "N/A",
+    supportAgentName: support.supportAgentName, // or any unique identifier
+    resolvedTicketsCount: support.resolvedTicketsCount || 0, // Adjust according to your data structure
+  
+    
+  }));
+ 
 
   return (
     <>
-      <div>
+      <div ref={topRef}>
         <div className="flex items-center text-[16px] my-2 space-x-2">
           <p onClick={()=>navigate('/supervisor')}  className="font-bold cursor-pointer  text-[#820000] ">SuperVisor</p>
           <ChevronRight color="#4B5C79" size={18} />
@@ -261,7 +233,7 @@ const SuperVisorView = ({}: Props) => {
                   title={card.title}
                   subTitle={card.subTitle}
                   images={card.images}
-                  rating={card.rating}
+                  
                 />
               ))}
             </div>
@@ -269,11 +241,11 @@ const SuperVisorView = ({}: Props) => {
             {/* Table Section */}
             <div>
               <Table<SupervisorData>
-                data={data}
+                data={SVData}
                 columns={columns}
                 headerContents={{
                   title: "Support Team Members",
-                  search: { placeholder: "Search Supervisor" },
+                  search: { placeholder: "Search Support Agent" },
                   sort: [
                     {
                       sortHead: "Filter",
@@ -299,6 +271,8 @@ const SuperVisorView = ({}: Props) => {
                   ],
                 }}
                 noAction
+                maxHeight="450px"
+                skeltonCount={11}
               />
             </div>
           </div>
@@ -311,14 +285,14 @@ const SuperVisorView = ({}: Props) => {
           >
             <div className="rounded-full flex my-2 justify-between">
               <div className="flex">
-              {getData.svData?.user?.userImage ? (
+              {getData.svData?.user?.userImage && getData.svData?.user?.userImage>50 ? (
                 <img
                   className="w-16 h-16 rounded-full"
                   src={getData.svData?.user?.userImage}
                   alt=""
                 />
               ) : (
-                <p className="w-16 h-16    bg-black rounded-full flex justify-center items-center">
+                <p className="w-16 h-16 bg-black rounded-full flex justify-center items-center">
                   <UserIcon color="white" size={35} />
                 </p>
               )}
@@ -402,8 +376,8 @@ const SuperVisorView = ({}: Props) => {
               </p>
               <hr />
 
-              <div className="flex py-1 mt-3">
-                <div className="flex flex-col items-center space-y-1">
+              <div className="flex py-2 mt-24 space-x-6">
+                <div className="flex flex-col items-center ">
                   <div
                     onClick={() => handleModalToggle(true, false, false)}
                     className="w-8 h-8 mb-2 rounded-full border-white cursor-pointer"
@@ -419,7 +393,7 @@ const SuperVisorView = ({}: Props) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col  items-center space-y-1">
+                <div className="flex flex-col  items-center ">
                   <div
                     onClick={() => handleModalToggle(false, true, false)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
@@ -435,7 +409,7 @@ const SuperVisorView = ({}: Props) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col   items-center space-y-1">
+                <div className="flex flex-col   items-center ">
                   <div
                     onClick={() => handleModalToggle(false, false, true)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
@@ -451,7 +425,7 @@ const SuperVisorView = ({}: Props) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col  items-center space-y-1">
+                <div className="flex flex-col  items-center ">
                   <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                       <div className="ms-2 mt-2">
@@ -463,12 +437,27 @@ const SuperVisorView = ({}: Props) => {
                     DeActivate
                   </p>
                 </div>
+
+                <div className="flex flex-col  items-center">
+                <div onClick={() => handleModalToggle(false, false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <Trash size={18} color="#BC3126" />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Delete</p>
+              </div>
               </div>
             </div>
           </div>
         </div>
 
-        <SuperVisorTicketsOverview />
+        {/* <SuperVisorTicketsOverview ticketSummary={ticketSummary} /> */}
+        <SuperVisorTicketsOverview 
+        ticketSummary={ticketSummary}
+        supportAgentDetails= {supportAgentDetails}
+        insideSvData={insideSvData}/>
       </div>
 
       {/* Modal controlled by state */}
@@ -486,6 +475,18 @@ const SuperVisorView = ({}: Props) => {
       >
         <SVViewAward getData={getData} onClose={() => handleModalToggle()} />
       </Modal >
+      <Modal
+        open={isModalOpen.confirm}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          prompt="Are you sure want to delete this Supervisor?"
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>      
     </>
   );
 };

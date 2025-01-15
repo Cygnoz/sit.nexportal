@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import CalenderClock from "../../../../assets/icons/CalenderClock";
 import ChevronRight from "../../../../assets/icons/ChevronRight";
@@ -6,41 +8,64 @@ import EditIcon from "../../../../assets/icons/EditIcon";
 import RegionIcon from "../../../../assets/icons/RegionIcon";
 import RupeeIcon from "../../../../assets/icons/RupeeIcon";
 import TicketCheck from "../../../../assets/icons/TicketCheck";
+// import Trash from "../../../../assets/icons/Trash";
+import UserIcon from "../../../../assets/icons/UserIcon";
 import ViewRoundIcon from "../../../../assets/icons/ViewRoundIcon";
-import profileImage from '../../../../assets/image/AvatarImg.png';
 import licenserImg from '../../../../assets/image/LicenserView.jpeg';
+import ConfirmModal from "../../../../components/modal/ConfirmModal";
+import Modal from "../../../../components/modal/Modal";
 import HomeCard from "../../../../components/ui/HomeCards";
+import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
+import LicenserForm from "../LicenserForm";
+import LicenserViewForm from "./LicenserViewForm";
 import PaymentTable from "./PaymentTable";
 import RecentActivityView from "./RecenetActivity";
 import SupportTicketTable from "./SupportTicketTable";
-import Modal from "../../../../components/modal/Modal";
-import LicenserViewForm from "./LicenserViewForm";
-import { useEffect, useState } from "react";
-import LicenserForm from "../LicenserForm";
-import useApi from "../../../../Hooks/useApi";
-import { endPoints } from "../../../../services/apiEndpoints";
+import { getStatusClass } from "../../../../components/ui/GetStatusClass";
 
 type Props = {
-
 };
 
 function LicenserView({ }: Props) {
-
-  const [isModalOpen, setIsModalOpen] = useState({
-    editLicenser: false,
-    viewLicenser: false
-  });
-  const handleModalToggle = (editLicenser = false, viewLicenser = false) => {
-    setIsModalOpen((prevState: any) => ({
-      ...prevState,
-      editLicenser: editLicenser,
-      viewLicenser: viewLicenser
-    }));
-  }
+  const topRef = useRef<HTMLDivElement>(null);
+  
+    useEffect(() => {
+      // Scroll to the top of the referenced element
+      topRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, []);
+  const { request: deleteLicenser } = useApi("delete", 3001);
 
   const {request: getaLicenser}=useApi('get',3001)
   const { id } = useParams();
   const [licenseData, setLicenseData] = useState<any>()
+
+  const [isModalOpen, setIsModalOpen] = useState({
+    editLicenser: false,
+    viewLicenser: false,
+    confirm: false,
+    
+    
+  });
+  const handleModalToggle = (
+
+    editLicenser = false,
+    viewLicenser= false,
+    confirm = false,
+    
+    
+    
+  ) => {
+    setIsModalOpen((prevState) => ({
+      ...prevState,
+      editLicenser,
+      viewLicenser,
+      confirm,
+    }));
+  getOneLicenser
+   // if (getLead) getLead(); // Safeguard
+  };
+   
 
      const getOneLicenser = async () => {
           try {
@@ -64,7 +89,61 @@ function LicenserView({ }: Props) {
         }, [id]);
 
         console.log(licenseData);
+
+
+        const handleDelete = async () => {
+          try {
+            const { response, error } = await deleteLicenser(`${endPoints.LEAD}/${id}`);
+            if (response) {
+              toast.success(response.data.message);
+              navigate("/licenser");
+            } else {
+              toast.error(error?.response?.data?.message || "An error occurred");
+            }
+          } catch (err) {
+            console.error("Delete error:", err);
+            toast.error("Failed to delete the licenser.");
+          }
+        };
         
+        const { request: getInsideLicenser } = useApi('get', 3001);
+const [insideLicenserData, setInsideLicenserData] =  useState<any>();
+const [recentActivities, setRecentActivities] = useState([]);
+const [supportTickets, setSupportTickets] = useState([]);
+
+const getInsideViewLICENSER = async () => {
+  try {
+    const { response, error } = await getInsideLicenser(`${endPoints.LICENSER}/${id}/details`);
+    
+    if (response && !error) {
+      console.log(response.data);
+      setInsideLicenserData(response.data);
+
+      // Extract recentActivities & supportTickets
+      if (response.data.licenserDetails) {
+        setRecentActivities(response.data.licenserDetails.recentActivities || []);
+        setSupportTickets(response.data.licenserDetails.supportTickets || []);
+      }
+      
+    } else {
+      console.error(error.response.data.message);
+    }
+  } catch (err) {
+    console.error("Error fetching LICENSER data:", err);
+  }
+};
+
+useEffect(() => {
+  getInsideViewLICENSER();
+}, [id]);
+
+console.log("Licenser Data:", insideLicenserData);
+console.log("Recent Activities:", recentActivities);
+console.log("Support Tickets:", supportTickets);
+
+        
+
+
 
   // Function to toggle modal visibility
 
@@ -79,28 +158,37 @@ function LicenserView({ }: Props) {
     },
     {
       icon: <TicketCheck />,
-      number: "100",
+      number:  insideLicenserData?.licenserDetails?.openTickets || 0,
       title: "Open Tickets",
       iconFrameColor: "#30B777",
       iconFrameBorderColor: "#B3F0D3CC",
     },
     {
       icon: <RegionIcon size={24} />,
-      number: "526",
+      number: insideLicenserData?.licenserDetails?.closedTickets || 0,
       title: "Closed Tickets",
       iconFrameColor: "#51BFDA",
       iconFrameBorderColor: "#C1E7F1CC",
     },
     {
       icon: <RegionIcon size={24} />,
-      number: "12Oct23",
+      number: insideLicenserData?.licenserDetails?.startDate 
+        ? new Date(insideLicenserData.licenserDetails.startDate)
+            .toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" })
+            .toUpperCase()
+        : "N/A",
       title: "Start Date",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
+    
     {
       icon: <RegionIcon size={24} />,
-      number: "12Oct24",
+      number: insideLicenserData?.licenserDetails?.endDate 
+      ? new Date(insideLicenserData.licenserDetails.endDate)
+          .toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "2-digit" })
+          .toUpperCase()
+      : "N/A",
       title: "End Date",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
@@ -109,8 +197,14 @@ function LicenserView({ }: Props) {
   const licenser: { key: any; label: string }[] = [
     { key: licenseData?.firstName, label: "Licenser Name" },
     { key: licenseData?.phone, label: "Phone" },
-    { key: licenseData?.startDate, label: "Starting Date" },
-    { key: licenseData?.endDate, label: "Ending Date" },
+    { 
+      key: licenseData?.startDate ? new Date(licenseData.startDate).toLocaleDateString('en-GB') : null, 
+      label: "Starting Date" 
+  },
+  { 
+      key: licenseData?.endDate ? new Date(licenseData.endDate).toLocaleDateString('en-GB') : null, 
+      label: "Ending Date" 
+  },
     { key: licenseData?.bdaDetails?.bdaName , label: "BDA" },
     { key: licenseData?.regionDetails?.regionName, label: "Region" },
     { key: licenseData?.areaDetails?.areaName, label: "Area" },
@@ -119,7 +213,7 @@ function LicenserView({ }: Props) {
   const navigate=useNavigate()
   return (
     <>
-    <div className="text-[#4B5C79] space-y-2 mb-5">
+    <div ref={topRef} className="text-[#4B5C79] space-y-2 mb-5">
       <div className="flex items-center text-[16px]  space-x-2 mb-4">
         <p onClick={()=>navigate('/licenser')} className="font-bold cursor-pointer text-[#820000]">Licenser</p>
         <ChevronRight color="#4B5C79" size={18} />
@@ -155,24 +249,59 @@ function LicenserView({ }: Props) {
               </div>
             </div>
             <div className="col-span-10 flex flex-col space-y-2">
-              <div className="text-sm space-y-1">
-                <p>License Expiry Alert</p>
-                <p>license for <u> Plan 2 </u>  will expire on</p>
-              </div>
-              <p className="text-[#E04F52] text-[16px] font-semibold">25 Nov 24</p>
-            </div>
+  <div>
+    <p>License Expiry Alert</p>
+    <div
+      className={`${getStatusClass(licenseData?.licensorStatus)} flex items-center gap-2 w-fit`}
+    >
+      <p className="text-sm">{licenseData?.licensorStatus}</p>
+    </div>
+  </div>
+
+  {licenseData?.licensorStatus === "Expired" ? (
+    <p className="text-[#E04F52] text-[16px] font-semibold">Update This Licensor</p>
+  ) : (
+    (licenseData?.licensorStatus === "Active" || licenseData?.licensorStatus === "Pending Renewal") && (
+      <>
+        <p className="text-[#E04F52] text-[16px] font-semibold">
+          {licenseData?.endDate
+            ? new Date(licenseData.endDate).toLocaleDateString("en-GB")
+            : null}
+        </p>
+        <p className="text-[#4B5C79] text-[14px] font-normal">
+          {licenseData?.endDate
+            ? `${Math.ceil(
+                (new Date(licenseData.endDate).getTime() - new Date().getTime()) /
+                  (1000 * 60 * 60 * 24)
+              )} days left`
+            : "No end date available"}
+        </p>
+      </>
+    )
+  )}
+</div>
+
+
           </div>
-          <RecentActivityView />
+          <RecentActivityView 
+          insideLicenserData={insideLicenserData}
+          recentActivities={recentActivities}
+
+          />
         </div>
         <div className="w-[86%] space-y-3">
           <div className="h-[130px] relative flex flex-col  bg-white rounded-lg">
-            <img src={profileImage} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>
-            <div className="h-[65px] bg-cover rounded-t-lg w-full flex justify-end" style={{ backgroundImage: `url(${licenserImg})` }}>
-              <div className="flex py-1 me-3">
+           {licenseData?.image && licenseData?.image>50 ? <img src={licenseData?.image} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-[61px] h-[61px]"></img>:
+              <p className="rounded-full absolute top-8 left-5 border-2 flex items-center justify-center border-white bg-black w-[61px] h-[61px]"  >
+              <UserIcon color="white" size={35} />
+            </p>
+           }
+            <div className="h-[70px] bg-cover rounded-t-lg w-full flex justify-end" style={{ backgroundImage: `url(${licenserImg})` }}>
+              <div className="flex pt-2 me-3">
 
 
                 <div className="flex flex-col items-center space-y-2">
-                  <div onClick={() => handleModalToggle(true, false)} className="w-6 h-6 mb-2 rounded-full border-white" >
+                  <div onClick={() => handleModalToggle(true, false, false)} className="w-6 h-6 mb-2 cursor-pointer rounded-full border-white" >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <EditIcon size={18} color="#F0D5A0" />
@@ -184,8 +313,8 @@ function LicenserView({ }: Props) {
                 </div>
 
                 <div className="flex flex-col  items-center space-y-2 ">
-                  <div onClick={() => handleModalToggle(false, true)}
-                    className="w-6 h-6 mb-2 rounded-full">
+                  <div onClick={() => handleModalToggle(false, true,false)}
+                    className="w-6 h-6 mb-2 rounded-full cursor-pointer">
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <ViewRoundIcon size={18} color="#B6D6FF" />
@@ -200,7 +329,7 @@ function LicenserView({ }: Props) {
 
 
                 <div className="flex flex-col  items-center space-y-2">
-                  <div className="w-6 h-6 mb-2 rounded-full">
+                  <div  className="w-6 h-6 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <DeActivateIcon size={18} color="#D52B1E4D" />
@@ -212,32 +341,39 @@ function LicenserView({ }: Props) {
 
                 </div>
 
+
+
               </div>
             </div>
-            <div className="h-[65px] py-3 bg-white rounded-b-lg">
-              <div className="ms-32 space-x-10 flex">
-                {licenser.map((data) => (
-                  <div className="text-sm">
-                    <p className="text-[#8F99A9] ">{data.label}</p>
-                    <p className="text-[#303F58] font-medium ">{data.key}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <div className="h-[65px] py-3 bg-white rounded-b-lg px-2">
+  <div className="ms-28 space-x-6 flex justify-end">
+    {licenser.map((data) => (
+      <div className="text-[12px]">
+        <p className="text-[#8F99A9]">{data.label}</p>
+        <p className="text-[#303F58] font-medium">{data.key}</p>
+      </div>
+    ))}
+  </div>
+</div>
+
           </div>
-          <SupportTicketTable />
+          <SupportTicketTable 
+          supportTickets={supportTickets}/>
           <PaymentTable />
         </div>
       </div>
      
     </div>
      {/* Modal controlled by state */}
-     <Modal open={isModalOpen.viewLicenser} onClose={() => handleModalToggle()} className="w-[35%]">
+     <Modal open={isModalOpen.viewLicenser} onClose={() => handleModalToggle()} className="w-[45%]">
      <LicenserViewForm onClose={() => handleModalToggle()} />
    </Modal>
    <Modal open={isModalOpen.editLicenser} onClose={() => handleModalToggle()} className="w-[60%]">
      <LicenserForm editId={id} onClose={() => handleModalToggle()} />
    </Modal>
+   <Modal open={isModalOpen.confirm} align="center" onClose={() => handleModalToggle()} className="w-[30%]">
+        <ConfirmModal prompt="Are you sure want to delete this licenser?"  action={handleDelete} onClose={() => handleModalToggle()} />
+      </Modal>
     </>
   );
 }

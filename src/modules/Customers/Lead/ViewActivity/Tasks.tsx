@@ -1,56 +1,84 @@
-import Boxes from "../../../../assets/icons/Boxes"
-import PackageCheck from "../../../../assets/icons/PackageCheck"
-import Table from "../../../../components/ui/Table"
+// import Boxes from "../../../../assets/icons/Boxes"
+// import PackageCheck from "../../../../assets/icons/PackageCheck"
+import { useEffect, useState } from "react";
+import useApi from "../../../../Hooks/useApi";
+import TaskTable from "./TaskTable";
+import { useParams } from "react-router-dom";
+import { endPoints } from "../../../../services/apiEndpoints";
+import { LeadEmailData } from "../../../../Interfaces/LeadEmail";
 
-interface LeadViewData {
-    task: string;
-    dueDate: string;
-    bda: string;
-    button: string;
-    source: string;
-  }
+type Props = {
+  leadData:any
+}
 
-type Props = {}
+const Tasks = ({leadData}: Props) => {
 
-const Tasks = ({}: Props) => {
-         // Data for the table
-const leadData: LeadViewData[] = [
-    { task: "BDA12345", dueDate: "Anjela John", bda: "(406) 555-0120", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Kristin Watson", bda: "(480) 555-0103", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Wade Warren", bda: "(702) 555-0122", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "", },
-  ];
+  const {request : getLeadTask}=useApi('get',3001)
+  const [taskData, setTaskData]=useState<any[]>([])
+
+  const {id}=useParams()
+
+  const getTask = async () => {
+    try {
+        const { response, error } = await getLeadTask(`${endPoints.GET_ALL_LEAD_ACTIVITIES}/${id}`);
+        console.log(response);
+        console.log(error);
+
+        if (response && !error) {
+            console.log(response.data.activities);
+
+            // Filter activities where activityType is 'Task' and transform them
+            const transformedTask = response.data?.activities
+                ?.filter((task: any) => task.activityType === 'Task') // Only include tasks
+                ?.map((task: any) => ({
+                    ...task,
+                    taskTitle: task?.taskTitle,
+                    taskDescription: task?.taskDescription,
+                    dueDate: task?.dueDate,
+                    taskType: task?.taskType,
+                    time: task?.time,
+                    bda:leadData?.bdaDetails?.bdaName
+                    ? leadData?.bdaDetails?.bdaName
+                    : "N/A"
+                })) || [];
+
+            // Update the state with the filtered and transformed tasks
+            setTaskData(transformedTask);
+        } else {
+            console.log(error.response.data.message);
+        }
+    } catch (err) {
+        console.log(err, "error message");
+    }
+};
+
+      useEffect(()=>{
+          getTask()
+      },[])
+      console.log(taskData);
   
     // Define the columns with strict keys
-  const columns: { key: keyof LeadViewData; label: string }[] = [
-    { key: "task", label: "Task" },
+  const columns: { key: any; label: string }[] = [
+    { key: "taskTitle", label: "Task" },
     { key: "dueDate", label: "Due Date" },
     { key: "bda", label: "BDA" },
-    { key: "button", label: "" },
-    { key: "source", label: "" },
   ];
 
   return (
     <div>
-             <div>
-        <Table<LeadViewData>
-            data={leadData}
+         <div>
+        <TaskTable<LeadEmailData>
+            data={taskData}
             columns={columns}
             headerContents={{
-            title: "Lead Details",
+            title: "Tasks",
             search: { placeholder: "Search" },
-            sort: [
-                  {
-                    sortHead: "Filter",
-                    sortList: [
-                      { label: "Sort by Date", icon: <PackageCheck size={14} color="#4B5C79"/> },
-                      { label: "Sort by Status", icon: <Boxes size={14} color="#4B5C79"/> }
-                    ]
-                  }
-                ]
+            button:{
+              buttonHead:"Add Task"
+            }
             }}
             noAction
+            getTask={getTask}
         />
     </div>
     </div>

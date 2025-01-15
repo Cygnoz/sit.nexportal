@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { RegionData } from "../../../Interfaces/Region";
@@ -37,19 +36,7 @@ const RegionHome = () => {
     navigate(`/regions/${id}`);
   };
 
-  // const handleDelete=async(id:any)=>{
-  //   try{
-  //     const {response,error}=await deleteRegion(`${endPoints.REGION}/${id}`)
-  //   if(response && !error){
-  //     toast.success(response.data.message)
-  //     getAllRegions()
-  //   }else{
-  //     toast.error(error.response.data.message)
-  //   }
-  //   }catch(err){
-  //     console.log();
-  //   }
-  // }
+
 
   const handleEdit = (id: any) => {
     handleModalToggle();
@@ -66,11 +53,10 @@ const RegionHome = () => {
             createdAt: new Date(region.createdAt).toLocaleDateString("en-GB"), // This formats the date to "dd/mm/yyyy"
           })
         );
-
         // Then set the transformed regions into state
         setAllRegion(transformedRegions);
       } else {
-        toast.error(error.response.data.message);
+        console.log(error.response.data.message);
       }
     } catch (err) {
       console.log(err);
@@ -81,12 +67,14 @@ const RegionHome = () => {
     getAllRegions();
   }, []);
 
+ 
+  
   // Data for HomeCards
   const homeCardData = [
     {
       icon: <RegionIcon size={24} />,
-      number: totalCounts?.totalUsers,
-      title: "Total Users",
+      number: totalCounts?.totalRegion,
+      title: "Total Region",
       iconFrameColor: "#F9A51A",
       iconFrameBorderColor: "#FFF2DDCC",
     },
@@ -121,11 +109,11 @@ const RegionHome = () => {
   ];
 
   // Define the columns with strict keys
-  const columns: { key: keyof RegionData; label: string }[] = [
+  const columns: { key: any; label: string }[] = [
     { key: "regionCode", label: "Region Code" },
     { key: "regionName", label: "Region Name" },
     { key: "country", label: "Country" },
-    { key: "description", label: "Discription" },
+    { key: "status", label: "Status" },
     { key: "createdAt", label: "Created Date" },
   ];
 

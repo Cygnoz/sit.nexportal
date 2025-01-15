@@ -28,7 +28,7 @@ interface Address {
     city?: string;
     state?: string;
     country?:string
-    region?: string;
+    region: string;
     area?: string;
     commission?:string;
     bankDetails?: BankDetails;

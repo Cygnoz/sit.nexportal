@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import EscalatedTicket from "../../../assets/icons/EscalatedTicket";
@@ -15,38 +15,86 @@ import useApi from "../../../Hooks/useApi";
 type Props = {};
 
 const SupportAgentView = ({}: Props) => {
+  const topRef = useRef<HTMLDivElement>(null);
+    
+      useEffect(() => {
+        // Scroll to the top of the referenced element
+        topRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, []);
+
+      const { request: getInsideSADetails } = useApi('get', 3003);
+
+const [rewards, setRewards] = useState([]);
+const [tickets, setTickets] = useState({ openTickets: [], closedTickets: [] });
+const [ticketsResolved, setTicketsResolved] = useState(0);
+const [totalTickets, setTotalTickets] = useState(0);
+
+const getInsideSA = async () => {
+  try {
+    const { response, error } = await getInsideSADetails(`${endPoints.SUPPORT_AGENT}/${id}/details`);
+    console.log(response, "res");
+    console.log(error, "err");
+
+    if (response && !error) {
+      console.log(response.data);
+
+      // Extract rewards and tickets
+      const { rewards, tickets, ticketsResolved, totalTickets } = response.data;
+
+      // Set state for rewards and tickets
+      setRewards(rewards || []);
+      setTickets(tickets || { openTickets: [], closedTickets: [] });
+      setTicketsResolved(ticketsResolved || 0);
+      setTotalTickets(totalTickets || 0);
+    } else {
+      console.log(error.response.data.message);
+    }
+  } catch (err) {
+    console.log(err, "error");
+  }
+};
+
+useEffect(() => {
+  getInsideSA();
+}, []);
+
+console.log("rewards",rewards);
+console.log("tickets",tickets);
+
+
+
   // Data for HomeCards
   const viewCardData = [
     {
       icon: <TicketCardIcon size={40} />,
-      number: "58",
+      number: totalTickets, // Use totalTickets from state
       title: "Total Tickets",
       iconFrameColor: "#51BFDA",
       iconFrameBorderColor: "#C1E7F1CC",
     },
     {
       icon: <AreaManagerIcon />,
-      number: "35",
-      title: "Total Escalated Tickets",
+      number: tickets.openTickets.length, // Use the count of open tickets
+      title: "Open Tickets",
       iconFrameColor: "#F9A51A",
       iconFrameBorderColor: "#FFF2DDCC",
     },
     {
       icon: <UserIcon />,
-      number: "1 hr",
-      title: "Average Resolution Time",
+      number: ticketsResolved, // Use ticketsResolved from state
+      title: "Resolved Tickets",
       iconFrameColor: "#30B777",
       iconFrameBorderColor: "#B3F0D3CC",
     },
     {
       icon: <EscalatedTicket />,
-      number: "16",
-      title: "Total Escalated Tickets",
+      number: tickets.closedTickets.length, // Use the count of closed tickets
+      title: "Closed Tickets",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
   ];
-
+  
   const { request: getaSA } = useApi("get", 3003);
   const { id } = useParams();
   const [getData, setGetData] = useState<{
@@ -75,9 +123,9 @@ const SupportAgentView = ({}: Props) => {
   }, [id]);
 
   const navigate=useNavigate()
-
+  
   return (
-    <div>
+    <div ref={topRef}>
       <div className="flex items-center text-[16px] my-2 space-x-2">
         <p onClick={()=>navigate('/support-agent')}  className="font-bold cursor-pointer text-[#820000] ">Support Agent</p>
         <ChevronRight color="#4B5C79" size={18} />
@@ -105,7 +153,7 @@ const SupportAgentView = ({}: Props) => {
         ))}
       </div>
       <div>
-        <ViewHomwTable getData={getData} />
+        <ViewHomwTable getData={getData} tickets={tickets}  />
       </div>
 
       {/* Graph & feedback */}

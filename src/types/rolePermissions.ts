@@ -29,7 +29,7 @@ interface RolePermissions {
 
 // Define the icons for each sidebar option
 const sidebarIcons: { [key: string]: React.ComponentType } = {
-    "Regions": RegionIcon,
+    "Region": RegionIcon,
     "Area": AreaIcon,
     "Region Manager": UserIcon,
     "Area Manager": AreaManagerIcon,
@@ -40,16 +40,18 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
     "Trial": TrialIcon,
     "Licenser": Licensor,
     "Tickets": TicketCheck,
+    "Expense" : TicketCheck,
+    "Payroll" : TicketCheck,
     "User": UserIcon,
     "User Log": UserIcon,
-    "Work Commission":UserIcon,
-    "Prise":Trophy,
+    "Worker Commission":UserIcon,
+    "Praise":Trophy,
 
   };
 
 // Define routes for each sidebar option
 const sidebarRoutes: { [key: string]: string } = {
-    "Regions": "/regions",
+    "Region": "/regions",
     "Area": "/areas",
     "Region Manager": "/region-manager",
     "Area Manager": "/area-manager",
@@ -60,10 +62,12 @@ const sidebarRoutes: { [key: string]: string } = {
     "Trial": "/trial",
     "Licenser": "/licenser",
     "Tickets": "/ticket",
+    "Expense": "/expense",
+    "Payroll":"/payroll",
     "User": "/users",
     "User Log": "/user-log",
-    "Work Commission":'/worker-commission',
-    "Prise":'/prises',
+    "Worker Commission":'/worker-commission',
+    "Praise":'/prises',
     
     
   };
@@ -71,7 +75,7 @@ const sidebarRoutes: { [key: string]: string } = {
 // Define permissions for each role based on the new categorization
 const rolePermissions: RolePermissions = {
   'Super Admin': [
-    "Regions",
+    "Region",
     "Area",
     "Region Manager",
     "Area Manager",
@@ -82,13 +86,15 @@ const rolePermissions: RolePermissions = {
     "Trial",
     "Licenser",
     "Tickets",
+    "Expense",
+    "Payroll",
     "User",
     "User Log",
-    "Work Commission",
-    "Prise",
+    "Worker Commission",
+    "Praise",
   ],
   'Sales Admin': [
-    "Regions",
+    "Region",
     "Area",
     "Region Manager",
     "Area Manager",
@@ -96,10 +102,10 @@ const rolePermissions: RolePermissions = {
     "Lead",
     "Trial",
     "Licenser",
-    "Work Commission",
-    "Prise",
+    "Worker Commission",
+    "Praise",
   ],
-  'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets","Prise"],
+  'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets","Praise"],
   'Region Manager': ["Area", "Area Manager", "BDA", "Lead", "Trial", "Licenser"],
   'Area Manager': ["BDA", "Lead", "Trial", "Licenser"],
   'BDA': ["Lead", "Trial", "Licenser"],

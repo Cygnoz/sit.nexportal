@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import { AreaData } from "../../../Interfaces/Area";
@@ -13,17 +12,17 @@ import Modal from "../../../components/modal/Modal";
 import Button from "../../../components/ui/Button";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
-import { useRegularApi } from "../../../context/ApiContext";
+// import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import AreaForm from "./AreaForm";
+import toast from "react-hot-toast";
 
 
 
 const AreaHome = () => {
-  const {totalCounts}=useRegularApi()
+  // const {totalCounts}=useRegularApi()
   const navigate=useNavigate()
   const [allAreas,setAllAreas]=useState<AreaData[]>([]);
-  // State to manage modal visibility
   const {request:getAllArea}=useApi('get',3003)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId,setEditId]=useState('')
@@ -42,67 +41,84 @@ const AreaHome = () => {
     setEditId(id)
   }
 
-  const getAreas=async()=>{
-    try{
-      const {response,error}=await getAllArea(endPoints.GET_AREAS)
-      if(response && !error){
-        const transformedAreas = response.data.areas?.map((area:any) => ({
+  const [totalCounts, setTotalCounts] = useState({
+    totalArea: 0,
+    totalAreaManagers: 0,
+    totalBda: 0,
+    totalLeads: 0,
+  });
+  
+  const getAreas = async () => {
+    try {
+      const { response, error } = await getAllArea(endPoints.GET_AREAS);
+  
+      if (response && !error) {
+        console.log(response);
+  
+        // Extract areas and transform data
+        const transformedAreas = response.data.areas?.map((area: any) => ({
           ...area,
-          createdAt: new Date(area.createdAt)
-            .toLocaleDateString("en-GB"), // Extracts the date part
-          region:area?.region?.regionName  
+          createdAt: new Date(area.createdAt).toLocaleDateString("en-GB"), // Format date
+          region: area?.region?.regionName,
         }));
-        
-        // Then set the transformed regions into state
         setAllAreas(transformedAreas);
-      }else{
-        toast.error(error.response.data.message)
+  
+        // Extract totals
+        setTotalCounts({
+          totalArea: response.data.totalArea || 0,
+          totalAreaManagers: response.data.totalAreaManagers || 0,
+          totalBda: response.data.totalBda || 0,
+          totalLeads: response.data.totalLeads || 0,
+        });
+  
+        console.log("Areas", transformedAreas);
+      } else {
+        console.error(error?.response?.data?.message || "Failed to fetch data.");
       }
-    }catch(err){
-      console.log(err);
+    } catch (err) {
+      console.error("Error fetching areas:", err);
+      toast.error("An unexpected error occurred.");
     }
-  }
-
-  useEffect(()=>{
-    getAreas()
-  },[])
-
-  console.log(allAreas);
+  };
+  
+  useEffect(() => {
+    getAreas();
+  }, []);
+    console.log(allAreas);
   
 
   // Data for HomeCards
   const homeCardData = [
-    { 
-      icon: <AreaIcon size={24}/>, 
-      number: totalCounts?.totalArea, 
-      title: "Total Area", 
-      iconFrameColor: "#30B777", 
-      iconFrameBorderColor: "#B3F0D3CC" 
+    {
+      icon: <AreaIcon size={24} />,
+      number: totalCounts.totalArea,
+      title: "Total Area",
+      iconFrameColor: "#30B777",
+      iconFrameBorderColor: "#B3F0D3CC",
     },
-    { 
-      icon: <UserIcon size={24}/>, 
-      number: totalCounts?.totalAreaManagers, 
-      title: "Total Area Manager", 
-      iconFrameColor: "#1A9CF9", 
-      iconFrameBorderColor: "#BBD8EDCC" 
+    {
+      icon: <UserIcon size={24} />,
+      number: totalCounts.totalAreaManagers,
+      title: "Total Area Manager",
+      iconFrameColor: "#1A9CF9",
+      iconFrameBorderColor: "#BBD8EDCC",
     },
-    { 
-      icon: <AreaManagerIcon size={24} />, 
-      number: totalCounts?.totalBdas, 
-      title: "Total BDA's", 
-      iconFrameColor: "#D786DD", 
-      iconFrameBorderColor: "#FADDFCCC" 
+    {
+      icon: <AreaManagerIcon size={24} />,
+      number: totalCounts.totalBda,
+      title: "Total BDA's",
+      iconFrameColor: "#D786DD",
+      iconFrameBorderColor: "#FADDFCCC",
     },
-    { 
-      icon: <LeadsCardIcon size={40}/>, 
-      number: totalCounts?.totalLead, 
-      title: "Total Leads", 
-      iconFrameColor: "#DD9F86", 
-      iconFrameBorderColor: "#F6DCD2" 
+    {
+      icon: <LeadsCardIcon size={40} />,
+      number: totalCounts.totalLeads,
+      title: "Total Leads",
+      iconFrameColor: "#DD9F86",
+      iconFrameBorderColor: "#F6DCD2",
     },
-
   ];
-  
+    
 
 
   // Define the columns with strict keys
@@ -111,7 +127,7 @@ const AreaHome = () => {
     { key: "areaName", label: "Area Name" },
     { key: "createdAt", label: "Created Date" },
     { key: "region", label: "Region" },
-    { key: "description", label: "Discription" },
+    { key: "status", label: "Status" },
   ];
   
   const name = "Name";

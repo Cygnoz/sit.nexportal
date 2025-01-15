@@ -55,7 +55,7 @@ const AMViewForm: React.FC<Props> = ({ onClose }) => {
         <div className="flex justify-between items-center">
           <div className="px-2 ">
             <h1 className="font-bold text-sm">Area Manager Info</h1>
-            <p className="text-xs mt-2 font-normal text-[#8F99A9]">Lorem ipsum dolor sit amet consectetur adipisicing elit. Labore quisquam pos</p>
+            <p className="text-xs mt-2 font-normal text-[#8F99A9]">Building strong connections, achieving regional goals.</p>
 
           </div>
           <button

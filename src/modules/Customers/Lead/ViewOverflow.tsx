@@ -41,6 +41,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
     const current: any = dropdownRef.current
     if (current && !current.contains(event.target)) {
       setIsOpen(false);
+      setLead((prev: any) => ({ ...prev, leadStatus: leadData?.leadStatus }));
     }
   };
   
@@ -83,19 +84,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
     uv: item.uv / 160, // Normalize uv values
   }));
   
-  // const leadConversionData = [
-  //   { name: 'Area 1', uv: 40, },
-  //   { name: 'Area 2', uv: 20, },
-  //   { name: 'Area 3', uv: 60, },
-  //   { name: 'Area 4', uv: 50, },
-  //   { name: 'Area 5', uv: 30, },
-  //   { name: 'Area 6', uv: 80, },
-  //   { name: 'Area 7', uv: 70, },
-  //   { name: 'Area 8', uv: 90, },
-  //   { name: 'Area 9', uv: 100, },
-  //   { name: 'Area 10', uv: 55, },
-  // ];
-  // const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336',];
+  
 
 
   const renderStep = (step: number, label: string, activeStatuses: string[]) => {

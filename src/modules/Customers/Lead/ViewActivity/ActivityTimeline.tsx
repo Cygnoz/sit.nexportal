@@ -1,24 +1,34 @@
-import rightArrow from '../../../../assets/image/right-arrow.png'
 import EditIcon from '../../../../assets/icons/EditIcon'
 import profileImage from '../../../../assets/image/AvatarImg.png'
-import SortBy from '../../../../components/ui/SortBy'
+import rightArrow from '../../../../assets/image/right-arrow.png'
 
 type Props = {}
 
 const ActivityTimeline = ({}: Props) => {
+    
+    
+      
   return (
     <div>
                 <div className="w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
-            <div className="flex gap-4 mb-2">
-            <SortBy
-            sort={[length=4, ]}
-            />
-            
-             <SortBy
-            sort={[length=4, ]}
-            />
-            </div>
-            <p className="text-[#303F58] text-sm font-bold">Today, November 21,2024</p>
+          
+             <div className="flex gap-4">
+             {/* <SelectDropdown
+            placeholder="All Activities"
+            searchPlaceholder="Search Activities"
+            width="w-44"
+          /> */}
+
+{/* <SelectDropdown
+           
+            placeholder="All Timelines"
+           
+            searchPlaceholder="Search Timelines"
+            width="w-44"
+          /> */}
+
+      </div>
+            <p className="text-[#303F58] text-sm font-bold mt-3">Today, November 21,2024</p>
             <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
                 <div className="flex gap-6">
                 <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">

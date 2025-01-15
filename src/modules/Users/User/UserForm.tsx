@@ -31,7 +31,7 @@ const baseSchema = {
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
-  phoneNo: Yup.string().optional(), // Optional field
+  phoneNo: Yup.string().required("Phone Number is required"), // Optional field
   role: Yup.string().required("Role is required"),
 };
 
@@ -225,7 +225,6 @@ const editValidationSchema = Yup.object({
                 placeholder="Enter Full Name"
                 error={errors.userName?.message}
                 {...register("userName")}
-                onChange={() => handleInputChange("userName")}
               />
               <Input
                 label="Email Address"
@@ -234,7 +233,6 @@ const editValidationSchema = Yup.object({
                 placeholder="Enter Email"
                 error={errors.email?.message}
                 {...register("email")}
-                onChange={() => handleInputChange("email")}
               />
               <CustomPhoneInput
                 label="Phone Number"
@@ -252,14 +250,14 @@ const editValidationSchema = Yup.object({
                 <>
                   <InputPasswordEye
                     label={editId?"New Password":"Password"}
-                    required
+                    required={editId?false:true}
                     placeholder="Enter your password"
                     error={errors.password?.message}
                     {...register("password")}
                   />
                   <InputPasswordEye
                     label="Confirm Password"
-                    required
+                    required={editId?false:true}
                     placeholder="Confirm your password"
                     error={errors.confirmPassword?.message}
                     {...register("confirmPassword")}
@@ -269,15 +267,16 @@ const editValidationSchema = Yup.object({
               {!editId&&<Select
                 required
                 label="Role"
+                value={watch("role")}
                 placeholder={!editId ? "Select Role" : undefined}
                 options={editId ? editRoles : addRoles}
                 error={errors.role?.message}
-                {...register("role")}
+                onChange={(selectedValue)=>{
+                  setValue("role",selectedValue)
+                  handleInputChange("role")
+                }}
               />}
-            </div>
-          </div>
-        </div>
-        <div className="flex justify-end gap-2 mt-3 pb-2">
+               <div className="flex justify-end gap-2 pt-3 pb-2 ">
           <Button
             variant="tertiary"
             className="h-8 text-sm border rounded-lg"
@@ -295,6 +294,11 @@ const editValidationSchema = Yup.object({
             Submit
           </Button>
         </div>
+            </div>
+           
+          </div>
+        </div>
+        
       </form>
     </div>
   );

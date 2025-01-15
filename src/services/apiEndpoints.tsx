@@ -17,16 +17,21 @@ export const endPoints = {
   // Area
   AREA: "/area",
   GET_AREAS: "/areas",
+  RECENT_ACTIVITY: "/area-activity-logs",
+  DEACTIVATE_AREA:"/deactivateArea",
 
   //RM
   RM: "/region-manager",
   GET_ALL_RM: "/region-managers",
+  CHECK_RM:'/region-manager-check',
+  TOP_PERFORMANCE:'/top-performers',
 
   //Country and State
   GET_COUNTRY: "/countries",
 
   // Area Manager
   AM: "/area-manager",
+  CHECK_AM:'/area-manager-check',
 
   //Worker Commission
   WC: "/commissions",
@@ -35,12 +40,15 @@ export const endPoints = {
 
   // BDA
   BDA: "/bda",
+  CHECK_BDA:'/bda-check',
+  BDA_DETAILS:'/bda-details',
 
   //SuperVisor
   SUPER_VISOR: "/supervisor",
-
+  CHECK_SV:"/supervisor-check",
   //Support Agent
   SUPPORT_AGENT: "/supportAgent",
+
 
   // Lead
   LEADS: "/leads",
@@ -63,5 +71,29 @@ export const endPoints = {
   // Praise
   PRAISE:"/praise",
   GET_ALL_PRAISE:"/praises",
-  GET_ONE_PRAISE:"/praises"
+  GET_ONE_PRAISE:"/praises",
+
+
+
+  // Dashboard
+  TEAM_BREAK_DOWN:'/team-counts',
+  CONVERSION_RATE:'/conversion-rate',
+  RESOLVED_TICKETS:'/tickets/solved-by-region',
+
+  // Region Inside View 
+  CUSTOMERCOUNTS:"/customer/statistics",
+
+  //Region Recent Activity
+  ACTIVITIES:"activity-logs",
+  DEACTIVATE_REGION:"/deactivateRegion",
+
+  DROPDOWN_DATA:"/dropdown-data",
+
+  // LEAD ACTIVITY
+  LEAD_ACTIVITY:"/activity",
+  GET_ALL_LEAD_ACTIVITIES:"/activitys",
+
+  //LOGOUT
+  LOGOUT:"/logout", 
+  
 };

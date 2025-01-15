@@ -9,7 +9,7 @@ import { endPoints } from '../../../services/apiEndpoints'
 import No_Data_found from "../../../assets/image/NO_DATA.png";
 type Props = {}
 
-function UserLogLogHome({}: Props) {
+function UserLogHome({}: Props) {
   const [sortMethods,setSortMethods]=useState({
     startingDate:'',
     endingDate:'',
@@ -63,33 +63,52 @@ function UserLogLogHome({}: Props) {
   };
   
   const filteredLogs = useMemo(() => {
-   
     return allUserLog.filter((log) => {
       // Convert the log date (DD/MM/YY) to a Date object
-      const logDateParts:any = log.date.split("/"); // Split the date into [DD, MM, YY]
-      const filteresDate:any=`20${logDateParts[2]}`
-      const logDate:any = new Date(filteresDate, logDateParts[1] - 1, logDateParts[0]); // Convert to YYYY-MM-DD format
+      const logDateParts: any = log.date.split("/"); // Split the date into [DD, MM, YY]
+      const filteredYear: any = `20${logDateParts[2]}`; // Ensure full year format
+      const logDate = new Date(filteredYear, logDateParts[1] - 1, logDateParts[0]); // Convert to YYYY-MM-DD format
+      logDate.setHours(0, 0, 0, 0); // Normalize time to midnight
   
       // Convert starting and ending dates to Date objects for comparison
       const startingDate = sortMethods.startingDate
-        ? new Date(sortMethods.startingDate) // Assuming sortMethods.startingDate is in 'YYYY-MM-DD' format
+        ? new Date(sortMethods.startingDate)
         : null;
       const endingDate = sortMethods.endingDate
-        ? new Date(sortMethods.endingDate) // Assuming sortMethods.endingDate is in 'YYYY-MM-DD' format
+        ? new Date(sortMethods.endingDate)
         : null;
   
-        
-      // Check if the log date is within the range of starting and ending dates
-      const isStartDateValid = startingDate ? startingDate <= logDate : true;
-      const isEndDateValid = endingDate ? endingDate >= logDate : true;
+      if (startingDate) startingDate.setHours(0, 0, 0, 0); // Normalize time
+      if (endingDate) endingDate.setHours(0, 0, 0, 0); // Normalize time
   
+      let isDateValid = true;
+  
+      // Handle date comparison for range and single dates
+      if (startingDate && endingDate) {
+        // Inclusive range: Match logs from starting date to ending date (inclusive)
+        isDateValid = logDate >= startingDate && logDate <= endingDate;
+      } else if (startingDate) {
+        // If only starting date is selected, include logs on or after this date
+        isDateValid = logDate >= startingDate;
+      } else if (endingDate) {
+        // If only ending date is selected, include logs on or before this date
+        isDateValid = logDate <= endingDate;
+      }
+  
+      // Filter by user, screen, and action
       const isUserValid = sortMethods.user ? log.userId?.role === sortMethods.user : true;
       const isScreenValid = sortMethods.screen ? log.screen === sortMethods.screen : true;
       const isActionValid = sortMethods.action ? log.action === sortMethods.action : true;
   
-      return isStartDateValid && isEndDateValid && isUserValid && isScreenValid && isActionValid;
+      return isDateValid && isUserValid && isScreenValid && isActionValid;
     });
   }, [allUserLog, sortMethods]);
+  
+  
+  
+  
+  
+  
   
 
   
@@ -103,11 +122,13 @@ function UserLogLogHome({}: Props) {
       ];
 
       const actionColorMap: { [key: string]: string } = {
-        Add: "text-green-700",      // Green for "Add"
-        Edit: "text-orange-400",    // Orange for "Edit"
-        Delete: "text-red-700",     // Red for "Delete"
-        Login: "text-blue-600",
-        View: "text-yellow-800",      // Rose color for "Login"
+        Add: "text-green-600",       // A slightly softer green for "Add"
+        Edit: "text-yellow-500",     // A balanced yellow for "Edit"
+        Delete: "text-red-600",      // A strong but not overwhelming red for "Delete"
+        Login: "text-blue-500",      // A professional shade of blue for "Login"
+        View: "text-teal-600",       // A calm teal for "View"
+        Logout: "text-gray-500",     // A subtle gray for "Logout"
+        Convert: "text-emerald-500", // A fresh emerald green for "Convert"
       };
       
 
@@ -135,6 +156,8 @@ function UserLogLogHome({}: Props) {
     { label: "Edit", value: "Edit" },
     { label: "Login", value: "Login" },
     { label: "View", value: "View" },
+    { label: "Logout", value: "Logout" },
+    { label: "Convert", value: "Convert" },
   ];
 
   const screenList = [
@@ -146,6 +169,8 @@ function UserLogLogHome({}: Props) {
     { label: 'Logout', value: 'Logout' },
     { label: 'User', value: 'User' },
     { label: 'Region', value: 'Region' },
+    { label: 'Ticket', value: 'Ticket' },
+    { label: 'Prise', value: 'Prise' },
     { label: 'Area Manager', value: 'Area Manager' },
     { label: 'Commission', value: 'Commission' },
     { label: 'Supervisor', value: 'Supervisor' },
@@ -206,7 +231,7 @@ function UserLogLogHome({}: Props) {
   return (
     <div className="text-[#303F58] space-y-4">
     <h1 className="text-[#303F58] text-xl font-bold">User Log</h1>
-    <p className='text-xs'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque natus iusto maiores ducimus optio</p>
+    <p className='text-xs'>Efficiently manage and sort UseLog tables with seamless screen compatibility, ensuring a smooth and productive experience across all devices.</p>
     <div className="w-full bg-white rounded-lg p-4">
        <div  className='flex  items-center gap-2'>
        
@@ -240,7 +265,8 @@ function UserLogLogHome({}: Props) {
 
   <div className='mt-5'>
     <Select
-      onChange={(e) => handleSorting('user', e.target.value)}
+      value={sortMethods.user}
+      onChange={(selectedValue) => handleSorting('user',selectedValue)}
       placeholder="Select User"
       options={usersList}
     />
@@ -248,7 +274,8 @@ function UserLogLogHome({}: Props) {
 
   <div className='mt-5'>
     <Select
-      onChange={(e) => handleSorting('screen', e.target.value)}
+      value={sortMethods.screen}
+      onChange={(selectedValue) => handleSorting('screen', selectedValue)}
       placeholder="Select Screen"
       options={screenList}
     />
@@ -256,7 +283,8 @@ function UserLogLogHome({}: Props) {
 
   <div className='mt-5'>
     <Select
-      onChange={(e) => handleSorting('action', e.target.value)}
+      value={sortMethods.action}
+      onChange={(selectedValue) => handleSorting('action', selectedValue)}
       placeholder="Select Action"
       options={actionList}
     />
@@ -390,4 +418,4 @@ function UserLogLogHome({}: Props) {
   )
 }
 
-export default UserLogLogHome
+export default UserLogHome

@@ -10,7 +10,6 @@ import CalenderDays from "../../../assets/icons/CalenderDays";
 import PackageMinus from "../../../assets/icons/PackageMinus";
 import Boxes from "../../../assets/icons/Boxes";
 import Package from "../../../assets/icons/Package";
-import PackageCheck from "../../../assets/icons/PackageCheck";
 import TrialIcon from "../../../assets/icons/TrialIcon";
 import LeadIcon from "../../../assets/icons/LeadIcon";
 import AddLicenser from "./LicenserForm";
@@ -22,7 +21,7 @@ import { LicenserData } from "../../../Interfaces/Licenser";
 
 
 const LicensorHome = () => {
-  const {totalCounts}=useRegularApi()
+  const {customersCounts}=useRegularApi()
   const {request:getAllLicenser}=useApi('get',3001)
    const [allLicenser, setAllLicenser] = useState<LicenserData[]>([]);
    
@@ -49,9 +48,9 @@ const LicensorHome = () => {
           try{
             const {response,error}=await getAllLicenser(endPoints.LICENSER)
             console.log("res",response);
-            
+            console.log("err",error);
             if(response && !error){
-              console.log(response.data.licensers);
+              console.log(response.data);
              const transformLicense= response.data.licensers?.map((license:any) => ({
                 ...license,
                 startDate: license.startDate
@@ -60,8 +59,7 @@ const LicensorHome = () => {
                 endDate: license.endDate
                 ? new Date(license.endDate).toLocaleDateString("en-GB")
                 : "N/A",
-                licenserId:license.customerId,
-                licensorStatus:'Active'
+                licenserId:license.customerId
                
               })) || [];
              setAllLicenser(transformLicense)
@@ -69,8 +67,7 @@ const LicensorHome = () => {
           }catch(err){
             console.log(err);
           }
-        }
-        console.log(allLicenser);
+      }
         
         useEffect(()=>{
           getLicensers()
@@ -79,11 +76,10 @@ const LicensorHome = () => {
 
       // Data for HomeCards
   const homeCardData = [
-    { icon: <Boxes />, number: totalCounts?.totalLicensor, title: "Total Licenser",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
-    { icon: <CalenderDays />, number: "110", title: "Licenser Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
-    { icon: <Package />, number: "56", title: "Closed Licenser",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
-    { icon: <PackageCheck />, number: "100", title: "Converted Licenser",iconFrameColor:'#FCB23E',iconFrameBorderColor:'#FDE3BBCC' },
-    { icon: <PackageMinus />, number: "147", title: "Licenser Lost",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
+    { icon: <Boxes />, number: customersCounts?.totalLicensers, title: "Total Licenser",iconFrameColor:'#51BFDA',iconFrameBorderColor:'#C1E7F1CC' },
+    { icon: <CalenderDays />, number: customersCounts?.licensersToday, title: "Licenser Today",iconFrameColor:'#1A9CF9',iconFrameBorderColor:'#BBD8EDCC' },
+    { icon: <Package />, number: customersCounts?.activeLicensers, title: "Active Licenser",iconFrameColor:'#D786DD',iconFrameBorderColor:'#FADDFCCC' },
+    { icon: <PackageMinus />, number: customersCounts?.expiredLicensers, title: "Expired Licenser",iconFrameColor:'#30B777',iconFrameBorderColor:'#B3F0D3CC' },
   ];
 
 
@@ -97,7 +93,7 @@ const LicensorHome = () => {
           { key: "licensorStatus", label: "Status" },
          ];
       
-
+ 
   return (
     <>
     <div className="space-y-3">
@@ -151,14 +147,6 @@ const LicensorHome = () => {
                       { label: "Enterprise", icon: <CalenderDays size={14} color="#4B5C79"/> }
                     ]
                   },
-                  {
-                    sortHead: "Plan",
-                    sortList: [
-                      { label: "All", icon: <UserIcon size={14} color="#4B5C79"/> },
-                      { label: "Monthly", icon: <RegionIcon size={14} color="#4B5C79"/> },
-                      { label: "Yearly", icon: <AreaManagerIcon size={14} color="#4B5C79"/> },
-                    ]
-                  }
           ]
         }}
         actionList={[

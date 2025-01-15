@@ -59,21 +59,21 @@ const SupervisorHome = () => {
     },
     {
       icon: <TicketCardIcon size={40} />,
-      number: "46",
+      number: totalCounts?.totalTickets,
       title: "Total Tickets",
       iconFrameColor: "#51BFDA",
       iconFrameBorderColor: "#C1E7F1CC",
     },
     {
       icon: <EscalatedTicket />,
-      number: "86",
+      number: "0",
       title: "Total Escalated Tickets",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
     {
       icon: <ResolvedTicket />,
-      number: "498",
+      number: totalCounts?.resolvedTickets,
       title: "Total Resolved Tickets",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
@@ -107,6 +107,7 @@ const SupervisorHome = () => {
               : "N/A",
               loginEmail: SV?.user?.email,
               userName: SV?.user?.userName,
+              userImage:SV?.user?.userImage,
               regionName: SV?.region?.regionName,
           })) || [];
         setAllSV(transformedSV);

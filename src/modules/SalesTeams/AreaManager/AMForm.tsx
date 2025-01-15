@@ -22,11 +22,15 @@ import { endPoints } from "../../../services/apiEndpoints";
 // import { AreaData } from "../../../Interfaces/Area";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
 import { useRegularApi } from "../../../context/ApiContext";
-
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
+import { StaffTabsList } from "../../../components/list/StaffTabsList";
+import Modal from "../../../components/modal/Modal";
+import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
 interface AddAreaManagerProps {
   onClose: () => void; // Prop for handling modal close
-  editId?:string
+  editId?: string;
 }
 
 const baseSchema = {
@@ -34,22 +38,19 @@ const baseSchema = {
   phoneNo: Yup.string()
     .matches(/^\d+$/, "Phone number must contain only digits")
     .required("Phone number is required"),
-    workEmail: Yup.string().email("Invalid work email"),
-    personalEmail: Yup.string().email("Invalid personal email"),
+  workEmail: Yup.string().email("Invalid work email"),
+  personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
-    .transform((value, originalValue) =>
-      originalValue === "" ? null : value
-    ),
+    .transform((value, originalValue) => (originalValue === "" ? null : value)),
+  region: Yup.string().required("Region is required"),
+  area: Yup.string().required("Area is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
   ...baseSchema,
-  email: Yup.string()
-  .required("Email required")
-  .email("Invalid email"),
-  password: Yup.string()
-    .required("Password is required"),
+  email: Yup.string().required("Email required").email("Invalid email"),
+  password: Yup.string().required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
@@ -59,9 +60,7 @@ const editValidationSchema = Yup.object().shape({
   ...baseSchema,
 });
 
-
-
-const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
+const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   const {
     register,
     handleSubmit,
@@ -71,59 +70,118 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
     setValue,
     formState: { errors },
   } = useForm<AMData>({
-    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
+
+  const {request:checkAm}=useApi("put",3002)
+  const [isModalOpen, setIsModalOpen] = useState({
+    viewBusinesscard: false,
+    viewIdcard: false,
+  });
+
+  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false,) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      viewBusinesscard:viewBusinesscard,
+      viewIdcard: viewIdcard,
+      
+    }));
+  }
 
   const { request: addAM } = useApi("post", 3002);
   const { request: editAM } = useApi("put", 3002);
-  const {request:getAM}=useApi('get',3002);
+  const { request: getAM } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
-  const {allAreas,allRegions, allCountries, allWc}=useRegularApi()
+  
+  const { dropDownAreas, dropdownRegions, allCountries, allWc } = useRegularApi();
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     areas: { label: string; value: string }[];
-    workerCommission:{label: string; value: string}[];
-    country:{label: string; value: string}[];
-    state:{label: string; value: string}[]
-    
-  }>({ regions: [], areas: [], workerCommission:[],country:[],state:[] });
-
+    workerCommission: { label: string; value: string }[];
+    country: { label: string; value: string }[];
+    state: { label: string; value: string }[];
+  }>({ regions: [], areas: [], workerCommission: [], country: [], state: [] });
 
   const onSubmit: SubmitHandler<AMData> = async (data) => {
     console.log("dewdew");
-    
+
     console.log(data);
 
-    if(submit){
-      try{
-  const fun = editId ? editAM : addAM; // Select the appropriate function based on editId
+    if (submit) {
+      try {
+        const fun = editId ? editAM : addAM; // Select the appropriate function based on editId
         let response, error;
-    
+
         if (editId) {
           // Call editBDA if editId exists
-          ({ response, error } = await fun(`${endPoints.GET_ALL_AM}/${editId}`, data));
+          ({ response, error } = await fun(
+            `${endPoints.GET_ALL_AM}/${editId}`,
+            data
+          ));
         } else {
           // Call addBDA if editId does not exist
           ({ response, error } = await fun(endPoints.AM, data));
         }
-    
+
         console.log("Response:", response);
         console.log("Error:", error);
-    
+
         if (response && !error) {
           toast.success(response.data.message); // Show success toast
           onClose(); // Close the form/modal
         } else {
           toast.error(error.response.data.message); // Show error toast
         }
-      }
-      catch(err){
+      } catch (err) {
         console.error("Error submitting AM data:", err);
-         toast.error("An unexpected error occurred."); // Handle unexpected errors
+        toast.error("An unexpected error occurred."); // Handle unexpected errors
       }
     }
   };
+
+  const checkAM = async () => {
+    const region = watch("region");
+    const area = watch("area");
+  
+    // Ensure values are defined
+    if (!region && !area) return false;
+  
+    try {
+      const body = {
+        regionId: region,
+        areaId: area,
+      };
+  
+      const { response, error } = await checkAm(endPoints.CHECK_AM, body);
+      console.log("Response:", response);
+      console.log("Error:", error);
+  
+      if (response && !error) {
+        return true;
+      }
+  
+      if (error?.response?.data?.message) {
+        const errorMessage = error.response.data.message
+   
+        if (
+          errorMessage ===
+            "Area is already assigned to another Area Manager. Try adding another Area." ||
+          errorMessage ===
+            "Region Manager not found for the provided region." ||
+          errorMessage==="areaId is required."  
+        ) {
+          toast.error(errorMessage);
+          return false;
+        }
+      }
+    } catch (err) {
+      console.error("Unexpected Error:", err);
+    }
+  
+    return false;
+  };
+  
   
 
   const tabs = [
@@ -135,25 +193,50 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
-  const handleNext = async (tab: string) => {
-    const currentIndex = tabs.indexOf(activeTab);
-    let fieldsToValidate: any[] = [];
 
-    if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo"];
-    } else if (!editId&&tab === "Company Information") {
-      fieldsToValidate = ["email", "password", "confirmPassword"];
+ const handleNext = async (tab: string) => {
+  const currentIndex = tabs.indexOf(activeTab);
+  let fieldsToValidate: any[] = [];
+  let canProceed = true;
+
+  if (tab === "Personal Information") {
+    fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
+  } else if (tab === "Company Information") {
+    fieldsToValidate = [
+      ...(editId ? [] : ["email", "password", "confirmPassword"]),
+      "region",
+      "area",
+      "workEmail",
+    ];
+
+    if (!editId) {
+      const amCheck = await checkAM(); // Call checkAM function
+
+      if (!amCheck && (watch("region") || watch("area"))) {
+        canProceed = false;
+      }
     }
+  }
 
-    const isValid = fieldsToValidate.length
-      ? await trigger(fieldsToValidate)
-      : true;
+  // Validate fields only if canProceed is true
+  if (canProceed && fieldsToValidate.length > 0) {
+    const isValid = await trigger(fieldsToValidate);
 
-    if (isValid && currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1]);
-      clearErrors();
+    // If validation fails, stop here
+    if (!isValid) {
+
+      return;
     }
-  };
+  }
+
+  // If validation passes and we can proceed, move to the next tab
+  if (canProceed && currentIndex < tabs.length - 1) {
+    setActiveTab(tabs[currentIndex + 1]);
+    clearErrors();
+  }
+};
+
+
   const handleBack = () => {
     const currentIndex = tabs.indexOf(activeTab);
     if (currentIndex > 0) {
@@ -162,49 +245,52 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose ,editId}) => {
     setSubmit(false);
   };
 
-
   useEffect(() => {
     // Map the regions into the required format for regions data
-    const filteredRegions = allRegions?.map((region:any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
- 
+
     // Set the data object with updated regions
-    setData((prevData:any) => ({ ...prevData, regions: filteredRegions }));
-  }, [allRegions]);
- 
+    setData((prevData: any) => ({ ...prevData, regions: filteredRegions }));
+  }, [dropdownRegions]);
+
   useEffect(() => {
     // Filter areas based on the selected region
-    const filteredAreas = allAreas?.filter((area:any) => area.region?._id === watch("region"));
- 
+    const filteredAreas = dropDownAreas?.filter(
+      (area: any) => area?.region === watch("region")
+    );
+
+    console.log("dee",filteredAreas);
+    
     // Map the filtered areas to the required format
-    const transformedAreas = filteredAreas?.map((area:any) => ({
-label: area.areaName,
+    const transformedAreas = filteredAreas?.map((area: any) => ({
+      label: area.areaName,
       value: String(area._id), // Ensure `value` is a string
     }));
- 
+
     // Set the data object with updated areas
-    setData((prevData:any) => ({ ...prevData, areas: transformedAreas }));
-  }, [watch("region"), allAreas]); // Re-run when either selected region or allAreas changes
+    setData((prevData: any) => ({ ...prevData, areas: transformedAreas }));
+  }, [watch("region"), dropDownAreas]); // Re-run when either selected region or allAreas changes
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
       label: items.name,
       value: String(items.name), // Ensure `value` is a string
     }));
-    setData((prevData:any) => ({ ...prevData, country: filteredCountries }));
-  }, [allCountries])
+    setData((prevData: any) => ({ ...prevData, country: filteredCountries }));
+  }, [allCountries]);
 
   useEffect(() => {
     const selectedCountry = watch("country");
     if (selectedCountry) {
       const filteredAreas = allCountries.filter(
-        (country:any) => country.name === selectedCountry
+        (country: any) => country.name === selectedCountry
       );
- 
-      const transformedState = filteredAreas.flatMap((country:any) =>
-        country.states.map((state:any) => ({
+
+      const transformedState = filteredAreas.flatMap((country: any) =>
+        country.states.map((state: any) => ({
           label: state,
           value: state,
         }))
@@ -217,10 +303,11 @@ label: area.areaName,
       label: commission.profileName,
       value: String(commission._id), // Ensure `value` is a string
     }));
-    setData((prevData:any) => ({ ...prevData, workerCommission: filteredCommissions }));
-
-  }, [allWc])
-
+    setData((prevData: any) => ({
+      ...prevData,
+      workerCommission: filteredCommissions,
+    }));
+  }, [allWc]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -250,52 +337,87 @@ label: area.areaName,
     });
   };
 
+  const getOneAM = async () => {
+    try {
+      const { response, error } = await getAM(
+        `${endPoints.GET_ALL_AM}/${editId}`
+      );
+      if (response && !error) {
+        const AM: any = response.data; // Return the fetched data
+        console.log("cdsds", AM);
 
-  const getOneAM = async()=>{
-    try{
-      const { response, error } = await getAM(`${endPoints.GET_ALL_AM}/${editId}`);
-          if (response && !error) {
-            const AM:any= response.data; // Return the fetched data
-            console.log("cdsds",AM);
-            
-            const { user,_id, ...am } = AM;
-            const transformedAM = AM ? {
+        const { user, _id, ...am } = AM;
+        const transformedAM = AM
+          ? {
               ...am,
-              dateOfJoining: new Date(AM.dateOfJoining).toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
-              userName:user?.userName,
-              phoneNo:user?.phoneNo,
-              email:user?.email,
-              userImage:user?.userImage,
-              region:AM.region?._id,
-              area:AM.area?._id,
-              commission:AM.commission?._id
-            } : null;
-            setFormValues(transformedAM)
-          } else {
-            // Handle the error case if needed (for example, log the error)
-            console.error('Error fetching data:', error);
-          }
+              dateOfJoining: new Date(AM.dateOfJoining)
+                .toISOString()
+                .split("T")[0], // Format as 'YYYY-MM-DD'
+              userName: user?.userName,
+              phoneNo: user?.phoneNo,
+              email: user?.email,
+              userImage: user?.userImage,
+              region: AM.region?._id,
+              area: AM.area?._id,
+              commission: AM.commission?._id,
+            }
+          : null;
+        setFormValues(transformedAM);
+      } else {
+        // Handle the error case if needed (for example, log the error)
+        console.error("Error fetching data:", error);
+      }
+    } catch (err) {
+      console.error("Error fetching areas:", err);
     }
-    catch(err){
-      console.error('Error fetching areas:', err);      
-    }
-  }
+  };
 
   useEffect(() => {
-       getOneAM()
-   }, [editId]); // Trigger the effect when editId changes
+    if (
+      errors &&
+      Object.keys(errors).length > 0 &&
+      activeTab == "ID & Business Card"
+    ) {
+      // Get the first error field
+      const firstErrorField = Object.keys(errors)[0];
 
+      // Find the tab containing this field
+      const tabIndex: any = StaffTabsList.findIndex((tab) =>
+        tab.validationField.includes(firstErrorField)
+      );
+
+      // If a matching tab is found, switch to it
+      if (tabIndex >= 0) {
+        setActiveTab(tabs[tabIndex]);
+      }
+      const errorrs: any = errors;
+      // Log all errors
+      Object.keys(errorrs).forEach((field) => {
+        console.log(`${field}: ${errorrs[field]?.message}`);
+      });
+
+      // Show the first error message in a toast
+      toast.error(errorrs[firstErrorField]?.message);
+    }
+  }, [errors]);
+
+  useEffect(() => {
+    if(editId){
+      getOneAM();
+    }
+  }, [editId]); // Trigger the effect when editId changes
 
   return (
+    <>
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-lg font-bold text-deepStateBlue ">
-          {editId?'Edit':'Create'} Area Manager
+            {editId ? "Edit" : "Create"} Area Manager
           </h1>
           <p className="text-ashGray text-sm">
-          {`Use this form to ${
+            {`Use this form to ${
               editId ? "edit an existing AM" : "add a new AM"
             } details. Please fill in the required information`}
           </p>
@@ -313,6 +435,7 @@ label: area.areaName,
         {tabs.map((tab, index) => (
           <div
             key={tab}
+            onClick={() => setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${
               activeTab === tab
                 ? "text-deepStateBlue border-b-2 border-secondary2"
@@ -365,30 +488,39 @@ label: area.areaName,
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2 col-span-10">
-                <Input
+              <Input
                   required
                   placeholder="Enter Full Name"
+                  value={watch("userName")}
                   label="Full Name"
                   error={errors.userName?.message}
-                  {...register("userName")}
+                  onChange={(e)=>{
+                    handleInputChange("userName")
+                    setValue("userName",e.target.value)
+                  }}
                 />
-                <Input
+                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
                   error={errors.personalEmail?.message}
-                  {...register("personalEmail")}
+                  value={watch("personalEmail")}
+                  onChange={(e)=>{
+                    setValue("personalEmail",e.target.value)
+                    handleInputChange("personalEmail")
+                  }}
                 />
-               <CustomPhoneInput
+                <CustomPhoneInput
                   label="Phone Number"
                   required
                   error={errors.phoneNo?.message}
-                  value={watch("phoneNo")} 
+                  value={watch("phoneNo")}
                   placeholder="Enter phone number"
                   onChange={(value) => {
                     handleInputChange("phoneNo");
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
-                  }}/>
-                <div className="flex gap-4 w-full">
+                  }}
+                />
+                <div className="grid grid-cols-2 gap-2">
                   <Input
                     placeholder="Enter Age"
                     label="Age"
@@ -396,6 +528,7 @@ label: area.areaName,
                     error={errors.age?.message}
                     {...register("age")}
                   />
+
                   <Input
                     label="Blood Group"
                     placeholder="Enter Blood Group"
@@ -415,21 +548,34 @@ label: area.areaName,
                   error={errors.address?.street2?.message}
                   {...register("address.street2")}
                 />
-               <Select
-                  label="Country"
-                  placeholder="Select Country"
-                  error={errors.country?.message}
-                  options={data.country}
-                  {...register("country")}
-                />
                 <Select
+                  placeholder="Select Country"
+                  label="Country"
+                  error={errors.country?.message}
+                  value={watch("country")}
+                  onChange={(selectedValue) => {
+                    // Update the country value and clear the state when country changes
+                    setValue("country", selectedValue);
+                    handleInputChange("country");
+                    setValue("state", ""); // Reset state when country changes
+                  }}
+                  options={data.country}
+                />
+
+                <Select
+                  placeholder={
+                    data.state.length === 0 ? "Choose Country" : "Select State"
+                  }
+                  value={watch("state")}
+                  onChange={(selectedValue) => {
+                    setValue("state", selectedValue);
+                    handleInputChange("state");
+                  }}
                   label="State"
-                  placeholder={data.state.length==0?"Choose Country":"Select State"}
                   error={errors.state?.message}
                   options={data.state}
-                  {...register("state")}
                 />
-                  <Input
+                <Input
                   label="City"
                   placeholder="Enter City"
                   error={errors.city?.message}
@@ -454,7 +600,11 @@ label: area.areaName,
                   label="Date of Joining"
                   error={errors.dateOfJoining?.message}
                   {...register("dateOfJoining")}
-                  value={watch('dateOfJoining')?watch('dateOfJoining'):new Date().toISOString().split("T")[0]} // Sets current date as defau
+                  value={
+                    watch("dateOfJoining")
+                      ? watch("dateOfJoining")
+                      : new Date().toISOString().split("T")[0]
+                  } // Sets current date as defau
                 />
               </div>
             </div>
@@ -462,50 +612,61 @@ label: area.areaName,
 
           {activeTab === "Company Information" && (
             <div>
-              {!editId&& 
-              <>
-              <p className="my-4 text-[#303F58] text-sm font-semibold">
-                Set Login Credential
-              </p>
-              <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
-                <Input
-                  required
-                  placeholder="Enter Email"
-                  label="Email"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-               
-               <>
-               <Input
-                  required
-                  placeholder="Enter Password"
-                  label="Create Password"
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-                <Input
-                  required
-                  placeholder="Re-enter Password"
-                  label="Confirm Password"
-                  error={errors.confirmPassword?.message}
-                  {...register("confirmPassword")}
-                />
-               </>
-              
-                
-              </div>
-              </>
-               }
+              {!editId && (
+                <>
+                  <p className="my-4 text-[#303F58] text-sm font-semibold">
+                    Set Login Credential
+                  </p>
+                  <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
+                  <Input
+                      required
+                      placeholder="Enter Email"
+                      label="Email"
+                      value={watch("email")}
+                      error={errors.email?.message}
+                      onChange={(e)=>{
+                        handleInputChange("email")
+                        setValue("email",e.target.value)
+                      }}
+                    />
+                    <InputPasswordEye
+                      label={editId ? "New Password" : "Password"}
+                      required
+                      value={watch("password")}
+                      placeholder="Enter your password"
+                      error={errors.password?.message}
+                      onChange={(e)=>{
+                        handleInputChange("password")
+                        setValue("password",e.target.value)
+                      }}
+                    />
+                    <InputPasswordEye
+                      label="Confirm Password"
+                      required
+                      value={watch("confirmPassword")}
+                      placeholder="Confirm your password"
+                      error={errors.confirmPassword?.message}
+                      onChange={(e)=>{
+                        handleInputChange("confirmPassword")
+                        setValue("confirmPassword",e.target.value)
+                      }}
+                    />
+                  </div>
+                </>
+              )}
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <Input
+              <Input
                   placeholder="Enter Work Email"
                   label="Work Email"
                   error={errors.workEmail?.message}
-                  {...register("workEmail")}
+                  value={watch("workEmail")}
+                  onChange={(e)=>{
+                    setValue("workEmail",e.target.value)
+                    handleInputChange("workEmail")
+                  }}
                 />
-                 <CustomPhoneInput
+                <CustomPhoneInput
                   label="Work Phone"
                   error={errors.workPhone?.message}
                   placeholder="Enter phone number"
@@ -513,29 +674,49 @@ label: area.areaName,
                   onChange={(value) => {
                     handleInputChange("workPhone");
                     setValue("workPhone", value); // Update the value of the phone field in React Hook Form
-                  }}/>
-                <Select
-                  label="Select Region"
-                  placeholder="Choose Region"
-                  value={watch("region")}
-                  error={errors.region?.message}
-                  options={data.regions}
-                  {...register("region")}
+                  }}
                 />
                 <Select
+                  required
+                  placeholder="Select Region"
+                  label="Select Region"
+                  value={watch("region")}
+                  onChange={(selectedValue) => {
+                    setValue("region", selectedValue); // Manually update the region value
+                    handleInputChange("region");
+                    setValue("area", "");
+                  }}
+                  error={errors.region?.message}
+                  options={data.regions}
+                />
+                <Select
+                  required
                   label="Select Area"
-                  placeholder={data.areas.length==0?'Select Region':"Select Area"}
+                  placeholder={
+                    data.areas.length === 0
+                      ? watch("region")?.length > 0
+                        ? "No Area Found"
+                        : "Select Region"
+                      : "Select Area"
+                  }
                   value={watch("area")}
+                  onChange={(selectedValue) => {
+                    setValue("area", selectedValue); // Manually update the region value
+                    handleInputChange("area");
+                  }}
                   error={errors.area?.message}
                   options={data.areas}
-                  {...register("area")}
                 />
                 <Select
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
+                  value={watch("commission")}
+                  onChange={(selectedValue) => {
+                    setValue("commission", selectedValue); // Manually update the commission value
+                    handleInputChange("commission");
+                  }}
                   error={errors.commission?.message}
                   options={data.workerCommission}
-                  {...register("commission")}
                 />
               </div>
             </div>
@@ -628,7 +809,7 @@ label: area.areaName,
               </div>
             </div>
           )}
-        {activeTab === "ID & Business Card" && (
+          {activeTab === "ID & Business Card" && (
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                 <p className="text-[#303F58] text-base font-bold">
@@ -642,6 +823,7 @@ label: area.areaName,
                 <img src={bcardback} width={220} className="mb-3" alt="" />
                 <div className="flex gap-3 justify-end">
                   <Button
+                    onClick={()=>handleModalToggle(true, false)}
                     variant="tertiary"
                     size="sm"
                     className="text-xs text-[#565148] font-medium rounded-md"
@@ -662,6 +844,7 @@ label: area.areaName,
                 <img src={idcard} className="my-3" alt="" />
                 <div className="flex gap-3 justify-end">
                   <Button
+                    onClick={()=>handleModalToggle(false, true)}
                     variant="tertiary"
                     size="sm"
                     className="text-xs text-[#565148] font-medium rounded-md"
@@ -712,7 +895,6 @@ label: area.areaName,
               variant="primary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
-              type="submit"
               onClick={() => handleNext(activeTab)}
             >
               Next
@@ -720,7 +902,16 @@ label: area.areaName,
           )}
         </div>
       </form>
+    
     </div>
+      <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
+      <AMViewBCard onClose={() => handleModalToggle()} />
+    </Modal>
+    <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
+      <AMIdCardView onClose={() => handleModalToggle()} />
+    </Modal>
+
+    </>
   );
 };
 

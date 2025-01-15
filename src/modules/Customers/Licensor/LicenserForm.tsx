@@ -15,6 +15,11 @@ import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
+import { useUser } from "../../../context/UserContext";
+import OrganisationForm from "../../../components/modal/ConvertionModal/OrganisationForm";
+import Modal from "../../../components/modal/Modal";
+import { useResponse } from "../../../context/ResponseContext";
+
 
 type Props = {
   onClose: () => void;
@@ -32,15 +37,23 @@ const validationSchema = Yup.object({
    regionId:Yup.string().required('Region is required'),
    areaId:Yup.string().required('Area is required'),
    bdaId:Yup.string().required('Bda is required'),
-   startDate:Yup.string().required('startDate is required'),
-  endDate:Yup.string().required('endDate is required')
+   startDate:Yup.string().required('StartDate is required'),
+  endDate:Yup.string().required('EndDate is required')
 });
 
 function LicenserForm({ onClose ,editId}: Props) {
+  const [isOrgModal, setIsOrgModal] = useState(false);
+  const handleModalToggle = (close=false)=>{
+    setIsOrgModal((prev)=>!prev)
+     close&&onClose()
+}
+
+  const {setCustomerData}=useResponse()
+  const {user}=useUser()
   const {request:addLicenser}=useApi('post',3001)
   const {request:editLicenser}=useApi('put',3001)
  const {request:getLicenser}=useApi('get',3001)
-  const {allRegions,allAreas,allBDA,allCountries}=useRegularApi()
+  const {dropdownRegions,dropDownAreas,dropDownBdas,allCountries}=useRegularApi()
     const [data, setData] = useState<{
       regions: { label: string; value: string }[];
       areas: { label: string; value: string }[];
@@ -48,8 +61,10 @@ function LicenserForm({ onClose ,editId}: Props) {
       country: { label: string; value: string }[];
       state: { label: string; value: string }[]
 
-    }>({ regions: [], areas: [],bdas:[],state: [] ,country:[]});
-    
+    }>({ regions:[], areas: [],bdas:[],state:[] ,country:[]});
+
+    // const [isOpenOrg,setIsOpenOrg]=useState(false)
+    // const [licenserId,setLicenserId]=useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
@@ -66,48 +81,52 @@ function LicenserForm({ onClose ,editId}: Props) {
     },
   });
 
-  console.log(data);
   
 
-  const onSubmit: SubmitHandler<LicenserData> = async (data:any, event) => {
-    event?.preventDefault(); // Prevent default form submission behavior
+ 
+
+  const onSubmit: SubmitHandler<LicenserData> = async (data: any, event) => {
+    event?.preventDefault(); // Prevent default form submission
     console.log("Form Data", data);
-    
   
     try {
-      const fun = editId ? editLicenser : addLicenser; // Select the appropriate function based on editId
+      const fun = editId ? editLicenser : addLicenser; // Select function
       let response, error;
+  
       if (editId) {
-        // Call updateLead if editId exists (editing a lead)
         ({ response, error } = await fun(`${endPoints.LICENSER}/${editId}`, data));
       } else {
-        // Call addLead if editId does not exist (adding a new lead)
         ({ response, error } = await fun(endPoints.LICENSER, data));
       }
+  
       console.log("Response:", response);
       console.log("Error:", error);
   
       if (response && !error) {
-        //console.log(response.data);
+        const customerData={
+          ...data,
+          licenserId:response.data.savedLicenser._id
+        }
+        setCustomerData(customerData)
+        toast.success(response.data.message); // Show success message
+        editId?onClose():handleModalToggle()
         
-         toast.success(response.data.message); // Show success toast
-        onClose(); // Close the form/modal
       } else {
-        toast.error(error.response?.data?.message || "An error occurred."); // Show error toast
+        toast.error(error.response?.data?.message || "An error occurred.");
       }
     } catch (err) {
       console.error("Error submitting license data:", err);
-      toast.error("An unexpected error occurred."); // Handle unexpected errors
+      toast.error("An unexpected error occurred.");
     }
   };
   
 
+  
+  
 
-  const leadSource = [
-    { label: "Active", value: "Active" },
-    { label: "Pending", value: "Pending" },
-    { label: "Expired", value: "Expired" },
-  ];
+
+  
+
 
   const salutation = [
     { value: "Mr.", label: "Mr." },
@@ -142,9 +161,9 @@ function LicenserForm({ onClose ,editId}: Props) {
     }
   };
 
-   // UseEffect for updating regions
+    // UseEffect for updating regions
     useEffect(() => {
-      const filteredRegions = allRegions?.map((region: any) => ({
+      const filteredRegions = dropdownRegions?.map((region: any) => ({
         value: String(region._id),
         label: region.regionName,
       }));
@@ -153,12 +172,12 @@ function LicenserForm({ onClose ,editId}: Props) {
         ...prevData,
         regions: filteredRegions,
       }));
-    }, [allRegions]);
+    }, [dropdownRegions]);
   
     // UseEffect for updating areas based on selected region
     useEffect(() => {
-      const filteredAreas = allAreas?.filter(
-        (area: any) => area.region?._id === watch("regionId")
+      const filteredAreas = dropDownAreas?.filter(
+        (area: any) => area?.region === watch("regionId")
       );
       const transformedAreas = filteredAreas?.map((area: any) => ({
         label: area.areaName,
@@ -170,22 +189,39 @@ function LicenserForm({ onClose ,editId}: Props) {
         ...prevData,
         areas: transformedAreas,
       }));
-    }, [watch("regionId"), allAreas]);
+    }, [watch("regionId"), dropDownAreas]);
   
     // UseEffect for updating regions
     useEffect(() => {
-      const filteredBDA:any = allBDA?.map((bda: any) => ({
+      const filteredBDA = dropDownBdas?.filter(
+        (bda: any) => bda?.area === watch("areaId")
+      );
+      const transformedBda:any = filteredBDA?.map((bda: any) => ({
         value: String(bda?._id),
-        label: bda?.bdaName,
+        label: bda?.userName,
       }));
-      // setValue("bdaId",filteredBDA?.value)
+      
       // Update the state without using previous `data` state
       setData((prevData:any) => ({
         ...prevData,
-        bdas: filteredBDA,
+        bdas: transformedBda,
       }));
-    }, [allBDA]);
+    }, [dropDownBdas,watch("areaId")]);
 
+    useEffect(()=>{
+      
+      if(user?.role=="BDA"){
+        const filteredBDA:any = dropDownBdas?.find(
+          (bda: any) => bda?.user?.employeeId === user?.employeeId
+        );
+  
+        console.log("Filtered BDA:", filteredBDA?._id);
+        setValue("areaId", filteredBDA?.area?._id || "");
+          setValue("regionId", filteredBDA?.region?._id || "");
+          setValue("bdaId", filteredBDA?._id || "");
+          
+      }
+    },[user,dropDownBdas])
     
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
@@ -220,10 +256,6 @@ function LicenserForm({ onClose ,editId}: Props) {
       Object.keys(data).forEach((key) => {
         setValue(key as keyof LicenserData, data[key as keyof LicenserData]);
       });
-      // console.log(watch("firstName"));
-      
-      // console.log(watch("areaId"));
-      // console.log(watch("regionId"));
     };
   
     const getOneLicenser = async () => {
@@ -252,7 +284,9 @@ function LicenserForm({ onClose ,editId}: Props) {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
+
   return (
+    <>
     <div className="px-5 py-3 bg-white rounded shadow-md">
       <div className="flex justify-between">
       <div>
@@ -361,20 +395,31 @@ function LicenserForm({ onClose ,editId}: Props) {
           </div>
           <div className="grid grid-cols-2 gap-4 mt-4">
          
-             <Select
+          <Select
                   placeholder="Select Country"
                   label="Country"
                   error={errors.country?.message}
                   value={watch("country")}
+                  onChange={(selectedValue) => {
+                    // Update the country value and clear the state when country changes
+                    setValue("country", selectedValue);
+                    handleInputChange("country");
+                    setValue("state", ""); // Reset state when country changes
+                  }}
                   options={data.country}
-                  {...register("country")}
                 />
                 <Select
-                  placeholder={data.state.length==0?"Choose Country":"Select State"}
+                  placeholder={
+                    data.state.length === 0 ? "Choose Country" : "Select State"
+                  }
+                  value={watch("state")}
+                  onChange={(selectedValue) => {
+                    setValue("state", selectedValue);
+                    handleInputChange("state");
+                  }}
                   label="State"
                   error={errors.state?.message}
                   options={data.state}
-                  {...register("state")}
                 />
              <Input
               label="Company ID"
@@ -389,14 +434,7 @@ function LicenserForm({ onClose ,editId}: Props) {
               {...register("companyName")}
             />
           </div>
-        <div className="grid grid-cols-3 gap-4 my-4">
-        <Select
-              label="Licenser Status"
-              placeholder="Select Licenser status"
-              options={leadSource}
-              error={errors.licensorStatus?.message}
-              {...register("licensorStatus")}
-            />
+        <div className="grid grid-cols-2 gap-4 my-4">
             <Input
               required
               label="Start Date"
@@ -413,54 +451,87 @@ function LicenserForm({ onClose ,editId}: Props) {
             error={errors.endDate?.message}
             {...register("endDate")}
           />
-          <Select
-          required
-              label="Region"
-              placeholder="Select Region"
-              error={errors.regionId?.message}
-              options={data.regions}
-              {...register("regionId")}
+         <div className="col-span-2 gap-3 grid grid-cols-3">
+         <Select
+            readOnly={user?.role=="BDA"?true:false}
+            required
+            placeholder="Select Region"
+            label="Select Region"
+            value={watch("regionId")}
+            onChange={(selectedValue) => {
+              setValue("regionId", selectedValue); // Manually update the region value
+              handleInputChange("regionId");
+              setValue("areaId", "");
+              setValue("bdaId", "");
+            }}
+            error={errors.regionId?.message}
+            options={data.regions}
             />
             <Select
-            required
-            label="Area"
-            placeholder={data.areas.length==0?'Select Region':"Select Area"}
-              error={errors.areaId?.message}
-              options={data.areas}
-            {...register("areaId")}
-          />
-          <Select
-          required
-          label="Assign BDA"
-          error={errors.bdaId?.message}
-          placeholder="Select BDA"
-          options={data.bdas}
-          {...register("bdaId")}
-        />
+              readOnly={user?.role=="BDA"?true:false}
+              required
+                  label="Select Area"
+                  placeholder={watch("regionId")?"Select Area":"Select Region"}
+                  value={watch("areaId")}
+                  onChange={(selectedValue) => {
+                    setValue("areaId", selectedValue); // Manually update the region value
+                    setValue("bdaId","")
+                    handleInputChange("areaId");
+                  }}
+                  error={errors.areaId?.message}
+                  options={data.areas}
+            />
+            <Select
+              readOnly={user?.role=="BDA"?true:false}
+              required
+                  label="Assigned BDA"
+                  placeholder={watch("areaId")?"Select BDA":"Select Area"}
+                  value={watch("bdaId")}
+                  onChange={(selectedValue) => {
+                    setValue("bdaId", selectedValue); // Manually update the region value
+                    handleInputChange("bdaId");
+                  }}
+                  error={errors.bdaId?.message}
+                  options={data.bdas}
+            />
+         </div>
+        
         </div>
-        <div className="bottom-0 left-0 w-full p-2 bg-white flex gap-2 justify-end">
-          <Button
-            variant="tertiary"
-            className="h-8 text-sm border rounded-lg"
-            size="xl"
-            onClick={onClose}
-          >
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            className="h-8 text-sm border rounded-lg"
-            size="xl"
-            type="submit"
-          >
-            Done
-          </Button>
-        </div>
+        <div className="bottom-0 left-0 w-full pt-2 ps-2 bg-white flex gap-2 justify-end">
+      <Button
+        variant="tertiary"
+        className="h-8 text-sm border rounded-lg"
+        size="xl"
+        onClick={onClose}
+      >
+        Cancel
+      </Button>
+      <Button
+        variant="primary"
+        className="h-8 text-sm border rounded-lg"
+        size="xl"
+        type="submit"
+      
+      >
+        Done
+      </Button>
+
+
+    </div>
         </div>
      
      
         </form>
     </div>
+    <Modal
+                open={isOrgModal}
+                align="center"
+                onClose={()=>handleModalToggle(true)}
+                className="w-[35%]"
+            >
+                <OrganisationForm type="licenser"   onClose={()=>handleModalToggle(true)} />
+            </Modal>
+    </>
   );
 }
 

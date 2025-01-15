@@ -42,8 +42,7 @@ const RMHome = () => {
 
   const getRMs = async () => {
     try {
-      const { response, error } = await getRM(endPoints.GET_ALL_RM);
-
+      const { response, error } = await getRM(endPoints.GET_ALL_RM); 
       if (response && !error) {
         const transformedRMss =
           response.data.regionManager?.map((region: any) => ({
@@ -53,6 +52,7 @@ const RMHome = () => {
               : "N/A",
             loginEmail: region?.user?.email,
             userName: region?.user?.userName,
+            userImage:region?.user?.userImage,
             regionName: region?.region?.regionName,
           })) || [];
         setAllRms(transformedRMss);

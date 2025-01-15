@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AreaIcon from "../../../assets/icons/AreaIcon";
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
@@ -19,6 +19,9 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import RMForm from "./RMForm";
 import RMViewAward from "./RMViewAward";
+import Trash from "../../../assets/icons/Trash";
+import toast from "react-hot-toast";
+import ConfirmModal from "../../../components/modal/ConfirmModal";
 
 interface AreaData {
   areaCode: string;
@@ -28,27 +31,37 @@ interface AreaData {
 }
 
 const RMView = () => {
+  const topRef = useRef<HTMLDivElement>(null);
+    
+      useEffect(() => {
+        // Scroll to the top of the referenced element
+        topRef.current?.scrollIntoView({ behavior: "smooth" });
+      }, []);
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
     editRM: false,
     viewRM: false,
     awardRM: false,
+    confirm:false,
   });
   const handleModalToggle = (
     editRM = false,
     viewRM = false,
-    awardRM = false
+    awardRM = false,
+    confirm=false,
   ) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editRM: editRM,
       viewRM: viewRM,
       awardRM: awardRM,
+      confirm: confirm,
     }));
     getARM();
   };
 
   const { request: getaRM } = useApi("get", 3002);
+  const {request:deleteaRM}=useApi("delete",3002)
   const { id } = useParams();
   const [getData, setGetData] = useState<{
     rmData: any;
@@ -72,29 +85,46 @@ const RMView = () => {
   useEffect(() => {
     getARM();
   }, [id]);
-  console.log(getData);
+ 
 
   const navigate = useNavigate();
+
+  const handleDelete = async () => {
+    try {
+      const { response, error } = await deleteaRM(`${endPoints.GET_ALL_RM}/${id}`);
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/region-manager");
+      } else {
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete the Region Manager.");
+    }
+  };
+  
+
 
   // Data for HomeCards
   const homeCardData = [
     {
       icon: <AreaIcon size={24} />,
-      number: "167",
+      number: getData?.rmData?.totalCounts?.totalAreaManaged,
       title: "Total Area",
       iconFrameColor: "#30B777",
       iconFrameBorderColor: "#B3F0D3CC",
     },
     {
       icon: <UserIcon size={24} />,
-      number: "86",
+      number: getData?.rmData?.totalCounts?.totalAreaManagers,
       title: "Total Area Manager",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
     {
       icon: <AreaManagerIcon size={24} />,
-      number: "498",
+      number:getData?.rmData?.totalCounts?.totalBdas,
       title: "Total BDA's",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
@@ -102,76 +132,76 @@ const RMView = () => {
   ];
 
   // Data for the table
-  const data: AreaData[] = [
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 1",
-      region: "Region 1",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 2",
-      region: "Region 2",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 3",
-      region: "Region 3",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 4",
-      region: "Region 4",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 5",
-      region: "Region 5",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 6",
-      region: "Region 6",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 7",
-      region: "Region 7",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 8",
-      region: "Region 8",
-      areaManagers: "ILorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 9",
-      region: "Region 9",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 10",
-      region: "Region 10",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-    {
-      areaCode: "AR-NE001",
-      areaName: "Area 11",
-      region: "Region 11",
-      areaManagers: "Lorem ipsum dolor sise cillum d",
-    },
-  ];
+  // const data: AreaData[] = [
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 1",
+  //     region: "Region 1",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 2",
+  //     region: "Region 2",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 3",
+  //     region: "Region 3",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 4",
+  //     region: "Region 4",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 5",
+  //     region: "Region 5",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 6",
+  //     region: "Region 6",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 7",
+  //     region: "Region 7",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 8",
+  //     region: "Region 8",
+  //     areaManagers: "ILorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 9",
+  //     region: "Region 9",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 10",
+  //     region: "Region 10",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  //   {
+  //     areaCode: "AR-NE001",
+  //     areaName: "Area 11",
+  //     region: "Region 11",
+  //     areaManagers: "Lorem ipsum dolor sise cillum d",
+  //   },
+  // ];
   // Define the columns with strict keys
-  const columns: { key: keyof AreaData; label: string }[] = [
+  const columns: { key:any; label: string }[] = [
     { key: "areaCode", label: "Area Code" },
     { key: "areaName", label: "Area Name" },
     { key: "region", label: "Region" },
@@ -180,9 +210,53 @@ const RMView = () => {
 
   // const { id } = useParams();
 
+  const {request:getRMInside}=useApi('get',3002)
+  const [totalAreaManaged, setTotalAreaManaged] = useState([]);
+  const [totalAreaManagers, setTotalAreaManagers] = useState([]);
+  const [totalBdas, setTotalBdas] = useState([]);
+
+  const getRMInsides = async () => {
+    try {
+      const { response, error } = await getRMInside(`${endPoints.RM}/${id}/details`);
+      console.log(response, "res");
+      console.log(error, "err");
+
+      if (response && !error) {
+        const data = response.data;
+        console.log("dTAA",data.totalBdas);
+
+        
+
+        // Set the values for each key separately
+        const rawData = response.data.totalAreaManaged || [];
+        const processedData = rawData.map((item: any) => ({
+          areaCode: item.areaCode,
+          areaName: item.areaName,
+          region: item.region || "N/A", // Default to "N/A" if region is missing
+          areaManagers: item.areaManagerName, // Assuming areaManagerName is a single name
+        }));
+        setTotalAreaManaged(processedData);
+        setTotalAreaManagers(data.totalAreaManagers || []);
+        setTotalBdas(data.totalBdas || []);
+      } else {
+        console.log(error.response.data.message);
+      }
+    } catch (err) {
+      console.log(err, "error");
+    }
+  };
+
+  useEffect(() => {
+    getRMInsides();
+  }, []);
+
+  // For debugging
+ console.log("rmViewData",getData.rmData);
+ 
+
   return (
     <>
-      <div>
+      <div ref={topRef}>
         <div className="flex items-center text-[16px] my-2 space-x-2">
           <p
             onClick={() => navigate("/region-manager")}
@@ -192,8 +266,8 @@ const RMView = () => {
           </p>
           <ChevronRight color="#4B5C79" size={18} />
           <p className="font-bold text-[#303F58] ">
-            {getData.rmData?.user?.userName
-              ? getData.rmData?.user?.userName
+            {getData?.rmData?.regionManager?.user?.userName
+              ? getData?.rmData?.regionManager?.user?.userName
               : "N/A"}
           </p>
         </div>
@@ -205,17 +279,17 @@ const RMView = () => {
               backgroundImage: `url(${BackgroundImage})`, // Use the imported image
             }}
           >
-            <div className="col-span-6 ">
+            <div className="col-span-6">
               <div>
                 {/* Left Section: Area Icon and Details */}
 
                 <div className="flex items-center gap-4 text-white">
                   <div className="flex items-center gap-2">
                     <div className="w-25 h-25 bg-blue ms-2 py-2 items-center justify-center rounded-full ">
-                      {getData.rmData?.user?.userImage ? (
+                      {getData?.rmData?.regionManager?.user?.userImage && getData?.rmData?.regionManager?.user?.userImage>50 ? (
                         <img
                           className="w-16 h-16 rounded-full"
-                          src={getData.rmData?.user?.userImage}
+                          src={getData?.rmData?.regionManager?.user?.userImage}
                           alt=""
                         />
                       ) : (
@@ -224,8 +298,8 @@ const RMView = () => {
                         </p>
                       )}
                       <h2 className="font-normal text-center text-2xl py-2">
-                        {getData.rmData?.user?.userName
-                          ? getData.rmData?.user?.userName
+                        {getData?.rmData?.regionManager?.user?.userName
+                          ? getData?.rmData?.regionManager?.user?.userName
                           : "N/A"}
                       </h2>
                     </div>
@@ -237,8 +311,8 @@ const RMView = () => {
                       Contact Number
                     </p>
                     <h3 className="text-sm font-medium">
-                      {getData.rmData?.user?.phoneNo
-                        ? getData.rmData?.user?.phoneNo
+                      {getData?.rmData?.regionManager?.user?.phoneNo
+                        ? getData?.rmData?.regionManager?.user?.phoneNo
                         : "N/A"}
                     </h3>
                   </div>
@@ -248,8 +322,8 @@ const RMView = () => {
                       Email
                     </p>
                     <p className="text-sm font-medium">
-                      {getData.rmData?.user?.email
-                        ? getData.rmData?.user?.email
+                      {getData?.rmData?.regionManager?.user?.email
+                        ? getData?.rmData?.regionManager?.user?.email
                         : "N/A"}
                     </p>
                   </div>
@@ -260,12 +334,12 @@ const RMView = () => {
                     </p>
                     <p
                       onClick={() =>
-                        navigate(`/regions/${getData.rmData?.region?._id}`)
+                        navigate(`/regions/${getData?.rmData?.regionManager?.region?._id}`)
                       }
                       className=" text-[#FFFFFF] text-sm font-medium underline"
                     >
-                      {getData.rmData?.region?.regionCode
-                        ? getData.rmData?.region?.regionCode
+                      {getData?.rmData?.regionManager?.region?.regionCode
+                        ? getData?.rmData?.regionManager?.region?.regionCode
                         : "N/A"}
                     </p>{" "}
                   </div>
@@ -273,12 +347,12 @@ const RMView = () => {
               </div>
             </div>
 
-            <div className="col-span-6 m-3">
+            <div className="col-span-6  m-2">
               <div>
-                <div className="flex gap-4 ms-auto text-[10px] py-2  text-white">
+                <div className="flex   gap-4 -ms-14  text-[10px] py-2  text-white">
                   {/* Right Section: Managers and Actions */}
 
-                  <div className="flex -ms-3 mt-2">
+                  <div className="flex -me-2  mt-2">
                     {/* Sales Managers */}
                     <div className=" text-end w-48">
                       <p className="text-xs text-[#D4D4D4] py-2">Role</p>
@@ -288,8 +362,8 @@ const RMView = () => {
                     <div className="text-center w-24">
                       <p className="text-xs text-[#D4D4D4] py-2">Employee ID</p>
                       <p className="text-xs">
-                        {getData.rmData?.user?.employeeId
-                          ? getData.rmData?.user?.employeeId
+                        {getData?.rmData?.regionManager?.user?.employeeId
+                          ? getData?.rmData?.regionManager?.user?.employeeId
                           : "N/A"}
                       </p>
                     </div>
@@ -298,19 +372,17 @@ const RMView = () => {
                       <p className="text-xs text-[#D4D4D4] py-2">
                         Joining Date
                       </p>
-                      <p className="text-xs ">
-                        {getData.rmData?.dateOfJoining
-                          ? new Date(
-                              getData.rmData.dateOfJoining
-                            ).toLocaleDateString()
-                          : "N/A"}
-                      </p>
+                      <p className="text-xs">
+  {getData?.rmData?.regionManager?.dateOfJoining
+    ? new Date(getData.rmData.regionManager.dateOfJoining).toLocaleDateString("en-GB")
+    : "N/A"}
+</p>
                     </div>
                   </div>
 
                   <div className="flex flex-col w-fit items-center space-y-1">
                     <div
-                      onClick={() => handleModalToggle(true, false, false)}
+                      onClick={() => handleModalToggle(true, false, false, false)}
                       className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                     >
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -324,7 +396,7 @@ const RMView = () => {
 
                   <div className="flex flex-col  items-center space-y-1">
                     <div
-                      onClick={() => handleModalToggle(false, true, false)}
+                      onClick={() => handleModalToggle(false, true, false, false)}
                       className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                     >
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -338,7 +410,7 @@ const RMView = () => {
 
                   <div className="flex flex-col   items-center space-y-1">
                     <div
-                      onClick={() => handleModalToggle(false, false, true)}
+                      onClick={() => handleModalToggle(false, false, true, false)}
                       className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                     >
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -359,6 +431,17 @@ const RMView = () => {
                       </div>
                     </div>
                     <p className="text-center ms-3">DeActivate</p>
+                  </div>
+
+                  <div onClick={()=>handleModalToggle(false,false,false,true)} className="flex flex-col -ms-2 items-center space-y-1">
+                    <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2 ">
+                    <Trash size={18} color="#BC3126" />
+                  </div>
+                </div>
+                    </div>
+                    <p className="text-center ms-3">Delete</p>
                   </div>
                 </div>
                 {/* HomeCards Section */}
@@ -389,7 +472,7 @@ const RMView = () => {
           <div className="col-span-7 py-6 ">
             <div>
               <Table<AreaData>
-                data={data}
+                data={totalAreaManaged}
                 columns={columns}
                 headerContents={{
                   title: "Total Area Managed",
@@ -401,12 +484,12 @@ const RMView = () => {
             </div>
           </div>
           <div className="col-span-5 py-6">
-            <RMViewAriaManagers />
+            <RMViewAriaManagers totalAreaManagers={totalAreaManagers} />
           </div>
         </div>
 
         <div>
-          <RMViewBDAandGraph />
+          <RMViewBDAandGraph totalBdas={totalBdas} />
         </div>
       </div>
       {/* Modal controlled by state */}
@@ -424,6 +507,19 @@ const RMView = () => {
       >
         <RMViewAward getData={getData} onClose={() => handleModalToggle()} />
       </Modal>
+      <Modal
+        open={isModalOpen.confirm}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDelete}
+          prompt="Are you sure want to delete this Region manager?"
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>       
+
     </>
   );
 };

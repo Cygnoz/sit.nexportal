@@ -1,9 +1,13 @@
+import { useEffect, useState } from "react";
 import LeadsCardIcon from "../../../assets/icons/LeadsCardIcon";
 import LicenserCardIcon from "../../../assets/icons/LicenserCardIcon";
 import HomeCard from "../../../components/ui/HomeCards";
 // import Licensers from "../../../components/ui/Licensers";
 import Table from "../../../components/ui/Table";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
 import LicenserTable from "./LicenserTable";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -19,41 +23,35 @@ interface AreaData {
 
 
   
-type Props = {}
+type Props = {
+  id:any
+}
 
-const LeadAndLisence = ({}: Props) => {
-
-    const handleEditDeleteView=(editId?:any,viewId?:any,deleteId?:any)=>{
-        if(viewId){
-        //   navigate(`/areaView/${viewId}`)
-          console.log(viewId);
-          
-        }else if(editId){
-          console.log(editId)
-          console.log(deleteId);
-          
-          // setId({...id,edit:editId})
-        }
+const LeadAndLisence = ({id}: Props) => {
+    const [leadLicensorData,setLeadLicensorData]=useState<any>()
+    const navigate=useNavigate()
+    const handleView=(id:any)=>{
+        navigate(`/lead/${id}`)
       }
-    
+    const {request:getLeadLicensor}=useApi('get',3003)
       // Data for HomeCards
       const homeCardData = [
         { 
             icon: <LeadsCardIcon size={40} />, 
-            number: "222", 
+            number: leadLicensorData?leadLicensorData?.leadConversionRate:0, 
             title: "Lead Conversion Rate", 
             iconFrameColor: "#DD9F86", 
             iconFrameBorderColor: "#FADDFCCC" 
         },
         {    icon: <LicenserCardIcon />, 
-            number: "333", 
+            number: leadLicensorData?leadLicensorData?.activeLicenses:0, 
             title: "Active licenses", 
             iconFrameColor: "#8695DD", 
             iconFrameBorderColor: "#CAD1F1CC" 
         },
         {    icon: <LicenserCardIcon />, 
-          number: "333", 
-          title: "Active licenses", 
+          number: leadLicensorData?leadLicensorData?.expiredLicenses:0, 
+          title: "Expired  licenses", 
           iconFrameColor: "#8695DD", 
           iconFrameBorderColor: "#CAD1F1CC" 
       },
@@ -67,36 +65,47 @@ const LeadAndLisence = ({}: Props) => {
     
       ];
       
-      // Data for the table
-      const data: AreaData[] = [
 
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Website", assignedTo: "Manii" , status:"New"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Referal", assignedTo: "Sanu" , status:"Contacted"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Website", assignedTo: "Manii" , status:"New"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Referal", assignedTo: "Sanu" , status:"Contacted"},
-         {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Website", assignedTo: "Manii" , status:"New"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Referal", assignedTo: "Sanu" , status:"Contacted"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Website", assignedTo: "Manii" , status:"New"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Referal", assignedTo: "Sanu" , status:"Contacted"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Website", assignedTo: "Manii" , status:"New"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Referal", assignedTo: "Sanu" , status:"Contacted"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Website", assignedTo: "Manii" , status:"New"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Referal", assignedTo: "Sanu" , status:"Contacted"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Website", assignedTo: "Manii" , status:"New"},
-        {leadId: "LDA1234", leadName: "Subii", phoneNumber: " 11111111", emailAddress: "subi@gmail.com", source: "Referal", assignedTo: "Sanu" , status:"Contacted"},
-    ];
       // Define the columns with strict keys
-      const columns: { key: keyof AreaData; label: string }[] = [
-        { key: "leadId", label: "Lead ID" },
+    const columns: { key: any; label: string }[] = [
+        { key: "customerId", label: "Lead ID" },
         { key: "leadName", label: "Lead Name" },
-        { key: "phoneNumber", label: "Phone Number" },
-        { key: "emailAddress", label: "Email address" },
-        { key: "source", label: "Source" },
-        { key: "assignedTo", label: "Assigned To" },
-        { key: "status", label: "Status" },
-      ];
+        { key: "phone", label: "Phone Number" },
+        { key: "email", label: "Email address" },
+        { key: "leadSource", label: "Source" },
+        { key: "bdaName", label: "Assigned To" },
+        { key: "leadStatus", label: "Status" },
+    ];
 
-
+    const getLeadAndLicenser = async () => {
+        try {
+          const { response, error } = await getLeadLicensor(
+            `${endPoints.GET_AREAS}/${id}/lead`
+          );
+          if (response && !error) {
+            const {leads,licensors,activeLicenses, expiredLicenses, leadConversionRate}=response.data
+            const filteredlicesor=licensors.map((licensor:any)=>({
+              ...licensor,
+              endDate: licensor.endDate
+                  ? new Date(licensor.endDate).toLocaleDateString("en-GB")
+                  : "N/A",
+              startDate:licensor.startDate
+              ? new Date(licensor.startDate).toLocaleDateString("en-GB")
+              : "N/A",
+            }))
+            const filtered={leads,filteredlicesor,activeLicenses, expiredLicenses, leadConversionRate}
+           setLeadLicensorData(filtered)
+          } else {
+            console.log(error.response.data);
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      };
+    
+      useEffect(() => {
+        getLeadAndLicenser()
+      }, [id]);
       
 
   return (
@@ -117,9 +126,9 @@ const LeadAndLisence = ({}: Props) => {
 
       {/* Table Section */}
       <div>
-        <Table<AreaData> data={data} columns={columns} headerContents={{
+        <Table<AreaData> data={leadLicensorData?.leads} columns={columns} headerContents={{
           title:"Lead Details",
-          search:{placeholder:'Search BDA By Name'},
+          search:{placeholder:'Search Leads...'},
         //   sort: [
         //         {
         //           sortHead: "Filter",
@@ -134,14 +143,14 @@ const LeadAndLisence = ({}: Props) => {
         }}
         actionList={[
           
-          { label: 'view', function: handleEditDeleteView },
+          { label: 'view', function: handleView },
         ]}
          />
       </div>
 
       <div className="my-4">
          {/* Licensers handled by BDA */}
-       <LicenserTable/>
+       <LicenserTable licensor={leadLicensorData?.filteredlicesor}/>
       </div>
 
       

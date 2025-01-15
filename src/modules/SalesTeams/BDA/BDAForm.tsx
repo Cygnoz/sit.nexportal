@@ -21,10 +21,15 @@ import useApi from "../../../Hooks/useApi";
 import { BDAData } from "../../../Interfaces/BDA";
 import { endPoints } from "../../../services/apiEndpoints";
 import { useRegularApi } from "../../../context/ApiContext";
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
+import { StaffTabsList } from "../../../components/list/StaffTabsList";
+import Modal from "../../../components/modal/Modal";
+import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
 interface BDAProps {
   onClose: () => void; // Prop for handling modal close
-  editId?:string
+  editId?: string;
 }
 
 const baseSchema = {
@@ -36,18 +41,15 @@ const baseSchema = {
   personalEmail: Yup.string().email("Invalid personal email"),
   age: Yup.number()
     .nullable()
-    .transform((value, originalValue) =>
-      originalValue === "" ?null : value
-    ),
+    .transform((value, originalValue) => (originalValue === "" ? null : value)),
+  region: Yup.string().required("Region is required"),
+  area: Yup.string().required("Area is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
   ...baseSchema,
-  email: Yup.string()
-    .required("Email required")
-    .email("Invalid email"),
-  password: Yup.string()
-    .required("Password is required"),
+  email: Yup.string().required("Email required").email("Invalid email"),
+  password: Yup.string().required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Confirm Password is required"),
@@ -57,11 +59,11 @@ const editValidationSchema = Yup.object().shape({
   ...baseSchema,
 });
 
-const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
-  const { allAreas, allRegions, allWc, allCountries } = useRegularApi();
+const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
+  const { dropDownAreas, dropdownRegions, allWc, allCountries } = useRegularApi();
   const { request: addBDA } = useApi("post", 3002);
   const { request: editBDA } = useApi("put", 3002);
-  const {request:getBDA}=useApi('get',3002);
+  const { request: getBDA } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -80,16 +82,31 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     clearErrors,
     formState: { errors },
   } = useForm<BDAData>({
-    resolver: yupResolver(editId?editValidationSchema:addValidationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
+  const {request:checkBda}=useApi("put",3002)
+
+  const [isModalOpen, setIsModalOpen] = useState({
+    viewBusinesscard: false,
+    viewIdcard: false,
+  });
+
+  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false,) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      viewBusinesscard:viewBusinesscard,
+      viewIdcard: viewIdcard,
+      
+    }));
+  }
 
   const onSubmit: SubmitHandler<BDAData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
-    if(submit){
+    if (submit) {
       try {
         const fun = editId ? editBDA : addBDA; // Select the appropriate function based on editId
         let response, error;
-    
+
         if (editId) {
           // Call editBDA if editId exists
           ({ response, error } = await fun(`${endPoints.BDA}/${editId}`, data));
@@ -97,10 +114,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
           // Call addBDA if editId does not exist
           ({ response, error } = await fun(endPoints.BDA, data));
         }
-    
+
         console.log("Response:", response);
         console.log("Error:", error);
-    
+
         if (response && !error) {
           toast.success(response.data.message); // Show success toast
           onClose(); // Close the form/modal
@@ -113,7 +130,43 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
       }
     }
   };
+
+  const checkBDA=async()=>{
+    const region = watch("region");
+    const area = watch("area");
   
+    // Ensure values are defined
+    if (!region && !area) return false;
+    try{
+      const body={
+        regionId:watch("region"),
+        areaId:watch("area")
+      }
+      const {response,error}=await checkBda(endPoints.CHECK_BDA,body)
+      console.log("res",response);
+      console.log("err",error);
+      
+      
+      if(response && !error){
+        return true
+      }else{
+        
+        if(
+          toast.error(error.response.data.message=='Internal server error'?'Select region or area':error.response.data.message)
+        )
+        
+        if(error?.response?.data?.message==="Area Manager not found for the provided area." ||"Region Manager not found for the provided region.")
+          {
+          return false
+        }else{
+          return true
+        }
+      }
+    }catch(err){
+      console.log(err);
+      
+    }
+  }
 
   const tabs = [
     "Personal Information",
@@ -127,18 +180,40 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
-
+    let canProceed = true;
+  
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo"];
-    } else if (!editId&&tab === "Company Information") {
-      fieldsToValidate = ["email", "password", "confirmPassword"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
+    } else if (tab === "Company Information") {
+      fieldsToValidate = [
+        ...(editId ? [] : ["email", "password", "confirmPassword"]),
+        "region",
+        "area",
+        "workEmail",
+      ];
+  
+  
+        const amCheck = await checkBDA(); // Call checkAM function
+  
+        if (!amCheck && (watch("region") || watch("area"))) {
+          canProceed = false;
+        }
+      
     }
-
-    const isValid = fieldsToValidate.length
-      ? await trigger(fieldsToValidate)
-      : true;
-
-    if (isValid && currentIndex < tabs.length - 1) {
+  
+    // Validate fields only if canProceed is true
+    if (canProceed && fieldsToValidate.length > 0) {
+      const isValid = await trigger(fieldsToValidate);
+  
+      // If validation fails, stop here
+      if (!isValid) {
+  
+        return;
+      }
+    }
+  
+    // If validation passes and we can proceed, move to the next tab
+    if (canProceed && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
     }
@@ -156,21 +231,21 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       value: String(region._id),
       label: region.regionName,
     }));
     // Update the state without using previous `data` state
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       regions: filteredRegions,
     }));
-  }, [allRegions]);
+  }, [dropdownRegions]);
 
   // UseEffect for updating areas based on selected region
   useEffect(() => {
-    const filteredAreas = allAreas?.filter(
-      (area: any) => area.region?._id === watch("region")
+    const filteredAreas = dropDownAreas?.filter(
+      (area: any) => area?.region=== watch("region")
     );
     const transformedAreas = filteredAreas?.map((area: any) => ({
       label: area.areaName,
@@ -178,11 +253,11 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     }));
 
     // Update areas
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       areas: transformedAreas,
     }));
-  }, [watch("region"), allAreas]);
+  }, [watch("region"), dropDownAreas]);
 
   // UseEffect for updating wc
   useEffect(() => {
@@ -192,7 +267,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     }));
 
     // Update wc
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       wc: filteredCommission,
     }));
@@ -206,7 +281,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     }));
 
     // Update country
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       country: filteredCountry,
     }));
@@ -223,13 +298,11 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     }));
 
     // Update areas
-    setData((prevData:any) => ({
+    setData((prevData: any) => ({
       ...prevData,
       state: transformedState,
     }));
   }, [watch("country")]);
-
-  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -249,7 +322,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
     // Clear the leadImage value
     setValue("userImage", "");
   };
-  
+
   const setFormValues = (data: BDAData) => {
     Object.keys(data).forEach((key) => {
       setValue(key as keyof BDAData, data[key as keyof BDAData]);
@@ -262,49 +335,77 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
       if (response && !error) {
         const BDA = response.data; // Return the fetched data
         console.log("Fetched BDA data:", BDA);
-  
-        const { user,_id, ...bda } = BDA;
-  
-        const transformedBDA = BDA ? {
-          ...bda,
-          dateOfJoining: new Date(BDA.dateOfJoining).toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
-          userName: user?.userName,
-          phoneNo: user?.phoneNo,
-          email: user?.email,
-          userImage: user?.userImage,
-          region: BDA.region?._id,
-          area: BDA.area?._id,
-          commission: BDA.commission?._id
-        } : null;
-  
+
+        const { user, _id, ...bda } = BDA;
+
+        const transformedBDA = BDA
+          ? {
+              ...bda,
+              dateOfJoining: new Date(BDA.dateOfJoining)
+                .toISOString()
+                .split("T")[0], // Format as 'YYYY-MM-DD'
+              userName: user?.userName,
+              phoneNo: user?.phoneNo,
+              email: user?.email,
+              userImage: user?.userImage,
+              region: BDA.region?._id,
+              area: BDA.area?._id,
+              commission: BDA.commission?._id,
+            }
+          : null;
+
         console.log("Transformed BDA data:", transformedBDA);
-  
+
         setFormValues(transformedBDA);
       } else {
         // Handle the error case if needed (for example, log the error)
-        console.error('Error fetching BDA data:', error);
+        console.error("Error fetching BDA data:", error);
       }
     } catch (err) {
-      console.error('Error fetching BDA data:', err);
+      console.error("Error fetching BDA data:", err);
     }
   };
-  
-  
+
   useEffect(() => {
-    getOneBDA()
+    getOneBDA();
   }, [editId]); // Trigger the effect when editId changes
+
+  useEffect(() => {
+    if (errors && Object.keys(errors).length > 0 && activeTab=="ID & Business Card") {
+      // Get the first error field
+      const firstErrorField = Object.keys(errors)[0];
   
+      // Find the tab containing this field
+      const tabIndex:any = StaffTabsList.findIndex((tab) =>
+        tab.validationField.includes(firstErrorField)
+      );
+  
+      // If a matching tab is found, switch to it
+      if (tabIndex >= 0) {
+        setActiveTab(tabs[tabIndex]);
+      }
+     const errorrs:any=errors
+      // Log all errors
+      Object.keys(errorrs).forEach((field) => {
+        console.log(`${field}: ${errorrs[field]?.message}`);
+      });
+  
+      // Show the first error message in a toast
+      toast.error(errorrs[firstErrorField]?.message);
+    }
+  }, [errors]);
 
   return (
+    <>
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
       <div className="flex justify-between items-center mb-4">
         <div>
           <h1 className="text-lg font-bold text-deepStateBlue ">
-            {editId?'Edit':'Create'} BDA
+            {editId ? "Edit" : "Create"} BDA
           </h1>
           <p className="text-ashGray text-sm">
-          {`Use this form to ${
+            {`Use this form to ${
               editId ? "edit an existing BDA" : "add a new BDA"
             } details. Please fill in the required information`}
           </p>
@@ -322,6 +423,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
         {tabs.map((tab, index) => (
           <div
             key={tab}
+            onClick={()=>setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${
               activeTab === tab
                 ? "text-deepStateBlue border-b-2 border-secondary2"
@@ -358,7 +460,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                     type="file"
                     className="hidden"
                     onChange={handleFileChange}
-                    //   onChange={(e) => handleFileUpload(e)}
                   />
                   <ImagePlaceHolder uploadedImage={watch("userImage")} />
                 </label>
@@ -375,18 +476,26 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
               </div>
 
               <div className="grid grid-cols-2 gap-2 col-span-10">
-                <Input
+              <Input
                   required
                   placeholder="Enter Full Name"
+                  value={watch("userName")}
                   label="Full Name"
                   error={errors.userName?.message}
-                  {...register("userName")}
+                  onChange={(e)=>{
+                    handleInputChange("userName")
+                    setValue("userName",e.target.value)
+                  }}
                 />
-                <Input
+                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
                   error={errors.personalEmail?.message}
-                  {...register("personalEmail")}
+                  value={watch("personalEmail")}
+                  onChange={(e)=>{
+                    setValue("personalEmail",e.target.value)
+                    handleInputChange("personalEmail")
+                  }}
                 />
                 <CustomPhoneInput
                   required
@@ -399,13 +508,15 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}
                 />
-                <div className="flex gap-4 w-full">
+                <div className="grid grid-cols-2 gap-2">
                   <Input
                     placeholder="Enter Age"
                     label="Age"
                     type="number"
+                    error={errors.age?.message}
                     {...register("age")}
                   />
+
                   <Input
                     label="Blood Group"
                     placeholder="Enter Blood Group"
@@ -426,20 +537,30 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   {...register("address.street2")}
                 />
                 <Select
-                  label="Country"
                   placeholder="Select Country"
-                  value={watch("country")}
+                  label="Country"
                   error={errors.country?.message}
+                  value={watch("country")}
+                  onChange={(selectedValue) => {
+                    // Update the country value and clear the state when country changes
+                    setValue("country", selectedValue);
+                    handleInputChange("country");
+                    setValue("state", ""); // Reset state when country changes
+                  }}
                   options={data.country}
-                  {...register("country")}
                 />
                 <Select
+                  placeholder={
+                    data.state.length === 0 ? "Choose Country" : "Select State"
+                  }
+                  value={watch("state")}
+                  onChange={(selectedValue) => {
+                    setValue("state", selectedValue);
+                    handleInputChange("state");
+                  }}
                   label="State"
-                  value={watch('state')}
-                  placeholder={data.state.length==0?"Choose Country":"Select State"}
                   error={errors.state?.message}
                   options={data.state}
-                  {...register("state")}
                 />
                 <Input
                   label="City"
@@ -466,7 +587,11 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                   label="Date of Joining"
                   error={errors.dateOfJoining?.message}
                   {...register("dateOfJoining")}
-                  value={watch('dateOfJoining')?watch('dateOfJoining'):new Date().toISOString().split("T")[0]} // Sets current date as default
+                  value={
+                    watch("dateOfJoining")
+                      ? watch("dateOfJoining")
+                      : new Date().toISOString().split("T")[0]
+                  } // Sets current date as default
                 />
               </div>
             </div>
@@ -474,47 +599,59 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
 
           {activeTab === "Company Information" && (
             <div>
-            {!editId&&<>
-              <p className="my-4 text-[#303F58] text-sm font-semibold">
-                {editId?'Edit':'Set'} Login Credential
-              </p>
-              <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
-                <Input
-                  required
-                  type="email"
-                  placeholder="Enter Email"
-                  label="Email"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-            
-               <>
-               <Input
-                  required
-                  placeholder="Enter Password"
-                  label="Create Password"
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-                <Input
-                  required
-                  placeholder="Re-enter Password"
-                  label="Confirm Password"
-                  error={errors.confirmPassword?.message}
-                  {...register("confirmPassword")}
-                />
-               </>
-               
-              </div>
-              </>}
+              {!editId && (
+                <>
+                  <p className="my-4 text-[#303F58] text-sm font-semibold">
+                    {editId ? "Edit" : "Set"} Login Credential
+                  </p>
+                  <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
+                  <Input
+                      required
+                      placeholder="Enter Email"
+                      label="Email"
+                      value={watch("email")}
+                      error={errors.email?.message}
+                      onChange={(e)=>{
+                        handleInputChange("email")
+                        setValue("email",e.target.value)
+                      }}
+                    />
+                    <InputPasswordEye
+                      label={editId ? "New Password" : "Password"}
+                      required
+                      value={watch("password")}
+                      placeholder="Enter your password"
+                      error={errors.password?.message}
+                      onChange={(e)=>{
+                        handleInputChange("password")
+                        setValue("password",e.target.value)
+                      }}
+                    />
+                    <InputPasswordEye
+                      label="Confirm Password"
+                      required
+                      value={watch("confirmPassword")}
+                      placeholder="Confirm your password"
+                      error={errors.confirmPassword?.message}
+                      onChange={(e)=>{
+                        handleInputChange("confirmPassword")
+                        setValue("confirmPassword",e.target.value)
+                      }}
+                    />
+                  </div>
+                </>
+              )}
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <Input
+              <Input
                   placeholder="Enter Work Email"
-                  type="email"
                   label="Work Email"
                   error={errors.workEmail?.message}
-                  {...register("workEmail")}
+                  value={watch("workEmail")}
+                  onChange={(e)=>{
+                    setValue("workEmail",e.target.value)
+                    handleInputChange("workEmail")
+                  }}
                 />
                 <CustomPhoneInput
                   placeholder="Phone"
@@ -526,29 +663,47 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                     setValue("workPhone", value); // Update the value of the phone field in React Hook Form
                   }}
                 />
-                <Select
+               <Select
+                  required
+                  placeholder="Select Region"
                   label="Select Region"
-                  placeholder="Choose Region"
                   value={watch("region")}
+                  onChange={(selectedValue) => {
+                    setValue("region", selectedValue); // Manually update the region value
+                    handleInputChange("region");
+                    setValue("area", "");
+                  }}
                   error={errors.region?.message}
                   options={data.regions}
-                  {...register("region")}
                 />
                 <Select
+                  required
                   label="Select Area"
-                  placeholder={data.areas.length==0?'Select Region':"Select Area"}
-                  value={watch('area')}
+                  placeholder={
+                    data.areas.length === 0
+                      ? watch("region")?.length > 0
+                        ? "No Area Found"
+                        : "Select Region"
+                      : "Select Area"
+                  }
+                  value={watch("area")}
+                  onChange={(selectedValue) => {
+                    setValue("area", selectedValue); // Manually update the region value
+                    handleInputChange("area");
+                  }}
                   error={errors.area?.message}
                   options={data.areas}
-                  {...register("area")}
                 />
                 <Select
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
-                  value={watch('commission')}
+                  value={watch("commission")}
+                  onChange={(selectedValue) => {
+                    setValue("commission", selectedValue); // Manually update the commission value
+                    handleInputChange("commission");
+                  }}
                   error={errors.commission?.message}
                   options={data.wc}
-                  {...register("commission")}
                 />
               </div>
             </div>
@@ -642,7 +797,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
             </div>
           )}
 
-{activeTab === "ID & Business Card" && (
+          {activeTab === "ID & Business Card" && (
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                 <p className="text-[#303F58] text-base font-bold">
@@ -656,6 +811,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 <img src={bcardback} width={220} className="mb-3" alt="" />
                 <div className="flex gap-3 justify-end">
                   <Button
+                   onClick={()=>handleModalToggle(true, false)}
                     variant="tertiary"
                     size="sm"
                     className="text-xs text-[#565148] font-medium rounded-md"
@@ -676,6 +832,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
                 <img src={idcard} className="my-3" alt="" />
                 <div className="flex gap-3 justify-end">
                   <Button
+                   onClick={()=>handleModalToggle(false,true)}
                     variant="tertiary"
                     size="sm"
                     className="text-xs text-[#565148] font-medium rounded-md"
@@ -690,7 +847,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
             </div>
           )}
         </div>
- 
+
         <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
           {tabs.indexOf(activeTab) > 0 ? (
             <Button
@@ -726,7 +883,6 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
               variant="primary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
-              type="submit"
               onClick={() => handleNext(activeTab)}
             >
               Next
@@ -735,6 +891,13 @@ const BDAForm: React.FC<BDAProps> = ({ onClose,editId }) => {
         </div>
       </form>
     </div>
+    <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
+      <AMViewBCard onClose={() => handleModalToggle()} />
+    </Modal>
+    <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
+      <AMIdCardView onClose={() => handleModalToggle()} />
+    </Modal>
+    </>
   );
 };
 

@@ -2,7 +2,7 @@
 import Input from "../../form/Input";
 //import Select from "../../../components/form/Select";
 import Button from "../../ui/Button";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import InputPasswordEye from "../../form/InputPasswordEye";
@@ -13,6 +13,7 @@ import { useEffect } from "react";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { useResponse } from "../../../context/ResponseContext";
+import { useNavigate } from "react-router-dom";
 
 // import Select from "../../form/Select";
 //import CustomPhoneInput from "../../../components/form/CustomPhone";
@@ -20,8 +21,9 @@ import { useResponse } from "../../../context/ResponseContext";
 
 type Props = {
   onClose: () => void;
-  type:"lead"|"trial";
+  type?:"lead"|"trial" |"licenser";
   orgData?:any
+  getLeads?:()=>void
 };
 
 const validationSchema = Yup.object({
@@ -38,10 +40,11 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Start date is required"),
   endDate: Yup.string().required("End date is required"),
 });
-const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
+const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
    const {customerData}=useResponse()
     const {request:leadToTrial}=useApi('put',3001)
     const {request:trialToLicenser}=useApi('put',3001)
+    const navigate=useNavigate()
   const {
     register,
     handleSubmit,
@@ -51,27 +54,53 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
     formState: { errors },
   } = useForm<Conversion>({
     resolver: yupResolver(validationSchema),
+    defaultValues:{
+      customerStatus:type=="lead"?'Lead':type==="licenser"?'Licenser':''
+    }
   });
 
-  const onSubmit: SubmitHandler<Conversion> =async (data) => {
-    console.log("Form Data:", data);
-    try{
-        const fun=type=="lead"?leadToTrial:trialToLicenser
-        const {response,error}=await fun(`${type==="lead"?endPoints.TRIAL:endPoints.TRIALS}/${customerData._id}`,data)
-        console.log(error);
-        
-        if(response && !error){
-            toast.success(response.data.message)
-            onClose()
-        }else{
-            toast.error(error.response.data.error.message)
+  const onSubmit: SubmitHandler<Conversion> = async (data) => {
+    try {
+        const fun = type === "lead" || type === "licenser" ? leadToTrial : trialToLicenser;
+
+        const customerId = customerData?._id || customerData?.licenserId;
+        if (!customerId) {
+            throw new Error("Customer ID is required");
         }
-    }catch(err){
-        console.log(err)   
+
+        const { response, error } = await fun(
+            `${type === "lead" || type === "licenser" ? endPoints.TRIAL : endPoints.TRIALS}/${customerId}`, 
+            data
+        );
+
+        if (response && !error) {
+            toast.success(
+                customerData?.licenserId 
+                    ? "Organization created Successfully" 
+                    : response.data.message
+            );
+            if (!customerData?.licenserId) {
+                navigate(type === "lead" ? "/lead" : "/trial");
+            }
+            getLeads?.();
+            onClose?.();
+        } else {
+            toast.error(error?.response?.data?.error?.message || "An unexpected error occurred.");
+        }
+    } catch (err: any) {
+        toast.error(err.message || "An unexpected error occurred.");
+        console.error(err);
     }
-  };
+};
+
   
-  console.log(errors)
+  console.log(errors);
+
+
+  console.log("cus",customerData);
+  
+  
+
 
 
   const handleInputChange = (field: keyof Conversion) => {
@@ -80,18 +109,15 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
 
 
 
-  
-  useEffect(()=>{
-    setValue("contactName",customerData?.firstName)
-  },[customerData])
-
-  useEffect(()=>{
-    if(orgData){
-      setValue("organizationName",orgData?.organizationName)
-      setValue("contactNum",orgData?.primaryContactNum )
-      setValue("email",orgData?.primaryContactEmail )
-    }
-  },[orgData])
+ useEffect(()=>{
+ 
+       setValue("contactName",customerData?.firstName)
+       setValue("organizationName",orgData?.organizationName?orgData?.organizationName:customerData?.companyName)
+       setValue("contactNum",orgData?.primaryContactNum?orgData?.primaryContactNum:customerData?.phone )
+       setValue("email",orgData?.primaryContactEmail?orgData?.primaryContactEmail:customerData?.email)
+       setValue("startDate",orgData?.startDate?orgData?.startDate:customerData?.startDate)
+       setValue("endDate",orgData?.endDate?orgData?.endDate:customerData?.endDate)
+   },[orgData,customerData])
 
   useEffect(() => {
     if (type === 'lead' && watch("startDate")) {
@@ -104,10 +130,14 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
       
       // Set the calculated endDate in the form
       setValue("endDate", formattedEndDate);
+      clearErrors("endDate")
     }
   }, [watch("startDate"), type, setValue]);
   
     
+
+  console.log("err",errors);
+  
 
   return (
     <div className="p-1 bg-white rounded shadow-md space-y-2">
@@ -189,6 +219,7 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
                   required
                   type="date"
                   label="End Date"
+                  value={watch("endDate")}
                   error={errors.endDate?.message}
                   {...register("endDate")}
                 />
@@ -196,14 +227,14 @@ const OrganisationForm = ({ onClose ,type,orgData}: Props) => {
             </div>
           
           <div className=" flex justify-end gap-2 mt-3 me-3">
-            <Button
+           {type!=="licenser"&& <Button
               variant="tertiary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
               onClick={onClose}
             >
               Cancel
-            </Button>
+            </Button>}
             <Button
               variant="primary"
               className="h-8 text-sm border rounded-lg"

@@ -8,6 +8,7 @@ import {
   YAxis
 } from "recharts";
 import Table from "../../../components/ui/Table";
+import { useNavigate } from "react-router-dom";
 
 interface TrailTableData {
     trailId:string;
@@ -17,33 +18,24 @@ interface TrailTableData {
     status: string;
   }
   
-type Props = {}
+type Props = {
+  bdaData?:any
+}
 
-const GraphTable = ({}: Props) => {
+const GraphTable = ({bdaData}: Props) => {
+  const navigate=useNavigate()
   const [selectedMonth, setSelectedMonth] = useState("January");
-    const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
-        if (viewId) {
-          // navigate(`/amView/${viewId}`)
-          console.log(viewId);
-            console.log(editId);
-            console.log(deleteId);
-            
-        }
+    const handleView = (id:any) => {
+       navigate(`/trial/${id}`)
       }
     
-  // Data for the table
-  const data: TrailTableData[] = [
-    { trailId:"LD12345", leadName: "Devid Billie", currentStatus: "Initial Contact", startDate:"7/11/19", status: "High",  },
-    { trailId:"LD12345", leadName: "Sudeep Kumar", currentStatus: "(406) 555-0120", startDate:"7/11/19", status: "Medium",  },
-    { trailId:"LD12345", leadName: "Kathryn Murphy", currentStatus: "Initial Contact", startDate:"7/11/19", status: "Low",  },
-    { trailId:"LD12345", leadName: "Darrell Steward", currentStatus: "Initial Contact", startDate:"7/11/19", status: "Low", },
-  ];
+
   // Define the columns with strict keys
-  const columns: { key: keyof TrailTableData; label: string }[] = [
-    { key: "trailId", label: "Trail ID" },
+  const columns: { key: any; label: string }[] = [
+    { key: "customerId", label: "Trail ID" },
     { key: "leadName", label: "Lead Name" },
-    { key: "currentStatus", label: "Current Status" },
-    { key: "status", label: "Priority" },
+    { key: "trialStatus", label: "Current Status" },
+    // { key: "status", label: "Priority" },
     { key: "startDate", label: "Start Date" },
   ];
 
@@ -203,20 +195,9 @@ const GraphTable = ({}: Props) => {
     },
   ];
 
-  // const CustomLegend = () => {
-  //   return (
-  //     <div
-  //       className="justify-between mt-6"
-  //       style={{ display: "flex", gap: "10px" }}
-  //     >
-  //       <span style={{ color: "#e2b0ff" }}>Area1</span>
-  //       <span style={{ color: "#8884d8" }}>Area2</span>
-  //       <span style={{ color: "#82ca9d" }}>Area3</span>
-  //       <span style={{ color: "#d86a57" }}>Area4</span>
-  //       <span style={{ color: "#6ab6ff" }}>Area5</span>
-  //     </div>
-  //   );
-  // };
+  console.log("sdsdddddddddddd",bdaData);
+  
+ 
 
   return (
     <div>
@@ -244,7 +225,7 @@ const GraphTable = ({}: Props) => {
                       </div>
                       <div className="mt-5">
                         <LineChart
-                          width={580}
+                          width={510}
                           height={330}
                           data={datas}
                           margin={{
@@ -300,13 +281,15 @@ const GraphTable = ({}: Props) => {
         </div>
         <div className="col-span-7">
         <div className="">
-        <Table<TrailTableData> data={data} columns={columns} headerContents={{
+        <Table<TrailTableData> data={bdaData?.TransformedTrial} columns={columns} headerContents={{
           title: "Current Trails handled by BDA",
-          search: { placeholder: 'Search BDA by Name' },
+          search: { placeholder: 'Search Trial Name' },
         }}
         actionList={[
-          { label: 'view', function: handleEditDeleteView },
-        ]} />
+          { label: 'view', function: handleView},
+        ]}
+        maxHeight='325px'
+         />
       </div>
         </div>
       </div>

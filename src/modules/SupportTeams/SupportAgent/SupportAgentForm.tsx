@@ -21,6 +21,11 @@ import useApi from "../../../Hooks/useApi";
 import { SAData } from "../../../Interfaces/SA";
 import { endPoints } from "../../../services/apiEndpoints";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
+import { StaffTabsList } from "../../../components/list/StaffTabsList";
+import Modal from "../../../components/modal/Modal";
+import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
 interface AddSupportAgentProps {
   onClose: () => void;
@@ -37,6 +42,7 @@ const baseSchema = {
   age: Yup.number()
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
+    region:Yup.string().required("Region is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -57,7 +63,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   onClose,
   editId,
 }) => {
-  const { allRegions, allWc, allCountries } = useRegularApi();
+  const { dropdownRegions, allWc, allCountries } = useRegularApi();
   const { request: addSA } = useApi("post", 3003);
   const { request: editSA } = useApi("put", 3003);
   const { request: getSA } = useApi("get", 3003);
@@ -80,6 +86,20 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   } = useForm<SAData>({
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
+
+  const [isModalOpen, setIsModalOpen] = useState({
+    viewBusinesscard: false,
+    viewIdcard: false,
+  });
+
+  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false,) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      viewBusinesscard:viewBusinesscard,
+      viewIdcard: viewIdcard,
+      
+    }));
+  }
 
   const onSubmit: SubmitHandler<SAData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
@@ -128,24 +148,24 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
-
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo"];
-    } else if (!editId&&tab === "Company Information") {
+      fieldsToValidate = ["userName", "phoneNo","personalEmail"];
+    } else if (tab === "Company Information") {
       fieldsToValidate = [
-        "email",
-         "password",
-         "confirmPassword",
+        !editId && "email",
+        !editId && "password",
+        !editId && "confirmPassword",
+        "region",
+        "workEmail"
       ];
     }
-
-    const iSAalid = fieldsToValidate.length
+    const isValid = fieldsToValidate.length
       ? await trigger(fieldsToValidate)
       : true;
-
-    if (iSAalid && currentIndex < tabs.length - 1) {
+    if (isValid && currentIndex < tabs.length - 1) {
       setActiveTab(tabs[currentIndex + 1]);
       clearErrors();
+      
     }
   };
 
@@ -163,7 +183,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
 
   // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = allRegions?.map((region: any) => ({
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
       value: String(region._id),
       label: region.regionName,
     }));
@@ -172,7 +192,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
       ...prevData,
       regions: filteredRegions,
     }));
-  }, [allRegions]);
+  }, [dropdownRegions]);
 
   // UseEffect for updating wc
   useEffect(() => {
@@ -286,7 +306,33 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
     getOneSA();
   }, [editId]); // Trigger the effect when editId changes
 
+  useEffect(() => {
+    if (errors && Object.keys(errors).length > 0 && activeTab=="ID & Business Card") {
+      // Get the first error field
+      const firstErrorField = Object.keys(errors)[0];
+  
+      // Find the tab containing this field
+      const tabIndex:any = StaffTabsList.findIndex((tab) =>
+        tab.validationField.includes(firstErrorField)
+      );
+  
+      // If a matching tab is found, switch to it
+      if (tabIndex >= 0) {
+        setActiveTab(tabs[tabIndex]);
+      }
+     const errorrs:any=errors
+      // Log all errors
+      Object.keys(errorrs).forEach((field) => {
+        console.log(`${field}: ${errorrs[field]?.message}`);
+      });
+  
+      // Show the first error message in a toast
+      toast.error(errorrs[firstErrorField]?.message);
+    }
+  }, [errors]);
+
   return (
+    <>
     <div className="p-5 bg-white rounded shadow-md">
       {/* Close button */}
       <div className="flex justify-between items-center mb-4">
@@ -315,6 +361,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
         {tabs.map((tab, index) => (
           <div
             key={tab}
+            onClick={()=>setActiveTab(tab)}
             className={`cursor-pointer py-3 px-[16px] ${
               activeTab === tab
                 ? "text-deepStateBlue border-b-2 border-secondary2"
@@ -367,18 +414,26 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                 )}
               </div>
               <div className="grid grid-cols-2 gap-2 col-span-10">
-                <Input
+              <Input
                   required
                   placeholder="Enter Full Name"
+                  value={watch("userName")}
                   label="Full Name"
                   error={errors.userName?.message}
-                  {...register("userName")}
+                  onChange={(e)=>{
+                    handleInputChange("userName")
+                    setValue("userName",e.target.value)
+                  }}
                 />
                 <Input
                   placeholder="Enter Email Address"
                   label="Email Address"
                   error={errors.personalEmail?.message}
-                  {...register("personalEmail")}
+                  value={watch("personalEmail")}
+                  onChange={(e)=>{
+                    setValue("personalEmail",e.target.value)
+                    handleInputChange("personalEmail")
+                  }}
                 />
                 <CustomPhoneInput
                   required
@@ -391,20 +446,22 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                     setValue("phoneNo", value); // Update the value of the phone field in React Hook Form
                   }}
                 />
-                <div className="flex gap-4 w-full">
-                  <Input
-                    placeholder="Enter Age"
-                    label="Age"
-                    type="number"
-                    {...register("age")}
-                  />
+                 <div className="grid grid-cols-2 gap-2">
+                 <Input
+  placeholder="Enter Age"
+  label="Age"
+  type="number"
+  error={errors.age?.message}
+  {...register("age")}
+/>
+
                   <Input
                     label="Blood Group"
                     placeholder="Enter Blood Group"
                     error={errors.bloodGroup?.message}
                     {...register("bloodGroup")}
                   />
-                </div>
+                  </div>
                 <Input
                   label="Address"
                   placeholder="Street 1"
@@ -417,21 +474,31 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                   error={errors.address?.street2?.message}
                   {...register("address.street2")}
                 />
-                <Select
-                  label="Country"
+                 <Select
                   placeholder="Select Country"
-                  value={watch("country")}
+                  label="Country"
                   error={errors.country?.message}
+                  value={watch("country")}
+                  onChange={(selectedValue) => {
+                    // Update the country value and clear the state when country changes
+                    setValue("country", selectedValue);
+                    handleInputChange("country");
+                    setValue("state", ""); // Reset state when country changes
+                  }}
                   options={data.country}
-                  {...register("country")}
                 />
                 <Select
-                  label="State"
+                  placeholder={
+                    data.state.length === 0 ? "Choose Country" : "Select State"
+                  }
                   value={watch("state")}
-                  placeholder="Select State"
+                  onChange={(selectedValue) => {
+                    setValue("state", selectedValue);
+                    handleInputChange("state");
+                  }}
+                  label="State"
                   error={errors.state?.message}
                   options={data.state}
-                  {...register("state")}
                 />
                 <Input
                   label="City"
@@ -448,7 +515,6 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                 />
                 <Input
                   label="PAN No"
-                  type="number"
                   placeholder="Enter Pan Number"
                   error={errors.panNo?.message}
                   {...register("panNo")}
@@ -477,28 +543,38 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                 {editId ? "Edit" : "Set"} Login Credential
               </p>
               <div className="grid grid-cols-3 gap-4 mt-4 mb-6">
-                <Input
-                  required
-                  type="email"
-                  placeholder="Enter Email"
-                  label="Email"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
-               
-                    <Input
+              <Input
                       required
-                      placeholder="Enter Password"
-                      label="Create Password"
-                      error={errors.password?.message}
-                      {...register("password")}
+                      placeholder="Enter Email"
+                      label="Email"
+                      value={watch("email")}
+                      error={errors.email?.message}
+                      onChange={(e)=>{
+                        handleInputChange("email")
+                        setValue("email",e.target.value)
+                      }}
                     />
-                    <Input
+                    <InputPasswordEye
+                      label={editId ? "New Password" : "Password"}
                       required
-                      placeholder="Re-enter Password"
+                      value={watch("password")}
+                      placeholder="Enter your password"
+                      error={errors.password?.message}
+                      onChange={(e)=>{
+                        handleInputChange("password")
+                        setValue("password",e.target.value)
+                      }}
+                    />
+                    <InputPasswordEye
                       label="Confirm Password"
+                      required
+                      value={watch("confirmPassword")}
+                      placeholder="Confirm your password"
                       error={errors.confirmPassword?.message}
-                      {...register("confirmPassword")}
+                      onChange={(e)=>{
+                        handleInputChange("confirmPassword")
+                        setValue("confirmPassword",e.target.value)
+                      }}
                     />
                     </div>
                   </>
@@ -506,12 +582,15 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
               
               <hr className="" />
               <div className="grid grid-cols-2 gap-4 mt-4">
-                <Input
+              <Input
                   placeholder="Enter Work Email"
-                  type="email"
                   label="Work Email"
                   error={errors.workEmail?.message}
-                  {...register("workEmail")}
+                  value={watch("workEmail")}
+                  onChange={(e)=>{
+                    setValue("workEmail",e.target.value)
+                    handleInputChange("workEmail")
+                  }}
                 />
                 <CustomPhoneInput
                   placeholder="Phone"
@@ -524,20 +603,28 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                   }}
                 />
                 <Select
+                  required
+                  placeholder="Select Region"
                   label="Select Region"
-                  placeholder="Choose Region"
                   value={watch("region")}
+                  onChange={(selectedValue) => {
+                    setValue("region", selectedValue); // Manually update the region value
+                    handleInputChange("region");
+                  }}
                   error={errors.region?.message}
                   options={data.regions}
-                  {...register("region")}
                 />
+
                 <Select
                   label="Choose Commission Profile"
                   placeholder="Commission Profile"
                   value={watch("commission")}
+                  onChange={(selectedValue) => {
+                    setValue("commission", selectedValue); // Manually update the commission value
+                    handleInputChange("commission");
+                  }}
                   error={errors.commission?.message}
                   options={data.wc}
-                  {...register("commission")}
                 />
               </div>
             </div>
@@ -645,6 +732,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                 <img src={bcardback} width={220} className="mb-3" alt="" />
                 <div className="flex gap-3 justify-end">
                   <Button
+                  onClick={()=>handleModalToggle( true, false)}
                     variant="tertiary"
                     size="sm"
                     className="text-xs text-[#565148] font-medium rounded-md"
@@ -665,6 +753,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                 <img src={idcard} className="my-3" alt="" />
                 <div className="flex gap-3 justify-end">
                   <Button
+                  onClick={()=>handleModalToggle(false, true)}
                     variant="tertiary"
                     size="sm"
                     className="text-xs text-[#565148] font-medium rounded-md"
@@ -714,7 +803,6 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
               variant="primary"
               className="h-8 text-sm border rounded-lg"
               size="lg"
-              type="submit"
               onClick={() => handleNext(activeTab)}
             >
               Next
@@ -723,6 +811,13 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
         </div>
       </form>
     </div>
+     <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
+     <AMViewBCard onClose={() => handleModalToggle()} />
+   </Modal>
+   <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
+     <AMIdCardView onClose={() => handleModalToggle()} />
+   </Modal>
+    </>
   );
 };
 
