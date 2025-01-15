@@ -264,38 +264,65 @@ exports.deleteRegion = async (req, res, next) => {
 };
 
    // Deactivate a region and its associated areas
-   exports.deactivateRegion = async (req, res) => {
-    try {
-      const { regionId } = req.params;
-  
-      // Find the region by ID and update its status to "Deactivate"
-      const updatedRegion = await Region.findByIdAndUpdate(
-        regionId,
-        { status: "Deactivate" },
-        { new: true } // Return the updated document
-      );
-  
-      // If the region does not exist
-      if (!updatedRegion) {
-        return res.status(404).json({ message: "Region not found" });
-      }
-  
-      // Deactivate all areas referencing this region
-      const updatedAreas = await Area.updateMany(
-        { region: regionId }, // Find all areas linked to the region
-        { status: "Deactivate" } // Update their status to "Deactivate"
-      );
-  
-      res.status(200).json({
-        message: "Region and associated areas deactivated successfully",
-        region: updatedRegion,
-        affectedAreas: updatedAreas.modifiedCount, // Number of areas updated
-      });
-    } catch (error) {
-      console.error("Error deactivating region and areas:", error.message || error);
-      res.status(500).json({ message: "Internal server error" });
+// Toggle the status of a region
+exports.deactivateRegion = async (req, res, next) => {
+  try {
+    const { regionId } = req.params; // Get the region ID from request params
+    const { status } = req.body; // Get the desired status from the request body
+ 
+    // Validate the provided status
+    const validStatuses = ["Activate", "Deactivate"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value. Use 'Activate' or 'Deactivate'." });
     }
-  };
+ 
+    // Check if the region is referenced in RegionManager, Supervisor, Bda, or SupportAgent collections before deactivation
+    if (status === "Deactivate") {
+      const isReferenced = await Promise.any([
+        RegionManager.exists({ region: regionId }),
+        Supervisor.exists({ region: regionId }),
+        Bda.exists({ region: regionId }),
+        SupportAgent.exists({ region: regionId }),
+      ]);
+ 
+      if (isReferenced) {
+        return res.status(400).json({
+          message: "Region cannot be deactivated as it is referenced in RegionManager, Supervisor, Bda, or SupportAgent.",
+        });
+      }
+    }
+ 
+    // Update the region's status
+    const updatedRegion = await Region.findByIdAndUpdate(
+      regionId,
+      { status },
+      { new: true } // Return the updated document
+    );
+ 
+    // If the region does not exist
+    if (!updatedRegion) {
+      return res.status(404).json({ message: "Region not found" });
+    }
+ 
+    // Respond with success and the updated region
+    res.status(200).json({
+      message: `Region ${status.toLowerCase()}d successfully`,
+      region: updatedRegion,
+    });
+ 
+    // Log the operation
+    ActivityLog(req, `Successfully `, updatedRegion._id);
+    next();
+  } catch (error) {
+    console.error(`Error toggling region status:`, error.message || error);
+ 
+    // Log the failure
+    ActivityLog(req, `Failed`);
+    next();
+ 
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
   
 
 exports.getAreasByRegion = async (req, res) => {

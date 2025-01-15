@@ -293,28 +293,54 @@ exports.getAllAreas = async (req, res) => {
   
 
   // Deactivate an area
-exports.deactivateArea = async (req, res) => {
+// Toggle the status of an area
+exports.deactivateArea = async (req, res, next) => {
   try {
-    const { areaId } = req.params;
-
-    // Find the area by ID and update the status to "Deactivate"
+    const { areaId } = req.params; // Get the area ID from request params
+    const { status } = req.body; // Get the desired status from the request body
+ 
+    // Validate the provided status
+    const validStatuses = ["Activate", "Deactivate"];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value. Use 'Activate' or 'Deactivate'." });
+    }
+ 
+    // Check if the area is referenced in the AreaManager collection
+    if (status === "Deactivate") {
+      const areaInUse = await AreaManager.exists({ area: areaId });
+      if (areaInUse) {
+        return res.status(400).json({ message: "Area cannot be deactivated as it is referenced in AreaManager." });
+      }
+    }
+ 
+    // Find the area by ID and update the status
     const updatedArea = await Area.findByIdAndUpdate(
       areaId,
-      { status: "Deactivate" },
+      { status },
       { new: true } // Return the updated document
     );
-
+ 
     // If the area does not exist
     if (!updatedArea) {
       return res.status(404).json({ message: "Area not found" });
     }
-
+ 
+    // Respond with success and the updated area
     res.status(200).json({
-      message: "Area deactivated successfully",
+      message: `Area ${status.toLowerCase()}d successfully`,
       area: updatedArea,
     });
+ 
+    // Log the operation
+    logOperation(req, `Successfully `, updatedArea._id);
+    next();
   } catch (error) {
-    console.error("Error deactivating area:", error.message || error);
+    console.error(`Error toggling area status:`, error.message || error);
+ 
+    // Log the failure
+    logOperation(req, `Failed`);
+    next();
+ 
     res.status(500).json({ message: "Internal server error" });
   }
 };
