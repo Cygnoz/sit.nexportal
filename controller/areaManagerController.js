@@ -218,28 +218,66 @@ exports.addAreaManager = async (req, res, next) => {
   }
 };
 
+// exports.addAreaManagerCheck = async (req, res) => {
+//   try {
+//     const {regionId , areaId } = req.body
+    
+//     const regionManager = await RegionManager.findOne({ region: regionId });
+    
+//     // Send specific error responses based on missing data
+//     if (!regionManager) {
+//       return res.status(404).json({ message: "Region Manager not found for the provided region." });
+//     }
+//     const existingAreaManager = await AreaManager.findOne({ area: areaId });
+//         if (existingAreaManager) {
+//           return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });
+//         }
+//     return res.status(201).json({
+//       message: "success"
+//     });
+//   } catch (error) {
+//     console.error("Unexpected error:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
 exports.addAreaManagerCheck = async (req, res) => {
   try {
-    const {regionId , areaId } = req.body
-    
+    const { regionId, areaId } = req.body;
+
+    // Validate required fields
+    if (!regionId) {
+      return res.status(400).json({ message: "regionId is required." });
+    }
+    if (!areaId) {
+      return res.status(400).json({ message: "areaId is required." });
+    }
+
+    // Check if Region Manager exists for the provided region
     const regionManager = await RegionManager.findOne({ region: regionId });
-    
-    // Send specific error responses based on missing data
     if (!regionManager) {
       return res.status(404).json({ message: "Region Manager not found for the provided region." });
     }
+
+    // Check if the area is already assigned to another Area Manager
     const existingAreaManager = await AreaManager.findOne({ area: areaId });
-        if (existingAreaManager) {
-          return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });
-        }
+    if (existingAreaManager) {
+      return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });
+    }
+
+    // Success response
     return res.status(201).json({
-      message: "success"
+      message: "Success",
     });
   } catch (error) {
     console.error("Unexpected error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+
 
 exports.getAreaManager = async (req, res) => {
   try {
