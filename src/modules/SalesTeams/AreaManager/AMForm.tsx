@@ -162,13 +162,14 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
       }
   
       if (error?.response?.data?.message) {
-        const errorMessage = error.response.data.message;
-  
+        const errorMessage = error.response.data.message
+   
         if (
           errorMessage ===
             "Area is already assigned to another Area Manager. Try adding another Area." ||
           errorMessage ===
-            "Region Manager not found for the provided region."
+            "Region Manager not found for the provided region." ||
+          errorMessage==="areaId is required."  
         ) {
           toast.error(errorMessage);
           return false;

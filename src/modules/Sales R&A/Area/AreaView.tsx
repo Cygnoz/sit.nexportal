@@ -14,6 +14,8 @@ import AreaForm from "./AreaForm";
 import LeadAndLisence from "./LeadAndLisence";
 import ResendActivity from "./RecentActivity";
 import TeamOverview from "./TeamOverview";
+import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 
 type Props = {};
 
@@ -34,7 +36,7 @@ const AreaView = ({ }: // status,
   const { id } = useParams();
   const navigate = useNavigate()
   const { request: getArea } = useApi('get', 3003)
-  // const { request: deactivationArea } = useApi('put', 3003)
+  const { request: deactivationArea } = useApi('put', 3003)
   const [area, setArea] = useState<any>()
   const tabs = [
     "Team Overview",
@@ -128,7 +130,36 @@ const AreaView = ({ }: // status,
   useEffect(() => {
     getRecentActivities();
   }, []);
+  const handleDeactivate = async () => {
+    const body={
+      status:area?.area?.status==='Active'?'Deactive':'Active'
+    }
+    try {
+      const { response, error } = await deactivationArea(`${endPoints.DEACTIVATE_AREA}/${id}`,body);
+      console.log(response);
+      console.log(error, "error message");
+      
+      
+      if (response) {
+       toast.success(response.data.message);
+       getAreas()
+       navigate("/areas");
+       
+      } else {
+        console.log(error?.response?.data?.message);
+        
+        toast.error(error?.response?.data?.message  || "An error occurred");     
+        
+        
+      }
+    } catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the lead.");
+    }
+  };
 
+
+  
 
     return (
     <>
@@ -208,12 +239,12 @@ const AreaView = ({ }: // status,
               </div>
               <p className="text-center ms-2">Edit</p>
             </div>
-            {/* <div
+            <div
               onClick={() => handleModalToggle(false, false, true)}
               className="flex flex-col items-center space-y-1 cursor-pointer"
             >
               <div className="w-8 h-8 mb-2 rounded-full">
-              {area?.status === "Active" ?
+              {area?.area?.status === "Active" ?
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
                       <DeActivateIcon size={18} color="#D52B1E4D" />
@@ -230,9 +261,9 @@ const AreaView = ({ }: // status,
 
               </div>
               <p className="text-center ms-2">
-                {area?.status === "Active" ? "Deactivate" : "Activate"}
+                {area?.area?.status === "Active" ? "Deactivate" : "Activate"}
               </p>
-            </div> */}
+            </div>
             <div onClick={() => handleModalToggle(false, true, false)} className="cursor-pointer">
               <div className="rounded-full bg-[#D52B1E4D] h-9 w-9 border border-white mb-2">
                 <div className="ms-2 mt-2 ">
@@ -282,7 +313,7 @@ const AreaView = ({ }: // status,
         />
       </Modal>
 
-      {/* <Modal
+      <Modal
         open={isModalOpen.deactivateArea}
         align="center"
         onClose={() => handleModalToggle()}
@@ -297,7 +328,7 @@ const AreaView = ({ }: // status,
           }
           onClose={() => handleModalToggle()}
         />
-      </Modal> */}
+      </Modal>
 
     </>
   );

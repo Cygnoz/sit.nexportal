@@ -14,19 +14,19 @@ const ActivityTimeline = ({}: Props) => {
                 <div className="w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
           
              <div className="flex gap-4">
-             <SelectDropdown
+             {/* <SelectDropdown
             placeholder="All Activities"
             searchPlaceholder="Search Activities"
             width="w-44"
-          />
+          /> */}
 
-<SelectDropdown
+{/* <SelectDropdown
            
             placeholder="All Timelines"
            
             searchPlaceholder="Search Timelines"
             width="w-44"
-          />
+          /> */}
 
       </div>
             <p className="text-[#303F58] text-sm font-bold mt-3">Today, November 21,2024</p>

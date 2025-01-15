@@ -85,7 +85,7 @@ export const endPoints = {
 
   //Region Recent Activity
   ACTIVITIES:"activity-logs",
-  DEACTIVATION:"/deactivateRegion",
+  DEACTIVATE_REGION:"/deactivateRegion",
 
   DROPDOWN_DATA:"/dropdown-data",
 
