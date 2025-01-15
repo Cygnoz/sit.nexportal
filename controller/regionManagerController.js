@@ -343,7 +343,7 @@ exports.editRegionManager = async (req, res, next) => {
     
     if (regionManager) {
       return res.status(400).json({
-        message: "Region is already assigned to another Region Manager. Try adding another Area."
+        message: "Region is already assigned to another Region Manager. Try adding another Region."
       });
     }
 
