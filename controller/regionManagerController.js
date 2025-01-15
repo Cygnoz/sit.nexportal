@@ -229,36 +229,6 @@ exports.addRegionManagerCheck = async (req, res, next) => {
   }
 };
 
-// exports.getRegionManager = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-
-//     const regionManager = await RegionManager.findById(id).populate([
-//       { path: "user", select: "userName phoneNo userImage  employeeId email" },
-//       { path: "region", select: "regionName regionCode" },
-//       { path: "commission", select: "profileName" },
-//     ]);
-
-//     if (!regionManager) {
-//       return res.status(404).json({ message: "Region Manager not found" });
-//     }
-
-//     const decryptField = (field) => (field ? decrypt(field) : field);
-
-//     regionManager.adhaarNo = decryptField(regionManager.adhaarNo);
-//     regionManager.panNo = decryptField(regionManager.panNo);
-//     if (regionManager.bankDetails) {
-//       regionManager.bankDetails.bankAccountNo = decryptField(
-//         regionManager.bankDetails.bankAccountNo
-//       );
-//     }
-
-//     res.status(200).json(regionManager);
-//   } catch (error) {
-//     console.error("Error fetching Region Manager:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// };
 
 exports.getRegionManager = async (req, res) => {
   try {
@@ -364,6 +334,17 @@ exports.editRegionManager = async (req, res, next) => {
     );
     if (duplicateCheck) {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
+    }
+
+    const regionManager = await RegionManager.findOne({
+      region: data.region,
+      _id: { $ne: req.params.id } // Exclude the current document being edited
+    });
+    
+    if (regionManager) {
+      return res.status(400).json({
+        message: "Region is already assigned to another Region Manager. Try adding another Area."
+      });
     }
 
     // Encrypt sensitive fields
