@@ -45,7 +45,7 @@ const RecentActivity = ({loading,recentActData}: Props) => {
     <div>
       <div className="bg-white p-5 h-full mb-2 ">
         <h1 className="font-bold text-sm mb-2">Recent Activity Feed</h1>
-        <div className={`${recentActData.length>3&&"custom-scrollbar overflow-y-scroll"} h-[410px] `}>
+        <div className={`${recentActData.length>3&&"custom-scrollbar overflow-y-scroll"} h-[450px] `}>
         {loading ? (
           <SkeletonLoader />
         ) : recentActData.length === 0  ? (

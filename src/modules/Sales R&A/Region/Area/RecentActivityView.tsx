@@ -61,7 +61,7 @@ const RecentActivityView: React.FC = () => {
 
   return (
     <>
-      <div className="bg-white shadow-md rounded-lg h-full p-3">
+      <div className="bg-white shadow-md rounded-lg p-3 h-[470px]">
         <h1 className="font-bold text-base ">Recent Activities</h1>
         {/* Scrollable container */}
         {data && data.length > 0 ? (

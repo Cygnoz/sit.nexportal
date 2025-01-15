@@ -3,10 +3,12 @@ import {
   Legend,
   Line,
   LineChart,
+  ResponsiveContainer,
   Tooltip,
   XAxis, YAxis
 } from 'recharts';
 import LeadConvertionRateRegion from './Graphs/LeadConvertionRateRegion';
+import PerformanceArea from './PerformanceArea';
 
 type Props = {}
 
@@ -89,6 +91,7 @@ const RegionPerformanceView = ({}: Props) => {
 
   return (
     <div className='flex flex-col space-y-3 mt-2'>
+      <PerformanceArea/>
     <LeadConvertionRateRegion/>
     <div className="bg-white w-full p-2">
                <div className="py-1 ms-2 flex justify-between">
@@ -96,6 +99,7 @@ const RegionPerformanceView = ({}: Props) => {
                  {/* <SelectDropdown /> */}
                </div>
                <div className="mt-5">
+                 <ResponsiveContainer minWidth={1000} minHeight={400}>
                  <LineChart
                    width={1000}
                    height={400}
@@ -148,6 +152,7 @@ const RegionPerformanceView = ({}: Props) => {
                      dot={false}
                    />
                  </LineChart>
+                   </ResponsiveContainer>
                </div>
              </div>
     </div>
