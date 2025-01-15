@@ -309,6 +309,17 @@ exports.editSupervisor = async (req, res, next) => {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
+    const supervisor = await Supervisor.findOne({
+          region: data.region,
+          _id: { $ne: req.params.id } // Exclude the current document being edited
+        });
+        
+        if (supervisor) {
+          return res.status(400).json({
+            message: "Region is already assigned to another Supervisor. Try adding another Region."
+          });
+        }
+
     // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 

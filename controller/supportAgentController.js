@@ -366,6 +366,15 @@ exports.editSupportAgent = async (req, res, next) => {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
+    const supervisor = await Supervisor.findOne({ region: data.region });
+
+    // Check which manager is missing and send a specific error response
+    if (!supervisor) {
+      return res.status(404).json({
+        message: "supervisor not found for the provided region.",
+      });
+    }
+
     // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
