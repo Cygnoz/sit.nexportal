@@ -360,12 +360,12 @@ exports.editAreaManager = async (req, res, next) => {
       return res.status(400).json({ message: validationError });
     }
 
-    const AreaManager = await AreaManager.findOne({
+    const areaManager = await AreaManager.findOne({
       area: data.area,
       _id: { $ne: req.params.id } // Exclude the current document being edited
     });
     
-    if (AreaManager) {
+    if (areaManager) {
       return res.status(400).json({
         message: "Area is already assigned to another Area Manager. Try adding another Area."
       });
