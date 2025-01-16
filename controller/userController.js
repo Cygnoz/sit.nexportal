@@ -11,6 +11,7 @@ const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
 const NodeCache = require('node-cache');
 const otpCache = new NodeCache({ stdTTL: 180 }); // 180 seconds
+const filterByRole = require("../services/filterByRole");
 
 
 // Login 
@@ -90,7 +91,7 @@ exports.verifyOtp =  async (req, res) => {
     // Check if OTP matches and is not expired
     if (cachedOtp && cachedOtp === otp) {
 
-
+      
       // Capture IP address and User-Agent during verification
       const requestIP = req.ip || req.connection.remoteAddress; // Get IP address
       const requestUserAgent = req.headers['user-agent']; // Get User-Agent (browser/device info)
@@ -113,15 +114,21 @@ exports.verifyOtp =  async (req, res) => {
         process.env.JWT_SECRET, // JWT secret from environment variables
         { expiresIn: '12h' }
       );
-
+      
       // Remove sensitive data from response
       user.password = undefined;
+
+      
+      
+      const query = await filterByRole(user._id);
+      const userId = query.toString();
 
       // Send response with user data (excluding organizationId)
       res.status(200).json({
         success: true,
         token: `Bearer ${token}`, // Prepend "Bearer " to the token
         user: {
+          userId,
           id: user._id,
           email: user.email,
           userName: user.userName,

@@ -9,6 +9,7 @@ const AreaManager = require("../database/model/areaManager");
 const RegionManager = require("../database/model/regionManager");
 
 
+
 // exports.addArea = async (req, res, next) => {
 //     try {
 //       const { areaCode, areaName, region, description } = req.body;

@@ -8,7 +8,7 @@ exports.addCommission = async (req, res, next) => {
       if (!profileName || commissionPercentage == null || thresholdAmount == null) {
         return res.status(400).json({ message: "All fields must be provided" });
       }
-  
+      
       // Validate commissionPercentage
       if (commissionPercentage < 0 || commissionPercentage > 100) {
         return res.status(400).json({ message: "Commission percentage must be between 0 and 100" });
