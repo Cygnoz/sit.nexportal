@@ -54,9 +54,6 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
     formState: { errors },
   } = useForm<Conversion>({
     resolver: yupResolver(validationSchema),
-    defaultValues:{
-      customerStatus:type=="lead"?'Lead':type==="licenser"?'Licenser':''
-    }
   });
 
   const onSubmit: SubmitHandler<Conversion> = async (data) => {
@@ -93,11 +90,7 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
     }
 };
 
-  
-  console.log(errors);
 
-
-  console.log("cus",customerData);
   
   
 
@@ -117,6 +110,9 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
        setValue("email",orgData?.primaryContactEmail?orgData?.primaryContactEmail:customerData?.email)
        setValue("startDate",orgData?.startDate?orgData?.startDate:customerData?.startDate)
        setValue("endDate",orgData?.endDate?orgData?.endDate:customerData?.endDate)
+       if(type=="licenser" || type=="lead"){
+        setValue("customerStatus",type=="licenser"?'Licenser':'Trial')
+       }
    },[orgData,customerData])
 
   useEffect(() => {
