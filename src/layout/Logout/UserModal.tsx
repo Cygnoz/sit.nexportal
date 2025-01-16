@@ -25,10 +25,10 @@ const UserModal = ({ }: Props) => {
   });
 
   // Function to toggle the user dropdown visibility
-  const toggleUserDropdown = () => {
+  const toggleUserDropdown = (userDropdown=false) => {
     setIsModalOpen((prev) => ({
       ...prev,
-      userDropdown: !prev.userDropdown,
+      userDropdown: userDropdown,
     }));
   };
 
@@ -84,7 +84,7 @@ const UserModal = ({ }: Props) => {
     <>
     <div className="relative" ref={dropdownRef}>
       <p
-        onClick={toggleUserDropdown}
+        onClick={()=>toggleUserDropdown(!isModalOpen.userDropdown)}
         className="tooltip cursor-pointer"
         data-tooltip="User"
       >
