@@ -2,7 +2,7 @@
 import Input from "../../form/Input";
 //import Select from "../../../components/form/Select";
 import Button from "../../ui/Button";
-import { useForm, SubmitHandler, } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as Yup from "yup";
 import InputPasswordEye from "../../form/InputPasswordEye";
@@ -21,9 +21,9 @@ import { useNavigate } from "react-router-dom";
 
 type Props = {
   onClose: () => void;
-  type?:"lead"|"trial" |"licenser";
-  orgData?:any
-  getLeads?:()=>void
+  type?: "lead" | "trial" | "licenser";
+  orgData?: any;
+  getLeads: () => void;
 };
 
 const validationSchema = Yup.object({
@@ -40,11 +40,11 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Start date is required"),
   endDate: Yup.string().required("End date is required"),
 });
-const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
-   const {customerData}=useResponse()
-    const {request:leadToTrial}=useApi('put',3001)
-    const {request:trialToLicenser}=useApi('put',3001)
-    const navigate=useNavigate()
+const OrganisationForm = ({ onClose, type, orgData, getLeads }: Props) => {
+  const { customerData } = useResponse();
+  const { request: leadToTrial } = useApi("put", 3001);
+  const { request: trialToLicenser } = useApi("put", 3001);
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -58,82 +58,103 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
 
   const onSubmit: SubmitHandler<Conversion> = async (data) => {
     try {
-        const fun = type === "lead" || type === "licenser" ? leadToTrial : trialToLicenser;
+      const fun =
+        type === "lead" || type === "licenser" ? leadToTrial : trialToLicenser;
 
-        const customerId = customerData?._id || customerData?.licenserId;
-        if (!customerId) {
-            throw new Error("Customer ID is required");
-        }
+      const customerId = customerData?._id || customerData?.licenserId;
+      if (!customerId) {
+        throw new Error("Customer ID is required");
+      }
 
-        const { response, error } = await fun(
-            `${type === "lead" || type === "licenser" ? endPoints.TRIAL : endPoints.TRIALS}/${customerId}`, 
-            data
+      const { response, error } = await fun(
+        `${
+          type === "lead" || type === "licenser"
+            ? endPoints.TRIAL
+            : endPoints.TRIALS
+        }/${customerId}`,
+        data
+      );
+
+      if (response && !error) {
+        toast.success(
+          customerData?.licenserId
+            ? "Organization created Successfully"
+            : response.data.message
         );
 
-        if (response && !error) {
-            toast.success(
-                customerData?.licenserId 
-                    ? "Organization created Successfully" 
-                    : response.data.message
-            );
-            if (!customerData?.licenserId) {
-                navigate(type === "lead" ? "/lead" : "/trial");
-            }
-            getLeads?.();
-            onClose?.();
-        } else {
-            toast.error(error?.response?.data?.error?.message || "An unexpected error occurred.");
-        }
+        navigate(customerData?.licenserId ? "/licenser" : "/trial");
+
+        getLeads();
+        onClose?.();
+      } else {
+        toast.error(
+          error?.response?.data?.error?.message ||
+            "An unexpected error occurred."
+        );
+      }
     } catch (err: any) {
-        toast.error(err.message || "An unexpected error occurred.");
-        console.error(err);
+      toast.error(err.message || "An unexpected error occurred.");
+      console.error(err);
     }
-};
+  };
 
+  console.log(errors);
 
-  
-  
-
-
+  console.log("cus", customerData);
 
   const handleInputChange = (field: keyof Conversion) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-
-
- useEffect(()=>{
- 
-       setValue("contactName",customerData?.firstName)
-       setValue("organizationName",orgData?.organizationName?orgData?.organizationName:customerData?.companyName)
-       setValue("contactNum",orgData?.primaryContactNum?orgData?.primaryContactNum:customerData?.phone )
-       setValue("email",orgData?.primaryContactEmail?orgData?.primaryContactEmail:customerData?.email)
-       setValue("startDate",orgData?.startDate?orgData?.startDate:customerData?.startDate)
-       setValue("endDate",orgData?.endDate?orgData?.endDate:customerData?.endDate)
-       if(type=="licenser" || type=="lead"){
-        setValue("customerStatus",type=="licenser"?'Licenser':'Trial')
-       }
-   },[orgData,customerData])
+  useEffect(() => {
+    setValue("contactName", customerData?.firstName);
+    setValue(
+      "organizationName",
+      orgData?.organizationName
+        ? orgData?.organizationName
+        : customerData?.companyName
+    );
+    setValue(
+      "contactNum",
+      orgData?.primaryContactNum
+        ? orgData?.primaryContactNum
+        : customerData?.phone
+    );
+    setValue(
+      "email",
+      orgData?.primaryContactEmail
+        ? orgData?.primaryContactEmail
+        : customerData?.email
+    );
+    setValue(
+      "startDate",
+      orgData?.startDate ? orgData?.startDate : customerData?.startDate
+    );
+    setValue(
+      "endDate",
+      orgData?.endDate ? orgData?.endDate : customerData?.endDate
+    );
+    if (type == "licenser" || type == "lead") {
+      setValue("customerStatus", type == "licenser" ? "Licenser" : "Trial");
+    }
+  }, [orgData, customerData]);
 
   useEffect(() => {
-    if (type === 'lead' && watch("startDate")) {
+    if (type === "lead" && watch("startDate")) {
       // Calculate 7 days after the startDate
       const calculatedEndDate = new Date(watch("startDate"));
       calculatedEndDate.setDate(calculatedEndDate.getDate() + 7);
-      
+
       // Format the date to YYYY-MM-DD format (required for <input type="date">)
-      const formattedEndDate = calculatedEndDate.toISOString().split('T')[0];
-      
+      const formattedEndDate = calculatedEndDate.toISOString().split("T")[0];
+
       // Set the calculated endDate in the form
       setValue("endDate", formattedEndDate);
-      clearErrors("endDate")
+      clearErrors("endDate");
     }
   }, [watch("startDate"), type, setValue]);
-  
-    
 
-  console.log("err",errors);
-  
+  console.log("err", errors);
 
   return (
     <div className="p-1 bg-white rounded shadow-md space-y-2">
@@ -154,83 +175,84 @@ const OrganisationForm = ({ onClose ,type,orgData,getLeads}: Props) => {
           </p>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
-         
-            <div className=" my-2">
-              <div className="mx-3 gap-4 space-y-2 max-w-xl">
-                <Input
-                  required
-                  readOnly={orgData?true:false}
-                  label="Organization Name"
-                  type="text"
-                  placeholder="Enter Name"
-                  error={errors.organizationName?.message}
-                  {...register("organizationName")}
-                />
-                <Input
-                  required
-                  readOnly={orgData?true:false}
-                  label="Email"
-                  type="text"
-                  placeholder="Enter Email"
-                  error={errors.email?.message}
-                  {...register("email")}
-                />
+          <div className=" my-2">
+            <div className="mx-3 gap-4 space-y-2 max-w-xl">
+              <Input
+                required
+                readOnly={orgData ? true : false}
+                label="Organization Name"
+                type="text"
+                placeholder="Enter Name"
+                error={errors.organizationName?.message}
+                {...register("organizationName")}
+              />
+              <Input
+                required
+                readOnly={orgData ? true : false}
+                label="Email"
+                type="text"
+                placeholder="Enter Email"
+                error={errors.email?.message}
+                {...register("email")}
+              />
 
-                <CustomPhoneInput
-                  required
-                  isReadOnly={orgData?true:false}
-                  label="Phone Number"
-                  name="phone"
-                  error={errors.contactNum?.message}
-                  placeholder="Enter phone number"
-                  value={watch("contactNum")} // Watch phone field for changes
-                  onChange={(value) => {
-                    handleInputChange("contactNum");
-                    setValue("contactNum", value); // Update the value of the phone field in React Hook Form
-                  }}
-                />
-                <InputPasswordEye
-                  required
-                  placeholder="Enter Password"
-                  label="New Password"
-                  error={errors.password?.message}
-                  {...register("password")}
-                />
-                <InputPasswordEye
-                  required
-                  placeholder="Re-enter Password"
-                  label="Confirm Password"
-                  error={errors.confirmPassword?.message}
-                  {...register("confirmPassword")}
-                />
-                <Input
-                  required
-                  type="date"
-                  label="Start Date"
-                  error={errors.startDate?.message}
-                  {...register("startDate")}
-                />
+              <CustomPhoneInput
+                required
+                isReadOnly={orgData ? true : false}
+                label="Phone Number"
+                name="phone"
+                error={errors.contactNum?.message}
+                placeholder="Enter phone number"
+                value={watch("contactNum")} // Watch phone field for changes
+                onChange={(value) => {
+                  handleInputChange("contactNum");
+                  setValue("contactNum", value); // Update the value of the phone field in React Hook Form
+                }}
+              />
+              <InputPasswordEye
+                required
+                placeholder="Enter Password"
+                label="New Password"
+                error={errors.password?.message}
+                {...register("password")}
+              />
+              <InputPasswordEye
+                required
+                placeholder="Re-enter Password"
+                label="Confirm Password"
+                error={errors.confirmPassword?.message}
+                {...register("confirmPassword")}
+              />
+              <Input
+                required
+                type="date"
+                label="Start Date"
+                error={errors.startDate?.message}
+                {...register("startDate")}
+              />
 
-                <Input
-                  required
-                  type="date"
-                  label="End Date"
-                  value={watch("endDate")}
-                  error={errors.endDate?.message}
-                  {...register("endDate")}
-                />
-              </div>
+              <Input
+                required
+                type="date"
+                label="End Date"
+                value={watch("endDate")}
+                error={errors.endDate?.message}
+                {...register("endDate")}
+              />
             </div>
-          
+          </div>
+
           <div className=" flex justify-end gap-2 mt-3 me-3">
-           {type!=="licenser"&& <Button
-              variant="tertiary"
-              className="h-8 text-sm border rounded-lg"
-              size="lg"
-              onClick={onClose}
-            >
-              Cancel
-            </Button>}
+            {type !== "licenser" && (
+              <Button
+                variant="tertiary"
+                className="h-8 text-sm border rounded-lg"
+                size="lg"
+                onClick={onClose}
+              >
+                Cancel
+              </Button>
+            )}
             <Button
               variant="primary"
               className="h-8 text-sm border rounded-lg"
