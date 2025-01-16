@@ -140,11 +140,11 @@ useEffect(()=>{
   return (
     <div>
       <div className="rounded-2xl">
-        <div className="flex w-full justify-between bg-[#71736B] rounded-t-lg">
+        <div className="flex w-full justify-between items-center bg-[#71736B] rounded-t-lg">
           <div className="space-y-2 p-4">
             <h3 className="text-[#FFFEFB] font-bold text-sm">Create Mails</h3>
           </div>
-          <div className="flex gap-2 p-4">
+          <div className="flex items-center gap-2 p-4">
             <div className="mt-1 cursor-pointer">
               <ExternalLinkIcon size={20} />
             </div>
@@ -164,7 +164,7 @@ useEffect(()=>{
             className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2 text-[#303F58] text-xs font-semibold text-center"
             /> */}
 
-          <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2">
+          <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex items-center p-2">
             <div className="rounded-full w-6 h-6 overflow-hidden mx-1 mt-[1%]">
             {leadData?.image ? (
                 <img
@@ -177,7 +177,7 @@ useEffect(()=>{
                   <UserIcon color="white" size={16} />
                 </p>
               )}            </div>
-            <p className="text-[#303F58] text-xs font-semibold mt-1">{leadData?.email}</p>
+            <p className="text-[#303F58] text-xs font-semibold ">{leadData?.email}</p>
 
           </div>
         </div>

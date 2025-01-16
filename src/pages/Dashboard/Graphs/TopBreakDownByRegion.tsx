@@ -80,7 +80,7 @@ function TopBreakDownByRegion({}: Props) {
 
   return (
     <>
-      <div className="bg-white h-[530px] rounded-lg w-full -p-3">
+      <div className="bg-white min-h-[530px]  rounded-lg w-full -p-3">
         <div className="flex justify-between items-center p-3">
           <h1 className="text-[#303F58] text-lg font-bold ">Top Break Down By Region</h1>
           <SelectDropdown
@@ -119,7 +119,7 @@ function TopBreakDownByRegion({}: Props) {
    <p className="text-md">Total Team</p>
  </div>
 
- <div className="flex justify-center">
+ <div className="flex justify-center pb-4 h-full">
    <div className="space-y-4">
      {roles.filter(role => role.count > 0).length > 0 ? (
        roles.filter(role => role.count > 0).map((role) => (

@@ -510,7 +510,6 @@ function LicenserForm({ onClose, editId }: Props) {
         className="w-[35%]"
       >
         <OrganisationForm
-          getLeads={getOneLicenser}
           type="licenser"
           onClose={() => handleModalToggle(true)}
         />

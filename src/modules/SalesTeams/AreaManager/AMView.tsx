@@ -1,16 +1,19 @@
 // import Licensers from "../../../components/ui/Licensers";
 import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import { Bar, BarChart, CartesianGrid, LabelList, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, LabelList, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory';
 import AwardIcon from "../../../assets/icons/AwardIcon";
 import ChevronRight from "../../../assets/icons/ChevronRight";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
+import Trash from "../../../assets/icons/Trash";
 import UserIcon from '../../../assets/icons/UserIcon';
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
 import BackgroundView from '../../../assets/image/AMView.png';
 import profileImage from '../../../assets/image/AvatarImg.png';
+import ConfirmModal from "../../../components/modal/ConfirmModal";
 import Modal from "../../../components/modal/Modal";
 import LicensersTable from '../../../components/ui/LicensersTable';
 import useApi from '../../../Hooks/useApi';
@@ -19,9 +22,6 @@ import AMForm from './AMForm';
 import AMViewAward from './AMViewAward';
 import AMViewCardandTable from "./AMViewCardandTable";
 import AMViewForm from "./AMViewForm";
-import Trash from "../../../assets/icons/Trash";
-import toast from "react-hot-toast";
-import ConfirmModal from "../../../components/modal/ConfirmModal";
 
 
 // import AMViewAward from './AMViewAward';
@@ -82,37 +82,7 @@ const AMView = ({ }: Props) => {
   }, [id])
   console.log(getData);
 
-  // const { request: getInsideAM } = useApi('get', 3002);
-  // const [insideAmData, setInsideAmData] = useState();
-  // const [bdaDetails, setBdaDetails] = useState([]);
-  // const [licenserDetails, setLicenserDetails] = useState([]);
-  
-  // const getInsideViewAM = async () => {
-  //   try {
-  //     const { response, error } = await getInsideAM(`${endPoints.AM}/${id}/details`);
-      
-  //     if (response && !error) {
-  //       console.log(response.data);
-  //       setInsideAmData(response.data);
-        
-  //       // Extract bdaDetails and licenserDetails separately
-  //       setBdaDetails(response.data.bdaDetails || []);
-  //       setLicenserDetails(response.data.licenserDetails || []);
-  //     } else {
-  //       console.error(error.response.data.message);
-  //     }
-  //   } catch (err) {
-  //     console.error("Error fetching AM data:", err);
-  //   }
-  // };
-  
-  // useEffect(() => {
-  //   getInsideViewAM();
-  // }, [id]);
-  
-  // console.log("Inside AM Data:", insideAmData);
-  // console.log("BDA Details:", bdaDetails);
-  // console.log("Licenser Details:", licenserDetails);
+ 
     
   const handleDelete = async () => {
     try {
@@ -150,16 +120,7 @@ const AMView = ({ }: Props) => {
     console.log(id);
   }
 
-  // const data: AMData[] = [
-  //   { name: "Devid Billie", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
-  //   { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-  //   { name: "Kathryn Murphy", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: "2/12/2024" },
-  //   { name: "Darrell Steward", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-  //   { name: "Ronald Richards", plan: "Plan 1", status: "Upcoming Renewal", startDate: "2/11/2024", endDate: " 2/12/2024" },
-  //   { name: "Jane Cooper", plan: "Plan 1", status: "Active", startDate: "2/11/2024", endDate: "2/12/2024" },
-  //   { name: "Sudeep Kumar", plan: "Plan 1", status: "Expired", startDate: "2/11/2024", endDate: "2/12/2024" },
-  // ];
-  // Define the columns with strict keys
+
 
   const columns: { key: any; label: string }[] = [
     { key: "firstName", label: "Name" },
@@ -176,16 +137,6 @@ const AMView = ({ }: Props) => {
     try {
       const { response, error } = await getInsideAM(`${endPoints.AM}/${id}/details`);
       if (response && !error) {
-        console.log(response.data);
-        // const rawData= response.data.bdaDetails || []
-        // const processessData=rawData.map((item:any)=>({
-        //   ...item,
-        //   bdaName:item.bdaName,
-        //   leadAssigned:item.leadAssigned,
-        //   conversionRate:item.conversionRate,
-        //   status:item.status,
-        //   area:item.area,
-        // }))
         setInsideAmData(response.data);
         // Extract bdaDetails and licenserDetails separately
         setBdaDetails(response.data.bdaDetails || []);
@@ -310,7 +261,7 @@ const AMView = ({ }: Props) => {
     );
   };
 
-  const [selectedMonth, setSelectedMonth] = useState("January"); // State for dropdown selection
+ 
   const CustomLegend = () => {
     return (
       <div
@@ -326,104 +277,7 @@ const AMView = ({ }: Props) => {
     );
   };
 
-  const datass = {
-    January: [
-      { name: "Jan 05", Area1: 10, Area2: 20, Area3: 40, Area4: 70, Area5: 80 },
-      { name: "Jan 10", Area1: 15, Area2: 25, Area3: 35, Area4: 60, Area5: 85 },
-      { name: "Jan 15", Area1: 12, Area2: 22, Area3: 45, Area4: 40, Area5: 75 },
-      { name: "Jan 20", Area1: 18, Area2: 28, Area3: 50, Area4: 55, Area5: 90 },
-      { name: "Jan 25", Area1: 20, Area2: 35, Area3: 60, Area4: 65, Area5: 78 },
-      { name: "Jan 30", Area1: 15, Area2: 25, Area3: 55, Area4: 58, Area5: 82 },
-    ],
-    February: [
-      { name: "Feb 05", Area1: 20, Area2: 30, Area3: 60, Area4: 50, Area5: 40 },
-      { name: "Feb 10", Area1: 25, Area2: 35, Area3: 55, Area4: 65, Area5: 70 },
-      { name: "Feb 15", Area1: 22, Area2: 32, Area3: 75, Area4: 45, Area5: 60 },
-      { name: "Feb 20", Area1: 28, Area2: 38, Area3: 70, Area4: 55, Area5: 50 },
-      { name: "Feb 25", Area1: 30, Area2: 45, Area3: 80, Area4: 65, Area5: 60 },
-      { name: "Feb 28", Area1: 25, Area2: 35, Area3: 75, Area4: 60, Area5: 70 },
-    ],
-    March: [
-      { name: "Jan 05", Area1: 10, Area2: 20, Area3: 40, Area4: 70, Area5: 80 },
-      { name: "Jan 10", Area1: 15, Area2: 25, Area3: 35, Area4: 60, Area5: 85 },
-      { name: "Jan 15", Area1: 12, Area2: 22, Area3: 45, Area4: 40, Area5: 75 },
-      { name: "Jan 20", Area1: 18, Area2: 28, Area3: 50, Area4: 55, Area5: 90 },
-      { name: "Jan 25", Area1: 20, Area2: 35, Area3: 60, Area4: 65, Area5: 78 },
-      { name: "Jan 30", Area1: 15, Area2: 25, Area3: 55, Area4: 58, Area5: 82 },
-    ],
-    April: [
-      { name: "Feb 05", Area1: 20, Area2: 30, Area3: 60, Area4: 50, Area5: 40 },
-      { name: "Feb 10", Area1: 25, Area2: 35, Area3: 55, Area4: 65, Area5: 70 },
-      { name: "Feb 15", Area1: 22, Area2: 32, Area3: 75, Area4: 45, Area5: 60 },
-      { name: "Feb 20", Area1: 28, Area2: 38, Area3: 70, Area4: 55, Area5: 50 },
-      { name: "Feb 25", Area1: 30, Area2: 45, Area3: 80, Area4: 65, Area5: 60 },
-      { name: "Feb 28", Area1: 25, Area2: 35, Area3: 75, Area4: 60, Area5: 70 },
-    ],
-    May: [
-      { name: "Jan 05", Area1: 10, Area2: 20, Area3: 40, Area4: 70, Area5: 80 },
-      { name: "Jan 10", Area1: 15, Area2: 25, Area3: 35, Area4: 60, Area5: 85 },
-      { name: "Jan 15", Area1: 12, Area2: 22, Area3: 45, Area4: 40, Area5: 75 },
-      { name: "Jan 20", Area1: 18, Area2: 28, Area3: 50, Area4: 55, Area5: 90 },
-      { name: "Jan 25", Area1: 20, Area2: 35, Area3: 60, Area4: 65, Area5: 78 },
-      { name: "Jan 30", Area1: 15, Area2: 25, Area3: 55, Area4: 58, Area5: 82 },
-    ],
-    June: [
-      { name: "Feb 05", Area1: 20, Area2: 30, Area3: 60, Area4: 50, Area5: 40 },
-      { name: "Feb 10", Area1: 25, Area2: 35, Area3: 55, Area4: 65, Area5: 70 },
-      { name: "Feb 15", Area1: 22, Area2: 32, Area3: 75, Area4: 45, Area5: 60 },
-      { name: "Feb 20", Area1: 28, Area2: 38, Area3: 70, Area4: 55, Area5: 50 },
-      { name: "Feb 25", Area1: 30, Area2: 45, Area3: 80, Area4: 65, Area5: 60 },
-      { name: "Feb 28", Area1: 25, Area2: 35, Area3: 75, Area4: 60, Area5: 70 },
-    ],
-    July: [
-      { name: "Jan 05", Area1: 10, Area2: 20, Area3: 40, Area4: 70, Area5: 80 },
-      { name: "Jan 10", Area1: 15, Area2: 25, Area3: 35, Area4: 60, Area5: 85 },
-      { name: "Jan 15", Area1: 12, Area2: 22, Area3: 45, Area4: 40, Area5: 75 },
-      { name: "Jan 20", Area1: 18, Area2: 28, Area3: 50, Area4: 55, Area5: 90 },
-      { name: "Jan 25", Area1: 20, Area2: 35, Area3: 60, Area4: 65, Area5: 78 },
-      { name: "Jan 30", Area1: 15, Area2: 25, Area3: 55, Area4: 58, Area5: 82 },
-    ],
-    August: [
-      { name: "Feb 05", Area1: 20, Area2: 30, Area3: 60, Area4: 50, Area5: 40 },
-      { name: "Feb 10", Area1: 25, Area2: 35, Area3: 55, Area4: 65, Area5: 70 },
-      { name: "Feb 15", Area1: 22, Area2: 32, Area3: 75, Area4: 45, Area5: 60 },
-      { name: "Feb 20", Area1: 28, Area2: 38, Area3: 70, Area4: 55, Area5: 50 },
-      { name: "Feb 25", Area1: 30, Area2: 45, Area3: 80, Area4: 65, Area5: 60 },
-      { name: "Feb 28", Area1: 25, Area2: 35, Area3: 75, Area4: 60, Area5: 70 },
-    ],
-    September: [
-      { name: "Jan 05", Area1: 10, Area2: 20, Area3: 40, Area4: 70, Area5: 80 },
-      { name: "Jan 10", Area1: 15, Area2: 25, Area3: 35, Area4: 60, Area5: 85 },
-      { name: "Jan 15", Area1: 12, Area2: 22, Area3: 45, Area4: 40, Area5: 75 },
-      { name: "Jan 20", Area1: 18, Area2: 28, Area3: 50, Area4: 55, Area5: 90 },
-      { name: "Jan 25", Area1: 20, Area2: 35, Area3: 60, Area4: 65, Area5: 78 },
-      { name: "Jan 30", Area1: 15, Area2: 25, Area3: 55, Area4: 58, Area5: 82 },
-    ],
-    October: [
-      { name: "Feb 05", Area1: 20, Area2: 30, Area3: 60, Area4: 50, Area5: 40 },
-      { name: "Feb 10", Area1: 25, Area2: 35, Area3: 55, Area4: 65, Area5: 70 },
-      { name: "Feb 15", Area1: 22, Area2: 32, Area3: 75, Area4: 45, Area5: 60 },
-      { name: "Feb 20", Area1: 28, Area2: 38, Area3: 70, Area4: 55, Area5: 50 },
-      { name: "Feb 25", Area1: 30, Area2: 45, Area3: 80, Area4: 65, Area5: 60 },
-      { name: "Feb 28", Area1: 25, Area2: 35, Area3: 75, Area4: 60, Area5: 70 },
-    ],
-    November: [
-      { name: "Jan 05", Area1: 10, Area2: 20, Area3: 40, Area4: 70, Area5: 80 },
-      { name: "Jan 10", Area1: 15, Area2: 25, Area3: 35, Area4: 60, Area5: 85 },
-      { name: "Jan 15", Area1: 12, Area2: 22, Area3: 45, Area4: 40, Area5: 75 },
-      { name: "Jan 20", Area1: 18, Area2: 28, Area3: 50, Area4: 55, Area5: 90 },
-      { name: "Jan 25", Area1: 20, Area2: 35, Area3: 60, Area4: 65, Area5: 78 },
-      { name: "Jan 30", Area1: 15, Area2: 25, Area3: 55, Area4: 58, Area5: 82 },
-    ],
-    December: [
-      { name: "Feb 05", Area1: 20, Area2: 30, Area3: 60, Area4: 50, Area5: 40 },
-      { name: "Feb 10", Area1: 25, Area2: 35, Area3: 55, Area4: 65, Area5: 70 },
-      { name: "Feb 15", Area1: 22, Area2: 32, Area3: 75, Area4: 45, Area5: 60 },
-      { name: "Feb 20", Area1: 28, Area2: 38, Area3: 70, Area4: 55, Area5: 50 },
-      { name: "Feb 25", Area1: 30, Area2: 45, Area3: 80, Area4: 65, Area5: 60 },
-      { name: "Feb 28", Area1: 25, Area2: 35, Area3: 75, Area4: 60, Area5: 70 },
-    ],
-  };
+ 
 
   const datas = [
     {
@@ -570,16 +424,6 @@ const AMView = ({ }: Props) => {
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
               </div>
 
-              {/* <div className="flex flex-col -ms-2 items-center space-y-1">
-                    <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                    <div className="rounded-full bg-[#D52B1E26] h-9 w-9 border border-white mb-2">
-                  <div className="ms-2 mt-2 ">
-                    <Trash size={18} color="#BC3126" />
-                  </div>
-                </div>
-                    </div>
-                    <p className="text-center ms-3">Delete</p>
-                  </div> */}
 
               <div className="flex flex-col  items-center space-y-1">
                 <div onClick={() => handleModalToggle(false, false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
@@ -606,7 +450,7 @@ const AMView = ({ }: Props) => {
         insideAmData={insideAmData}
         />
       {/* Charts */}
-      <div className="grid grid-cols-12 py-12 gap-4">
+      <div className="grid grid-cols-12 mb-5 gap-4">
         <div className="col-span-4 h-full">
           <div className="bg-white rounded-lg w-full h-full  p-3">
             <h1 className="text-[#303F58] text-lg font-bold p-3">Lead status distribution</h1>
@@ -654,6 +498,7 @@ const AMView = ({ }: Props) => {
             <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
 
             <div className="relative">
+               <ResponsiveContainer width="100%" minHeight={400}>
               <BarChart
                 className="h-fit"
                 barGap={54}
@@ -685,9 +530,9 @@ const AMView = ({ }: Props) => {
                   <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
 
                 </Bar>
-
               </BarChart>
-              <div className='flex ms-24 gap-[53px] -mt-2'>
+              </ResponsiveContainer>
+              <div className='flex ms-28 gap-[53px] -mt-2'>
                 {ChartData.map((chart) => (
                   <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
                 ))
@@ -719,37 +564,13 @@ const AMView = ({ }: Props) => {
       </div>
       {/* Graph */}
       <div className="flex gap-3 py-2 mt-6">
-        {/* {VieCardData.map((card,index)=>(
-          <ViewCard
-          iconFrameColor={card.iconFrameColor}
-          iconFrameBorderColor={card.iconFrameBorderColor}
-          key={index} 
-          icon={card.icon} 
-          number={card.number} 
-          title={card.title} 
-          />
-        ))} */}
         <div className="py-3 bg-white p-2 w-full">
           <div className="py-1 ms-2 flex justify-between">
             <h2 className="font-bold">Leads Converted by Area Manager Over Time</h2>
-            <div className="">
-              <label htmlFor="month-select"></label>
-              <select
-                className="bg-[#FEFDFA] rounded-lg"
-                id="month-select"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                style={{ padding: "5px", border: "1px solid #ccc" }}
-              >
-                {Object.keys(datass).map((month) => (
-                  <option key={month} value={month}>
-                    {month}
-                  </option>
-                ))}
-              </select>
-            </div>
+           
           </div>
           <div className="mt-5 w-full">
+          <ResponsiveContainer width="100%" minHeight={400}>
             <LineChart
               width={1250}
               height={400}
@@ -802,6 +623,7 @@ const AMView = ({ }: Props) => {
                 dot={false}
               />
             </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
       </div>

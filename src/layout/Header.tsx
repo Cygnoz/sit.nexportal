@@ -91,7 +91,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
 
   return (
     <div
-      className="p-4 flex items-center gap-2 w-full border-b-slate-400 border-y-orange-200 header-container"
+      className="p-4 flex items-center gap-2 w-full border-b border-b-[#DADEE5]  header-container"
       onKeyDown={handleKeyDown}
     >
       <div className="relative w-[68%]" ref={searchBarRef}>

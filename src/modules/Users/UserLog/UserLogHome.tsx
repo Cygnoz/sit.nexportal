@@ -129,6 +129,7 @@ function UserLogHome({}: Props) {
         View: "text-teal-600",       // A calm teal for "View"
         Logout: "text-gray-500",     // A subtle gray for "Logout"
         Convert: "text-emerald-500", // A fresh emerald green for "Convert"
+        Deactivate:"text-orange-400"
       };
       
 
@@ -158,6 +159,8 @@ function UserLogHome({}: Props) {
     { label: "View", value: "View" },
     { label: "Logout", value: "Logout" },
     { label: "Convert", value: "Convert" },
+    { label: "Deactivate", value: "Deactivate" },
+    { label: "Delete", value: "Delete" },
   ];
 
   const screenList = [
@@ -231,7 +234,7 @@ function UserLogHome({}: Props) {
   return (
     <div className="text-[#303F58] space-y-4">
     <h1 className="text-[#303F58] text-xl font-bold">User Log</h1>
-    <p className='text-xs'>Efficiently manage and sort UseLog tables with seamless screen compatibility, ensuring a smooth and productive experience across all devices.</p>
+    <p className='text-xs'>Efficiently manage and sort UseLog tables with seamless screen compatibility, ensuring a smooth and productive experience across all devices</p>
     <div className="w-full bg-white rounded-lg p-4">
        <div  className='flex  items-center gap-2'>
        

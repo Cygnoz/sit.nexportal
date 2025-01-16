@@ -15,15 +15,12 @@ import toast from "react-hot-toast";
 import { useResponse } from "../../../context/ResponseContext";
 import { useNavigate } from "react-router-dom";
 
-// import Select from "../../form/Select";
-//import CustomPhoneInput from "../../../components/form/CustomPhone";
-//import InputPasswordEye from "../../../components/form/InputPasswordEye";
+
 
 type Props = {
   onClose: () => void;
   type?: "lead" | "trial" | "licenser";
   orgData?: any;
-  getLeads: () => void;
 };
 
 const validationSchema = Yup.object({
@@ -40,7 +37,7 @@ const validationSchema = Yup.object({
   startDate: Yup.string().required("Start date is required"),
   endDate: Yup.string().required("End date is required"),
 });
-const OrganisationForm = ({ onClose, type, orgData, getLeads }: Props) => {
+const OrganisationForm = ({ onClose, type, orgData }: Props) => {
   const { customerData } = useResponse();
   const { request: leadToTrial } = useApi("put", 3001);
   const { request: trialToLicenser } = useApi("put", 3001);
@@ -75,6 +72,9 @@ const OrganisationForm = ({ onClose, type, orgData, getLeads }: Props) => {
         data
       );
 
+      console.log("res",response);
+      console.log("er",error)
+      
       if (response && !error) {
         toast.success(
           customerData?.licenserId
@@ -82,13 +82,12 @@ const OrganisationForm = ({ onClose, type, orgData, getLeads }: Props) => {
             : response.data.message
         );
 
-        navigate(customerData?.licenserId ? "/licenser" : "/trial");
+        navigate(customerData?.licenserId || type==="trial" ? "/licenser" : "/trial");
 
-        getLeads();
         onClose?.();
       } else {
         toast.error(
-          error?.response?.data?.error?.message ||
+          error?.response?.data?.message ||
             "An unexpected error occurred."
         );
       }
@@ -98,9 +97,9 @@ const OrganisationForm = ({ onClose, type, orgData, getLeads }: Props) => {
     }
   };
 
-  console.log(errors);
 
-  console.log("cus", customerData);
+
+ 
 
   const handleInputChange = (field: keyof Conversion) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
@@ -154,7 +153,7 @@ const OrganisationForm = ({ onClose, type, orgData, getLeads }: Props) => {
     }
   }, [watch("startDate"), type, setValue]);
 
-  console.log("err", errors);
+  
 
   return (
     <div className="p-1 bg-white rounded shadow-md space-y-2">
@@ -176,7 +175,7 @@ const OrganisationForm = ({ onClose, type, orgData, getLeads }: Props) => {
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className=" my-2">
-            <div className="mx-3 gap-4 space-y-2 max-w-xl">
+            <div className="mx-3 gap-4 space-y-2">
               <Input
                 required
                 readOnly={orgData ? true : false}

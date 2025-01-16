@@ -33,7 +33,11 @@ import Timer from "../../../../assets/icons/Timer";
 import Trash from "../../../../assets/icons/Trash";
 import ConfirmModal from "../../../../components/modal/ConfirmModal";
 import toast from "react-hot-toast";
-type Props = {};
+import NoRecords from "../../../../components/ui/NoRecords";
+
+type Props = {
+
+};
 
 const TrialView = ({ }: Props) => {
   // State to manage modal visibility
@@ -52,7 +56,7 @@ const TrialView = ({ }: Props) => {
   const [trialStatus, setTrialStatus] = useState(false);
   const mainContainerRef = useRef<HTMLDivElement>(null);
   const { request: getTrial } = useApi("get", 3001);
-  const { request : deleteTrail} = useApi('delete',3001)
+  const { request: deleteTrail } = useApi('delete', 3001)
   const [trial, setTrial] = useState<any>([]);
   const handleScrollToTop = () => {
     if (mainContainerRef.current) {
@@ -259,187 +263,215 @@ const TrialView = ({ }: Props) => {
   data = { trial, customerData }
 
 
+  const { request: getAllActivityTimeline } = useApi('get', 3001)
+  const [activityData, setActivityData] = useState<any[]>([])
+
+  const getActivityTimeline = async () => {
+    try {
+      const { response, error } = await getAllActivityTimeline(`${endPoints.ACTIVITY_TIMELINE}/${id}`)
+      console.log(response, 'res');
+      console.log(error, 'err');
+      if (response && !error) {
+        console.log(response.data);
+        setActivityData(response.data.activities)
+      }
+      else {
+        console.log(error.response.data.message);
+
+      }
+
+    }
+    catch (err) {
+      console.log(err, 'error');
+
+    }
+  }
+  useEffect(() => {
+    getActivityTimeline()
+  }, [])
+
 
 
   return (
-    <div
-      ref={mainContainerRef}
-      style={{
-        height: "100vh",
-        overflowY: "scroll",
-        position: "relative",
-      }}
-      className="mb-2 hide-scrollbar"
-    >
-      <div className="flex items-center text-[16px] space-x-2">
-        <p
-          onClick={() => navigate("/trial")}
-          className="font-bold cursor-pointer text-[#820000] "
-        >
-          Trail
-        </p>
-        <ChevronRight color="#4B5C79" size={18} />
-        <p className="font-bold text-[#303F58] ">{trial?.primaryContactName}</p>
-      </div>
-
-      {trialStatus && (
-        <div className="bg-[#F3E6E6] relative rounded-lg mt-2 ">
-          <img
-            className="h-24 w-48 top-4  right-7  absolute"
-            src={bgpicturee}
-            alt=""
-          />
-          <div className="p-3 flex justify-between">
-            <div className="p-2">
-              <h1 className="bg-[#B08E20] p-1 rounded-lg text-white text-xs font-semibold">
-                Trail On Hold
-              </h1>
-            </div>
-            <div className="justify-end">
-              <button
-                onClick={pauseModalToggle}
-                type="button"
-                className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900 me-auto"
-              >
-                &times;
-              </button>
-            </div>
-          </div>
-          <div className="flex p-2">
-            <h1 className="mt-2 ml-2">
-              This trial is currently paused. No activities are allowed until
-              resumed
-            </h1>
-            <Button onClick={pauseModalToggle} className="ml-96 h-10 -mt-2">
-              Resume Trail
-            </Button>
-          </div>
-        </div>
-      )}
-
-      <div className="grid grid-cols-12 mt-5 gap-4">
-        <div className="col-span-3 w-full ">
-          <div
-            className="h-fit w-full bg-cover rounded-xl p-6"
-            style={{ backgroundImage: `url(${BackgroundImage})` }}
+    <div>
+      <div
+        ref={mainContainerRef}
+        style={{
+          height: "100vh",
+          overflowY: "scroll",
+          position: "relative",
+        }}
+        className="mb-2 hide-scrollbar"
+      >
+        <div className="flex items-center text-[16px] space-x-2">
+          <p
+            onClick={() => navigate("/trial")}
+            className="font-bold cursor-pointer text-[#820000] "
           >
-            <div className="flex justify-end">
-              <div className={`${getStatusClass(customerData?.trialStatus)}  flex items-center gap-2  w-fit ms-auto `}>
-                <div className={`w-2 h-2 -mt-[2px] ${customerData?.trialStatus == 'In Progress' || customerData?.trialStatus == 'Proposal' ? 'bg-black' : 'bg-white'} rounded-full`}></div>
-                <p className="text-sm">{customerData?.trialStatus}</p>
+            Trail
+          </p>
+          <ChevronRight color="#4B5C79" size={18} />
+          <p className="font-bold text-[#303F58] ">{trial?.primaryContactName}</p>
+        </div>
+
+        {trialStatus && (
+          <div className="bg-[#F3E6E6] relative rounded-lg mt-2 ">
+            <img
+              className="h-24 w-48 top-4  right-7  absolute"
+              src={bgpicturee}
+              alt=""
+            />
+            <div className="p-3 flex justify-between">
+              <div className="p-2">
+                <h1 className="bg-[#B08E20] p-1 rounded-lg text-white text-xs font-semibold">
+                  Trail On Hold
+                </h1>
+              </div>
+              <div className="justify-end">
+                <button
+                  onClick={pauseModalToggle}
+                  type="button"
+                  className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900 me-auto"
+                >
+                  &times;
+                </button>
               </div>
             </div>
-            <div className="flex gap-4">
-              <div className="w-14 h-14 rounded-full overflow-hidden">
-                <img
-                  src={customerData?.image && customerData?.image>50 ? customerData?.image : profileImage} // Replace with the actual image URL
-                  alt="Profile"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="mb-3 mt-3">
-                <p className="text-[#FFFFFF] text-xs font-semibold mb-3">
-                  {trial?.primaryContactName}
-                </p>
-                <p className="text-[#FFFFFF] text-xs font-normal">
+            <div className="flex p-2">
+              <h1 className="mt-2 ml-2">
+                This trial is currently paused. No activities are allowed until
+                resumed
+              </h1>
+              <Button onClick={pauseModalToggle} className="ml-96 h-10 -mt-2">
+                Resume Trail
+              </Button>
+            </div>
+          </div>
+        )}
 
-                  <span className="text-xs font-bold ">{customerData?.customerId}</span>
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 my-4 ">
-              <BuildingIcon color="#FFFFFF" size={16} />
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                Organization
-              </span>
-              <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                {trial?.organizationName}
-              </span>
-            </div>
-            <div className="flex gap-4 my-4 ">
-              <BuildingIcon color="#FFFFFF" size={16} />
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                Organization Id
-              </span>
-              <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                {trial?.organizationId}
-              </span>
-            </div>
-
-            <div className="my-8">
-              <div className="flex gap-4 my-4 ">
-                <EmailIcon color="#FFFFFF" size={16} />
-                <p className="text-[#FFFFFF] text-xs font-normal">
-                  {trial?.primaryContactEmail}
-                </p>
-              </div>
-              <div className="flex gap-4 mb-2">
-                <PhoneRingIcon color="#FFFFFF" size={16} />
-                <p className="text-[#FFFFFF] text-xs font-normal">
-                  {trial?.primaryContactNum}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex gap-4 my-4 ">
-              <CalenderClock color="#FFFFFF" size={16} />
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                Start Date
-              </span>
-              <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                {new Date(customerData?.startDate).toLocaleDateString("en-GB")}
-              </span>
-            </div>
-            <div className="flex gap-4 my-4 ">
-              <CalenderClock color="#FFFFFF" size={16} />
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                End Date
-              </span>
-              <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                {new Date(customerData?.endDate).toLocaleDateString("en-GB")}
-              </span>
-            </div>
-
-            <div className="flex gap-4 my-4  p-2 w-48 rounded-xl mt-7 bg-[#34B8A4]">
-              <Timer color="#FFFFFF" size={16} />
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                Duration
-              </span>
-              <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
-              <span className="text-[#FFFFFF] text-xs font-normal">
-                {customerData?.duration} Days
-              </span>
-            </div>
-
-            <div className="my-4 mt-7">
-              <div className="flex gap-4  my-3">
-                <p className="text-[#FFFFFF] text-xs font-normal">Region</p>
-                <p className="text-[#FFFFFF] text-xs font-bold">{customerData?.regionDetails?.regionName}</p>
-              </div>
-              <div className="flex gap-4 mb-4 ">
-                <p className="text-[#FFFFFF] text-xs font-normal">Area</p>
-                <p className="text-[#FFFFFF] text-xs font-bold ms-3">{customerData?.areaDetails?.areaName}</p>
-              </div>
-            </div>
-
-            <div className="flex w-full justify-around  h-20 px-6 py-4 gap-5 rounded-xl bg-[#FFFFFF33]">
-              <div>
-                <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2">
-                    <EmailRoundIcon size={18} color="#F0D5A0" />
-                  </div>
+        <div className="grid grid-cols-12 mt-5 gap-4">
+          <div className="col-span-3 w-full ">
+            <div
+              className="h-fit w-full bg-cover rounded-xl p-6"
+              style={{ backgroundImage: `url(${BackgroundImage})` }}
+            >
+              <div className="flex justify-end">
+                <div className={`${getStatusClass(customerData?.trialStatus)}  flex items-center gap-2  w-fit ms-auto `}>
+                  <div className={`w-2 h-2 -mt-[2px] ${customerData?.trialStatus == 'In Progress' || customerData?.trialStatus == 'Proposal' ? 'bg-black' : 'bg-white'} rounded-full`}></div>
+                  <p className="text-sm">{customerData?.trialStatus}</p>
                 </div>
-
-                <p className="text-[#FFF9F9] text-[10px] font-medium ms-1 mt-1">
-                  Email
-                </p>
               </div>
-              {/* <div onClick={() => handleModalToggle(true, false, false, false)}>
+              <div className="flex gap-4">
+                <div className="w-14 h-14 rounded-full overflow-hidden">
+                  <img
+                    src={customerData?.image && customerData?.image > 50 ? customerData?.image : profileImage} // Replace with the actual image URL
+                    alt="Profile"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <div className="mb-3 mt-3">
+                  <p className="text-[#FFFFFF] text-xs font-semibold mb-3">
+                    {trial?.primaryContactName}
+                  </p>
+                  <p className="text-[#FFFFFF] text-xs font-normal">
+
+                    <span className="text-xs font-bold ">{customerData?.customerId}</span>
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4 my-4 ">
+                <BuildingIcon color="#FFFFFF" size={16} />
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  Organization
+                </span>
+                <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  {trial?.organizationName}
+                </span>
+              </div>
+              <div className="flex gap-4 my-4 ">
+                <BuildingIcon color="#FFFFFF" size={16} />
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  Organization Id
+                </span>
+                <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  {trial?.organizationId}
+                </span>
+              </div>
+
+              <div className="my-8">
+                <div className="flex gap-4 my-4 ">
+                  <EmailIcon color="#FFFFFF" size={16} />
+                  <p className="text-[#FFFFFF] text-xs font-normal">
+                    {trial?.primaryContactEmail}
+                  </p>
+                </div>
+                <div className="flex gap-4 mb-2">
+                  <PhoneRingIcon color="#FFFFFF" size={16} />
+                  <p className="text-[#FFFFFF] text-xs font-normal">
+                    {trial?.primaryContactNum}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-4 my-4 ">
+                <CalenderClock color="#FFFFFF" size={16} />
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  Start Date
+                </span>
+                <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  {new Date(customerData?.startDate).toLocaleDateString("en-GB")}
+                </span>
+              </div>
+              <div className="flex gap-4 my-4 ">
+                <CalenderClock color="#FFFFFF" size={16} />
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  End Date
+                </span>
+                <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  {new Date(customerData?.endDate).toLocaleDateString("en-GB")}
+                </span>
+              </div>
+
+              <div className="flex gap-4 my-4  p-2 w-48 rounded-xl mt-7 bg-[#34B8A4]">
+                <Timer color="#FFFFFF" size={16} />
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  Duration
+                </span>
+                <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
+                <span className="text-[#FFFFFF] text-xs font-normal">
+                  {customerData?.duration} Days
+                </span>
+              </div>
+
+              <div className="my-4 mt-7">
+                <div className="flex gap-4  my-3">
+                  <p className="text-[#FFFFFF] text-xs font-normal">Region</p>
+                  <p className="text-[#FFFFFF] text-xs font-bold">{customerData?.regionDetails?.regionName}</p>
+                </div>
+                <div className="flex gap-4 mb-4 ">
+                  <p className="text-[#FFFFFF] text-xs font-normal">Area</p>
+                  <p className="text-[#FFFFFF] text-xs font-bold ms-3">{customerData?.areaDetails?.areaName}</p>
+                </div>
+              </div>
+
+              <div className="flex w-full justify-around  h-20 px-6 py-4 gap-5 rounded-xl bg-[#FFFFFF33]">
+                <div>
+                  <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <EmailRoundIcon size={18} color="#F0D5A0" />
+                    </div>
+                  </div>
+
+                  <p className="text-[#FFF9F9] text-[10px] font-medium ms-1 mt-1">
+                    Email
+                  </p>
+                </div>
+                {/* <div onClick={() => handleModalToggle(true, false, false, false)}>
                 <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
                     <EditIcon size={18} color="#F0D5A0" />
@@ -449,361 +481,279 @@ const TrialView = ({ }: Props) => {
                   Edit
                 </p>
               </div> */}
-              <div onClick={() => handleModalToggle(false, true, false, false)}>
-                <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2">
-                    <ViewRoundIcon size={18} color="#B6D6FF" />
+                <div onClick={() => handleModalToggle(false, true, false, false)}>
+                  <div className="rounded-full cursor-pointer bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <ViewRoundIcon size={18} color="#B6D6FF" />
+                    </div>
                   </div>
-                </div>
-                <p className="text-[#FFF9F9] text-[10px] font-medium ms-1 mt-1">
-                  View
-                </p>
-              </div>
-              <div >
-                <div className="rounded-full cursor-pointer ms-2  bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2">
-                    <DeActivateIcon size={18} color="#D52B1E4D" />
-                  </div>
-                </div>
-                <p className="text-[#FFF9F9] text-center text-[10px] font-medium mt-1">
-                  DeActivate
-                </p>
-              </div>
-
-              <div onClick={() => handleModalToggle(false, false, false, true)} className="cursor-pointer">
-                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2">
-                    <Trash size={18} color="red" />
-                  </div>
-                </div>
-                <p className="text-[#FFF9F9] text-[10px] font-medium mt-1">
-                  Delete
-                </p>
-              </div>
-            </div>
-            <div
-              onClick={() => handleModalToggle(false, false, true, false)}
-              className="flex gap-2 rounded-xl w-full justify-center cursor-pointer  bg-[#FFFFFF33]  py-3 px-2 h-14 my-4"
-            >
-              <div className="px-2 ">
-                <CalenderRound size={32} />
-              </div>
-              <p className="mt-2 text-[#FFFFFF] text-xs font-medium">
-                View Calender
-              </p>
-            </div>
-
-            <div className="w-full cursor-pointer  flex justify-between my-2">
-              <div onClick={extentModalToggle}>
-                <Button
-                  className="w-fit h-10 flex justify-center"
-                  variant="tertiary"
-                >
-                  <CalenderPlus size={16} color="#4B5C79" />
-                  <p className="text-#565148 font-medium text-xs">
-                    Extent Trial
+                  <p className="text-[#FFF9F9] text-[10px] font-medium ms-1 mt-1">
+                    View
                   </p>
-                </Button>
-              </div>
-              <div onClick={pauseModalToggle}>
-                <Button
-                  className="w-fit h-10 flex justify-center"
-                  variant="secondary"
-                >
-                  {trialStatus ? (
-                    <ArrowBigDash size={16} />
-                  ) : (
-                    <Pause size={16} />
-                  )}
-                  <p className="text-#585953 font-medium text-xs">
-                    {trialStatus ? "Resume" : "Pause"} Trial
-                  </p>
-                </Button>
-              </div>
-            </div>
-
-            <div
-              className="rounded-lg w-full mt-4  bg-[#820000] h-12 py-3 px-3 mb-4 cursor-pointer"
-              onClick={covertModalToggle}
-            >
-              <p className="text-center text-[#FEFDF9] text-base font-medium">
-                Converted to Licenser
-              </p>
-            </div>
-            <hr />
-            <div className="p-4">
-              <p className="text-[#FFFFFF] text-xs font-normal mb-2">
-                Assigned BDA
-              </p>
-              <div className="flex gap-2">
-                <div className="rounded-full w-7 h-7 overflow-hidden">
-                  <img src={profileImage} alt="" />
                 </div>
-                <p className="text-[#FFFFFF] text-xs font-bold py-2 px-1">
-                  {customerData?.bdaDetails?.bdaName?customerData?.bdaDetails?.bdaName :'N/A'}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-span-5 w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
-          <h1 className="text-sm font-bold">Recent Activities</h1>
-          <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
-            <div className="ml-24 my-1 text-sm font-bold">
-              <p>Email Sent</p>
-            </div>
-            <div className="flex gap-6">
-              <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
-                <img
-                  className="w-6 h-6 ms-3 mt-[25%]"
-                  src={rightArrow}
-                  alt=""
-                />
-              </div>
-              <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
-
-              <div className="flex gap-2 mt-2 -ml-2">
-                <EditIcon size={20} />
-                <div className="w-32 h-8 p-2 bg-[#FFFFFF] flex -mt-2 rounded-2xl">
-                  <div className="rounded-full w-5 h-5 overflow-hidden">
-                    <img src={profileImage} alt="" />
+                <div >
+                  <div className="rounded-full cursor-pointer ms-2  bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
+                    </div>
                   </div>
-                  <p className="text-[#4B5C79] text-xs font-medium ml-1">
-                    Kristin Watson
+                  <p className="text-[#FFF9F9] text-center text-[10px] font-medium mt-1">
+                    DeActivate
+                  </p>
+                </div>
+
+                <div onClick={() => handleModalToggle(false, false, false, true)} className="cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <Trash size={18} color="red" />
+                    </div>
+                  </div>
+                  <p className="text-[#FFF9F9] text-[10px] font-medium mt-1">
+                    Delete
                   </p>
                 </div>
               </div>
-              <div className="w-3 h-3 mt-3 -ml-4 bg-[#C8C8C8] rounded-full shadow-md"></div>
-              <div className="mt-2 -ml-2">
-                <p className="text-[#4B5C79] text-xs font-medium">
-                  19 minutes ago
-                </p>
-              </div>
-            </div>
-            <div className="ms-24 -mt-1">
-              <p className="text-[#4B5C79] text-xs font-medium">
-                Details{" "}
-                <span className="text-[#4B5C79] text-sm font-bold">
-                  Lead of the Trail
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
-            <div className="ml-24 my-1 text-sm font-bold">
-              <p>Email Sent</p>
-            </div>
-            <div className="flex gap-6">
-              <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
-                <img
-                  className="w-6 h-6 ms-3 mt-[25%]"
-                  src={rightArrow}
-                  alt=""
-                />
-              </div>
-              <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
-
-              <div className="flex gap-2 mt-2 -ml-2">
-                <EditIcon size={20} />
-                <div className="w-32 h-8 p-2 bg-[#FFFFFF] flex -mt-2 rounded-2xl">
-                  <div className="rounded-full w-5 h-5 overflow-hidden">
-                    <img src={profileImage} alt="" />
-                  </div>
-                  <p className="text-[#4B5C79] text-xs font-medium ml-1">
-                    Kristin Watson
-                  </p>
-                </div>
-              </div>
-              <div className="w-3 h-3 mt-3 -ml-4 bg-[#C8C8C8] rounded-full shadow-md"></div>
-              <div className="mt-2 -ml-2">
-                <p className="text-[#4B5C79] text-xs font-medium">
-                  19 minutes ago
-                </p>
-              </div>
-            </div>
-            <div className="ms-24 -mt-1">
-              <p className="text-[#4B5C79] text-xs font-medium">
-                Details{" "}
-                <span className="text-[#4B5C79] text-sm font-bold">
-                  Lead of the Trail
-                </span>
-              </p>
-            </div>
-          </div>
-          <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
-            <div className="ml-24 my-1 text-sm font-bold">
-              <p>Email Sent</p>
-            </div>
-            <div className="flex gap-6">
-              <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
-                <img
-                  className="w-6 h-6 ms-3 mt-[25%]"
-                  src={rightArrow}
-                  alt=""
-                />
-              </div>
-              <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
-
-              <div className="flex gap-2 mt-2 -ml-2">
-                <EditIcon size={20} />
-                <div className="w-32 h-8 p-2 bg-[#FFFFFF] flex -mt-2 rounded-2xl">
-                  <div className="rounded-full w-5 h-5 overflow-hidden">
-                    <img src={profileImage} alt="" />
-                  </div>
-                  <p className="text-[#4B5C79] text-xs font-medium ml-1">
-                    Kristin Watson
-                  </p>
-                </div>
-              </div>
-              <div className="w-3 h-3 mt-3 -ml-4 bg-[#C8C8C8] rounded-full shadow-md"></div>
-              <div className="mt-2 -ml-2">
-                <p className="text-[#4B5C79] text-xs font-medium">
-                  19 minutes ago
-                </p>
-              </div>
-            </div>
-            <div className="ms-24 -mt-1">
-              <p className="text-[#4B5C79] text-xs font-medium">
-                Details{" "}
-                <span className="text-[#4B5C79] text-sm font-bold">
-                  Lead of the Trail
-                </span>
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="col-span-4">
-          <div className="bg-white rounded-lg w-full p-3">
-            <h1 className="text-lg font-bold mb-2">Feature Usage Progress</h1>
-
-            <div className="ms-1">
-              <BarChart
-                width={400}
-                height={470}
-                data={AreaRevData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                layout="vertical"
+              <div
+                onClick={() => handleModalToggle(false, false, true, false)}
+                className="flex gap-2 rounded-xl w-full justify-center cursor-pointer  bg-[#FFFFFF33]  py-3 px-2 h-14 my-4"
               >
-                <YAxis
-                  type="category"
-                  dataKey="name"
-                  tick={<CustomizedAxisTick />}
-                  tickLine={false}
-                  axisLine={{ stroke: "#000" }} // Y axis line
-                />
-                <XAxis
-                  type="number"
-                  tick={{ fontSize: 10 }}
-                  axisLine={{ stroke: "transparent" }} // Remove X axis line
-                  tickLine={false} // Remove ticks on the X axis
-                />
-                <Tooltip />
-                <Bar
-                  dataKey="pv"
-                  radius={[5, 5, 5, 5]}
-                  barSize={20}
-                  label={<CustomLabel />}
+                <div className="px-2 ">
+                  <CalenderRound size={32} />
+                </div>
+                <p className="mt-2 text-[#FFFFFF] text-xs font-medium">
+                  View Calender
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 cursor-pointer gap-2 my-2">
+                <div className="w-full " onClick={extentModalToggle}>
+                  <Button
+                    className="w-full h-10 flex justify-center"
+                    variant="tertiary"
+                  >
+                    <CalenderPlus size={16} color="#4B5C79" />
+                    <p className="text-#565148 font-medium text-xs">
+                      Extent Trial
+                    </p>
+                  </Button>
+                </div>
+                <div className="w-full" onClick={pauseModalToggle}>
+                  <Button
+                    className="w-full h-10 flex justify-center"
+                    variant="secondary"
+                  >
+                    {trialStatus ? (
+                      <ArrowBigDash size={16} />
+                    ) : (
+                      <Pause size={16} />
+                    )}
+                    <p className="text-#585953 font-medium text-xs">
+                      {trialStatus ? "Resume" : "Pause"} Trial
+                    </p>
+                  </Button>
+                </div>
+              </div>
+
+              <div
+                className="rounded-lg w-full mt-4  bg-[#820000] h-12 py-3 px-3 mb-4 cursor-pointer"
+                onClick={covertModalToggle}
+              >
+                <p className="text-center text-[#FEFDF9] text-base font-medium">
+                  Converted to Licenser
+                </p>
+              </div>
+              <hr />
+              <div className="p-4">
+                <p className="text-[#FFFFFF] text-xs font-normal mb-2">
+                  Assigned BDA
+                </p>
+                <div className="flex gap-2">
+                  <div className="rounded-full w-7 h-7 overflow-hidden">
+                    <img src={profileImage} alt="" />
+                  </div>
+                  <p className="text-[#FFFFFF] text-xs font-bold py-2 px-1">
+                    {customerData?.bdaDetails?.bdaName ? customerData?.bdaDetails?.bdaName : 'N/A'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-span-5 w-full h-[60%] rounded-lg p-5 gap-5 bg-[#FFFFFF]">
+            <h1 className="text-lg font-bold">Recent Activities</h1>
+            {activityData.length > 0 ? (
+              activityData.map((timeline: any) => (
+                <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
+                  <div className="ml-24 my-1 text-sm font-bold">
+                    <p>{timeline?.description ? timeline?.description : 'N/A'}t</p>
+                  </div>
+                  <div className="flex gap-6">
+                    <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                      <img
+                        className="w-6 h-6 ms-3 mt-[25%]"
+                        src={rightArrow}
+                        alt=""
+                      />
+                    </div>
+                    <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
+
+                    <div className="flex gap-2 mt-2 -ml-2">
+                      <EditIcon size={20} />
+                      <div className="w-32 h-8 p-2 bg-[#FFFFFF] flex -mt-2 rounded-2xl">
+                        <div className="rounded-full w-5 h-5 overflow-hidden">
+                          <img src={profileImage} alt="" />
+                        </div>
+                        <p className="text-[#4B5C79] text-xs font-medium ml-1">
+                          {timeline?.userName ? timeline?.userName : "N/A"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="w-3 h-3 mt-3 -ml-4 bg-[#C8C8C8] rounded-full shadow-md"></div>
+                    <div className="mt-2 -ml-2">
+                      <p className="text-[#4B5C79] text-xs font-medium">
+                        {new Date(timeline?.createdAt).toLocaleString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                          hour12: true,
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="ms-24 -mt-1">
+                    <p className="text-[#4B5C79] text-xs font-medium">
+                      Details{" "}
+                      <span className="text-[#4B5C79] text-sm font-bold">
+                        {timeline?.taskTitle ? timeline?.taskTitle : 'N/A'}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              ))) : (
+              <div className="items-center">
+                <NoRecords text="No Activities Found" parentHeight="450px" imgSize={90} textSize="md" />
+              </div>
+            )}
+
+
+         
+          </div>
+
+          <div className="col-span-4">
+            <div className="bg-white rounded-lg w-full p-3">
+              <h1 className="text-lg font-bold mb-2">Feature Usage Progress</h1>
+
+              <div className="ms-1">
+                <BarChart
+                  width={400}
+                  height={470}
+                  data={AreaRevData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  layout="vertical"
                 >
-                  {AreaRevData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry?.color} />
-                  ))}
-                </Bar>
-              </BarChart>
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    tick={<CustomizedAxisTick />}
+                    tickLine={false}
+                    axisLine={{ stroke: "#000" }} // Y axis line
+                  />
+                  <XAxis
+                    type="number"
+                    tick={{ fontSize: 10 }}
+                    axisLine={{ stroke: "transparent" }} // Remove X axis line
+                    tickLine={false} // Remove ticks on the X axis
+                  />
+                  <Tooltip />
+                  <Bar
+                    dataKey="pv"
+                    radius={[5, 5, 5, 5]}
+                    barSize={20}
+                    label={<CustomLabel />}
+                  >
+                    {AreaRevData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry?.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Modal controlled by state */}
-      {/* <Modal
-        open={isModalOpen}
-        align="center"
-        onClose={handleModalToggle}
-        className="w-[40%]"
-      >
-        <TrialViewForm data={data}   onClose={handleModalToggle} />
-      </Modal> */}
+       
 
-      <Modal
-        open={isModalOpen.viewTrail}
-        onClose={() => handleModalToggle()}
-        className="w-[35%]"
-      >
-        <TrialViewForm onClose={() => handleModalToggle()} />
-      </Modal>
-
-
-      {/* Modal controlled by state */}
-      {/* <Modal
-        open={isModalOpen.editTrail}
-        align="center"
-        onClose={() => handleModalToggle()}
-        className="w-[35%]"
-      >
-        <TrialEditForm onClose={() => handleModalToggle()} />
-      </Modal>
- */}
-      {/* Modal controlled by state */}
-      <Modal
-        open={extentModalOpen}
-        align="center"
-        onClose={extentModalToggle}
-        className="w-[35%]"
-      >
-        <ExtentTrail getCutomer={getCustomer} trialData={data} onClose={extentModalToggle} />
-      </Modal>
-
-      {/* Modal controlled by state */}
-      <Modal
-        open={conLicModalOpen}
-        align="center"
-        onClose={covertModalToggle}
-        className="w-[30%]"
-      >
-        <ConvertModal getLeads={getOneTrial} orgData={trial} onClose={covertModalToggle} type="trial" />
-      </Modal>
-
-      {/* Modal controlled by state */}
-      <Modal
-        open={pausModalOpen}
-        align="center"
-        onClose={pauseModalToggle}
-        className="w-[35%]"
-      >
-        <ResumePauseTrail
-          handleScrollTop={handleScrollToTop}
-          trialStatus={trialStatus}
-          setTrialStatus={setTrialStatus}
-          onClose={pauseModalToggle}
-        />
-      </Modal>
-
-      {/* Modal controlled by state */}
-      <Modal
-        open={isModalOpen.calender}
-        align="center"
-        onClose={() => handleModalToggle()}
-        className="w-[65%]"
-      >
-        <CalenderModal onClose={() => handleModalToggle()} />
-      </Modal>
-      <Modal
-        open={isModalOpen.confirm}
-        align="center"
-        onClose={() => handleModalToggle()}
-        className="w-[30%]"
-      >
-        <ConfirmModal
-          action={handleDelete}
-          prompt="Are you sure want to delete this trial?"
+        <Modal
+          open={isModalOpen.viewTrail}
           onClose={() => handleModalToggle()}
-        />
-      </Modal>
+          className="w-[35%]"
+        >
+          <TrialViewForm onClose={() => handleModalToggle()} />
+        </Modal>
 
+
+      
+        <Modal
+          open={extentModalOpen}
+          align="center"
+          onClose={extentModalToggle}
+          className="w-[35%]"
+        >
+          <ExtentTrail getCutomer={getCustomer} trialData={data} onClose={extentModalToggle} />
+        </Modal>
+
+        {/* Modal controlled by state */}
+        <Modal
+          open={conLicModalOpen}
+          align="center"
+          onClose={covertModalToggle}
+          className="w-[30%]"
+        >
+          <ConvertModal  orgData={trial} onClose={covertModalToggle} type="trial" />
+        </Modal>
+
+        {/* Modal controlled by state */}
+        <Modal
+          open={pausModalOpen}
+          align="center"
+          onClose={pauseModalToggle}
+          className="w-[35%]"
+        >
+          <ResumePauseTrail
+            handleScrollTop={handleScrollToTop}
+            trialStatus={trialStatus}
+            setTrialStatus={setTrialStatus}
+            onClose={pauseModalToggle}
+          />
+        </Modal>
+
+        {/* Modal controlled by state */}
+        <Modal
+          open={isModalOpen.calender}
+          align="center"
+          onClose={() => handleModalToggle()}
+          className="w-[65%]"
+        >
+          <CalenderModal onClose={() => handleModalToggle()} />
+        </Modal>
+        <Modal
+          open={isModalOpen.confirm}
+          align="center"
+          onClose={() => handleModalToggle()}
+          className="w-[30%]"
+        >
+          <ConfirmModal
+            action={handleDelete}
+            prompt="Are you sure want to delete this trial?"
+            onClose={() => handleModalToggle()}
+          />
+        </Modal>
+
+      </div>
     </div>
+
   );
 };
 

@@ -10,8 +10,6 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { useEffect } from "react";
-//import CustomPhoneInput from "../../../components/form/CustomPhone";
-//import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 type Props = {
   onClose: () => void;
@@ -21,8 +19,12 @@ type Props = {
 
 const validationSchema = Yup.object({
   profileName: Yup.string().required("First name is required"),
-  commissionPercentage: Yup.number().required("commissionPercentage is required"),
-  thresholdAmount: Yup.number().required("thresholdAmount is required"),
+  commissionPercentage:  Yup.number()
+      .nullable()
+      .transform((value, originalValue) => (originalValue === "" ? null : value)).required("commissionPercentage is required"),
+  thresholdAmount: Yup.number()
+  .nullable()
+  .transform((value, originalValue) => (originalValue === "" ? null : value)).required("thresholdAmount is required"),
 });
 
 function WCommissionForm({ onClose , editId }: Props) {
@@ -94,12 +96,9 @@ function WCommissionForm({ onClose , editId }: Props) {
 
   };
 
-  // const handleInputChange = (field: keyof WCData) => {
-  //   clearErrors(field); // Clear the error for the specific field when the user starts typing
-  // };
 
   return (
-    <div className="p-5 space-y-2 text-[#4B5C79] py-2 w-[100%]">
+    <div className="p-5 space-y-2 text-[#4B5C79] py-2 w-full">
       <div className="flex justify-between p-2">
         <div>
           <h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Commission Profile</h3>
@@ -113,11 +112,11 @@ function WCommissionForm({ onClose , editId }: Props) {
           &times;
         </p>
       </div>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div>
+      <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
+      
 
-          <div className=" my-2">
-            <div className="mx-3 gap-4 space-y-2 max-w-2xl">
+          <div className=" my-2 w-full  gap-4 space-y-2">
+        
               <Input
                 required
                 label="Profile Name"
@@ -148,10 +147,10 @@ function WCommissionForm({ onClose , editId }: Props) {
               />
 
 
-            </div>
-          </div>
+           
+     
         </div>
-        <div className=" flex justify-end gap-2 mt-3 pb-2 me-3">
+        <div className=" flex justify-end gap-2 mt-3 pb-2 ">
           <Button
             variant="tertiary"
             className="h-8 text-sm border rounded-lg"

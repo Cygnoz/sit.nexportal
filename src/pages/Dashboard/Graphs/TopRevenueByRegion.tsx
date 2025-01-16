@@ -1,4 +1,4 @@
-import { Bar, BarChart, Cell, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import indLogo from '../../../assets/image/IndiaLogo.png';
 import SaudhLogo from "../../../assets/image/SaudiLogo.png";
 import UAELogo from "../../../assets/image/UAELogo.webp";
@@ -56,34 +56,35 @@ function TopRevenueByRegion({}: Props) {
                   <h2 className="text-md">Region 0234</h2>
                   <h2 className="text-md font-medium text-2xl">₹ 76,789,87</h2>
                 </div>
-                <div className="ms-5">
-                  <BarChart
-                    width={850}
-                    height={400}
-                    data={data}
-                    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                    layout="vertical"
-                  >
-                    <YAxis
-                      type="category"
-                      dataKey="name"
-                      tick={<CustomizedAxisTick />}
-                      tickLine={false}
-                      axisLine={{ stroke: '#000' }} // Y axis line
-                    />
-                    <XAxis
-                      type="number"
-                      tick={{ fontSize: 10 }}
-                      axisLine={{ stroke: 'transparent' }} // Remove X axis line
-                      tickLine={false} // Remove ticks on the X axis
-                    />
-                    <Tooltip />
-                    <Bar dataKey="pv" radius={[5, 5, 5, 5]} barSize={20} label={<CustomLabel />}>
-                      {data.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Bar>
-                  </BarChart>
+                <div className="ms-5 ">
+                <ResponsiveContainer width="100%" minHeight={400}>
+  <BarChart
+    data={data}
+    margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+    layout="vertical"
+  >
+    <YAxis
+      type="category"
+      dataKey="name"
+      tick={<CustomizedAxisTick />}
+      tickLine={false}
+      axisLine={{ stroke: '#000' }} // Y axis line
+    />
+    <XAxis
+      type="number"
+      tick={{ fontSize: 10 }}
+      axisLine={{ stroke: 'transparent' }} // Remove X axis line
+      tickLine={false} // Remove ticks on the X axis
+    />
+    <Tooltip />
+    <Bar dataKey="pv" radius={[5, 5, 5, 5]} barSize={20} label={<CustomLabel />}>
+      {data.map((entry, index) => (
+        <Cell key={`cell-${index}`} fill={entry.color} />
+      ))}
+    </Bar>
+  </BarChart>
+</ResponsiveContainer>
+
                 </div>
               </div>
 

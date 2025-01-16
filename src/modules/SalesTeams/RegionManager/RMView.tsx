@@ -131,75 +131,7 @@ const RMView = () => {
     },
   ];
 
-  // Data for the table
-  // const data: AreaData[] = [
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 1",
-  //     region: "Region 1",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 2",
-  //     region: "Region 2",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 3",
-  //     region: "Region 3",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 4",
-  //     region: "Region 4",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 5",
-  //     region: "Region 5",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 6",
-  //     region: "Region 6",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 7",
-  //     region: "Region 7",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 8",
-  //     region: "Region 8",
-  //     areaManagers: "ILorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 9",
-  //     region: "Region 9",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 10",
-  //     region: "Region 10",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  //   {
-  //     areaCode: "AR-NE001",
-  //     areaName: "Area 11",
-  //     region: "Region 11",
-  //     areaManagers: "Lorem ipsum dolor sise cillum d",
-  //   },
-  // ];
+ 
   // Define the columns with strict keys
   const columns: { key:any; label: string }[] = [
     { key: "areaCode", label: "Area Code" },
@@ -208,7 +140,6 @@ const RMView = () => {
     { key: "areaManagers", label: "Area Managers" },
   ];
 
-  // const { id } = useParams();
 
   const {request:getRMInside}=useApi('get',3002)
   const [totalAreaManaged, setTotalAreaManaged] = useState([]);
@@ -349,7 +280,7 @@ const RMView = () => {
 
             <div className="col-span-6  m-2">
               <div>
-                <div className="flex   gap-4 -ms-14  text-[10px] py-2  text-white">
+                <div className="flex  justify-between  gap-4 -ms-14  text-[10px] py-2  text-white">
                   {/* Right Section: Managers and Actions */}
 
                   <div className="flex -me-2  mt-2">
@@ -380,7 +311,8 @@ const RMView = () => {
                     </div>
                   </div>
 
-                  <div className="flex flex-col w-fit items-center space-y-1">
+                 <div className="flex gap-3">
+                 <div className="flex flex-col w-fit items-center space-y-1">
                     <div
                       onClick={() => handleModalToggle(true, false, false, false)}
                       className="w-8 h-8 mb-2 rounded-full cursor-pointer"
@@ -443,6 +375,7 @@ const RMView = () => {
                     </div>
                     <p className="text-center ms-3">Delete</p>
                   </div>
+                 </div>
                 </div>
                 {/* HomeCards Section */}
 

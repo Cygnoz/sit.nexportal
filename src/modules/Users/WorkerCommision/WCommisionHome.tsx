@@ -45,7 +45,7 @@ const WCommisionHome = () => {
     try {
       const { response, error } = await deleteWC(`${endPoints.WC}/${deleteId}`);
       if (response && !error) {
-        setAllWC((prev) => prev.filter((wc: any) => wc.id !== deleteId));
+        setAllWC((prev) => prev.filter((wc: any) => wc._id !== deleteId));
         toast.success(response.data.message || "Commission deleted successfully");
         getWC(); // Refresh the list
       } else {
@@ -89,6 +89,8 @@ const WCommisionHome = () => {
     getWC();
   }, []);
  
+ // console.log(getWC);
+  
   // Define the columns with strict keys
   const columns: { key: keyof WCData; label: string }[] = [
     { key: "profileName", label: "ProfileName" },

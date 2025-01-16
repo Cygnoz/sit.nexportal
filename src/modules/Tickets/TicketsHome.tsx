@@ -215,15 +215,16 @@ useEffect(() => {
 
 
         <div className="grid grid-cols-12 gap-3">
-        <div className="col-span-3">
-  <div className="flex justify-between mt-5 bg-[#E7EDF2] py-4 px-3">
-    <p>Unresolved Tickets</p>
-    <p>{allTicketss?.unResolvedTickets || 0}</p>
-  </div>
-  <div className="flex justify-between py-4 px-3">
+        <div className="col-span-3 cursor-pointer">
+        <div className="flex justify-between mt-5 bg-[#E7EDF2] py-4 px-3">
     <p>Total Tickets</p>
     <p>{allTicketss?.totalTickets || 0}</p>
   </div>
+  <div className="flex justify-between   py-4 px-3">
+    <p>Unresolved Tickets</p>
+    <p>{allTicketss?.unResolvedTickets || 0}</p>
+  </div>
+ 
   <div className="flex justify-between py-4 px-3">
     <p>Unassigned Tickets</p>
     <p>0</p>

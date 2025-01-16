@@ -191,24 +191,7 @@ function LeadHome({}: Props) {
             headerContents={{
               title: "Lead Details",
               search: { placeholder: "Search Leads..." },
-              // sort: [
-              //   {
-              //     sortHead: "Sort",
-              //     sortList: [
-              //       { label: "Sort by Name", icon: <CalenderDays size={14} color="#4B5C79"/> },
-              //       { label: "Sort by Age", icon: <Package size={14} color="#4B5C79"/> },
-              //       { label: "Sort by Name", icon: <CalenderDays size={14} color="#4B5C79"/> },
-              //       { label: "Sort by Age", icon: <Package size={14} color="#4B5C79"/> }
-              //     ]
-              //   },
-              //   {
-              //     sortHead: "Filter",
-              //     sortList: [
-              //       { label: "Sort by Date", icon: <PackageCheck size={14} color="#4B5C79"/> },
-              //       { label: "Sort by Status", icon: <Boxes size={14} color="#4B5C79"/> }
-              //     ]
-              //   }
-              // ]
+           
             }}
             actionList={[
               { label: "view", function: handleView },
@@ -235,7 +218,6 @@ function LeadHome({}: Props) {
         className="w-[30%]"
       >
         <ConvertModal
-          getLeads={getLeads}
           onClose={() => handleModalToggle()}
           type="lead"
         />

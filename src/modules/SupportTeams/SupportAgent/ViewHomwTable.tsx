@@ -52,14 +52,7 @@ const ViewHomwTable = ({ getData, tickets }: Props) => {
   console.log(getAwards);
 
 
-  // const datas: SupportAgentViewData[] = [
-  //     { ticketNo: "TN-H001",name:"Mckensy", organisationId: "MK-0023", issue: "Billing issue", priority: "Open",status:"High", },
-  //     { ticketNo: "TN-H002",name:"Tech stream System", organisationId: "TS-00377", issue: "Billing issue", priority: "Processing", status:"Low", },
-  //     { ticketNo: "TN-H003",name:"NextGen Logic", organisationId: "NL-00577", issue: "Billing issue", priority: "Open", status:"Medium", },
-  //     { ticketNo: "TN-H004",name:"ByteForge", organisationId: "BF-00078", issue: "Billing issue", priority: "Processing", status:"High",},
-  //     { ticketNo: "TN-H005", name:"Veritas Capital", organisationId: "VC-00089", issue: "Billing issue", priority: "Open", status:"Medium",},
-  //     { ticketNo: "TN-H006", name:"Inspire Financial", organisationId: "IF-00023", issue: "Billing issue", priority: "Processing", status:"Low",},
-  // ];
+ 
 
   const openData = tickets.openTickets.map((ticket, index) => ({
     ticketNo: index + 1, // Assign a unique number if not provided
@@ -102,10 +95,10 @@ const ViewHomwTable = ({ getData, tickets }: Props) => {
 
   return (
     <div>
-      <div className="grid grid-cols-12">
+      <div className="grid grid-cols-12 gap-4">
         <div className="col-span-9">
           {/* Table Section */}
-          <div className="mt-3 px-4 gap-4">
+          <div className="mt-3  gap-4">
           <SAViewTable
           data={activeTab === "Open Tickets" ? openData : closedData}
           columns={activeTab === "Open Tickets" ? Opencolumns : Closedcolumns}
@@ -137,7 +130,7 @@ const ViewHomwTable = ({ getData, tickets }: Props) => {
             ],
           }}
           noAction
-          maxHeight="300px"
+          maxHeight="290px"
           tabs={tabs}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
