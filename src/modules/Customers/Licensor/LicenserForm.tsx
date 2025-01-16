@@ -1,4 +1,3 @@
-
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
 import Input from "../../../components/form/Input";
 import PrefixInput from "../../../components/form/PrefixInput";
@@ -20,51 +19,48 @@ import OrganisationForm from "../../../components/modal/ConvertionModal/Organisa
 import Modal from "../../../components/modal/Modal";
 import { useResponse } from "../../../context/ResponseContext";
 
-
 type Props = {
   onClose: () => void;
-  editId?:string
+  editId?: string;
 };
 
-
-
 const validationSchema = Yup.object({
-   firstName: Yup.string().required("First name is required"),
-   email: Yup.string()
-     .email("Invalid email format")
-     .required("Email is required"),
-   phone: Yup.string().required("Phone is required"),
-   regionId:Yup.string().required('Region is required'),
-   areaId:Yup.string().required('Area is required'),
-   bdaId:Yup.string().required('Bda is required'),
-   startDate:Yup.string().required('StartDate is required'),
-  endDate:Yup.string().required('EndDate is required')
+  firstName: Yup.string().required("First name is required"),
+  email: Yup.string()
+    .email("Invalid email format")
+    .required("Email is required"),
+  phone: Yup.string().required("Phone is required"),
+  regionId: Yup.string().required("Region is required"),
+  areaId: Yup.string().required("Area is required"),
+  bdaId: Yup.string().required("Bda is required"),
+  startDate: Yup.string().required("StartDate is required"),
+  endDate: Yup.string().required("EndDate is required"),
 });
 
-function LicenserForm({ onClose ,editId}: Props) {
+function LicenserForm({ onClose, editId }: Props) {
   const [isOrgModal, setIsOrgModal] = useState(false);
-  const handleModalToggle = (close=false)=>{
-    setIsOrgModal((prev)=>!prev)
-     close&&onClose()
-}
+  const handleModalToggle = (close = false) => {
+    setIsOrgModal((prev) => !prev);
+    close && onClose();
+  };
 
-  const {setCustomerData}=useResponse()
-  const {user}=useUser()
-  const {request:addLicenser}=useApi('post',3001)
-  const {request:editLicenser}=useApi('put',3001)
- const {request:getLicenser}=useApi('get',3001)
-  const {dropdownRegions,dropDownAreas,dropDownBdas,allCountries}=useRegularApi()
-    const [data, setData] = useState<{
-      regions: { label: string; value: string }[];
-      areas: { label: string; value: string }[];
-      bdas:{ label: string; value: string }[];
-      country: { label: string; value: string }[];
-      state: { label: string; value: string }[]
+  const { setCustomerData } = useResponse();
+  const { user } = useUser();
+  const { request: addLicenser } = useApi("post", 3001);
+  const { request: editLicenser } = useApi("put", 3001);
+  const { request: getLicenser } = useApi("get", 3001);
+  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries } =
+    useRegularApi();
+  const [data, setData] = useState<{
+    regions: { label: string; value: string }[];
+    areas: { label: string; value: string }[];
+    bdas: { label: string; value: string }[];
+    country: { label: string; value: string }[];
+    state: { label: string; value: string }[];
+  }>({ regions: [], areas: [], bdas: [], state: [], country: [] });
 
-    }>({ regions:[], areas: [],bdas:[],state:[] ,country:[]});
-
-    // const [isOpenOrg,setIsOpenOrg]=useState(false)
-    // const [licenserId,setLicenserId]=useState('')
+  // const [isOpenOrg,setIsOpenOrg]=useState(false)
+  // const [licenserId,setLicenserId]=useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const {
@@ -81,36 +77,35 @@ function LicenserForm({ onClose ,editId}: Props) {
     },
   });
 
-  
-
- 
-
   const onSubmit: SubmitHandler<LicenserData> = async (data: any, event) => {
     event?.preventDefault(); // Prevent default form submission
     console.log("Form Data", data);
-  
+
     try {
       const fun = editId ? editLicenser : addLicenser; // Select function
       let response, error;
-  
+
       if (editId) {
-        ({ response, error } = await fun(`${endPoints.LICENSER}/${editId}`, data));
+        ({ response, error } = await fun(
+          `${endPoints.LICENSER}/${editId}`,
+          data
+        ));
       } else {
         ({ response, error } = await fun(endPoints.LICENSER, data));
       }
-  
+
       console.log("Response:", response);
       console.log("Error:", error);
-  
+
       if (response && !error) {
-        const customerData={
+        toast.success(response.data.message);
+        const customerData = {
           ...data,
-          licenserId:response.data.savedLicenser._id
-        }
-        setCustomerData(customerData)
-        toast.success(response.data.message); // Show success message
-        editId?onClose():handleModalToggle()
-        
+          licenserId: response.data.licenserId,
+        };
+        setCustomerData(customerData);
+        // Show success message
+        editId ? onClose() : handleModalToggle();
       } else {
         toast.error(error.response?.data?.message || "An error occurred.");
       }
@@ -119,14 +114,6 @@ function LicenserForm({ onClose ,editId}: Props) {
       toast.error("An unexpected error occurred.");
     }
   };
-  
-
-  
-  
-
-
-  
-
 
   const salutation = [
     { value: "Mr.", label: "Mr." },
@@ -139,10 +126,10 @@ function LicenserForm({ onClose ,editId}: Props) {
 
   const handleRemoveImage = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent click propagation
- 
+
     // Clear the image value
-    setValue("image","")
- 
+    setValue("image", "");
+
     // Reset the file input value
     if (fileInputRef?.current) {
       fileInputRef.current.value = ""; // Clear the input field
@@ -161,75 +148,73 @@ function LicenserForm({ onClose ,editId}: Props) {
     }
   };
 
-    // UseEffect for updating regions
-    useEffect(() => {
-      const filteredRegions = dropdownRegions?.map((region: any) => ({
-        value: String(region._id),
-        label: region.regionName,
-      }));
-      // Update the state without using previous `data` state
-      setData((prevData:any) => ({
-        ...prevData,
-        regions: filteredRegions,
-      }));
-    }, [dropdownRegions]);
-  
-    // UseEffect for updating areas based on selected region
-    useEffect(() => {
-      const filteredAreas = dropDownAreas?.filter(
-        (area: any) => area?.region === watch("regionId")
-      );
-      const transformedAreas = filteredAreas?.map((area: any) => ({
-        label: area.areaName,
-        value: String(area._id),
-      }));
-  
-      // Update areas
-      setData((prevData:any) => ({
-        ...prevData,
-        areas: transformedAreas,
-      }));
-    }, [watch("regionId"), dropDownAreas]);
-  
-    // UseEffect for updating regions
-    useEffect(() => {
-      const filteredBDA = dropDownBdas?.filter(
-        (bda: any) => bda?.area === watch("areaId")
-      );
-      const transformedBda:any = filteredBDA?.map((bda: any) => ({
-        value: String(bda?._id),
-        label: bda?.userName,
-      }));
-      
-      // Update the state without using previous `data` state
-      setData((prevData:any) => ({
-        ...prevData,
-        bdas: transformedBda,
-      }));
-    }, [dropDownBdas,watch("areaId")]);
+  // UseEffect for updating regions
+  useEffect(() => {
+    const filteredRegions = dropdownRegions?.map((region: any) => ({
+      value: String(region._id),
+      label: region.regionName,
+    }));
+    // Update the state without using previous `data` state
+    setData((prevData: any) => ({
+      ...prevData,
+      regions: filteredRegions,
+    }));
+  }, [dropdownRegions]);
 
-    useEffect(()=>{
-      
-      if(user?.role=="BDA"){
-        const filteredBDA:any = dropDownBdas?.find(
-          (bda: any) => bda?.user?.employeeId === user?.employeeId
-        );
-  
-        console.log("Filtered BDA:", filteredBDA?._id);
-        setValue("areaId", filteredBDA?.area?._id || "");
-          setValue("regionId", filteredBDA?.region?._id || "");
-          setValue("bdaId", filteredBDA?._id || "");
-          
-      }
-    },[user,dropDownBdas])
-    
+  // UseEffect for updating areas based on selected region
+  useEffect(() => {
+    const filteredAreas = dropDownAreas?.filter(
+      (area: any) => area?.region === watch("regionId")
+    );
+    const transformedAreas = filteredAreas?.map((area: any) => ({
+      label: area.areaName,
+      value: String(area._id),
+    }));
+
+    // Update areas
+    setData((prevData: any) => ({
+      ...prevData,
+      areas: transformedAreas,
+    }));
+  }, [watch("regionId"), dropDownAreas]);
+
+  // UseEffect for updating regions
+  useEffect(() => {
+    const filteredBDA = dropDownBdas?.filter(
+      (bda: any) => bda?.area === watch("areaId")
+    );
+    const transformedBda: any = filteredBDA?.map((bda: any) => ({
+      value: String(bda?._id),
+      label: bda?.userName,
+    }));
+
+    // Update the state without using previous `data` state
+    setData((prevData: any) => ({
+      ...prevData,
+      bdas: transformedBda,
+    }));
+  }, [dropDownBdas, watch("areaId")]);
+
+  useEffect(() => {
+    if (user?.role == "BDA") {
+      const filteredBDA: any = dropDownBdas?.find(
+        (bda: any) => bda?.user?.employeeId === user?.employeeId
+      );
+
+      console.log("Filtered BDA:", filteredBDA?._id);
+      setValue("areaId", filteredBDA?.area?._id || "");
+      setValue("regionId", filteredBDA?.region?._id || "");
+      setValue("bdaId", filteredBDA?._id || "");
+    }
+  }, [user, dropDownBdas]);
+
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
       label: items.name,
       value: String(items.name), // Ensure `value` is a string
     }));
     setData((prevData: any) => ({ ...prevData, country: filteredCountries }));
-  }, [allCountries])
+  }, [allCountries]);
 
   // // Effect to fetch and populate states based on selected country
   useEffect(() => {
@@ -249,243 +234,244 @@ function LicenserForm({ onClose ,editId}: Props) {
     }
   }, [watch("country"), allCountries]);
 
-
-   const setFormValues = (data: LicenserData) => {
+  const setFormValues = (data: LicenserData) => {
     console.log(data);
-    
-      Object.keys(data).forEach((key) => {
-        setValue(key as keyof LicenserData, data[key as keyof LicenserData]);
-      });
-    };
-  
-    const getOneLicenser = async () => {
-      try {
-        const { response, error } = await getLicenser(`${endPoints.LICENSER}/${editId}`);
-        if (response && !error) {
-          const Licenser = response.data; // Return the fetched data
-          console.log("Fetched Licenser data:", Licenser);
-          const{licensers,...filteredLicencers}=Licenser
-          setFormValues(filteredLicencers);
-        } else {
-          // Handle the error case if needed (for example, log the error)
-          console.error('Error fetching Lead data:', error);
-        }
-      } catch (err) {
-        console.error('Error fetching Lead data:', err);
+
+    Object.keys(data).forEach((key) => {
+      setValue(key as keyof LicenserData, data[key as keyof LicenserData]);
+    });
+  };
+
+  const getOneLicenser = async () => {
+    try {
+      const { response, error } = await getLicenser(
+        `${endPoints.LICENSER}/${editId}`
+      );
+      if (response && !error) {
+        const Licenser = response.data; // Return the fetched data
+        console.log("Fetched Licenser data:", Licenser);
+        const { licensers, ...filteredLicencers } = Licenser;
+        setFormValues(filteredLicencers);
+      } else {
+        // Handle the error case if needed (for example, log the error)
+        console.error("Error fetching Lead data:", error);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching Lead data:", err);
+    }
+  };
 
-    useEffect(() => {
-      getOneLicenser()
-    }, [editId]);
-
+  useEffect(() => {
+    getOneLicenser();
+  }, [editId]);
 
   const handleInputChange = (field: keyof LicenserData) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-
   return (
     <>
-    <div className="px-5 py-3 bg-white rounded shadow-md">
-      <div className="flex justify-between">
-      <div>
-
-<h3 className="text-[#303F58] font-bold text-lg">{editId ? "Edit" : "Create"} Licenser</h3>
-<p className="text-[11px] text-[#8F99A9] mt-1">
-  {editId
-    ? "Edit the details of the Licenser."
-    : "Fill in the details to create a new Licenser."}
-</p>
-</div>
-        <p onClick={onClose} className="text-2xl cursor-pointer">
-          &times;
-        </p>
-      </div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid grid-cols-12 gap-2 mt-3"
-      >
-        <div className="col-span-2">
-        <label className="cursor-pointer text-center flex justify-center" htmlFor="file-upload">
-            <input
-              id="file-upload"
-              type="file"
-              className="hidden"
-              onChange={handleFileChange}
-            />
-            <ImagePlaceHolder uploadedImage={watch("image")} />
-          </label>
-          {watch('image') && (
-        <div
-          onClick={handleRemoveImage} // Remove image handler
-          className="flex justify-center  items-center"
+      <div className="px-5 py-3 bg-white rounded shadow-md">
+        <div className="flex justify-between">
+          <div>
+            <h3 className="text-[#303F58] font-bold text-lg">
+              {editId ? "Edit" : "Create"} Licenser
+            </h3>
+            <p className="text-[11px] text-[#8F99A9] mt-1">
+              {editId
+                ? "Edit the details of the Licenser."
+                : "Fill in the details to create a new Licenser."}
+            </p>
+          </div>
+          <p onClick={onClose} className="text-2xl cursor-pointer">
+            &times;
+          </p>
+        </div>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="grid grid-cols-12 gap-2 mt-3"
         >
-          <div  className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
-           <Trash color="red" size={16}/>
+          <div className="col-span-2">
+            <label
+              className="cursor-pointer text-center flex justify-center"
+              htmlFor="file-upload"
+            >
+              <input
+                id="file-upload"
+                type="file"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+              <ImagePlaceHolder uploadedImage={watch("image")} />
+            </label>
+            {watch("image") && (
+              <div
+                onClick={handleRemoveImage} // Remove image handler
+                className="flex justify-center  items-center"
+              >
+                <div className="border-2 cursor-pointer rounded-full h-7 w-7 flex justify-center items-center -ms-2 mt-2">
+                  <Trash color="red" size={16} />
+                </div>
+              </div>
+            )}
           </div>
-        </div>
-      )}
-        </div>
-        <div className="col-span-10">
-          <div className="grid grid-cols-2 gap-4">
-            <PrefixInput
-              required
-              label="First Name"
-              selectName="salutation"
-              inputName="firstName"
-              selectValue={watch("salutation")} // Dynamic select binding
-              inputValue={watch("firstName")} // Dynamic input binding
-              options={salutation}
-              placeholder="Enter First Name"
-              error={errors.firstName?.message} // Display error message if any
-              onSelectChange={(e) => setValue("salutation", e.target.value)} // Update salutation value
-              onInputChange={(e) => {
-                clearErrors("firstName"); // Clear error for input field
-                setValue("firstName", e.target.value); // Update firstName value
-              }}
-            />
+          <div className="col-span-10">
+            <div className="grid grid-cols-2 gap-4">
+              <PrefixInput
+                required
+                label="First Name"
+                selectName="salutation"
+                inputName="firstName"
+                selectValue={watch("salutation")} // Dynamic select binding
+                inputValue={watch("firstName")} // Dynamic input binding
+                options={salutation}
+                placeholder="Enter First Name"
+                error={errors.firstName?.message} // Display error message if any
+                onSelectChange={(e) => setValue("salutation", e.target.value)} // Update salutation value
+                onInputChange={(e) => {
+                  clearErrors("firstName"); // Clear error for input field
+                  setValue("firstName", e.target.value); // Update firstName value
+                }}
+              />
 
-            <Input
-          
-              label="Last Name"
-              placeholder="Enter Last Name"
-              error={errors.lastName?.message}
-              {...register("lastName")}
-             // onChange={() => handleInputChange("lastName")}
-            />
-            
-            <Input
-              required
-              label="Email"
-              type="email"
-              placeholder="Enter Email"
-              error={errors.email?.message}
-              {...register("email")}
-             // onChange={() => handleInputChange("email")}
-            />
+              <Input
+                label="Last Name"
+                placeholder="Enter Last Name"
+                error={errors.lastName?.message}
+                {...register("lastName")}
+                // onChange={() => handleInputChange("lastName")}
+              />
 
-            <CustomPhoneInput
-              required
-              label="Phone"
-              name="phone"
-              error={errors.phone?.message}
-              placeholder="Enter Phone No"
-              value={watch("phone")} // Watch phone field for changes
-              onChange={(value) => {
-                handleInputChange("phone");
-                setValue("phone", value); // Update the value of the phone field in React Hook Form
-              }}
-            />
+              <Input
+                required
+                label="Email"
+                type="email"
+                placeholder="Enter Email"
+                error={errors.email?.message}
+                {...register("email")}
+                // onChange={() => handleInputChange("email")}
+              />
 
-            <Input
-              label="Address"
-              placeholder="Address"
-              error={errors.address?.message}
-              {...register("address")}
-            />
-             <Input
-              label="City"
-              placeholder="Enter Company Name"
-              error={errors.city?.message}
-              {...register("city")}
-            />
-            
-           
-          </div>
-          <div className="grid grid-cols-2 gap-4 mt-4">
-         
-          <Select
-                  placeholder="Select Country"
-                  label="Country"
-                  error={errors.country?.message}
-                  value={watch("country")}
+              <CustomPhoneInput
+                required
+                label="Phone"
+                name="phone"
+                error={errors.phone?.message}
+                placeholder="Enter Phone No"
+                value={watch("phone")} // Watch phone field for changes
+                onChange={(value) => {
+                  handleInputChange("phone");
+                  setValue("phone", value); // Update the value of the phone field in React Hook Form
+                }}
+              />
+
+              <Input
+                label="Address"
+                placeholder="Address"
+                error={errors.address?.message}
+                {...register("address")}
+              />
+              <Input
+                label="City"
+                placeholder="Enter Company Name"
+                error={errors.city?.message}
+                {...register("city")}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              <Select
+                placeholder="Select Country"
+                label="Country"
+                error={errors.country?.message}
+                value={watch("country")}
+                onChange={(selectedValue) => {
+                  // Update the country value and clear the state when country changes
+                  setValue("country", selectedValue);
+                  handleInputChange("country");
+                  setValue("state", ""); // Reset state when country changes
+                }}
+                options={data.country}
+              />
+              <Select
+                placeholder={
+                  data.state.length === 0 ? "Choose Country" : "Select State"
+                }
+                value={watch("state")}
+                onChange={(selectedValue) => {
+                  setValue("state", selectedValue);
+                  handleInputChange("state");
+                }}
+                label="State"
+                error={errors.state?.message}
+                options={data.state}
+              />
+              <Input
+                label="Company ID"
+                placeholder="Enter Company ID"
+                {...register("companyId")}
+                error={errors.companyId?.message}
+              />
+              <Input
+                label="Company Name"
+                placeholder="Enter Company Name"
+                error={errors.companyName?.message}
+                {...register("companyName")}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4 my-4">
+              <Input
+                required
+                label="Start Date"
+                type="date"
+                placeholder="Select Start Date"
+                error={errors.startDate?.message}
+                {...register("startDate")}
+              />
+              <Input
+                required
+                label="End Date"
+                type="date"
+                placeholder="Select End Date"
+                error={errors.endDate?.message}
+                {...register("endDate")}
+              />
+              <div className="col-span-2 gap-3 grid grid-cols-3">
+                <Select
+                  readOnly={user?.role == "BDA" ? true : false}
+                  required
+                  placeholder="Select Region"
+                  label="Select Region"
+                  value={watch("regionId")}
                   onChange={(selectedValue) => {
-                    // Update the country value and clear the state when country changes
-                    setValue("country", selectedValue);
-                    handleInputChange("country");
-                    setValue("state", ""); // Reset state when country changes
+                    setValue("regionId", selectedValue); // Manually update the region value
+                    handleInputChange("regionId");
+                    setValue("areaId", "");
+                    setValue("bdaId", "");
                   }}
-                  options={data.country}
+                  error={errors.regionId?.message}
+                  options={data.regions}
                 />
                 <Select
-                  placeholder={
-                    data.state.length === 0 ? "Choose Country" : "Select State"
-                  }
-                  value={watch("state")}
-                  onChange={(selectedValue) => {
-                    setValue("state", selectedValue);
-                    handleInputChange("state");
-                  }}
-                  label="State"
-                  error={errors.state?.message}
-                  options={data.state}
-                />
-             <Input
-              label="Company ID"
-              placeholder="Enter Company ID"
-              {...register("companyId")}
-              error={errors.companyId?.message}
-            />
-            <Input
-              label="Company Name"
-              placeholder="Enter Company Name"
-              error={errors.companyName?.message}
-              {...register("companyName")}
-            />
-          </div>
-        <div className="grid grid-cols-2 gap-4 my-4">
-            <Input
-              required
-              label="Start Date"
-              type="date"
-              placeholder="Select Start Date"
-              error={errors.startDate?.message}
-              {...register("startDate")}
-            />
-            <Input
-            required
-            label="End Date"
-            type="date"
-            placeholder="Select End Date"
-            error={errors.endDate?.message}
-            {...register("endDate")}
-          />
-         <div className="col-span-2 gap-3 grid grid-cols-3">
-         <Select
-            readOnly={user?.role=="BDA"?true:false}
-            required
-            placeholder="Select Region"
-            label="Select Region"
-            value={watch("regionId")}
-            onChange={(selectedValue) => {
-              setValue("regionId", selectedValue); // Manually update the region value
-              handleInputChange("regionId");
-              setValue("areaId", "");
-              setValue("bdaId", "");
-            }}
-            error={errors.regionId?.message}
-            options={data.regions}
-            />
-            <Select
-              readOnly={user?.role=="BDA"?true:false}
-              required
+                  readOnly={user?.role == "BDA" ? true : false}
+                  required
                   label="Select Area"
-                  placeholder={watch("regionId")?"Select Area":"Select Region"}
+                  placeholder={
+                    watch("regionId") ? "Select Area" : "Select Region"
+                  }
                   value={watch("areaId")}
                   onChange={(selectedValue) => {
                     setValue("areaId", selectedValue); // Manually update the region value
-                    setValue("bdaId","")
+                    setValue("bdaId", "");
                     handleInputChange("areaId");
                   }}
                   error={errors.areaId?.message}
                   options={data.areas}
-            />
-            <Select
-              readOnly={user?.role=="BDA"?true:false}
-              required
+                />
+                <Select
+                  readOnly={user?.role == "BDA" ? true : false}
+                  required
                   label="Assigned BDA"
-                  placeholder={watch("areaId")?"Select BDA":"Select Area"}
+                  placeholder={watch("areaId") ? "Select BDA" : "Select Area"}
                   value={watch("bdaId")}
                   onChange={(selectedValue) => {
                     setValue("bdaId", selectedValue); // Manually update the region value
@@ -493,44 +479,41 @@ function LicenserForm({ onClose ,editId}: Props) {
                   }}
                   error={errors.bdaId?.message}
                   options={data.bdas}
-            />
-         </div>
-        
-        </div>
-        <div className="bottom-0 left-0 w-full pt-2 ps-2 bg-white flex gap-2 justify-end">
-      <Button
-        variant="tertiary"
-        className="h-8 text-sm border rounded-lg"
-        size="xl"
-        onClick={onClose}
-      >
-        Cancel
-      </Button>
-      <Button
-        variant="primary"
-        className="h-8 text-sm border rounded-lg"
-        size="xl"
-        type="submit"
-      
-      >
-        Done
-      </Button>
-
-
-    </div>
-        </div>
-     
-     
+                />
+              </div>
+            </div>
+            <div className="bottom-0 left-0 w-full pt-2 ps-2 bg-white flex gap-2 justify-end">
+              <Button
+                variant="tertiary"
+                className="h-8 text-sm border rounded-lg"
+                size="xl"
+                onClick={onClose}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="primary"
+                className="h-8 text-sm border rounded-lg"
+                size="xl"
+                type="submit"
+              >
+                Done
+              </Button>
+            </div>
+          </div>
         </form>
-    </div>
-    <Modal
-                open={isOrgModal}
-                align="center"
-                onClose={()=>handleModalToggle(true)}
-                className="w-[35%]"
-            >
-                <OrganisationForm type="licenser"   onClose={()=>handleModalToggle(true)} />
-            </Modal>
+      </div>
+      <Modal
+        open={isOrgModal}
+        align="center"
+        onClose={() => handleModalToggle(true)}
+        className="w-[35%]"
+      >
+        <OrganisationForm
+          type="licenser"
+          onClose={() => handleModalToggle(true)}
+        />
+      </Modal>
     </>
   );
 }

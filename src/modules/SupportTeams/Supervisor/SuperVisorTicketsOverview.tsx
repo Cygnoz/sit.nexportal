@@ -55,53 +55,7 @@ const SuperVisorTicketsOverview = ({supportAgentDetails,ticketSummary,insideSvDa
        }
 };
  
- // Data for HomeCards
-//  const SuperVisorCardData = [
-//   {
-      
-//     number: ticketSummary?.totalTickets || 0,
-//       title: "Total Tickets",
-//       subTitle: "The total Tickets",
-//       images: [
-//         <img src={person1} alt="person1" className="w-10 h-10 rounded-full" />,
-//         <img src={person2} alt="person2" className="w-10 h-10 rounded-full" />,
-//         <img src={person1} alt="person3" className="w-10 h-10 rounded-full" />,
-//         <img src={person2} alt="person4" className="w-10 h-10 rounded-full" />,
-//     ],
-//   },
-//   {
-    
-//     number: ticketSummary?.openTickets || 0,
-//       title: "Open Tickets",
-//       subTitle: "In Percentage"
-//   },
-//   {
-      
-//     number: ticketSummary?.resolvedTickets || 0,
-//       title: "Tickets Resolved",
-//       subTitle: "customer satisfaction rating for tickets resolved by the team"
-//   },
-
-// ];
-
-   
-      // const SuperVisorCardData = [
-      //   {
-      //     title: "Total Tickets",
-      //     subTitle: "Overall ticket count",
-      //     number: ticketSummary?.totalTickets || 0,
-      //   },
-      //   {
-      //     title: "Resolved Tickets",
-      //     subTitle: "Tickets resolved successfully",
-      //     number: ticketSummary?.resolvedTickets || 0,
-      //   },
-      //   {
-      //     title: "Open Tickets",
-      //     subTitle: "Tickets currently open",
-      //     number: ticketSummary?.openTickets || 0,
-      //   },
-      // ];
+ 
 
       const SuperVisorCardData = [
         {
@@ -185,7 +139,9 @@ const SuperVisorTicketsOverview = ({supportAgentDetails,ticketSummary,insideSvDa
         actionList={[
          
           { label: 'view', function: handleView },
-        ]}  />
+        ]} 
+        maxHeight="300px"
+         />
       </div>
             </div>
 

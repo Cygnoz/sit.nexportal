@@ -94,8 +94,8 @@ const PraiseHome = ({ }: Props) => {
             <span className="font-bold text-xl">+</span> Create Praise
           </Button>
         </div>
-        <div className="full  bg-[#DAE7E7] rounded-2xl mt-8">
-          <div className="gird grid-cols-12 flex gap-6 bg-cover"
+        <div className=" mt-8">
+          <div className="gird grid-cols-12 relative rounded-b-2xl flex gap-6 bg-cover"
             style={{
               backgroundImage: `url(${BackgroundImage})`, // Use the imported image
             }}>
@@ -106,12 +106,12 @@ const PraiseHome = ({ }: Props) => {
             </div>
 
 
-            <div className="col-span-6  mt-24 ms-96">
-              <div className="mt-5">
+
+              <div className="mt-5 absolute right-[30%] top-24">
                 <Button onClick={handleModalToggle} className="rounded-lg w-40 h-8">
                   <p className="ms-7">Send Praise</p>
                 </Button>
-              </div>
+            
             </div>
 
 

@@ -354,7 +354,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
         onClose={covertModalToggle}
         className="w-[30%]"
       >
-        <ConvertModal getLeads={getLead}  onClose={covertModalToggle} type="lead" />
+        <ConvertModal   onClose={covertModalToggle} type="lead" />
       </Modal>
       <Modal
         open={isModalOpen.confirm}

@@ -10,10 +10,9 @@ type Props = {
     onClose: () => void;
     type:"lead"|"trial";
     orgData?:any
-    getLeads:()=>void
 };
 
-function ConvertModal({ onClose, type,orgData,getLeads }: Props) {
+function ConvertModal({ onClose, type,orgData, }: Props) {
     
     const [isCurrentModalOpen, setIsCurrentModalOpen] = useState(true);
     const [isNextModalOpen, setIsNextModalOpen] = useState(false);
@@ -90,7 +89,7 @@ function ConvertModal({ onClose, type,orgData,getLeads }: Props) {
                 onClose={onClose}
                 className="w-[35%]"
             >
-                <OrganisationForm getLeads={getLeads} orgData={orgData}  type={type} onClose={onClose} />
+                <OrganisationForm  orgData={orgData}  type={type} onClose={onClose} />
             </Modal>
         </>
     );

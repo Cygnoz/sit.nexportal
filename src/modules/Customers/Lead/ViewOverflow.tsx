@@ -5,7 +5,7 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 // import { BarChart, CartesianGrid, Cell, Tooltip, XAxis, YAxis, Bar } from "recharts";
-import { BarChart, Bar, Cell, CartesianGrid, XAxis, YAxis, } from 'recharts';
+import { BarChart, Bar, Cell, CartesianGrid, XAxis, YAxis, ResponsiveContainer, } from 'recharts';
 
 type Props = {
   leadData?: any;
@@ -37,12 +37,16 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
     setLead((prev: any) => ({ ...prev, leadStatus: status }));
   };
 
+ 
+  
+  
   const handleClickOutside = (event: any) => {
     const current: any = dropdownRef.current
     if (current && !current.contains(event.target)) {
       setIsOpen(false);
       setLead((prev: any) => ({ ...prev, leadStatus: leadData?.leadStatus }));
     }
+    
   };
   
   const handleSave = async () => {
@@ -63,10 +67,12 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
   useEffect(() => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  }, [leadData]);
 
   useEffect(() => {
-    setLead(leadData);
+    if(leadData){
+      setLead(leadData) 
+    }
   }, [leadData]);
 
   const data = [
@@ -89,7 +95,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
 
   const renderStep = (step: number, label: string, activeStatuses: string[]) => {
     const isActive = activeStatuses.includes(lead?.leadStatus);
-    const { bgColor, textColor } = isActive ? getStatusClass(lead?.leadStatus) : getStatusClass("");
+    const { bgColor, textColor } = isActive  ? getStatusClass(lead?.leadStatus) : getStatusClass('');
 
 
 
@@ -155,7 +161,9 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
 
     <div className="p-3 bg-white w-full space-y-2 rounded-lg mt-4">
     <h2 className="font-bold p-2">Lead Engagement Over Time</h2>
-    <BarChart width={950} height={280} data={normalizedData}>
+        <div className="-ms-6">
+        <ResponsiveContainer width="100%" minHeight={300}>
+    <BarChart  data={normalizedData}>
       <CartesianGrid strokeDasharray="3 3" vertical={false} />
       <XAxis dataKey="name" axisLine={false} tickLine={false} />
       <YAxis 
@@ -170,6 +178,8 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
         ))}
       </Bar>
     </BarChart>
+    </ResponsiveContainer>
+        </div>
   </div>
 
 
