@@ -12,6 +12,7 @@ const nodemailer = require('nodemailer');
 const NodeCache = require('node-cache');
 const otpCache = new NodeCache({ stdTTL: 180 }); // 180 seconds
 const filterByRole = require("../services/filterByRole");
+const SupportAgent = require("../database/model/supportAgent");
 
 
 // Login 
@@ -1170,11 +1171,25 @@ exports.getRegionsAreasBdas = async (req, res) => {
       userName: bda.user?.userName || 'N/A'
     }));
 
+    const supportagents = await SupportAgent.find({ status: "Active" })
+      .populate({
+        path: 'user',
+        model: User,
+        select: 'userName'
+      })
+      .select("_id user");
+
+    // Format BDAs to include userName directly
+    const formattedSupport = supportagents.map(supportAgent => ({
+      _id: supportAgent._id,
+      userName: supportAgent.user?.userName || 'N/A'
+    }));
     // Send the response
     res.status(200).json({
       regions,
       areas,
-      bdas: formattedBdas
+      bdas: formattedBdas,
+      supportAgent: formattedSupport
     });
   } catch (error) {
     console.error('Error fetching regions, areas, and BDAs:', error);
