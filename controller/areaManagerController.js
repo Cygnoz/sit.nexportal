@@ -494,6 +494,56 @@ exports.deleteAreaManager = async (req, res, next) => {
   }
 };
 
+exports.deactivateAreamanager = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Extract Area Manager ID
+    const { status } = req.body; // Extract status from request body
+ 
+    // Validate the status
+    if (!["Active", "Deactive"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status value. Allowed values are 'Active' or 'Deactive'.",
+      });
+    }
+ 
+    // Check if the Area Manager exists
+    const areaManager = await AreaManager.findById(id);
+    if (!areaManager) {
+      return res.status(404).json({ message: "Area Manager not found." });
+    }
+ 
+    // If deactivating, check if Area Manager is associated with any lead
+    if (status === "Deactive") {
+      const lead = await Leads.findOne({ areaManager: id });
+      if (lead) {
+        return res.status(400).json({
+          message: "Cannot deactivate Area Manager because it is referenced in Leads.",
+        });
+      }
+    }
+ 
+    // Update the Area Manager's status
+    areaManager.status = status;
+    await areaManager.save();
+ 
+    // Log the operation
+    logOperation(req, `Succesfully`, areaManager._id);
+     next()
+    // Respond with success
+    return res.status(200).json({
+      message: `Area Manager status updated to ${status} successfully.`,
+      areaManager,
+    });
+  } catch (error) {
+    console.error("Error updating Area Manager status:", error.message || error);
+ 
+    // Log the failure and respond with an error
+    logOperation(req, "Failed");
+    next();
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,

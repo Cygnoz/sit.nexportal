@@ -547,6 +547,56 @@ exports.deleteBda = async (req, res, next) => {
 };
 
 
+exports.deactivateBda = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Extract BDA ID from params
+    const { status } = req.body; // Extract status from request body
+ 
+    // Validate the status
+    if (!["Active", "Deactive"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status value. Allowed values are 'Active' or 'Deactive'.",
+      });
+    }
+ 
+    // Check if the BDA exists
+    const bda = await Bda.findById(id);
+    if (!bda) {
+      return res.status(404).json({ message: "BDA not found." });
+    }
+ 
+    // If deactivating, check if the BDA is referenced in Leads
+    if (status === "Deactive") {
+      const lead = await Leads.findOne({ bdaId: id });
+      if (lead) {
+        return res.status(400).json({
+          message: "Cannot deactivate BDA because it is referenced in Leads.",
+        });
+      }
+    }
+ 
+    // Update the BDA's status
+    bda.status = status;
+    await bda.save();
+ 
+    // Log the operation
+    logOperation(req, `Succesfully`, bda._id);
+        next()
+    // Return success response
+    res.status(200).json({
+      message: `BDA status updated to ${status} successfully.`,
+      bda,
+    });
+  } catch (error) {
+    console.error("Error updating BDA status:", error.message || error);
+ 
+    // Log the failure and respond with error
+    logOperation(req, "Failed ");
+     next();
+    res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,

@@ -423,6 +423,57 @@ exports.deleteRegionManager = async (req, res, next) => {
   }
 };
 
+
+exports.deactivateRegionmanager = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Extract Region Manager ID
+    const { status } = req.body; // Extract status from request body
+ 
+    // Validate the status
+    if (!["Active", "Deactive"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status value. Allowed values are 'Active' or 'Deactive'.",
+      });
+    }
+ 
+    // Check if the Region Manager exists
+    const regionManager = await RegionManager.findById(id);
+    if (!regionManager) {
+      return res.status(404).json({ message: "Region Manager not found." });
+    }
+ 
+    // If deactivating, check if Region Manager is associated with any lead
+    if (status === "Deactive") {
+      const lead = await Leads.findOne({ regionManager: id });
+      if (lead) {
+        return res.status(400).json({
+          message: "Cannot deactivate Region Manager because it is referenced in Leads.",
+        });
+      }
+    }
+ 
+    // Update the Region Manager's status
+    regionManager.status = status;
+    await regionManager.save();
+ 
+    // Log the operation
+      logOperation(req, `Succesfully`, regionManager._id);
+      next()
+    // Respond with success
+    return res.status(200).json({
+      message: `Region Manager status updated to ${status} successfully.`,
+      regionManager,
+    });
+  } catch (error) {
+    console.error("Error updating Region Manager status:", error.message || error);
+ 
+    // Log the failure and respond with an error
+    logOperation(req, "Failed");
+     next();
+    return res.status(500).json({ message: "Internal server error." });
+  }
+};
+
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
