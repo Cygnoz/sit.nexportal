@@ -344,18 +344,21 @@ const roles = [
       { action: "View Region Manager", note: "View Region Manager" },
       { action: "Edit Region Manager", note: "Edit Region Manager" },
       { action: "Delete Region Manager", note: "Delete Region Manager" },
+      { action: "Deactivate Region Manager", note: "Deactivate Region Manager" },
 
       // Area Manager
       { action: "Add Area Manager", note: "Add Area Manager" },
       { action: "View Area Manager", note: "View Area Manager" },
       { action: "Edit Area Manager", note: "Edit Area Manager" },
       { action: "Delete Area Manager", note: "Delete Area Manager" },
+      { action: "Deactivate Area Manager", note: "Deactivate Area Manager" },
 
       // BDA
       { action: "Add BDA", note: "Add BDA" },
       { action: "View BDA", note: "View BDA" },
       { action: "Edit BDA", note: "Edit BDA" },
       { action: "Delete BDA", note: "Delete BDA" },
+      { action: "Deactivate BDA", note: "Deactivate BDA" },
 
       // commission
       { action: "Add Commission", note: "Add Commission" },
@@ -368,12 +371,14 @@ const roles = [
       { action: "View Supervisor", note: "View Supervisor" },
       { action: "Edit Supervisor", note: "Edit Supervisor" },
       { action: "Delete Supervisor", note: "Delete Supervisor" },
+      { action: "Deactivate Supervisor", note: "Deactivate Supervisor" },
       
       // Support Agent
       { action: "Add Support Agent", note: "Add Support Agent" },
       { action: "View Support Agent", note: "View Support Agent" },
       { action: "Edit Support Agent", note: "Edit Support Agent" },
       { action: "Delete Support Agent", note: "Delete Support Agent" },
+      { action: "Deactivate Support Agent", note: "Deactivate Support Agent" },
 
       // Lead
       { action: "Add Lead", note: "Add Lead" },

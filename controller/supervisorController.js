@@ -398,6 +398,63 @@ exports.deleteSupervisor = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.deactivateSupervisor = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Extract supervisor ID
+    const { status } = req.body; // Extract status from the request body
+ 
+    // Validate the status
+    if (!["Active", "Deactive"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status value. Allowed values are 'Active' or 'Deactive'.",
+      });
+    }
+ 
+    // Find the supervisor
+    const supervisor = await Supervisor.findById(id);
+    if (!supervisor) {
+      return res.status(404).json({ message: "Supervisor not found" });
+    }
+ 
+    const supervisorRegion = supervisor.region; // Get the supervisor's region
+ 
+    // If deactivating, ensure no support agents are in the same region
+    if (status === "Deactive") {
+      const dependentAgents = await SupportAgent.find({ region: supervisorRegion });
+      if (dependentAgents.length > 0) {
+        return res.status(400).json({
+          message: "Cannot deactivate supervisor: There are support agents associated with the same region.",
+          supportAgents: dependentAgents.map(agent => ({
+            id: agent._id,
+            name: agent.userName,
+            email: agent.personalEmail,
+          })),
+        });
+      }
+    }
+ 
+    // Update the supervisor's status
+    supervisor.status = status;
+    await supervisor.save();
+ 
+    // Log the operation
+     logOperation(req, `Succesfully`, supervisor._id);
+     next()
+    // Respond with success
+    return res.status(200).json({
+      message: `Supervisor status updated to ${status} successfully.`,
+      supervisor,
+    });
+  } catch (error) {
+    console.error("Error updating supervisor status:", error);
+ 
+    // // Log the failure and respond with an error
+     logOperation(req, "Failed");
+    next();
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
  
 
 // Create a reusable transporter object using AWS SES

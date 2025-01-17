@@ -461,6 +461,62 @@ exports.deleteSupportAgent = async (req, res, next) => {
   }
 };
 
+exports.deactivateSupportagent = async (req, res, next) => {
+  try {
+    const { id } = req.params; // Extract support agent ID from the request params
+    const { status } = req.body; // Extract status from the request body
+ 
+    // Validate the status
+    if (!["Active", "Deactive"].includes(status)) {
+      return res.status(400).json({
+        message: "Invalid status value. Allowed values are 'Active' or 'Deactive'.",
+      });
+    }
+ 
+    // Find the support agent
+    const supportAgent = await SupportAgent.findById(id);
+    if (!supportAgent) {
+      return res.status(404).json({ message: "Support agent not found" });
+    }
+ 
+    // Check if the support agent is assigned to any ticket
+    if (status === "Deactive") {
+      const dependentTickets = await Ticket.find({ supportAgentId: id });
+      if (dependentTickets.length > 0) {
+        return res.status(400).json({
+          message: "Cannot deactivate support agent: They are associated with existing tickets.",
+          tickets: dependentTickets.map((ticket) => ({
+            id: ticket._id,
+            subject: ticket.subject,
+            status: ticket.status,
+          })),
+        });
+      }
+    }
+ 
+    // Update the status
+    supportAgent.status = status;
+    await supportAgent.save();
+ 
+    // Log the operation
+    logOperation(req, `Succesfully`, supportAgent._id);
+    next
+    // Respond with success
+    return res.status(200).json({
+      message: `Support agent status updated to ${status} successfully.`,
+      supportAgent,
+    });
+  } catch (error) {
+    console.error("Error updating support agent status:", error);
+ 
+    // Log the failure and send an error response
+    logOperation(req, "Failed ");
+     next();
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+ 
+
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
