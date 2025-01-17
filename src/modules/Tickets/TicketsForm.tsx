@@ -12,8 +12,6 @@ import useApi from "../../Hooks/useApi";
 import toast from "react-hot-toast";
 import { TicketsData } from "../../Interfaces/Tickets";
 import { useUser } from "../../context/UserContext";
-//import CustomPhoneInput from "../../../components/form/CustomPhone";
-//import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 type Props = {
   onClose: () => void;
@@ -229,7 +227,7 @@ function TicketsForm({ onClose, editId }: Props) {
         <form onSubmit={handleSubmit(onSubmit)}>
           <div>
             <div className=" my-2">
-              <div className="mx-3 gap-4 space-y-2 max-w-xl">
+              <div className="mx-3 gap-4 space-y-2 ">
                 <Select
                   required
                   label="Requestor"

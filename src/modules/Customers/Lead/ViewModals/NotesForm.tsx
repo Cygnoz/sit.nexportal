@@ -37,42 +37,42 @@ type Props = {
 
 
 const validationSchema = Yup.object().shape({
-    activityType: Yup.string(), // Ensure it's validated as "Meeting".
-    leadId: Yup.string(),
-    relatedTo:Yup.string(),
-    noteMembers:Yup.string(),
-    note:Yup.string(),
+  activityType: Yup.string(), // Ensure it's validated as "Meeting".
+  leadId: Yup.string(),
+  relatedTo: Yup.string().required("Related To is required"),
+  noteMembers: Yup.string(),
+  note: Yup.string().required("Note is required"),
 });
 
-const NotesForm = ({ onClose ,editId}: Props) => {
+const NotesForm = ({ onClose, editId }: Props) => {
   const [quillValue, setQuillValue] = useState<any>();
-  const {request: addLeadNote}=useApi('post',3001)
+  const { request: addLeadNote } = useApi('post', 3001)
   const { request: getLeadNote } = useApi("get", 3001);
   const { request: editLeadNote } = useApi("put", 3001);
 
 
-  console.log("editId",editId);
-  
-  const { id } = useParams()
-        console.log(id);
-  
-      const {
-        handleSubmit,
-        register,
-        setValue,
-        formState: { errors },
-        watch,
-    } = useForm<LeadNoteData>({
-        resolver: yupResolver(validationSchema),
-        defaultValues: {
-          activityType: "Note",
-          leadId: id
-      }
-      });
-    
-      console.log(errors);
+  console.log("editId", editId);
 
-     
+  const { id } = useParams()
+  console.log(id);
+
+  const {
+    handleSubmit,
+    register,
+    setValue,
+    formState: { errors },
+    watch,
+  } = useForm<LeadNoteData>({
+    resolver: yupResolver(validationSchema),
+    defaultValues: {
+      activityType: "Note",
+      leadId: id
+    }
+  });
+
+  console.log(errors);
+
+
   const Emoji = Quill.import('formats/emoji');
   Quill.register('modules/emoji', Emoji);
   const icons = Quill.import('ui/icons');
@@ -81,7 +81,7 @@ const NotesForm = ({ onClose ,editId}: Props) => {
   const boldIconHTML = ReactDOMServer.renderToStaticMarkup(<BoldIcon size={12} color='#4B5C79' />);
   const ItalicIconHTML = ReactDOMServer.renderToStaticMarkup(<ItalicIcon color='#4B5C79' />);
   const UnderlineIconHTML = ReactDOMServer.renderToStaticMarkup(<UnderlineIcon color='#4B5C79' />);
-  const StrikeIconHTML = ReactDOMServer.renderToStaticMarkup( <StrikeThroughIcon color='#4B5C79' /> );
+  const StrikeIconHTML = ReactDOMServer.renderToStaticMarkup(<StrikeThroughIcon color='#4B5C79' />);
   const LinkIconHTML = ReactDOMServer.renderToStaticMarkup(<LinkIcon color='#4B5C79' />);
   const EmojiIconHTML = ReactDOMServer.renderToStaticMarkup(<EmojiIcon color='#4B5C79' />);
 
@@ -112,13 +112,13 @@ const NotesForm = ({ onClose ,editId}: Props) => {
     Object.keys(data).forEach((key) => {
       setValue(key as keyof LeadNoteData, data[key as keyof LeadNoteData]);
     });
-  
+
     // Set Quill value when editing
     if (data.note) {
       setQuillValue(data.note);
     }
   };
-  
+
   useEffect(() => {
     if (editId) {
       (async () => {
@@ -126,7 +126,7 @@ const NotesForm = ({ onClose ,editId}: Props) => {
           const { response, error } = await getLeadNote(`${endPoints.LEAD_ACTIVITY}/${editId}`);
           if (response && !error) {
             console.log(response.data.activity);
-            
+
             setFormValues(response.data.activity);
           } else {
             console.log(error.response.data.message);
@@ -138,22 +138,22 @@ const NotesForm = ({ onClose ,editId}: Props) => {
     }
   }, [editId]);
 
-    //console.log("dd",watch());
-    
+  //console.log("dd",watch());
+
 
   const onSubmit: SubmitHandler<LeadNoteData> = async (data: any, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("Data", data);
     try {
       const apiCall = editId ? editLeadNote : addLeadNote;
-      const {response , error} = await apiCall(  editId ? `${endPoints.LEAD_ACTIVITY}/${editId}`: endPoints.LEAD_ACTIVITY , data);
+      const { response, error } = await apiCall(editId ? `${endPoints.LEAD_ACTIVITY}/${editId}` : endPoints.LEAD_ACTIVITY, data);
       if (response && !error) {
         console.log(response.data);
         toast.success(response.data.message)
         onClose();
       } else {
         console.log(error.data.message);
-        
+
       }
     } catch (err) {
       console.error("Error submitting lead note data:", err);
@@ -162,22 +162,22 @@ const NotesForm = ({ onClose ,editId}: Props) => {
   };
 
 
-useEffect(()=>{
- if(quillValue){
-  setValue("note",quillValue)
- }
-},[quillValue])
+  useEffect(() => {
+    if (quillValue) {
+      setValue("note", quillValue)
+    }
+  }, [quillValue])
 
-console.log("darssss",errors);
+  console.log("darssss", errors);
 
 
   return (
     <div>
-      <div className='p-4 mb-6 h-full'>
+      <div className='p-4  h-full'>
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-lg font-bold text-deepStateBlue ">
-            {editId ? "Edit" : "Add"} Note
+              {editId ? "Edit" : "Add"} Note
             </h1>
           </div>
           <div>
@@ -186,35 +186,44 @@ console.log("darssss",errors);
 
         </div>
         <form className='my-4' onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex gap-2"  >
-            <p className='text-[#4B5C79] text-sm font-normal my-2'>Related to: </p>
+          <div className="flex gap-2 w-full"  >
+            <p className='text-[#4B5C79] text-sm font-normal -mt-1'>Related to: </p>
+
             <Input
-              placeholder='Anjela John'
               {...register("relatedTo")}
               value={watch("relatedTo")}
-              className="w-fit h-fit flex p-2 mt-1 text-[#303F58] text-xs font-semibold"
+              placeholder='Anjela John'
+              type="text"
+              className="w-full flex text-[#303F58] text-xs font-semibold outline-none items-center"
             />
+            {errors.relatedTo && (
+              <p className="text-red-500 text-xs mt-1">{errors.relatedTo.message}</p>
+            )}
 
           </div>
-          <div className='w-full h-full mb-4'>
-    <ReactQuill
-      value={quillValue || watch("note") || ""}
-      onChange={setQuillValue}
-      placeholder="Start typing. @mention people to notify them"
-      className="quill-editor h-[300px] text-[#4B5C79] text-sm font-normal outline-none"
-      theme="snow"
-      modules={modules}
-    />
-  </div>
-        <div className='mt-16 flex justify-end'>
-        <Button type="submit" className='w-16 h-9 ms-2' variant='primary' size='sm'>Done</Button>
-      </div>
+          <div className='w-full h-full my-4'>
+            <ReactQuill
+              value={quillValue || watch("note") || ""}
+              onChange={setQuillValue}
+              placeholder="Start typing. @mention people to notify them"
+              className="quill-editor h-[300px] text-[#4B5C79] text-sm font-normal outline-none"
+              theme="snow"
+              modules={modules}
+            />
+            {errors.note && (
+              <p className="text-red-500 text-xs mt-1">{errors.note.message}</p>
+            )}
+
+          </div>
+          <div className='mt-16 flex justify-end'>
+            <Button type="submit" className='w-16 h-9 ms-2' variant='primary' size='sm'>Done</Button>
+          </div>
         </form>
 
-        
+
 
       </div>
-      
+
     </div>
   )
 }

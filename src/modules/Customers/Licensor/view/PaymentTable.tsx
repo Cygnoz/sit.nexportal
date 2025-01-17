@@ -45,7 +45,7 @@ const paymentData: PaymentData[] = [
     <>
    <div>
     <Table<PaymentData> data={paymentData} columns={paymentColumns} headerContents={{
-      title:'Support Ticket',
+      title:'Payment History',
       search:{placeholder:'Search'},
       sort: [
         {

@@ -45,7 +45,7 @@ const WCommisionHome = () => {
     try {
       const { response, error } = await deleteWC(`${endPoints.WC}/${deleteId}`);
       if (response && !error) {
-        setAllWC((prev) => prev.filter((wc: any) => wc.id !== deleteId));
+        setAllWC((prev) => prev.filter((wc: any) => wc._id !== deleteId));
         toast.success(response.data.message || "Commission deleted successfully");
         getWC(); // Refresh the list
       } else {

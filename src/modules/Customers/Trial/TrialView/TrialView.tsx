@@ -525,10 +525,10 @@ const TrialView = ({ }: Props) => {
                 </p>
               </div>
 
-              <div className="w-full cursor-pointer  flex justify-between my-2">
-                <div onClick={extentModalToggle}>
+              <div className="grid grid-cols-2 cursor-pointer gap-2 my-2">
+                <div className="w-full " onClick={extentModalToggle}>
                   <Button
-                    className="w-fit h-10 flex justify-center"
+                    className="w-full h-10 flex justify-center"
                     variant="tertiary"
                   >
                     <CalenderPlus size={16} color="#4B5C79" />
@@ -537,9 +537,9 @@ const TrialView = ({ }: Props) => {
                     </p>
                   </Button>
                 </div>
-                <div onClick={pauseModalToggle}>
+                <div className="w-full" onClick={pauseModalToggle}>
                   <Button
-                    className="w-fit h-10 flex justify-center"
+                    className="w-full h-10 flex justify-center"
                     variant="secondary"
                   >
                     {trialStatus ? (
@@ -580,7 +580,7 @@ const TrialView = ({ }: Props) => {
           </div>
 
           <div className="col-span-5 w-full h-[60%] rounded-lg p-5 gap-5 bg-[#FFFFFF]">
-            <h1 className="text-sm font-bold">Recent Activities</h1>
+            <h1 className="text-lg font-bold">Recent Activities</h1>
             {activityData.length > 0 ? (
               activityData.map((timeline: any) => (
                 <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
@@ -633,93 +633,12 @@ const TrialView = ({ }: Props) => {
                 </div>
               ))) : (
               <div className="items-center">
-                <NoRecords text="No Activities Found" imgSize={90} textSize="md" />
+                <NoRecords text="No Activities Found" parentHeight="450px" imgSize={90} textSize="md" />
               </div>
             )}
 
 
-            {/* <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
-              <div className="ml-24 my-1 text-sm font-bold">
-                <p>Email Sent</p>
-              </div>
-              <div className="flex gap-6">
-                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
-                  <img
-                    className="w-6 h-6 ms-3 mt-[25%]"
-                    src={rightArrow}
-                    alt=""
-                  />
-                </div>
-                <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
-
-                <div className="flex gap-2 mt-2 -ml-2">
-                  <EditIcon size={20} />
-                  <div className="w-32 h-8 p-2 bg-[#FFFFFF] flex -mt-2 rounded-2xl">
-                    <div className="rounded-full w-5 h-5 overflow-hidden">
-                      <img src={profileImage} alt="" />
-                    </div>
-                    <p className="text-[#4B5C79] text-xs font-medium ml-1">
-                      Kristin Watson
-                    </p>
-                  </div>
-                </div>
-                <div className="w-3 h-3 mt-3 -ml-4 bg-[#C8C8C8] rounded-full shadow-md"></div>
-                <div className="mt-2 -ml-2">
-                  <p className="text-[#4B5C79] text-xs font-medium">
-                    19 minutes ago
-                  </p>
-                </div>
-              </div>
-              <div className="ms-24 -mt-1">
-                <p className="text-[#4B5C79] text-xs font-medium">
-                  Details{" "}
-                  <span className="text-[#4B5C79] text-sm font-bold">
-                    Lead of the Trail
-                  </span>
-                </p>
-              </div>
-            </div>
-            <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
-              <div className="ml-24 my-1 text-sm font-bold">
-                <p>Email Sent</p>
-              </div>
-              <div className="flex gap-6">
-                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
-                  <img
-                    className="w-6 h-6 ms-3 mt-[25%]"
-                    src={rightArrow}
-                    alt=""
-                  />
-                </div>
-                <div className="w-3 h-3 mt-3 ml-6 bg-[#C8C8C8] rounded-full shadow-md"></div>
-
-                <div className="flex gap-2 mt-2 -ml-2">
-                  <EditIcon size={20} />
-                  <div className="w-32 h-8 p-2 bg-[#FFFFFF] flex -mt-2 rounded-2xl">
-                    <div className="rounded-full w-5 h-5 overflow-hidden">
-                      <img src={profileImage} alt="" />
-                    </div>
-                    <p className="text-[#4B5C79] text-xs font-medium ml-1">
-                      Kristin Watson
-                    </p>
-                  </div>
-                </div>
-                <div className="w-3 h-3 mt-3 -ml-4 bg-[#C8C8C8] rounded-full shadow-md"></div>
-                <div className="mt-2 -ml-2">
-                  <p className="text-[#4B5C79] text-xs font-medium">
-                    19 minutes ago
-                  </p>
-                </div>
-              </div>
-              <div className="ms-24 -mt-1">
-                <p className="text-[#4B5C79] text-xs font-medium">
-                  Details{" "}
-                  <span className="text-[#4B5C79] text-sm font-bold">
-                    Lead of the Trail
-                  </span>
-                </p>
-              </div>
-            </div> */}
+         
           </div>
 
           <div className="col-span-4">
@@ -764,15 +683,7 @@ const TrialView = ({ }: Props) => {
           </div>
         </div>
 
-        {/* Modal controlled by state */}
-        {/* <Modal
-        open={isModalOpen}
-        align="center"
-        onClose={handleModalToggle}
-        className="w-[40%]"
-      >
-        <TrialViewForm data={data}   onClose={handleModalToggle} />
-      </Modal> */}
+       
 
         <Modal
           open={isModalOpen.viewTrail}
@@ -783,17 +694,7 @@ const TrialView = ({ }: Props) => {
         </Modal>
 
 
-        {/* Modal controlled by state */}
-        {/* <Modal
-        open={isModalOpen.editTrail}
-        align="center"
-        onClose={() => handleModalToggle()}
-        className="w-[35%]"
-      >
-        <TrialEditForm onClose={() => handleModalToggle()} />
-      </Modal>
- */}
-        {/* Modal controlled by state */}
+      
         <Modal
           open={extentModalOpen}
           align="center"
@@ -810,7 +711,7 @@ const TrialView = ({ }: Props) => {
           onClose={covertModalToggle}
           className="w-[30%]"
         >
-          <ConvertModal getLeads={getOneTrial} orgData={trial} onClose={covertModalToggle} type="trial" />
+          <ConvertModal  orgData={trial} onClose={covertModalToggle} type="trial" />
         </Modal>
 
         {/* Modal controlled by state */}

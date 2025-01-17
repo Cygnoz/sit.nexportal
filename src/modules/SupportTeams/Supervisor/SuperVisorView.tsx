@@ -271,14 +271,14 @@ const SuperVisorView = ({}: Props) => {
                   ],
                 }}
                 noAction
-                maxHeight="450px"
+                maxHeight="500px"
                 skeltonCount={11}
               />
             </div>
           </div>
 
           <div
-            className="col-span-4 bg-slate-200 py-3 p-2 mx-2 my-6 mt-16 rounded-lg bg-cover bg-center"
+            className="col-span-4 bg-slate-200  p-2 mx-2 h-fit  mt-[72px] rounded-lg bg-cover bg-center"
             style={{
               backgroundImage: `url(${Background})`, // Use the imported image
             }}

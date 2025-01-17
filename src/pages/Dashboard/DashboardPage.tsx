@@ -17,6 +17,7 @@ import { endPoints } from "../../services/apiEndpoints";
 import LeadConversionRate from "./Graphs/LeadConversionRate";
 import TopBreakDownByRegion from "./Graphs/TopBreakDownByRegion";
 import TopRevenueByRegion from "./Graphs/TopRevenueByRegion";
+import NoRecords from "../../components/ui/NoRecords";
 
 const DashboardPage = () => {
   const { totalCounts } = useRegularApi();
@@ -197,39 +198,51 @@ const DashboardPage = () => {
           <div className="p-4 bg-white w-full space-y-3 rounded-lg h-full ">
             <h2 className="font-bold">Top Ticket Resolved Regions</h2>
 
-            {solvedTickets.map((solve: any, index: any) => {
-              // Find the matching logo from countryLogo array
-              const countryData = countryLogo.find(
-                (country) => country.country === solve.country
-              );
+            {solvedTickets?.length > 0 ? (
+              solvedTickets.map((solve: any, index: any) => {
+                // Find the matching logo from countryLogo array
+                const countryData = countryLogo.find(
+                  (country) => country.country === solve.country
+                );
 
-              // Dynamically assign a color from the colors array
-              const color = colors[index % colors.length];
-              <div className="overflow-y-scroll"></div>;
-              return (
-                <div key={solve?.regionName} className="grid grid-cols-2 py-1 ">
-                  <div className="flex items-center gap-2">
-                    <img
-                      className="w-5 h-5 rounded-full"
-                      src={countryData?.logo || ""}
-                      alt={solve?.country || "Unknown Country"}
-                    />
-                    <p className="text-sm">
-                      {solve?.regionName.length > 8
-                        ? `${solve?.regionName.slice(0, 8)}...`
-                        : solve?.regionName}
-                    </p>
+                // Dynamically assign a color from the colors array
+                const color = colors[index % colors.length];
+
+                return (
+                  <div
+                    key={solve?.regionName}
+                    className="grid grid-cols-2 py-1"
+                  >
+                    <div className="flex items-center gap-2">
+                      <img
+                        className="w-5 h-5 rounded-full"
+                        src={countryData?.logo || ""}
+                        alt={solve?.country || "Unknown Country"}
+                      />
+                      <p className="text-sm">
+                        {solve?.regionName.length > 8
+                          ? `${solve?.regionName.slice(0, 8)}...`
+                          : solve?.regionName}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <TicketsBar
+                        count={solve?.solvedTicket}
+                        maxCount={maxTicketCount}
+                        color={color}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <TicketsBar
-                      count={solve?.solvedTicket}
-                      maxCount={maxTicketCount}
-                      color={color}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <NoRecords
+                text="No Tickets found"
+                imgSize={60}
+                parentHeight="300px"
+                textSize="md"
+              />
+            )}
           </div>
         </div>
 

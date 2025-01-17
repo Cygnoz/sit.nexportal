@@ -38,17 +38,17 @@ const validationSchema = Yup.object().shape({
     leadId: Yup.string(),
     emailTo: Yup.string(),
     emailFrom: Yup.string(),
-    emailSubject: Yup.string(),
+    emailSubject: Yup.string().required("Email subject is required"),
     emailFile: Yup.string(),
-    emailText: Yup.string(),
+    emailMessage: Yup.string(),
 });
 
 const MailsForm = ({ onClose , leadData}: Props) => {
 
       const { id } = useParams()
-      console.log(id);
+      //console.log(id);
       const {user} =useUser()
-      console.log(user);
+    //  console.log(user);
       
     const {
       handleSubmit,
@@ -132,7 +132,7 @@ console.log(quillValue);
 
 useEffect(()=>{
  if(quillValue){
-  setValue("emailText",quillValue)
+  setValue("emailMessage",quillValue)
  }
 },[quillValue])
 
@@ -140,11 +140,11 @@ useEffect(()=>{
   return (
     <div>
       <div className="rounded-2xl">
-        <div className="flex w-full justify-between bg-[#71736B] rounded-t-lg">
+        <div className="flex w-full justify-between items-center bg-[#71736B] rounded-t-lg">
           <div className="space-y-2 p-4">
             <h3 className="text-[#FFFEFB] font-bold text-sm">Create Mails</h3>
           </div>
-          <div className="flex gap-2 p-4">
+          <div className="flex items-center gap-2 p-4">
             <div className="mt-1 cursor-pointer">
               <ExternalLinkIcon size={20} />
             </div>
@@ -164,7 +164,7 @@ useEffect(()=>{
             className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2 text-[#303F58] text-xs font-semibold text-center"
             /> */}
 
-          <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex p-2">
+          <div className="w-60 h-10 bg-[#EAEEF5] rounded-[50px] flex items-center p-2">
             <div className="rounded-full w-6 h-6 overflow-hidden mx-1 mt-[1%]">
             {leadData?.image ? (
                 <img
@@ -177,7 +177,7 @@ useEffect(()=>{
                   <UserIcon color="white" size={16} />
                 </p>
               )}            </div>
-            <p className="text-[#303F58] text-xs font-semibold mt-1">{leadData?.email}</p>
+            <p className="text-[#303F58] text-xs font-semibold ">{leadData?.email}</p>
 
           </div>
         </div>
@@ -186,12 +186,15 @@ useEffect(()=>{
 
         {/* <p className="text-[#303F58] text-sm font-semibold p-4 ms-2 mt-2">Your Subject Title</p> */}
         <Input
-        {...register("emailSubject")}
-        value={watch("emailSubject")}
-        placeholder="Your Subject Title"
-        type="text"
-        className="text-[#303F58] text-sm font-semibold outline-none w-[493px] px-4 mt-6"
-        />
+  {...register("emailSubject")}
+  value={watch("emailSubject")}
+  placeholder="Your Subject Title"
+  type="text"
+  className="text-[#303F58] text-sm font-semibold outline-none w-[493px] px-4 mt-6"
+/>
+{errors.emailSubject && (
+  <p className="text-red-500 text-xs mt-1">{errors.emailSubject.message}</p>
+)}
 
         <hr className="my-2" />
 
