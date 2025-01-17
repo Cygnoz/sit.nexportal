@@ -330,10 +330,11 @@ exports.getActivity = async (req, res) => {
         userName: 1,
         createdAt: 1,
         emailSubject: 1,
+        emailMessage: 1, // Added field
         taskTitle: 1,
         note: 1,
         meetingTitle: 1,
-        activityType: 1,
+        activityType: 1, // Added field
       }).sort({ createdAt: -1 });
  
       // Map data for response
@@ -342,11 +343,13 @@ exports.getActivity = async (req, res) => {
           description: activity.description,
           userName: activity.userName,
           createdAt: activity.createdAt,
+          activityType: activity.activityType, // Added field
         };
  
         switch (activity.activityType) {
           case "Mail":
             activityInfo.emailSubject = activity.emailSubject;
+            activityInfo.emailMessage = activity.emailMessage; // Added field
             break;
           case "Task":
             activityInfo.taskTitle = activity.taskTitle;
@@ -374,6 +377,9 @@ exports.getActivity = async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
     }
   };
+ 
+ 
+ 
  
  
  
