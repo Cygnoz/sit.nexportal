@@ -32,8 +32,6 @@ const [totalTickets, setTotalTickets] = useState(0);
 const getInsideSA = async () => {
   try {
     const { response, error } = await getInsideSADetails(`${endPoints.SUPPORT_AGENT}/${id}/details`);
-    console.log(response, "res");
-    console.log(error, "err");
 
     if (response && !error) {
       console.log(response.data);

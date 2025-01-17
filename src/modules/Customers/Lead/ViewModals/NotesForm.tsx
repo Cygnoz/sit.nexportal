@@ -173,7 +173,7 @@ console.log("darssss",errors);
 
   return (
     <div>
-      <div className='p-4 mb-6 h-full'>
+      <div className='p-4  h-full'>
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-lg font-bold text-deepStateBlue ">

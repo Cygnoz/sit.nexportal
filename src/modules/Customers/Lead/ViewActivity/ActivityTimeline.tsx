@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom'
 import useApi from '../../../../Hooks/useApi'
 import NoRecords from '../../../../components/ui/NoRecords'
 import SelectDropdown from '../../../../components/ui/SelectDropdown'
+import DOMPurify from "dompurify"; 
 
 type Props = {}
 
@@ -19,8 +20,8 @@ const ActivityTimeline = ({ }: Props) => {
     const getActivityTimeline = async () => {
         try {
             const { response, error } = await getAllActivityTimeline(`${endPoints.ACTIVITY_TIMELINE}/${id}`)
-            console.log(response, 'res');
-            console.log(error, 'err');
+            console.log( 'res',response);
+            console.log( 'err',error);
             if (response && !error) {
                 console.log(response.data);
                 setActivityData(response.data.activities)
@@ -162,9 +163,12 @@ const ActivityTimeline = ({ }: Props) => {
                                 </p></div>
                             </div>
                             <div className="ms-20 -mt-4">
-                                <p className="text-[#4B5C79] text-xs font-medium">{timeline?.taskTitle ? timeline?.taskTitle : 'N/A'}
+                                {!timeline?.note?<p  className="text-[#4B5C79] text-xs font-medium">{timeline?.taskTitle || timeline?.note ||timeline?.meetingTitle||timeline?.subject?timeline?.taskTitle || timeline?.note ||timeline?.meetingTitle||timeline?.subject : 'N/A'}
                                     {/* <span className="text-[#4B5C79] text-sm font-bold ms-1">Lead: Trail</span> */}
-                                </p>
+                                </p>:
+                                <div dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(timeline?.note || ""),
+            }}/>}
                             </div>
                         </div>
                     ))) : (

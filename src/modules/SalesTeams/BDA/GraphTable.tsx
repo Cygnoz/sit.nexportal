@@ -3,32 +3,32 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  ResponsiveContainer,
   Tooltip,
   XAxis,
-  YAxis
+  YAxis,
 } from "recharts";
 import Table from "../../../components/ui/Table";
 import { useNavigate } from "react-router-dom";
 
 interface TrailTableData {
-    trailId:string;
-    leadName: string;
-    currentStatus: string;
-    startDate:string;
-    status: string;
-  }
-  
-type Props = {
-  bdaData?:any
+  trailId: string;
+  leadName: string;
+  currentStatus: string;
+  startDate: string;
+  status: string;
 }
 
-const GraphTable = ({bdaData}: Props) => {
-  const navigate=useNavigate()
+type Props = {
+  bdaData?: any;
+};
+
+const GraphTable = ({ bdaData }: Props) => {
+  const navigate = useNavigate();
   const [selectedMonth, setSelectedMonth] = useState("January");
-    const handleView = (id:any) => {
-       navigate(`/trial/${id}`)
-      }
-    
+  const handleView = (id: any) => {
+    navigate(`/trial/${id}`);
+  };
 
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
@@ -195,107 +195,105 @@ const GraphTable = ({bdaData}: Props) => {
     },
   ];
 
-  console.log("sdsdddddddddddd",bdaData);
-  
- 
-
   return (
     <div>
-              <div className="grid grid-cols-12 gap-4 my-4">
+      <div className="grid grid-cols-12 gap-4 mb-2">
         <div className="col-span-5">
           <div className="py-3 bg-white p-2 rounded-lg">
-                      <div className="py-1 ms-2 flex justify-between">
-                        <h2 className="font-bold">Trial Converted By BDA Overtime</h2>
-                        <div className="">
-                          <label htmlFor="month-select"></label>
-                          <select
-                            className="bg-[#FEFDFA] rounded-lg"
-                            id="month-select"
-                            value={selectedMonth}
-                            onChange={(e) => setSelectedMonth(e.target.value)}
-                            style={{ padding: "5px", border: "1px solid #ccc" }}
-                          >
-                            {Object.keys(datass).map((month) => (
-                              <option key={month} value={month}>
-                                {month}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      </div>
-                      <div className="mt-5">
-                        <LineChart
-                          width={510}
-                          height={330}
-                          data={datas}
-                          margin={{
-                            top: 5,
-                            right: 30,
-                            left: 2,
-                            bottom: 5,
-                          }}
-                        >
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                          <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                          <YAxis axisLine={false} tickLine={false} />
-                          <Tooltip />
-                        
-                          <Line
-                            type="monotone"
-                            dataKey="Area1"
-                            stroke="#e2b0ff"
-                            strokeWidth={3}
-                            dot={false}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Area2"
-                            stroke="#8884d8"
-                            strokeWidth={3}
-                            dot={false}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Area3"
-                            stroke="#82ca9d"
-                            strokeWidth={3}
-                            dot={false}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Area4"
-                            stroke="#d86a57"
-                            strokeWidth={3}
-                            dot={false}
-                          />
-                          <Line
-                            type="monotone"
-                            dataKey="Area5"
-                            stroke="#6ab6ff"
-                            strokeWidth={3}
-                            dot={false}
-                          />
-                        </LineChart>
-                      </div>
-                    </div>
+            <div className="py-1 ms-2 flex justify-between">
+              <h2 className="font-bold">Trial Converted By BDA Overtime</h2>
+              <div className="">
+                <label htmlFor="month-select"></label>
+                <select
+                  className="bg-[#FEFDFA] rounded-lg"
+                  id="month-select"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  style={{ padding: "5px", border: "1px solid #ccc" }}
+                >
+                  {Object.keys(datass).map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div className="mt-5">
+               <ResponsiveContainer width="100%" minHeight={330}>
+              <LineChart
+                width={510}
+                height={330}
+                data={datas}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 2,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip />
+
+                <Line
+                  type="monotone"
+                  dataKey="Area1"
+                  stroke="#e2b0ff"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area2"
+                  stroke="#8884d8"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area3"
+                  stroke="#82ca9d"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area4"
+                  stroke="#d86a57"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area5"
+                  stroke="#6ab6ff"
+                  strokeWidth={3}
+                  dot={false}
+                />
+              </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
         <div className="col-span-7">
-        <div className="">
-        <Table<TrailTableData> data={bdaData?.TransformedTrial} columns={columns} headerContents={{
-          title: "Current Trails handled by BDA",
-          search: { placeholder: 'Search Trial Name' },
-        }}
-        actionList={[
-          { label: 'view', function: handleView},
-        ]}
-        maxHeight='325px'
-         />
-      </div>
+          <div className="">
+            <Table<TrailTableData>
+              data={bdaData?.TransformedTrial}
+              columns={columns}
+              headerContents={{
+                title: "Current Trails handled by BDA",
+                search: { placeholder: "Search Trial Name" },
+              }}
+              actionList={[{ label: "view", function: handleView }]}
+              maxHeight="325px"
+            />
+          </div>
         </div>
       </div>
-
     </div>
-  )
-}
+  );
+};
 
-export default GraphTable
+export default GraphTable;

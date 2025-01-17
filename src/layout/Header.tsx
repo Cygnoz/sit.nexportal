@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Bell from "../assets/icons/Bell";
 import Settings from "../assets/icons/Settings";
-import SearchBar from "../components/ui/SearchBar";
-import { useUser } from "../context/UserContext";
-import { useNavigate } from "react-router-dom";
 import { NavList } from "../components/list/NavLists";
-import Modal from "../components/modal/Modal";
+import SearchBar from "../components/ui/SearchBar";
 import UserModal from "./Logout/UserModal";
-import NoImage from "../components/ui/NoImage";
 
 interface HeaderProps {
   searchValue: string;
@@ -18,7 +15,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToActiveTab }) => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1); // Manage focused item index
-  const { user } = useUser();
   const navigate = useNavigate();
 
   const searchBarRef = useRef<HTMLDivElement>(null);
@@ -30,11 +26,6 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
       route.label.trim().toLowerCase().includes(searchValue.toLowerCase())
   );
   // State to manage modal visibility
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  // Function to toggle modal visibility
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
-  };
 
 
   const handleSelect = (route: any) => {
@@ -88,6 +79,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+ 
 
   return (
     <div
@@ -139,21 +131,10 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
             <Bell />
           </p>
         </div>
-        <p onClick={handleModalToggle} className="tooltip cursor-pointer" data-tooltip="User">
-          {user?.userImage && user?.userImage.length>50 ? (
-            <img
-              className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full"
-              src={user?.userImage}
-              alt=""
-            />
-          ) : (
-            <NoImage roundedSize={34} iconSize={18}/>
-          )}
-        </p>
+       <UserModal/>
+
       </div>
-      <Modal className="w-fit me-4 -mt-96" align="right" open={isModalOpen} onClose={handleModalToggle}>
-      <UserModal  onClose={handleModalToggle}/>
-      </Modal>
+      
     </div>
   );
 };
