@@ -546,7 +546,6 @@ exports.deleteBda = async (req, res, next) => {
   }
 };
 
-
 exports.deactivateBda = async (req, res, next) => {
   try {
     const { id } = req.params; // Extract BDA ID from params
@@ -565,16 +564,26 @@ exports.deactivateBda = async (req, res, next) => {
       return res.status(404).json({ message: "BDA not found." });
     }
  
-    // If deactivating, check if the BDA is referenced in Leads
+    // If deactivating, validate lead statuses
     if (status === "Deactive") {
       const associatedLeads = await Leads.find({ bdaId: id });
-      if (associatedLeads.length > 0) {
+ 
+      if (associatedLeads.length === 0) {
         return res.status(400).json({
-          message: "Cannot deactivate BDA: There are leads associated with this BDA.",
-          leads: associatedLeads.map(lead => ({
+          message: "Cannot deactivate BDA: No associated leads found.",
+        });
+      }
+ 
+      const nonWonLeads = associatedLeads.filter(lead => lead.leadStatus !== "Won");
+ 
+      if (nonWonLeads.length > 0) {
+        return res.status(400).json({
+          message:
+            "Cannot deactivate BDA: Some leads associated with this BDA do not have a 'Won' status.",
+          nonWonLeads: nonWonLeads.map(lead => ({
             id: lead._id,
-            name: lead.name,
-            status: lead.status,
+            name: lead.fullName || `${lead.firstName} ${lead.lastName}`,
+            leadStatus: lead.leadStatus,
           })),
         });
       }
@@ -593,7 +602,7 @@ exports.deactivateBda = async (req, res, next) => {
     const activity = new ActivityLog({
       userId: req.user.id,
       operationId: id,
-      activity: `${req.user.userName} Succesfully ${status}d BDA.`,
+      activity: `${req.user.userName} successfully ${status}d BDA.`,
       timestamp: actionTime,
       action: status === "Active" ? "Activate" : "Deactivate",
       status,
@@ -611,7 +620,6 @@ exports.deactivateBda = async (req, res, next) => {
  
     // Log the failure and respond with an error
     logOperation(req, "Failed");
-    next()
     return res.status(500).json({ message: "Internal server error." });
   }
 };
