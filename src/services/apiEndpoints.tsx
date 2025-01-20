@@ -25,6 +25,7 @@ export const endPoints = {
   GET_ALL_RM: "/region-managers",
   CHECK_RM:'/region-manager-check',
   TOP_PERFORMANCE:'/top-performers',
+  DEACTIVATE_RM:'/deactivateRm',
 
   //Country and State
   GET_COUNTRY: "/countries",
