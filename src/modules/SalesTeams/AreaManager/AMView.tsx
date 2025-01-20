@@ -35,9 +35,11 @@ interface AMData {
 }
 
 
-type Props = {}
+type Props = {
+  staffId?:any
+}
 
-const AMView = ({ }: Props) => {
+const AMView = ({staffId }: Props) => {
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -54,6 +56,7 @@ const AMView = ({ }: Props) => {
   });
   const { request: getaAM } = useApi('get', 3002)
   const { id } = useParams()
+  const iId=staffId?staffId:id
   const {request:deleteaAM}=useApi('delete',3002)
   const [getData, setGetData] = useState<{
     amData: any;
@@ -62,8 +65,10 @@ const AMView = ({ }: Props) => {
 
   const getAAM = async () => {
     try {
-      const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${id}`);
+      const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${iId}`);
       if (response && !error) {
+        console.log("res",response.data);
+        
         setGetData((prevData) => ({
           ...prevData,
           amData: response.data
@@ -79,14 +84,14 @@ const AMView = ({ }: Props) => {
   }
   useEffect(() => {
     getAAM();
-  }, [id])
+  }, [iId])
   console.log(getData);
 
  
     
   const handleDelete = async () => {
     try {
-      const { response, error } = await deleteaAM(`${endPoints.GET_ALL_AM}/${id}`);
+      const { response, error } = await deleteaAM(`${endPoints.GET_ALL_AM}/${iId}`);
       if (response) {
         toast.success(response.data.message);
         navigate("/area-manager");
@@ -135,7 +140,7 @@ const AMView = ({ }: Props) => {
 
   const getInsideViewAM = async () => {
     try {
-      const { response, error } = await getInsideAM(`${endPoints.AM}/${id}/details`);
+      const { response, error } = await getInsideAM(`${endPoints.AM}/${iId}/details`);
       if (response && !error) {
         setInsideAmData(response.data);
         // Extract bdaDetails and licenserDetails separately
@@ -166,7 +171,11 @@ const AMView = ({ }: Props) => {
   console.log("BDA Details:", bdaDetails);
   console.log("Licenser Details:", licenserDetails);
 
-
+  const topPerformingBDA = bdaDetails.map((bda: any) => ({
+    CR: parseFloat(bda?.bdaConversionRate),
+    name: bda?.bdaName,
+  }));
+  
 
 
   const roles = [
@@ -331,11 +340,6 @@ const AMView = ({ }: Props) => {
         <div className="items-center space-x-6">
           {/* Profile Picture */}
           <div className="bg-gray-300 rounded-full overflow-hidden">
-            {/* <img
-              src={profileImage}
-              alt="Profile"
-              className="w-full h-full object-cover"
-            /> */}
             {
               getData.amData?.user?.userImage && getData.amData?.user?.userImage>50 ?
                 <img className="w-16 h-16 rounded-full" src={getData.amData?.user?.userImage} alt="" />
@@ -627,19 +631,11 @@ const AMView = ({ }: Props) => {
           </div>
         </div>
       </div>
-      {/* Modal controlled by state */}
-      {/* <Modal open={isModalOpen} onClose={handleModalToggle}>
-        <AMViewForm onClose={handleModalToggle} />
-      </Modal>
-
-      <Modal align='right' className='w-[25%] me-16' open={isAwardOpen} onClose={AwardhandleToggle}>
-        <AMViewAward onClose={AwardhandleToggle} />
-      </Modal> */}
       <Modal open={isModalOpen.editAM} onClose={() => handleModalToggle()} className="">
-        <AMForm editId={id} onClose={() => handleModalToggle()} />
+        <AMForm editId={iId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.viewAM} onClose={() => handleModalToggle()} className="">
-        <AMViewForm onClose={() => handleModalToggle()} />
+        <AMViewForm id={iId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.awardAM} onClose={() => handleModalToggle()} align='right' className="w-[25%] me-12 mt-14">
         <AMViewAward getData={getData} onClose={() => handleModalToggle()} />

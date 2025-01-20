@@ -9,15 +9,18 @@ import { useParams } from "react-router-dom";
 import useApi from "../../../../Hooks/useApi";
 import { endPoints } from "../../../../services/apiEndpoints";
 import toast from "react-hot-toast";
+ import { useEffect } from "react";
 
 type Props = {
     onClose: () => void;
+    editId?: any;
 }
+
 
 const validationSchema = Yup.object().shape({
     leadId: Yup.string(),
     activityType: Yup.string(), // Ensure it's validated as "Meeting".
-    taskTitle: Yup.string(),
+    taskTitle: Yup.string().required("Task Tittle is required"),
     taskDescription: Yup.string(),
     taskType: Yup.string(),
     dueDate: Yup.string(),
@@ -26,67 +29,116 @@ const validationSchema = Yup.object().shape({
 });
 
 
-const TasksForm = ({ onClose }: Props) => {
+const TasksForm = ({ onClose,editId }: Props) => {
 
-    const { id } = useParams()
-    console.log(id);
-
-
+    const { request: editLeadTask } = useApi("put", 3001);
+    const { request: addLeadTask } = useApi("post", 3001);
+    const { request: getLeadTask } = useApi("get", 3001);
+    const { id } = useParams();
+  
     const {
-        handleSubmit,
-        register,
-        clearErrors,
-        setValue,
-        formState: { errors },
-        watch,
+      handleSubmit,
+      register,
+      clearErrors,
+      setValue,
+      watch,
+      formState: { errors },
     } = useForm<LeadTaskData>({
-        resolver: yupResolver(validationSchema),
-        defaultValues: {
-            activityType: "Task",
-            leadId: id
-        }
+      resolver: yupResolver(validationSchema),
+      defaultValues: {
+        activityType: "Task",
+        leadId: id,
+      },
     });
-
-    const handleInputChange = (field: keyof LeadTaskData) => {
-        clearErrors(field); // Clear the error for the specific field when the user starts typing
-    };
-
-    const { request: addLeadTask } = useApi('post', 3001)
-
-    console.log(errors);
-
-
-    const onSubmit: SubmitHandler<LeadTaskData> = async (data: any, event) => {
-
-
-        event?.preventDefault(); // Prevent default form submission behavior
-        console.log("Data", data);
-        // if (submit) {
-        try {
-            const { response, error } = await addLeadTask(endPoints.LEAD_ACTIVITY, data)
-            console.log(response);
-            console.log(error);
-
+  
+    // Function to set form values
+    const setFormValues = (data: LeadTaskData) => {
+        Object.keys(data).forEach((key) => {
+          setValue(key as keyof LeadTaskData, data[key as keyof LeadTaskData]);
+        });
+      };
+  
+    // Fetch task details when editing
+    useEffect(() => {
+      if (editId) {
+        console.log("editId:", editId);
+        (async () => {
+          try {
+            const { response, error } = await getLeadTask(`${endPoints.LEAD_ACTIVITY}/${editId}`);
             if (response && !error) {
-                console.log(response.data)
-                toast.success(response.data.message); // Show success toast
-                onClose(); // Close the form/modal
+              console.log("Task Data:", response.data.activity);
+              setFormValues(response.data.activity); // Set form values
             } else {
-                console.log(error.response.data.message);
-                toast.error(error.response.data.message); // Show error toast
+              console.error("API Error:", error.response.data.message);
             }
-        } catch (err) {
-            console.error("Error submitting lead task data:", err);
-            toast.error("An unexpected error occurred."); // Handle unexpected errors
+          } catch (err) {
+            console.error("Error fetching task data:", err);
+          }
+        })();
+      }
+    }, [editId]); // Depend on editId
+  
+    // Handle input change
+    const handleInputChange = (field: keyof LeadTaskData) => {
+      clearErrors(field);
+    };
+  
+    // Handle form submission
+    const onSubmit: SubmitHandler<LeadTaskData> = async (data: LeadTaskData, event) => {
+      event?.preventDefault();
+      console.log("Submitting Data:", data);
+  
+      try {
+        const apiCall = editId ? editLeadTask : addLeadTask;
+        const { response, error } = await apiCall(
+          editId ? `${endPoints.LEAD_ACTIVITY}/${editId}` : endPoints.LEAD_ACTIVITY,
+          data
+        );
+  
+        if (response && !error) {
+          console.log("API Response:", response.data);
+          toast.success(response.data.message);
+          onClose(); // Close modal after success
+        } else {
+          console.error("API Error:", error?.data?.message);
+          toast.error(error?.data?.message || "Failed to update task");
         }
-    }
+      } catch (err) {
+        console.error("Error submitting lead task data:", err);
+        toast.error("An unexpected error occurred.");
+      }
+    };
+    // const onSubmit: SubmitHandler<LeadTaskData> = async (data: any, event) => {
+ 
+ 
+    //     event?.preventDefault(); // Prevent default form submission behavior
+    //     console.log("Data", data);
+    //     // if (submit) {
+    //     try {
+    //         const { response, error } = await addLeadTask(endPoints.LEAD_ACTIVITY, data)
+    //         console.log(response);
+    //         console.log(error);
+ 
+    //         if (response && !error) {
+    //             console.log(response.data)
+    //             toast.success(response.data.message); // Show success toast
+    //             onClose(); // Close the form/modal
+    //         } else {
+    //             console.log(error.response.data.message);
+    //             toast.error(error.response.data.message); // Show error toast
+    //         }
+    //     } catch (err) {
+    //         console.error("Error submitting lead task data:", err);
+    //         toast.error("An unexpected error occurred."); // Handle unexpected errors
+    //     }
+    // }
 
     return (
         <div>
             <div className="h-fit w-full rounded-lg">
                 <div className="flex justify-between">
                     <div className="space-y-2 p-4">
-                        <h3 className="text-[#303F58] font-bold text-lg">Create Task</h3>
+                        <h3 className="text-[#303F58] font-bold text-lg"> {editId ? "Edit" : "Add"} Task</h3>
                     </div>
                     <p onClick={onClose} className="text-3xl p-4 cursor-pointer">&times;</p>
                 </div>
@@ -100,7 +152,11 @@ const TasksForm = ({ onClose }: Props) => {
                                 placeholder=""
                                 value={watch("taskTitle")}
                                 {...register("taskTitle")}
+                                required
                             />
+                            {errors.taskTitle && (
+                                <p className="text-red-500 text-xs mt-1">{errors.taskTitle.message}</p>
+                            )}
                             {/* <Input
                                 label="Task Description"
                                 placeholder=""
@@ -117,17 +173,17 @@ const TasksForm = ({ onClose }: Props) => {
                             <div className="grid grid-cols-4 gap-4">
                                 <Select
                                     label="Task Type"
-                                    placeholder="Select Type"
-                                    value={watch("taskType")}
+                                  
+                                    value={watch("taskType")} 
                                     onChange={(selectedValue) => {
                                         setValue("taskType", selectedValue);
                                         handleInputChange("taskType");
                                     }}
-                                    options={[
-                                        { value: "Urgent", label: "Urgent" },
-                                        { value: "Normal", label: "Normal" },
-                                    ]}
+                                    options={[{ value: "Normal", label: "Normal" },
+                                        { value: "Urgent", label: "Urgent" }
+                                    ]} 
                                 />
+
                                 <Input
                                     label="Due Date"
                                     placeholder="Enter Date"

@@ -718,6 +718,13 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
                   error={errors.commission?.message}
                   options={data.workerCommission}
                 />
+                <Input
+                      placeholder="Enter Amount"
+                      label="Salary Amount"
+                      type="number"
+                      error={errors.salaryAmount?.message}
+                      {...register("salaryAmount")}
+                    />
               </div>
             </div>
           )}

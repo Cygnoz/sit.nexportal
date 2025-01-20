@@ -3,7 +3,7 @@ export interface LeadEmailData{
     leadId?:string;
     emailTo?:string;
     emailFrom?:string;
-    emailSubject?:string;
+    emailSubject:string;
     emailFile?:string;
-    emailText?:string;
+    emailMessage?:string;
 }

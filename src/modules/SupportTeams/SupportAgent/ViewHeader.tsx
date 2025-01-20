@@ -6,7 +6,7 @@ import supportAgentbg from '../../../assets/image/SupportAgentView.png'
 import Modal from "../../../components/modal/Modal"
 import SupportAgentForm from "./SupportAgentForm"
 import SAViewForm from "./SAViewForm"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import useApi from "../../../Hooks/useApi"
 import { endPoints } from "../../../services/apiEndpoints"
 import UserIcon from "../../../assets/icons/UserIcon"
@@ -14,9 +14,11 @@ import Trash from "../../../assets/icons/Trash"
 import ConfirmModal from "../../../components/modal/ConfirmModal"
 import toast from "react-hot-toast"
 
-type Props = {}
+type Props = {
+  id:any
+}
 
-const ViewHeader = ({}: Props) => {
+const ViewHeader = ({id}: Props) => {
 
     const [isModalOpen, setIsModalOpen] = useState({
         editSA:false,
@@ -37,7 +39,6 @@ const ViewHeader = ({}: Props) => {
     const {request:deleteaSA}=useApi('delete',3003)
 
     const {request: getaSA}=useApi('get',3003)
-    const {id} =useParams()
     const [getData, setGetData] = useState<{
         saData:any;}>
       ({saData:[]})

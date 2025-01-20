@@ -4,8 +4,12 @@ import RMView from "../../modules/SalesTeams/RegionManager/RMView";
 import SuperVisorView from "../../modules/SupportTeams/Supervisor/SuperVisorView";
 import SupportAgentView from "../../modules/SupportTeams/SupportAgent/SupportAgentView";
 import DashboardPage from "../../pages/Dashboard/DashboardPage";
+export type Role = {
+  role: string;
+  component: React.ReactElement | React.ComponentType<{ staffId: string }>;
+};
 
-export const roles = [
+export const roles: Role[] = [
   { role: "Super Admin", component: <DashboardPage /> },
   { role: "Sales Admin", component: <DashboardPage /> },
   { role: "Support Admin", component: <DashboardPage /> },

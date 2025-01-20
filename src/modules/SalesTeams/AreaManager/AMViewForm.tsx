@@ -13,14 +13,14 @@ import AreaIcon from "../../../assets/icons/AreaIcon";
 
 type Props = {
   onClose: () => void;
+  id:any
 }
 
 
 
-const AMViewForm: React.FC<Props> = ({ onClose }) => {
+const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
 
   const {request: getaAM}=useApi('get',3002)
-  const {id} =useParams()
   const [data, setData] = useState<{
     amData:any;}>
     ({amData:[]})

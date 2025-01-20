@@ -1,18 +1,17 @@
-import { useParams } from 'react-router-dom';
-import useApi from '../../../Hooks/useApi';
 import { useEffect, useState } from 'react';
-import { endPoints } from '../../../services/apiEndpoints';
 import UserIcon from '../../../assets/icons/UserIcon';
 import NoRecords from '../../../components/ui/NoRecords';
+import useApi from '../../../Hooks/useApi';
+import { endPoints } from '../../../services/apiEndpoints';
 
 type Props = {
     onClose: () => void;
     getData: any;
+    id:any
 };
 
-const SVViewAward = ({ getData, onClose }: Props) => {
+const SVViewAward = ({ getData, onClose,id }: Props) => {
     const { request: getaAWARD } = useApi('get', 3004);
-    const { id } = useParams();
     const [getAwards, setGetDatas] = useState<any>([]);
     const [loading, setLoading] = useState(true);
 
