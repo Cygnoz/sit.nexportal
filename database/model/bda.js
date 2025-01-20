@@ -17,6 +17,8 @@ const bdaSchema = new mongoose.Schema({
   dateOfJoining: { type: Date },
   workEmail: { type: String},
   workPhone: { type: String},
+  salaryType:{ type: String},
+  salaryAmount:{ type: Number},
   status: { type: String},
   regionManager: { type: mongoose.Schema.Types.ObjectId, ref: "RegionManager" },
     areaManager: { type: mongoose.Schema.Types.ObjectId, ref: "AreaManager" },
