@@ -125,7 +125,6 @@ exports.getActivity = async (req, res) => {
     }
   };
  
- 
   exports.editActivity = async (req, res, next) => {
     try {
       const { id: activityId } = req.params; // Extract activity ID from request parameters
@@ -230,7 +229,6 @@ exports.getActivity = async (req, res) => {
       res.status(500).json({ message: "Internal server error" });
     }
   };
- 
  
   exports.deleteActivity = async (req, res,next) => {
     try {
