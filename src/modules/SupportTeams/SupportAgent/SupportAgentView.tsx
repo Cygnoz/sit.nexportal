@@ -12,9 +12,11 @@ import { endPoints } from "../../../services/apiEndpoints";
 import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 
-type Props = {};
+type Props = {
+  staffiId:string
+};
 
-const SupportAgentView = ({}: Props) => {
+const SupportAgentView = ({staffiId}: Props) => {
   const topRef = useRef<HTMLDivElement>(null);
     
       useEffect(() => {
@@ -22,16 +24,16 @@ const SupportAgentView = ({}: Props) => {
         topRef.current?.scrollIntoView({ behavior: "smooth" });
       }, []);
 
-      const { request: getInsideSADetails } = useApi('get', 3003);
+      const { request: getInsiIdeSADetails } = useApi('get', 3003);
 
 const [rewards, setRewards] = useState([]);
 const [tickets, setTickets] = useState({ openTickets: [], closedTickets: [] });
 const [ticketsResolved, setTicketsResolved] = useState(0);
 const [totalTickets, setTotalTickets] = useState(0);
 
-const getInsideSA = async () => {
+const getInsiIdeSA = async () => {
   try {
-    const { response, error } = await getInsideSADetails(`${endPoints.SUPPORT_AGENT}/${id}/details`);
+    const { response, error } = await getInsiIdeSADetails(`${endPoints.SUPPORT_AGENT}/${iId}/details`);
 
     if (response && !error) {
       console.log(response.data);
@@ -53,7 +55,7 @@ const getInsideSA = async () => {
 };
 
 useEffect(() => {
-  getInsideSA();
+  getInsiIdeSA();
 }, []);
 
 console.log("rewards",rewards);
@@ -94,7 +96,7 @@ console.log("tickets",tickets);
   ];
   
   const { request: getaSA } = useApi("get", 3003);
-  const { id } = useParams();
+  const { iId } = useParams();
   const [getData, setGetData] = useState<{
     saData: any;
   }>({ saData: [] });
@@ -102,7 +104,7 @@ console.log("tickets",tickets);
   const getASA = async () => {
     try {
       const { response, error } = await getaSA(
-        `${endPoints.SUPPORT_AGENT}/${id}`
+        `${endPoints.SUPPORT_AGENT}/${iId}`
       );
       if (response && !error) {
         setGetData((prevData) => ({
@@ -118,7 +120,7 @@ console.log("tickets",tickets);
   };
   useEffect(() => {
     getASA();
-  }, [id]);
+  }, [iId]);
 
   const navigate=useNavigate()
   

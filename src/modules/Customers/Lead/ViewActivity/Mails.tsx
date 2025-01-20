@@ -53,7 +53,7 @@ const Mails = ({ leadData }: Props) => {
   useEffect(() => {
     getMail();
   }, []);
-  console.log(mailData);
+
 
   return (
     <div>
