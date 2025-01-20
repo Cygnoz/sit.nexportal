@@ -17,6 +17,8 @@ const supportAgentSchema = new mongoose.Schema({
   dateOfJoining: { type: Date },
   workEmail: { type: String},
   workPhone: { type: String},
+  salaryType:{ type: String},
+  salaryAmount:{ type: Number},
   status: { type: String},
   region : { type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
   commission: { type: mongoose.Schema.Types.ObjectId, ref: 'Commission'},

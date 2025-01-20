@@ -17,6 +17,8 @@ const areaManagerSchema = new mongoose.Schema({
   dateOfJoining: { type: Date },
   workEmail: { type: String},
   workPhone: { type: String},
+  salaryType:{ type: String},
+  salaryAmount:{ type: Number},
   status: { type: String},
   region: { type: mongoose.Schema.Types.ObjectId, ref: 'Region'},
   area: { type: mongoose.Schema.Types.ObjectId, ref: 'Area' },
