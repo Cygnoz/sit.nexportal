@@ -149,34 +149,48 @@ exports.getActivity = async (req, res) => {
       }
  
       // Initialize description
-      let description = cleanedData.description || "Activity updated";
+      let description = cleanedData.description;
  
-      // Update description based on meetingStatus or taskStatus
-      if (activityType === "Meeting" && meetingStatus) {
-        switch (meetingStatus) {
-          case "Scheduled":
-            description = "Meeting scheduled";
-            break;
-          case "Canceled":
-            description = "Meeting canceled";
-            break;
-          case "Completed":
-            description = "Meeting completed";
-            break;
-          default:
-            description = "Meeting status updated";
+      // Determine the description based on the activity type and status
+      if (activityType === "Meeting") {
+        if (meetingStatus) {
+          switch (meetingStatus) {
+            case "Scheduled":
+              description = "Meeting scheduled";
+              break;
+            case "Canceled":
+              description = "Meeting canceled";
+              break;
+            case "Completed":
+              description = "Meeting completed";
+              break;
+            default:
+              description = "Meeting status updated";
+          }
+        } else {
+          description = "Meeting updated";
         }
-      } else if (activityType === "Task" && taskStatus) {
-        switch (taskStatus) {
-          case "Pending":
-            description = "Task is pending";
-            break;
-          case "Completed":
-            description = "Task completed";
-            break;
-          default:
-            description = "Task status updated";
+      } else if (activityType === "Task") {
+        if (taskStatus) {
+          switch (taskStatus) {
+            case "Pending":
+              description = "Task is pending";
+              break;
+            case "Completed":
+              description = "Task completed";
+              break;
+            default:
+              description = "Task status updated";
+          }
+        } else {
+          description = "Task updated";
         }
+      } else if (activityType === "Mail") {
+        description = "Mail updated";
+      } else if (activityType === "Note") {
+        description = "Note updated";
+      } else {
+        description = "Activity updated";
       }
  
       // Combine cleaned data with activityType, userName, userRole, and updated description
@@ -204,13 +218,13 @@ exports.getActivity = async (req, res) => {
         updatedActivity,
       });
  
-      ActivityLog(req, "Successfully updated activity", updatedActivity._id);
+      ActivityLog(req, "Successfully", updatedActivity._id);
       next(); // Pass control to the next middleware if any
  
     } catch (error) {
       console.error("Error updating activity:", error);
  
-      ActivityLog(req, "Failed to update activity");
+      ActivityLog(req, "Failed");
       next();
  
       res.status(500).json({ message: "Internal server error" });

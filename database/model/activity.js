@@ -1,5 +1,3 @@
-// v1.0
- 
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
  
@@ -16,6 +14,7 @@ const activitySchema = new Schema({
     emailSubject:{type:String},
     emailMessage:{type:String},
     emailFile:{type:String},
+    emailNote:{type:String},
  
     //note
     relatedTo:{type:String},
@@ -24,7 +23,7 @@ const activitySchema = new Schema({
  
     //meeting
     meetingTitle:{type:String},
-    addNotes:{type:String},
+    meetingNotes:{type:String},
     meetingType:{type:String},
     dueDate:{type:String},
     timeFrom:{type:String},
