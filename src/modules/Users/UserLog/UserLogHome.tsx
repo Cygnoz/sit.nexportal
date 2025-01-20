@@ -122,15 +122,17 @@ function UserLogHome({}: Props) {
       ];
 
       const actionColorMap: { [key: string]: string } = {
-        Add: "text-green-600",       // A slightly softer green for "Add"
-        Edit: "text-yellow-500",     // A balanced yellow for "Edit"
-        Delete: "text-red-600",      // A strong but not overwhelming red for "Delete"
-        Login: "text-blue-500",      // A professional shade of blue for "Login"
-        View: "text-teal-600",       // A calm teal for "View"
-        Logout: "text-gray-500",     // A subtle gray for "Logout"
-        Convert: "text-emerald-500", // A fresh emerald green for "Convert"
-        Deactivate:"text-orange-400"
+        Add: "text-green-500",         // A friendly and energetic green for "Add"
+        Edit: "text-yellow-400",       // A softer yellow for "Edit" to avoid harshness
+        Delete: "text-red-500",        // A clear red that conveys action but isn't too intense
+        Login: "text-blue-600",        // A deeper blue for a professional feel for "Login"
+        View: "text-teal-500",         // A soothing teal that aligns with a calm viewing action
+        Logout: "text-red-800",       // A neutral gray for "Logout" to signify disconnection
+        Convert: "text-emerald-600",   // A vibrant yet fresh emerald green for "Convert"
+        Deactivate: "text-orange-500", // A bold but balanced orange for "Deactivate"
+        Activate: "text-green-700",    // A darker green to indicate a confident "Activate" action
       };
+      
       
 
       const [currentPage, setCurrentPage] = useState<number>(1);
@@ -161,6 +163,7 @@ function UserLogHome({}: Props) {
     { label: "Convert", value: "Convert" },
     { label: "Deactivate", value: "Deactivate" },
     { label: "Delete", value: "Delete" },
+    { label: "Activate", value: "Activate" },
   ];
 
   const screenList = [

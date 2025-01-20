@@ -22,7 +22,9 @@ import RMViewAward from "./RMViewAward";
 import Trash from "../../../assets/icons/Trash";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
-
+type Props = {
+  staffId?:string
+};
 interface AreaData {
   areaCode: string;
   areaName: string;
@@ -30,7 +32,8 @@ interface AreaData {
   areaManagers: string;
 }
 
-const RMView = () => {
+const RMView = ({staffId}: Props) => {
+  
   const topRef = useRef<HTMLDivElement>(null);
     
       useEffect(() => {
@@ -63,13 +66,14 @@ const RMView = () => {
   const { request: getaRM } = useApi("get", 3002);
   const {request:deleteaRM}=useApi("delete",3002)
   const { id } = useParams();
+  const iId=staffId?staffId:id
   const [getData, setGetData] = useState<{
     rmData: any;
   }>({ rmData: [] });
 
   const getARM = async () => {
     try {
-      const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${id}`);
+      const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${iId}`);
       if (response && !error) {
         setGetData((prevData) => ({
           ...prevData,
@@ -84,14 +88,14 @@ const RMView = () => {
   };
   useEffect(() => {
     getARM();
-  }, [id]);
+  }, [iId]);
  
 
   const navigate = useNavigate();
 
   const handleDelete = async () => {
     try {
-      const { response, error } = await deleteaRM(`${endPoints.GET_ALL_RM}/${id}`);
+      const { response, error } = await deleteaRM(`${endPoints.GET_ALL_RM}/${iId}`);
       if (response) {
         toast.success(response.data.message);
         navigate("/region-manager");
@@ -141,14 +145,14 @@ const RMView = () => {
   ];
 
 
-  const {request:getRMInside}=useApi('get',3002)
+  const {request:getRMInsiIde}=useApi('get',3002)
   const [totalAreaManaged, setTotalAreaManaged] = useState([]);
   const [totalAreaManagers, setTotalAreaManagers] = useState([]);
   const [totalBdas, setTotalBdas] = useState([]);
 
-  const getRMInsides = async () => {
+  const getRMInsiIdes = async () => {
     try {
-      const { response, error } = await getRMInside(`${endPoints.RM}/${id}/details`);
+      const { response, error } = await getRMInsiIde(`${endPoints.RM}/${iId}/details`);
       console.log(response, "res");
       console.log(error, "err");
 
@@ -178,11 +182,10 @@ const RMView = () => {
   };
 
   useEffect(() => {
-    getRMInsides();
+    getRMInsiIdes();
   }, []);
 
-  // For debugging
- console.log("rmViewData",getData.rmData);
+  
  
 
   return (
@@ -291,10 +294,10 @@ const RMView = () => {
                     </div>
 
                     <div className="text-center w-24">
-                      <p className="text-xs text-[#D4D4D4] py-2">Employee ID</p>
+                      <p className="text-xs text-[#D4D4D4] py-2">Employee iId</p>
                       <p className="text-xs">
-                        {getData?.rmData?.regionManager?.user?.employeeId
-                          ? getData?.rmData?.regionManager?.user?.employeeId
+                        {getData?.rmData?.regionManager?.user?.employeeiId
+                          ? getData?.rmData?.regionManager?.user?.employeeiId
                           : "N/A"}
                       </p>
                     </div>
@@ -430,7 +433,7 @@ const RMView = () => {
         <RMViewForm onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.editRM} onClose={() => handleModalToggle()}>
-        <RMForm editId={id} onClose={() => handleModalToggle()} />
+        <RMForm editId={iId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal
         open={isModalOpen.awardRM}

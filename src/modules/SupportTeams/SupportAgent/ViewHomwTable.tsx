@@ -1,22 +1,22 @@
+import { useEffect, useState } from "react"
 import AreaManagerIcon from "../../../assets/icons/AreaMangerIcon"
 import CalenderDays from "../../../assets/icons/CalenderDays"
 import RegionIcon from "../../../assets/icons/RegionIcon"
 import UserIcon from "../../../assets/icons/UserIcon"
-import useApi from "../../../Hooks/useApi"
-import { useParams } from "react-router-dom"
-import { useEffect, useState } from "react"
-import { endPoints } from "../../../services/apiEndpoints"
 import No_Data_found from '../../../assets/image/NO_DATA.png'
+import useApi from "../../../Hooks/useApi"
+import { endPoints } from "../../../services/apiEndpoints"
 import SAViewTable from "./SAViewTable"
 
 type Props = {
   getData: any
   tickets: { openTickets: any[]; closedTickets: any[] };
+  id:any
 }
 
-const ViewHomwTable = ({ getData, tickets }: Props) => {
+const ViewHomwTable = ({ getData, tickets,id }: Props) => {
   const { request: getaAWARD } = useApi('get', 3004)
-  const { id } = useParams()
+ 
   const [getAwards, setGetDatas] = useState<any>([])
   const tabs = ["Open Tickets", "Closed Tickets"] as const;
   type TabType = (typeof tabs)[number];
