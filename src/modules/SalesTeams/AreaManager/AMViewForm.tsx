@@ -1,15 +1,14 @@
-import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import AreaIcon from "../../../assets/icons/AreaIcon";
 import BankIcon from "../../../assets/icons/BankIcon";
 import BloodGroupIcon from "../../../assets/icons/BloodGroupIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays"
+import CalenderDays from "../../../assets/icons/CalenderDays";
 import EmailIcon from "../../../assets/icons/EmailIcon";
 import LocationIcon from "../../../assets/icons/LocationIcon";
 import PhoneIcon from "../../../assets/icons/PhoneIcon";
-import UserIcon from "../../../assets/icons/UserIcon"
+import UserIcon from "../../../assets/icons/UserIcon";
 import useApi from "../../../Hooks/useApi";
-import { useEffect, useState } from "react";
 import { endPoints } from "../../../services/apiEndpoints";
-import AreaIcon from "../../../assets/icons/AreaIcon";
 
 type Props = {
   onClose: () => void;

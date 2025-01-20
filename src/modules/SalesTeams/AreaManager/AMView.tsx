@@ -171,10 +171,10 @@ const AMView = ({staffId }: Props) => {
   console.log("BDA Details:", bdaDetails);
   console.log("Licenser Details:", licenserDetails);
 
-  const topPerformingBDA = bdaDetails.map((bda: any) => ({
-    CR: parseFloat(bda?.bdaConversionRate),
-    name: bda?.bdaName,
-  }));
+  // const topPerformingBDA = bdaDetails.map((bda: any) => ({
+  //   CR: parseFloat(bda?.bdaConversionRate),
+  //   name: bda?.bdaName,
+  // }));
   
 
 
