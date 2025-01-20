@@ -43,7 +43,7 @@ router.get("/region-manager/:id/details",verifyToken,checkPermission('View Regio
 
 router.delete("/region-managers/:id",verifyToken,checkPermission('Delete Region Manager'), regionManagerController.deleteRegionManager,ActivityLogGeneration('Delete Region Manager'));
 
-router.put('/deactivateRm/:id',verifyToken,checkPermission('Deactivate Region Manager'),regionManagerController.deactivateRegionmanager,ActivityLogGeneration('Deactivate Region Manager'))
+router.put('/deactivateRm/:id',verifyToken,checkPermission('Deactivate Region Manager'),regionManagerController.deactivateRegionManager,ActivityLogGeneration('Deactivate Region Manager'))
  
 // Area manager
 router.put("/area-manager-check",verifyToken,checkPermission('Add Area Manager'), areaManagerController.addAreaManagerCheck);

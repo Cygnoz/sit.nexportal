@@ -423,11 +423,11 @@ exports.deleteRegionManager = async (req, res, next) => {
   }
 };
 
-
-exports.deactivateRegionmanager = async (req, res, next) => {
+ 
+exports.deactivateRegionManager = async (req, res, next) => {
   try {
-    const { id } = req.params; // Extract Region Manager ID
-    const { status } = req.body; // Extract status from request body
+    const { id } = req.params; // Extract Region Manager ID from params
+    const { status } = req.body; // Extract status from the request body
  
     // Validate the status
     if (!["Active", "Deactive"].includes(status)) {
@@ -442,12 +442,17 @@ exports.deactivateRegionmanager = async (req, res, next) => {
       return res.status(404).json({ message: "Region Manager not found." });
     }
  
-    // If deactivating, check if Region Manager is associated with any lead
+    // If deactivating, check if the Region Manager is referenced in any lead
     if (status === "Deactive") {
-      const lead = await Leads.findOne({ regionManager: id });
-      if (lead) {
+      const associatedLeads = await Leads.find({ regionManager: id });
+      if (associatedLeads.length > 0) {
         return res.status(400).json({
-          message: "Cannot deactivate Region Manager because it is referenced in Leads.",
+          message: "Cannot deactivate Region Manager: There are leads associated with this Region Manager.",
+          leads: associatedLeads.map(lead => ({
+            id: lead._id,
+            name: lead.name,
+            status: lead.status,
+          })),
         });
       }
     }
@@ -456,20 +461,34 @@ exports.deactivateRegionmanager = async (req, res, next) => {
     regionManager.status = status;
     await regionManager.save();
  
+    // Use the `updatedAt` field for logging
+    const actionTime = regionManager.updatedAt.toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    });
+ 
     // Log the operation
-      logOperation(req, `Succesfully`, regionManager._id);
-      next()
+    const activity = new ActivityLog({
+      userId: req.user.id,
+      operationId:id,
+      activity: `${req.user.userName} Succesfully ${status}d Region Manager.`,
+      timestamp: actionTime,
+      action: status === "Active" ? "Activate" : "Deactivate",
+      status,
+      screen: "Region Manager",
+    });
+    await activity.save();
+ 
     // Respond with success
     return res.status(200).json({
       message: `Region Manager status updated to ${status} successfully.`,
       regionManager,
     });
   } catch (error) {
-    console.error("Error updating Region Manager status:", error.message || error);
+    console.error("Error updating Region Manager status:", error);
  
     // Log the failure and respond with an error
     logOperation(req, "Failed");
-     next();
+    next()
     return res.status(500).json({ message: "Internal server error." });
   }
 };

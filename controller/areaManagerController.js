@@ -497,7 +497,7 @@ exports.deleteAreaManager = async (req, res, next) => {
 exports.deactivateAreamanager = async (req, res, next) => {
   try {
     const { id } = req.params; // Extract Area Manager ID
-    const { status } = req.body; // Extract status from request body
+    const { status } = req.body; // Extract status from the request body
  
     // Validate the status
     if (!["Active", "Deactive"].includes(status)) {
@@ -506,36 +506,55 @@ exports.deactivateAreamanager = async (req, res, next) => {
       });
     }
  
-    // Check if the Area Manager exists
+    // Find the Area Manager
     const areaManager = await AreaManager.findById(id);
     if (!areaManager) {
       return res.status(404).json({ message: "Area Manager not found." });
     }
  
-    // If deactivating, check if Area Manager is associated with any lead
+    // Check if the Area Manager is associated with any leads when deactivating
     if (status === "Deactive") {
-      const lead = await Leads.findOne({ areaManager: id });
-      if (lead) {
+      const associatedLeads = await Leads.find({ areaManager: id });
+      if (associatedLeads.length > 0) {
         return res.status(400).json({
-          message: "Cannot deactivate Area Manager because it is referenced in Leads.",
+          message: "Cannot deactivate Area Manager: There are leads associated with this Area Manager.",
+          leads: associatedLeads.map(lead => ({
+            id: lead._id,
+            name: lead.name,
+            status: lead.status,
+          })),
         });
       }
     }
  
     // Update the Area Manager's status
     areaManager.status = status;
-    await areaManager.save();
+    await areaManager.save(); // Mongoose will update the `updatedAt` timestamp
+ 
+    // Use the `updatedAt` field for logging
+    const actionTime = areaManager.updatedAt.toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    });
  
     // Log the operation
-    logOperation(req, `Succesfully`, areaManager._id);
-     next()
+    const activity = new ActivityLog({
+      userId: req.user.id,
+      operationId: id,
+      activity: `${req.user.userName} Succesfully ${status}d Area Manager.`,
+      timestamp: actionTime,
+      action: status === "Active" ? "Activate" : "Deactivate",
+      status,
+      screen: "Area Manager",
+    });
+    await activity.save();
+ 
     // Respond with success
     return res.status(200).json({
       message: `Area Manager status updated to ${status} successfully.`,
       areaManager,
     });
   } catch (error) {
-    console.error("Error updating Area Manager status:", error.message || error);
+    console.error("Error updating Area Manager status:", error);
  
     // Log the failure and respond with an error
     logOperation(req, "Failed");
@@ -543,7 +562,6 @@ exports.deactivateAreamanager = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
-
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,

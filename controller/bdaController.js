@@ -550,7 +550,7 @@ exports.deleteBda = async (req, res, next) => {
 exports.deactivateBda = async (req, res, next) => {
   try {
     const { id } = req.params; // Extract BDA ID from params
-    const { status } = req.body; // Extract status from request body
+    const { status } = req.body; // Extract status from the request body
  
     // Validate the status
     if (!["Active", "Deactive"].includes(status)) {
@@ -567,33 +567,52 @@ exports.deactivateBda = async (req, res, next) => {
  
     // If deactivating, check if the BDA is referenced in Leads
     if (status === "Deactive") {
-      const lead = await Leads.findOne({ bdaId: id });
-      if (lead) {
+      const associatedLeads = await Leads.find({ bdaId: id });
+      if (associatedLeads.length > 0) {
         return res.status(400).json({
-          message: "Cannot deactivate BDA because it is referenced in Leads.",
+          message: "Cannot deactivate BDA: There are leads associated with this BDA.",
+          leads: associatedLeads.map(lead => ({
+            id: lead._id,
+            name: lead.name,
+            status: lead.status,
+          })),
         });
       }
     }
  
     // Update the BDA's status
     bda.status = status;
-    await bda.save();
+    await bda.save(); // Mongoose will update the `updatedAt` timestamp
+ 
+    // Use the `updatedAt` field for logging
+    const actionTime = bda.updatedAt.toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    });
  
     // Log the operation
-    logOperation(req, `Succesfully`, bda._id);
-        next()
+    const activity = new ActivityLog({
+      userId: req.user.id,
+      operationId: id,
+      activity: `${req.user.userName} Succesfully ${status}d BDA.`,
+      timestamp: actionTime,
+      action: status === "Active" ? "Activate" : "Deactivate",
+      status,
+      screen: "BDA",
+    });
+    await activity.save();
+ 
     // Return success response
-    res.status(200).json({
+    return res.status(200).json({
       message: `BDA status updated to ${status} successfully.`,
       bda,
     });
   } catch (error) {
-    console.error("Error updating BDA status:", error.message || error);
+    console.error("Error updating BDA status:", error);
  
-    // Log the failure and respond with error
-    logOperation(req, "Failed ");
-     next();
-    res.status(500).json({ message: "Internal server error." });
+    // Log the failure and respond with an error
+    logOperation(req, "Failed");
+    next()
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
 
