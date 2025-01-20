@@ -436,11 +436,25 @@ exports.deactivateSupervisor = async (req, res, next) => {
  
     // Update the supervisor's status
     supervisor.status = status;
-    await supervisor.save();
+    await supervisor.save(); // Mongoose will automatically update `updatedAt` timestamp
  
-    // Log the operation
-     logOperation(req, `Succesfully`, supervisor._id);
-     next()
+    // Use the `updatedAt` field for logging
+    const actionTime = supervisor.updatedAt.toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    });
+ 
+    // Log the operation (only once)
+    const activity = new ActivityLog({
+      userId: req.user.id,
+      operationId: id,
+      activity: `${req.user.userName} Succesfully ${status}d Supervisor.`,
+      timestamp: actionTime,
+      action: status === "Active" ? "Activate" : "Deactivate",
+      status,
+      screen: "Supervisor",
+    });
+    await activity.save();
+ 
     // Respond with success
     return res.status(200).json({
       message: `Supervisor status updated to ${status} successfully.`,
@@ -448,10 +462,10 @@ exports.deactivateSupervisor = async (req, res, next) => {
     });
   } catch (error) {
     console.error("Error updating supervisor status:", error);
- 
-    // // Log the failure and respond with an error
-     logOperation(req, "Failed");
+    // Log the failure and respond with an error
+    logOperation(req, "Failed");
     next();
+    // Respond with failure
     return res.status(500).json({ message: "Internal server error" });
   }
 };

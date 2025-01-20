@@ -494,13 +494,27 @@ exports.deactivateSupportagent = async (req, res, next) => {
       }
     }
  
-    // Update the status
+    // Update the support agent's status
     supportAgent.status = status;
-    await supportAgent.save();
+    await supportAgent.save(); // Mongoose will automatically update `updatedAt` timestamp
+ 
+    // Use the `updatedAt` field for logging
+    const actionTime = supportAgent.updatedAt.toLocaleString("en-US", {
+      timeZone: "Asia/Kolkata",
+    });
  
     // Log the operation
-    logOperation(req, `Succesfully`, supportAgent._id);
-    next
+    const activity = new ActivityLog({
+      userId: req.user.id,
+      operationId: id,
+      activity: `${req.user.userName} Succesfully ${status}d Support Agent.`,
+      timestamp: actionTime,
+      action: status === "Active" ? "Activate" : "Deactivate",
+      status,
+      screen: "Support Agent",
+    });
+    await activity.save();
+ 
     // Respond with success
     return res.status(200).json({
       message: `Support agent status updated to ${status} successfully.`,
@@ -510,8 +524,8 @@ exports.deactivateSupportagent = async (req, res, next) => {
     console.error("Error updating support agent status:", error);
  
     // Log the failure and send an error response
-    logOperation(req, "Failed ");
-     next();
+    logOperation(req, "Failed");
+    next()
     return res.status(500).json({ message: "Internal server error" });
   }
 };
