@@ -38,17 +38,17 @@ const validationSchema = Yup.object().shape({
     leadId: Yup.string(),
     emailTo: Yup.string(),
     emailFrom: Yup.string(),
-    emailSubject: Yup.string(),
+    emailSubject: Yup.string().required("Email subject is required"),
     emailFile: Yup.string(),
-    emailText: Yup.string(),
+    emailMessage: Yup.string(),
 });
 
 const MailsForm = ({ onClose , leadData}: Props) => {
 
       const { id } = useParams()
-      console.log(id);
+      //console.log(id);
       const {user} =useUser()
-      console.log(user);
+    //  console.log(user);
       
     const {
       handleSubmit,
@@ -132,7 +132,7 @@ console.log(quillValue);
 
 useEffect(()=>{
  if(quillValue){
-  setValue("emailText",quillValue)
+  setValue("emailMessage",quillValue)
  }
 },[quillValue])
 
@@ -186,12 +186,15 @@ useEffect(()=>{
 
         {/* <p className="text-[#303F58] text-sm font-semibold p-4 ms-2 mt-2">Your Subject Title</p> */}
         <Input
-        {...register("emailSubject")}
-        value={watch("emailSubject")}
-        placeholder="Your Subject Title"
-        type="text"
-        className="text-[#303F58] text-sm font-semibold outline-none w-[493px] px-4 mt-6"
-        />
+  {...register("emailSubject")}
+  value={watch("emailSubject")}
+  placeholder="Your Subject Title"
+  type="text"
+  className="text-[#303F58] text-sm font-semibold outline-none w-[493px] px-4 mt-6"
+/>
+{errors.emailSubject && (
+  <p className="text-red-500 text-xs mt-1">{errors.emailSubject.message}</p>
+)}
 
         <hr className="my-2" />
 
