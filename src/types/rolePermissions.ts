@@ -116,4 +116,4 @@ const rolePermissions: RolePermissions = {
 };
 
 // Export rolePermissions, sidebarRoutes, and sidebarIcons
-export { rolePermissions, sidebarRoutes, sidebarIcons };
+export { rolePermissions, sidebarRoutes, sidebarIcons, };

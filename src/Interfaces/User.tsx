@@ -9,4 +9,5 @@ export interface UserData {
     employeeId?:string
     type?:string
     _id?:string
+    userId?:string
   }

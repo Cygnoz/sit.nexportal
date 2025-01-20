@@ -644,7 +644,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     // Watch phone field for changes
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4 my-4">
+                <div className="grid grid-cols-3 gap-4 my-4">
                   <Select
                     required
                     placeholder="Select Region"
@@ -669,6 +669,13 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     error={errors.commission?.message}
                     options={data.wc}
                   />
+                  <Input
+                      placeholder="Enter Amount"
+                      label="Salary Amount"
+                      type="number"
+                      error={errors.salaryAmount?.message}
+                      {...register("salaryAmount")}
+                    />
                 </div>
               </>
             )}

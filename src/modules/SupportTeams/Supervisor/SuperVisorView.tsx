@@ -14,21 +14,21 @@ import Table from "../../../components/ui/Table";
 import SuperVisorTicketsOverview from "./SuperVisorTicketsOverview";
 import SuperVisorViewForm from "./SuperVisorViewForm";
 // import SuperVisorCard from "../../../components/ui/SuperVisorCards"
-import Background from "../../../assets/image/1.png";
-import PhoneIcon from "../../../assets/icons/PhoneIcon";
-import CalenderMultiple from "../../../assets/icons/CalenderMultiple";
-import ChevronRight from "../../../assets/icons/ChevronRight";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
-import { endPoints } from "../../../services/apiEndpoints";
 import AwardIcon from "../../../assets/icons/AwardIcon";
-import SVViewAward from "./SVViewAward";
-import SupervisorForm from "./SupervisorForm";
+import CalenderMultiple from "../../../assets/icons/CalenderMultiple";
+import ChevronRight from "../../../assets/icons/ChevronRight";
+import PhoneIcon from "../../../assets/icons/PhoneIcon";
+import Trash from "../../../assets/icons/Trash";
+import Background from "../../../assets/image/1.png";
 import person1 from "../../../assets/image/Ellipse 14.png";
 import person2 from "../../../assets/image/Ellipse 43.png";
-import Trash from "../../../assets/icons/Trash";
-import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
+import { endPoints } from "../../../services/apiEndpoints";
+import SVViewAward from "./SVViewAward";
+import SupervisorForm from "./SupervisorForm";
 
 
 
@@ -41,12 +41,13 @@ interface SupervisorData {
   rating: string;
 }
 
-type Props = {};
+type Props = {
+  staffId?:string
+};
 
-const SuperVisorView = ({}: Props) => {
+const SuperVisorView = ({staffId}: Props) => {
   const topRef = useRef<HTMLDivElement>(null);
-    
-      useEffect(() => {
+   useEffect(() => {
         // Scroll to the top of the referenced element
         topRef.current?.scrollIntoView({ behavior: "smooth" });
       }, []);
@@ -75,13 +76,13 @@ const SuperVisorView = ({}: Props) => {
   
   const { request: getInsideSv } = useApi('get', 3003);
   const [insideSvData, setInsideSvData] = useState<any>();
-  const [supervisorDetails, setSupervisorDetails] = useState([]);
   const [supportAgentDetails, setSupportAgentDetails] = useState([]);
   const [ticketSummary, setTicketSummary] = useState<any>({});
   
   const {request:deleteaSV}=useApi('delete',3003)
   const { request: getaSV } = useApi("get", 3003);
   const { id } = useParams();
+  const iId=staffId?staffId:id
   const [getData, setGetData] = useState<{
     svData: any;
   }>({ svData: [] });
@@ -89,7 +90,7 @@ const SuperVisorView = ({}: Props) => {
   const getASV = async () => {
     try {
       const { response, error } = await getaSV(
-        `${endPoints.SUPER_VISOR}/${id}`
+        `${endPoints.SUPER_VISOR}/${iId}`
       );
       if (response && !error) {
         setGetData((prevData) => ({
@@ -105,11 +106,12 @@ const SuperVisorView = ({}: Props) => {
   };
   useEffect(() => {
     getASV();
-  }, [id]);
+    getInsideViewSV();
+  }, [iId]);
 
   const handleDelete = async () => {
     try {
-      const { response, error } = await deleteaSV(`${endPoints.SUPER_VISOR}/${id}`);
+      const { response, error } = await deleteaSV(`${endPoints.SUPER_VISOR}/${iId}`);
       if (response) {
         toast.success(response.data.message);
         navigate("/supervisor");
@@ -128,14 +130,13 @@ const SuperVisorView = ({}: Props) => {
   
   const getInsideViewSV = async () => {
     try {
-      const { response, error } = await getInsideSv(`${endPoints.SUPER_VISOR}/${id}/details`);
+      const { response, error } = await getInsideSv(`${endPoints.SUPER_VISOR}/${iId}/details`);
   
       if (response && !error) {
         console.log(response.data);
         setInsideSvData(response.data);
   
         if (response.data) {
-          setSupervisorDetails(response.data.supervisorDetails || []);
           setSupportAgentDetails(response.data.supportAgentDetails || []);
           setTicketSummary(response.data.ticketSummary || {});
         }
@@ -147,15 +148,6 @@ const SuperVisorView = ({}: Props) => {
     }
   };
   
-  useEffect(() => {
-    getInsideViewSV();
-  }, [id]);
-
-  console.log("SV Data:", insideSvData);
-  console.log("Supervisor Details:", supervisorDetails);
-  console.log("SupportAgent Details:", supportAgentDetails);
-  console.log("Ticket Summary:", ticketSummary);
-
 
 
   // Data for HomeCards
@@ -197,8 +189,6 @@ const SuperVisorView = ({}: Props) => {
     employeeId: support.employeeId || "N/A",
     supportAgentName: support.supportAgentName, // or any unique identifier
     resolvedTicketsCount: support.resolvedTicketsCount || 0, // Adjust according to your data structure
-  
-    
   }));
  
 
@@ -462,10 +452,10 @@ const SuperVisorView = ({}: Props) => {
 
       {/* Modal controlled by state */}
       <Modal open={isModalOpen.viewSV} onClose={() => handleModalToggle()}>
-        <SuperVisorViewForm onClose={() => handleModalToggle()} />
+        <SuperVisorViewForm id={iId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.editSV} onClose={() => handleModalToggle()}>
-        <SupervisorForm editId={id} onClose={() => handleModalToggle()} />
+        <SupervisorForm editId={iId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal
         open={isModalOpen.awardSV}
@@ -473,7 +463,7 @@ const SuperVisorView = ({}: Props) => {
         align="right"
         className="w-[25%] me-16"
       >
-        <SVViewAward getData={getData} onClose={() => handleModalToggle()} />
+        <SVViewAward id={iId} getData={getData} onClose={() => handleModalToggle()} />
       </Modal >
       <Modal
         open={isModalOpen.confirm}

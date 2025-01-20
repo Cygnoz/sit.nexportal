@@ -52,9 +52,11 @@ interface BDAViewDetails {
 }
 
 
-type Props = {}
+type Props = {
+  staffId?:string
+}
 
-const BDAView = ({}: Props) => {
+const BDAView = ({staffId}: Props) => {
   const {request:getBDAViewDetails}=useApi('get',3002)
   const topRef = useRef<HTMLDivElement>(null);
     
@@ -64,6 +66,7 @@ const BDAView = ({}: Props) => {
       }, []);
   const navigate=useNavigate()
   const {id}=useParams()
+  const iId=staffId?staffId:id
   const {request:getBDA}=useApi('get',3002);
   const {request: deleteABda}=useApi('delete',3002);
   const [data, setData] = useState<{
@@ -140,7 +143,7 @@ const BDAView = ({}: Props) => {
 
   const handleDelete = async () => {
     try {
-      const { response, error } = await deleteABda(`${endPoints.BDA}/${id}`);
+      const { response, error } = await deleteABda(`${endPoints.BDA}/${iId}`);
       console.log(response);
       console.log(error);
             
@@ -160,7 +163,7 @@ const BDAView = ({}: Props) => {
 
   const getOneBDA = async () => {
     try {
-      const { response, error } = await getBDA(`${endPoints.BDA}/${id}`);
+      const { response, error } = await getBDA(`${endPoints.BDA}/${iId}`);
       if (response && !error) {
         console.log(response.data);
         
@@ -179,11 +182,9 @@ const BDAView = ({}: Props) => {
   
   const getBDAViewData = async () => {
     try {
-      const { response, error } = await getBDAViewDetails(`${endPoints.BDA_DETAILS}/${id}/customers`);
+      const { response, error } = await getBDAViewDetails(`${endPoints.BDA_DETAILS}/${iId}/customers`);
       if (response && !error) {
-        console.log("res", response.data);
         const { LeadDetails, LicenserDetails, TrialDetails, bdaDetails } = response.data;
-  
         const TransformedLead = LeadDetails?.map((lead: any) => ({
           ...lead,
           createdAt: new Date(lead.createdAt).toLocaleDateString("en-GB"), // Format date
@@ -231,15 +232,7 @@ const BDAView = ({}: Props) => {
   useEffect(() => {
     getOneBDA()
     getBDAViewData()
-  }, [id]);
-
-  console.log("Bda Deatils",data.bdaViewDetails);
-  
-
-
-
-
-
+  }, [iId]);
 
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
 
@@ -371,7 +364,7 @@ const BDAView = ({}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
              </div>
 
-            <div onClick={()=>handleModalToggle(false,true,false,false)} className="flex flex-col  items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,true,false,false)} className="flex flex-col cursor-pointer  items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -452,7 +445,7 @@ const BDAView = ({}: Props) => {
 
     </div>
     <Modal open={isModalOpen.editBda} onClose={()=>handleModalToggle()}>
-    <BDAForm editId={id} onClose={()=>handleModalToggle()} />
+    <BDAForm editId={iId} onClose={()=>handleModalToggle()} />
   </Modal>
 
   <Modal align="right" className="w-[25%] me-16" open={isModalOpen.awards} onClose={()=>handleModalToggle()}>

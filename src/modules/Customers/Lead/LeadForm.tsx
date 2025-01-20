@@ -215,16 +215,12 @@ const salutation = [
 
 
   useEffect(()=>{
-    console.log("allBDA",dropDownBdas);
-    
     if(user?.role=="BDA"){
       const filteredBDA:any = dropDownBdas?.find(
-        (bda: any) => bda?.user?.employeeId === user?.employeeId
+        (bda: any) => bda?._id === user?.userId
       );
-
-      console.log("Filtered BDA:", filteredBDA?._id);
-      setValue("areaId", filteredBDA?.area?._id || "");
-        setValue("regionId", filteredBDA?.region?._id || "");
+      setValue("areaId", filteredBDA?.area || "");
+        setValue("regionId", filteredBDA?.region || "");
         setValue("bdaId", filteredBDA?._id || "");
         
     }
