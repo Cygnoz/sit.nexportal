@@ -33,13 +33,18 @@ interface AMData {
   startDate: string;
   endDate: string;
 }
-
+interface InsideAmData {
+  totalLeads: number;
+}
 
 type Props = {
   staffId?: any
+  
 }
 
 const AMView = ({ staffId }: Props) => {
+  const [insideAmData, setInsideAmData] = useState<InsideAmData | null>(null);
+ 
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -69,7 +74,7 @@ const AMView = ({ staffId }: Props) => {
     try {
       const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${iId}`);
       if (response && !error) {
-        console.log("res", response.data);
+        //console.log("res", response.data);
 
         setGetData((prevData) => ({
           ...prevData,
@@ -87,7 +92,7 @@ const AMView = ({ staffId }: Props) => {
   useEffect(() => {
     getAAM();
   }, [iId])
-  console.log(getData);
+  // console.log(getData);
 
 
 
@@ -137,9 +142,11 @@ const AMView = ({ staffId }: Props) => {
     { key: "endDate", label: "End Date" },
   ];
   const { request: getInsideAM } = useApi('get', 3002);
-  const [insideAmData, setInsideAmData] = useState();
   const [bdaDetails, setBdaDetails] = useState([]);
   const [licenserDetails, setLicenserDetails] = useState([]);
+
+  const [pieData, setPieData] = useState<any[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
 
   const getInsideViewAM = async () => {
     try {
@@ -149,6 +156,7 @@ const AMView = ({ staffId }: Props) => {
         // Extract bdaDetails and licenserDetails separately
         setBdaDetails(response.data.bdaDetails || []);
         const licenserData = response.data.licenserDetails || []
+        const leadlicenserData = response.data.leadStatusDetails || []
         const processData = licenserData.map((item: any) => ({
           ...item,
           firstName: item.firstName,
@@ -157,7 +165,57 @@ const AMView = ({ staffId }: Props) => {
           endDate: item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'
 
         }))
+      
+        
         setLicenserDetails(processData);
+
+            // Function to map index to color
+            const getColorForIndex = (index: number) => {
+              const colors = ['#1B6C75', '#30B777', '#6ABAF3', '#7CD5AB', '#00B5B5'];
+              return colors[index] || '#808080'; // Default color for out-of-bounds index
+            };
+  
+      
+
+
+// Dynamically map leadlicenserData to updatedRoles
+const updatedRoles = leadlicenserData.map((statusDetail: any, index:any) => ({
+  name: statusDetail.status || "Unknown", // Fallback for missing status
+  Count: statusDetail.count ?? 0,         // Use Count, default to 0 if missing
+ color: getColorForIndex(index),         // Assign colors based on index
+}));
+
+
+
+
+
+if (updatedRoles.length > 0) {
+ setRoles(updatedRoles)
+} else {
+  console.error("No roles to update. Check leadlicenserData.");
+}
+
+
+
+      
+          // Filter out roles with Count 0 and create pie chart data
+          const pieChartData = updatedRoles
+            .filter((role:any) => role.Count > 0) // Only include roles with Count > 0
+            .map((role:any) => ({
+              x: role.name,
+              y: role.Count,
+              color: role.color,
+            }));
+
+          // Update state
+          setRoles(updatedRoles);
+          setPieData(pieChartData);
+
+          
+
+       
+
+
       } else {
         console.error(error.response.data.message);
       }
@@ -170,15 +228,22 @@ const AMView = ({ staffId }: Props) => {
     getInsideViewAM();
   }, []);
 
+
+
+  
+
+  //console.log(pieData);
+
   console.log("Inside AM Data:", insideAmData);
-  console.log("BDA Details:", bdaDetails);
-  console.log("Licenser Details:", licenserDetails);
+  //console.log("BDA Details:", bdaDetails);
+  //console.log("Licenser Details:", licenserDetails);
+  //console.log("lead status", leadStatusDetails);
 
   const topPerformingBDA = bdaDetails.map((bda: any) => ({
     CR: parseFloat(bda?.bdaConversionRate),
     name: bda?.bdaName,
   }));
-  
+
   const handleDeactivate = async () => {
     const body = {
       status: getData?.amData?.status === 'Active' ? 'Deactive' : 'Active'
@@ -202,32 +267,6 @@ const AMView = ({ staffId }: Props) => {
       toast.error("Failed to Deactivate the lead.");
     }
   }
-
-
-  const roles = [
-    { name: 'New', count: 1239, color: '#30B777' }, // Updated color
-    { name: 'In progress', count: 598, color: '#6ABAF3' }, // Updated color
-    { name: 'Converted', count: 234, color: '#7CD5AB' }, // Updated color
-    { name: 'Lost', count: 89, color: '#00B5B5' } // Updated color
-  ];
-
-  const pieData = roles.map((role) => ({
-    x: role.name,
-    y: role.count,
-    color: role.color
-  }));
-
-
-
-
-
-
-
-
-
-
-
-  
   
 
 
@@ -423,18 +462,17 @@ const AMView = ({ staffId }: Props) => {
 
       </div>
       {/* Card & table */}
-      <AMViewCardandTable
-        bdaDetails={bdaDetails}
-        insideAmData={insideAmData}
-      />
+      <AMViewCardandTable bdaDetails={bdaDetails} insideAmData={insideAmData}/>
       {/* Charts */}
       <div className="grid grid-cols-12 mb-5 gap-4">
         <div className="col-span-4 h-full">
           <div className="bg-white rounded-lg w-full h-full  p-3">
             <h1 className="text-[#303F58] text-lg font-bold p-3">Lead status distribution</h1>
             <div className="-mt-3 relative">
-              <div className='absolute top-[35%] left-[39%] z-20 text-center -mt-4'>
-                <p className='text-xl font-semibold ms-4'>3456</p>
+              
+              <div className='absolute top-[35%] left-[38%] z-20 text-center -mt-7'>
+              <p className='text-xl font-semibold ms-4'>{insideAmData?.totalLeads || 0}</p>
+
                 <p className='text-xs ms-4'>Total Leads</p>
               </div>
               <VictoryPie
@@ -445,7 +483,7 @@ const AMView = ({ staffId }: Props) => {
                   y: roles.map(role => role.name),
                 }}
                 theme={VictoryTheme.clean}
-                labels={({ datum }) => `${((datum.y / roles.reduce((acc, role) => acc + role.count, 0)) * 100).toFixed(1)}%`}
+                labels={({ datum }) => `${((datum.y / roles.reduce((acc, role) => acc + role.Count, 0)) * 100).toFixed(1)}%`}
                 labelComponent={<VictoryLabel style={{ fill: '#303F58', fontSize: 15, marginLeft: -50 }} />}
                 style={{
                   data: {
@@ -462,7 +500,7 @@ const AMView = ({ staffId }: Props) => {
                         <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
                         <span className="text-gray-800 font-medium text-xs">{role.name}</span>
                       </div>
-                      <span className=" text-gray-600 text-xs">{role.count}</span>
+                      <span className=" text-gray-600 text-xs">{role.Count}</span>
                     </div>
                   ))}
                 </div>
@@ -472,35 +510,35 @@ const AMView = ({ staffId }: Props) => {
         </div>
         <div className="col-span-8">
 
-               <div className="p-3 bg-white w-full space-y-2 rounded-lg">
-                <p className="text-[#303F58] text-lg font-bold">
-                   Top performing BDA's
-                 </p>
-                 <p className="text-[#4B5C79] text-xs font-normal">
-                   Based on lead Conversion Performance Metric
-                 </p>
-                  
-                  <div className="mt-2 custom-scrollbar " style={{ overflowX: 'auto' }}>
-                    {/* Wrapper for dynamic width */}
-                    <div style={{ width: '100%' }} className="-ms-4 mt-3">
-                      <ResponsiveContainer width="100%" minHeight={380}>
-                      <BarChart
-                        data={topPerformingBDA}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                        <YAxis axisLine={false}   tickFormatter={(value) => `${value}%`} tickLine={false} domain={[0, 100]} />
-                        <Tooltip />
-                        <Bar barSize={30} dataKey="CR" radius={10}>
-                          {topPerformingBDA?.map((entry: any, index: any) => (
-                            <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-                </div>
+          <div className="p-3 bg-white w-full space-y-2 rounded-lg">
+            <p className="text-[#303F58] text-lg font-bold">
+              Top performing BDA's
+            </p>
+            <p className="text-[#4B5C79] text-xs font-normal">
+              Based on lead Conversion Performance Metric
+            </p>
+
+            <div className="mt-2 custom-scrollbar " style={{ overflowX: 'auto' }}>
+              {/* Wrapper for dynamic width */}
+              <div style={{ width: '100%' }} className="-ms-4 mt-3">
+                <ResponsiveContainer width="100%" minHeight={380}>
+                  <BarChart
+                    data={topPerformingBDA}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                    <YAxis axisLine={false} tickFormatter={(value) => `${value}%`} tickLine={false} domain={[0, 100]} />
+                    <Tooltip />
+                    <Bar barSize={30} dataKey="CR" radius={10}>
+                      {topPerformingBDA?.map((entry: any, index: any) => (
+                        <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 

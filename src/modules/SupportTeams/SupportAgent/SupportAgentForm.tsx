@@ -43,6 +43,7 @@ const baseSchema = {
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
     region:Yup.string().required("Region is required"),
+     salaryAmount:Yup.string().required("Salary Amount is required")
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -156,7 +157,8 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
         !editId && "password",
         !editId && "confirmPassword",
         "region",
-        "workEmail"
+        "workEmail",
+         "salaryAmount"
       ];
     }
     const isValid = fieldsToValidate.length
@@ -632,6 +634,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                       type="number"
                       error={errors.salaryAmount?.message}
                       {...register("salaryAmount")}
+                      required
                     />
               </div>
             </div>
