@@ -8,7 +8,7 @@ const crypto = require("crypto");
 const { ObjectId } = require("mongoose").Types;
 const nodemailer = require("nodemailer");
 const Ticket = require("../database/model/ticket");
-
+const ActivityLog = require('../database/model/activityLog')
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
 

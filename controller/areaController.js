@@ -404,10 +404,51 @@ exports.getAreaDetails = async (req, res) => {
   }
 };
 
+// const getBdaDetails = async (areaId) => {
+//   // Fetch all BDA documents that match the area
+//   const bdas = await Bda.find({ area: areaId }, { user: 1, dateOfJoining: 1 }).lean();
+
+//   // Prepare array for BDA details
+//   const bdaDetails = await Promise.all(
+//     bdas.map(async (bda) => {
+//       const user = await User.findById(bda.user, {
+//         employeeId: 1,
+//         userName: 1,
+//         email: 1,
+//         phoneNo: 1,
+//         userImage: 1,
+//       }).lean();
+
+//       const totalLeads = await Leads.countDocuments({ areaId, bdaId: bda._id });
+//       const leadsClosed = await Leads.countDocuments({
+//         areaId,
+//         bdaId: bda._id,
+//         customerStatus: { $ne: "Lead" },
+//       });
+
+//       return {
+//         _id :bda._id,
+//         employeeId: user?.employeeId || null,
+//         userName: user?.userName || null,
+//         email: user?.email || null,
+//         phoneNo: user?.phoneNo || null,
+//         userImage: user?.userImage || null,
+//         dateOfJoining: bda.dateOfJoining,
+//         totalLeads,
+//         leadsClosed,
+//       };
+//     })
+//   );
+
+//   return bdaDetails;
+// };
+
+// lead and conversion
+
 const getBdaDetails = async (areaId) => {
   // Fetch all BDA documents that match the area
   const bdas = await Bda.find({ area: areaId }, { user: 1, dateOfJoining: 1 }).lean();
-
+ 
   // Prepare array for BDA details
   const bdaDetails = await Promise.all(
     bdas.map(async (bda) => {
@@ -418,14 +459,31 @@ const getBdaDetails = async (areaId) => {
         phoneNo: 1,
         userImage: 1,
       }).lean();
-
+ 
       const totalLeads = await Leads.countDocuments({ areaId, bdaId: bda._id });
+ 
+      // Count converted leads for the BDA
+      const convertedLeadsForBda = await Leads.countDocuments({
+      bdaId: bda._id,
+      customerStatus: { $ne: "Lead" }, // Non-leads are considered converted
+      });
+ 
+   // Adjust the conversion rate to cap at 100%
+   const bdaConversionRate =
+   totalLeads > 0
+     ? Math.min(
+         ((convertedLeadsForBda / totalLeads) * 100).toFixed(2),
+         100
+       )
+     : "0";
+ 
+ 
       const leadsClosed = await Leads.countDocuments({
         areaId,
         bdaId: bda._id,
         customerStatus: { $ne: "Lead" },
       });
-
+ 
       return {
         _id :bda._id,
         employeeId: user?.employeeId || null,
@@ -436,14 +494,15 @@ const getBdaDetails = async (areaId) => {
         dateOfJoining: bda.dateOfJoining,
         totalLeads,
         leadsClosed,
+        bdaConversionRate
       };
     })
   );
-
+ 
   return bdaDetails;
 };
+ 
 
-// lead and conversion
 exports.getAreaLeadDetails = async (req, res) => {
   try {
     const { id } = req.params;
