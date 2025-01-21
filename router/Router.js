@@ -15,6 +15,8 @@ const ActivityLogGeneration = require('../controller/authController/activityLogC
 
 router.post('/ticket',verifyToken,checkPermission('Add Ticket'),TicketController.addTicket,ActivityLogGeneration('Add Ticket'))
 
+router.post('/unassigned-ticket',TicketController.unassignedTickets)
+
 router.get('/tickets',verifyToken,checkPermission('View Ticket'),TicketController.getAllTickets)
 
 router.get('/ticket/:ticketId',verifyToken,checkPermission('View Ticket'),TicketController.getTicket)

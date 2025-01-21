@@ -1,53 +1,84 @@
+// Importing models
 const Ticket = require("../database/model/ticket");
-const Leads = require("../database/model/leads")
+const Leads = require("../database/model/leads");
 const Region = require("../database/model/region");
 const Supervisor = require("../database/model/supervisor");
-const SupportAgent = require("../database/model/supportAgent")
-const User = require("../database/model/user")
+const SupportAgent = require("../database/model/supportAgent");
+const User = require("../database/model/user");
 const { Types } = require("mongoose");
 const moment = require('moment-timezone');
 const mongoose = require('mongoose');
 const filterByRole = require("../services/filterByRole");
-
-  
  
  
+ 
+// Function to clean data
+function cleanTicketData(data) {
+  const cleanData = (value) => (value === null || value === undefined || value === 0 ? undefined : value);
+  return Object.keys(data).reduce((acc, key) => {
+    acc[key] = cleanData(data[key]);
+    return acc;
+  }, {});
+}
+ 
+// Function to generate the current date and time in a specified time zone
+function generateOpeningDate(timeZone = "Asia/Kolkata", dateFormat = "YYYY-MM-DD", dateSplit = "-", timeFormat = "HH:mm:ss", timeSplit = ":") {
+  const localDate = moment.tz(new Date(), timeZone);
+  let formattedDate = localDate.format(dateFormat);
+  if (dateSplit) {
+    formattedDate = formattedDate.replace(/[-/]/g, dateSplit);
+  }
+  const formattedTime = localDate.format(timeFormat).replace(/:/g, timeSplit);
+  const timeZoneName = localDate.format("z");
+  const dateTime = `${formattedDate} ${formattedTime} (${timeZoneName})`;
+ 
+  return {
+    date: formattedDate,
+    time: `${formattedTime} (${timeZoneName})`,
+    dateTime,
+  };
+}
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+// Function to validate customer and support agent existence
 const dataExist = async (customerId, supportAgentId) => {
   const [customerExists, supportAgentExists] = await Promise.all([
     Leads.find({ _id: customerId }, { _id: 1, firstName: 1 , image:1 }),
-    SupportAgent.findOne({ _id: new Types.ObjectId(supportAgentId) }, { _id: 1, user: 1, region:1}), // Fetch one record
+    SupportAgent.findOne({ _id: new Types.ObjectId(supportAgentId) }, { _id: 1, user: 1, region:1 }),
   ]);
  
   let supportAgentName = null;
   if (supportAgentExists && supportAgentExists.user) {
-    const supportAgentUser = await User.findOne(
-      { _id: supportAgentExists.user },
-      { userName: 1 }
-    );
+    const supportAgentUser = await User.findOne({ _id: supportAgentExists.user }, { userName: 1 });
     if (supportAgentUser) {
       supportAgentName = supportAgentUser.userName;
     }
   }
  
   return {
-    customerExists,// Return the first customer record or null
-    supportAgentExists: supportAgentExists || null, // Return the agent or null
+    customerExists,
+    supportAgentExists: supportAgentExists || null,
     supportAgentName,
   };
 };
  
  
+ 
+ 
 exports.addTicket = async (req, res, next) => {
   try {
-    const { id: userId, userName } = req.user; // Get user info from the request
-    const cleanedData = cleanTicketData(req.body); // Clean the request body data
-    const { customerId, priority, supportAgentId } = cleanedData; // Extract necessary fields from cleaned data
+    const { id: userId, userName } = req.user;
+    const cleanedData = cleanTicketData(req.body);
+    const { customerId, priority, supportAgentId, ticketId } = cleanedData;
  
     // Validate required fields
     if (!customerId || !priority || !supportAgentId) {
-      return res.status(400).json({
-        message: "Customer, priority, and support agent are required",
-      });
+      return res.status(400).json({ message: "Customer, priority, and support agent are required" });
     }
  
     // Check if customer and support agent exist
@@ -73,7 +104,6 @@ exports.addTicket = async (req, res, next) => {
  
     // Fetch supervisor based on the same region
     const supervisor = await mongoose.model("Supervisor").findOne({ region: supportAgent.region._id });
- 
     if (!supervisor) {
       return res.status(404).json({ message: "Supervisor not found in the same region" });
     }
@@ -81,26 +111,13 @@ exports.addTicket = async (req, res, next) => {
     cleanedData.supervisor = supervisor._id;
  
     // Create the ticket using the createTicket function
-    const savedTicket = await createNewTicket(
-      cleanedData,
-      customerId,
-      supportAgentId,
-      userId,
-      userName
-    );
+    const savedTicket = await createTicket(cleanedData, customerId, supportAgentId, userId, userName);
  
-    // Include supervisorId in the ticket response
-    savedTicket.supervisorId = supervisor._id; // Add supervisor's _id to the ticket object
- 
-    // Respond with success and the new ticket details
     res.status(201).json({
       message: "Ticket added successfully",
-      savedTicket: {
-        ...savedTicket.toObject(), // Convert Mongoose object to plain JavaScript object
-      },
+      savedTicket: { ...savedTicket.toObject() },
     });
  
-    // Pass operation details to middleware
     ActivityLog(req, "successfully", savedTicket._id);
     next();
   } catch (error) {
@@ -112,37 +129,95 @@ exports.addTicket = async (req, res, next) => {
 };
  
 
+exports.unassignedTickets = async (req, res, next) => {
+  try {
+    const { requester, subject, description } = req.body;
+
+    // Validate required fields
+    if (!requester || !subject || !description) {
+      return res.status(400).json({ message: "Requester, subject, and description are required" });
+    }
+
+    // Find customer (Lead) by email
+    const lead = await Leads.findOne({ email: requester });
+    if (!lead) {
+      return res.status(404).json({ message: "Requester not found in Leads" });
+    }
+    
+    const { _id: customerId, regionId: regionId } = lead;
+
+
+    // Find supervisor by region
+    const supervisor = await Supervisor.findOne({ region: regionId });
+    if (!supervisor) {
+      return res.status(404).json({ message: "Supervisor not found for the requester's region" });
+    }
+
+    // Generate next ticket ID
+    let nextId = 1;
+    const lastTicket = await Ticket.findOne().sort({ ticketId: -1 });
+    if (lastTicket && lastTicket.ticketId) {
+      const splitId = lastTicket.ticketId.split("-");
+      if (splitId.length > 1) {
+        nextId = parseInt(splitId[1]) + 1;
+      }
+    }
+
+    // Create new ticket
+    const newTicket = new Ticket({
+      ticketId: `TK-${nextId}`,
+      customerId,
+      region: regionId,
+      supervisor: supervisor._id,
+      subject,
+      description,
+      status: "Open",
+      openingDate: generateOpeningDate().dateTime,
+    });
+
+    const savedTicket = await newTicket.save();
+
+    res.status(201).json({
+      message: "Unassigned ticket created successfully",
+      ticket: savedTicket,
+    });
+
+    next();
+  } catch (error) {
+    console.error("Error creating unassigned ticket:", error);
+    res.status(500).json({ message: "Internal server error" });
+    next();
+  }
+};
+ 
+ 
  
 exports.getTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
- 
-    // Fetch the ticket and populate necessary fields
     const ticket = await Ticket.findById(ticketId)
       .populate({
         path: 'customerId',
-        select: 'firstName image' // Fetch firstName and image from Lead collection
+        select: 'firstName image',
       })
       .populate({
         path: 'region',
-        model: 'Region', // Ensure the region field references the Region collection
-        select: 'regionName' // Fetch only regionName from the Region collection
+        model: 'Region',
+        select: 'regionName',
       })
       .populate({
         path: 'supportAgentId',
-        select: 'user', // Fetch user from SupportAgent
+        select: 'user',
         populate: {
           path: 'user',
-          select: 'userName userImage' // Fetch userName and userImage from User collection
-        }
+          select: 'userName userImage',
+        },
       });
  
-    // Check if the ticket exists
     if (!ticket) {
       return res.status(404).json({ message: 'Ticket not found' });
     }
  
-    // Send the ticket in the response
     res.status(200).json(ticket);
   } catch (error) {
     console.error('Error fetching ticket:', error);
@@ -153,55 +228,44 @@ exports.getTicket = async (req, res) => {
  
  
  
- 
- 
 exports.getAllTickets = async (req, res) => {
   try {
     const userId = req.user.id;
     const query = await filterByRole(userId);
-    
-    // Fetch the ticket and populate necessary fields
+   
     const tickets = await Ticket.find(query)
       .populate({
         path: 'customerId',
-        select: 'firstName image' // Fetch firstName and image from Lead collection
+        select: 'firstName image',
       })
       .populate({
         path: 'region',
-        model: 'Region', // Ensure the region field references the Region collection
-        select: 'regionName' // Fetch only regionName from the Region collection
+        model: 'Region',
+        select: 'regionName',
       })
       .populate({
         path: 'supportAgentId',
-        select: 'user', // Fetch user from SupportAgent
+        select: 'user',
         populate: {
           path: 'user',
-          select: 'userName userImage' // Fetch userName and userImage from User collection
-        }
+          select: 'userName userImage',
+        },
       });
  
-    // Check if the ticket exists
     if (!tickets) {
       return res.status(404).json({ message: 'Ticket not found' });
     }
+ 
     const totalTickets = tickets.length;
-    const resolvedTickets = tickets.filter((ticket) => ticket.status === "Resolved").length;
-    const unResolvedTickets = tickets.length - resolvedTickets;
-
-    // Send the ticket in the response
-    res.status(200).json({
-      tickets,
-      totalTickets,
-      resolvedTickets,
-      unResolvedTickets
-    });
- 
- 
+    res.status(200).json({ tickets, totalTickets });
   } catch (error) {
     console.error("Error fetching all tickets:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+ 
+ 
+ 
  
  
  
@@ -228,6 +292,8 @@ exports.getCustomers = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+ 
+ 
  
 exports.updateTicket = async (req, res, next) => {
   try {
@@ -268,11 +334,11 @@ exports.updateTicket = async (req, res, next) => {
 };
  
  
+ 
+ 
 exports.deleteTicket = async (req, res) => {
   try {
     const { ticketId } = req.params;
- 
-    // Delete the ticket
     const deletedTicket = await Ticket.findByIdAndDelete(ticketId);
  
     if (!deletedTicket) {
@@ -287,142 +353,46 @@ exports.deleteTicket = async (req, res) => {
 };
  
  
+ 
+ 
 const ActivityLog = (req, status, operationId = null) => {
-    const { id, userName } = req.user;
-    const log = { id, userName, status };
+  const { id, userName } = req.user;
+  const log = { id, userName, status };
  
-    if (operationId) {
-      log.operationId = operationId;
-    }
- 
-    req.user = log;
-  };
- 
- 
- 
- 
-    //Clean Data
-    function cleanTicketData(data) {
-      const cleanData = (value) => (value === null || value === undefined || value === 0 ? undefined : value);
-      return Object.keys(data).reduce((acc, key) => {
-        acc[key] = cleanData(data[key]);
-        return acc;
-      }, {});
-    }
-   
- 
- 
-  // Function to generate the current date and time in a specified time zone
-function generateOpeningDate(
-  timeZone = "Asia/Kolkata",
-  dateFormat = "YYYY-MM-DD",
-  dateSplit = "-",
-  timeFormat = "HH:mm:ss",
-  timeSplit = ":"
-) {
-  // Get the current date-time in the specified time zone
-  const localDate = moment.tz(new Date(), timeZone);
- 
-  // Format date
-  let formattedDate = localDate.format(dateFormat);
- 
-  // Replace default separators in the date if a custom split character is provided
-  if (dateSplit) {
-    formattedDate = formattedDate.replace(/[-/]/g, dateSplit);
+  if (operationId) {
+    log.operationId = operationId;
   }
  
-  // Format time
-  const formattedTime = localDate.format(timeFormat).replace(/:/g, timeSplit);
- 
-  // Get time zone abbreviation
-  const timeZoneName = localDate.format("z");
- 
-  // Combine date, time, and time zone
-  const dateTime = `${formattedDate} ${formattedTime} (${timeZoneName})`;
- 
-  return {
-    date: formattedDate,
-    time: `${formattedTime} (${timeZoneName})`,
-    dateTime,
-  };
-}
- 
-// Usage example
-const openingDate = generateOpeningDate();
-console.log(openingDate.dateTime); // e.g., "2024-12-19 14:30:45 (IST)"
- 
-const createNewTicket = async (data, customerId, supportAgentId, userId, userName) => {
-  const { dateTime } = generateOpeningDate(); // Auto-generate dateTime
- 
-  const newTicket = new Ticket({
-    ...data,
-    customerId,
-    supportAgentId,
-    openingDate: dateTime, // Set auto-generated openingDate here
-    userId,
-    userName,
-    status: "Open",
-  });
- 
-  return newTicket.save();
+  req.user = log;
 };
  
  
-    // Validate data existing
-    function validateCustomerAndSupportAgent( customerExists, supportAgentExists ,res ) {
-      if (!customerExists) {
-        res.status(404).json({ message: "Customer not found" });
-        return false;
-      }
-      if (!supportAgentExists) {
-        res.status(404).json({ message: "Support Agent not found." });
-        return false;
-      }
-      return true;
+ 
+ 
+async function createTicket(cleanedData, customerId, supportAgentId, userId, userName) {
+  const { ...rest } = cleanedData;
+ 
+  // Generate next ticket ID
+  let nextId = 1;
+  const lastTicket = await Ticket.findOne().sort({ ticketId: -1 });
+ 
+  if (lastTicket && lastTicket.ticketId) {
+    const splitId = lastTicket.ticketId.split("-");
+    if (splitId.length > 1) {
+      nextId = parseInt(splitId[1]) + 1;
     }
- 
-    async function createTicket(cleanedData, customerId, supportAgentId, userId, userName) {
-      const { ...rest } = cleanedData;
-   
-      // Generate the next ticket ID
-      let nextId = 1;
-   
-      // Try to get the last ticket to determine the next ID
-      const lastTicket = await Ticket.findOne().sort({ ticketId: -1 }); // Sort by ticketId descending
-   
-      if (lastTicket && lastTicket.ticketId) {
-        // Ensure ticketId exists and is in the correct format
-        const splitId = lastTicket.ticketId.split("-");
-        if (splitId.length > 1) {
-          const lastId = parseInt(splitId[1]);
-          if (!isNaN(lastId)) {
-            nextId = lastId + 1; // Increment the last ID
-          }
-        }
-      }
-   
-      // Format the new ticket ID
-      const ticketId = `TCKTID-${nextId.toString().padStart(4, "0")}`;
-   
- 
-   
-      // Save the new ticket
-      const savedTicket = await createNewTickets(
- 
-        {...rest,ticketId},
-        customerId,
-        supportAgentId,
-        userId,
-        userName,
-      )    
-      return savedTicket; // Return the saved ticket
-    }
-   
- 
-     // Create New ticket
-  function createNewTickets( data,   customerId, supportAgentId, userId, userName ) {
-    const newTickets = new Leads({ ...data,  customerId,supportAgentId, userId, userName , status:'Open'
- 
-    });
-    return newTickets.save();
   }
+ 
+  const newTicket = new Ticket({
+    ...rest,
+    ticketId: `TK-${nextId}`,
+    openedBy: userId,
+    openedByName: userName,
+    openingDate: generateOpeningDate().dateTime,
+    status:"Open",
+    customerId,
+    supportAgentId,
+  });
+ 
+  return newTicket.save();
+}
