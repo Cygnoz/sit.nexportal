@@ -208,6 +208,8 @@ const TeamOverview = ({ id }: Props) => {
         `${endPoints.GET_AREAS}/${id}/overview`
       );
       if (response && !error) {
+        console.log("resss",response.data);
+        
         const {bdas,statistics}=response.data
         const filteredBdas=bdas.map((bda:any)=>({
           ...bda,

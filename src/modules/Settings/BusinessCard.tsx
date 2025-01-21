@@ -21,8 +21,6 @@ import polygon from '../../assets/image/polygon.png'
 import dotsImage from '../../assets/image/BCardDots.png'
 import previewFront from '../../assets/image/preview-card-front.png'
 import previewBack from '../../assets/image/preview-card-back.png'
-// import template1 from '../../assets/image/preview-template1.png'
-// import template2 from '../../assets/image/preview-remplate2.png'
 
 type Props = {}
 
@@ -89,8 +87,9 @@ function BusinessCard({ }: Props) {
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 gap-2 p-2">
-                                    <div className="bg-[#184D81] rounded-lg w-full h-fit overflow-hidden">
+                                <div className="grid grid-cols-2 gap-3 p-2">
+                                    <div className="bg-[#184D81] min-h-[200px] relative rounded-lg w-full h-fit overflow-hidden">
+                                    <img className="w-40 h-[72px] absolute right-3" src={c} alt="" />
                                         <div className="flex gap-1 p-3">
                                             <div>
                                                 <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
@@ -104,9 +103,9 @@ function BusinessCard({ }: Props) {
                                                 <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
                                             </div>
                                         </div>
-                                        <div className="justify-end">
-                                            <img className="w-20 h-[72px] ml-auto me-6 -mt-14" src={c} alt="" />
-                                        </div>
+                                       
+                                          
+                                       
 
 
                                         <div className="flex">
@@ -161,7 +160,7 @@ function BusinessCard({ }: Props) {
                                         </div>
 
                                         <div className="flex justify-between p-2 relative">
-                                            <img src={cygnoz} className="w-14 h-5" alt="" />
+                                            <img src={cygnoz} className="w-24 h-5" alt="" />
                                             <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
                                         </div>
                                         <div>
@@ -169,7 +168,8 @@ function BusinessCard({ }: Props) {
                                         </div>
                                     </div>
 
-                                    <div className="bg-[#184D81] rounded-lg w-full h-fit overflow-hidden">
+                                    <div className="bg-[#184D81] min-h-[200px] relative rounded-lg w-full h-fit overflow-hidden">
+                                    <img className="w-40 h-[72px] absolute -right-8" src={c} alt="" />
                                         <div className="flex gap-4 p-3">
                                             <div>
                                                 <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
@@ -183,9 +183,6 @@ function BusinessCard({ }: Props) {
                                                 <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
                                             </div>
 
-                                        </div>
-                                        <div className="justify-end">
-                                            <img className="w-14 h-[72px] ml-auto -mt-14" src={c} alt="" />
                                         </div>
 
                                         <div className="flex p-2 justify-between">
@@ -238,7 +235,7 @@ function BusinessCard({ }: Props) {
                                         </div>
 
                                         <div className="flex justify-between p-3">
-                                            <img src={cygnoz} className="w-14 h-5" alt="" />
+                                            <img src={cygnoz} className="w-24 h-5" alt="" />
                                             <p className="text-[#FFFFFF] font-normal text-[10px] py-1 z-10">Engineering your business for the world</p>
                                         </div>
                                         <div className="relative">
@@ -247,8 +244,12 @@ function BusinessCard({ }: Props) {
 
                                     </div>
 
-                                    <div className="bg-[#184D81] rounded-lg w-full overflow-hidden">
-                                        <div className="flex gap-2 p-3 justify-between">
+                                    <div className="bg-[#184D81] min-h-[200px] relative z-20 flex flex-col justify-between  rounded-lg w-full overflow-hidden">
+                                    <img className="w-24 h-28 top-14 right-11 absolute -z-10" style={{ transform: 'rotate(-30deg)' }} src={cygnozC} alt="" />
+                                    <img className="w-16 h-[74px] right-0 top-14 absolute" src={dotsImage} alt="" />
+                                       
+                                       <div>
+                                       <div className="flex gap-2 p-3 justify-between">
                                             <div className="flex gap-1">
                                                 <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
                                                 <div>
@@ -268,14 +269,13 @@ function BusinessCard({ }: Props) {
                                             <p className="text-[#FFFFFF] font-light text-xs">Region</p>
                                             <p className="text-[#FFFFFF] font-semibold text-xs">Ernakulam</p>
                                         </div>
+                                       </div>
 
-                                        <div className="flex justify-end gap-4 -mt-2">
-                                            <img className="w-24 h-28 -mt-2" style={{ transform: 'rotate(-30deg)' }} src={cygnozC} alt="" />
-                                            <img className="w-16 h-[70px] mt-2" src={dotsImage} alt="" />
-                                        </div>
+                                        
+                                        
 
-                                        <div className="px-3 -mt-14">
-                                            {/* <p className="text-[#FFFFFF] font-light text-[10px] my-1">Personal Address & Mail</p> */}
+                                        <div className="px-3 grid grid-cols-2 z-20">
+                                            
                                             <div className="gap-1">
                                                 <div className="flex gap-2">
                                                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
@@ -304,12 +304,15 @@ function BusinessCard({ }: Props) {
                                                         <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
 
                                                     </div>
-                                                    <div>
-                                                        <img src={cygnoz} className="w-16 h-6 ml-auto" alt="" />
-                                                        <p className="text-[#FFFFFF] font-light text-[8px]">Engineering your business for the world</p>
-                                                    </div>
+                                                   
                                                 </div>
                                             </div>
+                                            <div className="flex flex-col justify-end mb-2">
+                                                        <div>
+                                                        <img src={cygnoz} className="w-24 h-5 ml-auto" alt="" />
+                                                        <p className="text-[#FFFFFF] font-light text-[7px] w-fit ml-auto">Engineering your business for the world</p>
+                                                        </div>
+                                                    </div>
                                         </div>
 
                                     </div>
