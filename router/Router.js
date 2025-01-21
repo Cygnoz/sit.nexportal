@@ -19,6 +19,8 @@ router.post('/unassigned-ticket',TicketController.unassignedTickets)
 
 router.get('/tickets',verifyToken,checkPermission('View Ticket'),TicketController.getAllTickets)
 
+router.get('/unassigned-ticket',verifyToken,checkPermission('View Ticket'),TicketController.getAllUnassignedTickets)
+
 router.get('/ticket/:ticketId',verifyToken,checkPermission('View Ticket'),TicketController.getTicket)
 
 router.get('/getCustomers',TicketController.getCustomers)

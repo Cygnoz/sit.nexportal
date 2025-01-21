@@ -178,10 +178,9 @@ exports.unassignedTickets = async (req, res, next) => {
     const savedTicket = await newTicket.save();
 
     res.status(201).json({
-      message: "Unassigned ticket created successfully",
-      ticket: savedTicket,
+      message: "Your ticket has been created successfully!",
     });
-
+    
     next();
   } catch (error) {
     console.error("Error creating unassigned ticket:", error);
@@ -226,13 +225,11 @@ exports.getTicket = async (req, res) => {
 };
  
  
- 
- 
 exports.getAllTickets = async (req, res) => {
   try {
     const userId = req.user.id;
     const query = await filterByRole(userId);
-   
+
     const tickets = await Ticket.find(query)
       .populate({
         path: 'customerId',
@@ -251,19 +248,71 @@ exports.getAllTickets = async (req, res) => {
           select: 'userName userImage',
         },
       });
- 
+
     if (!tickets) {
-      return res.status(404).json({ message: 'Ticket not found' });
+      return res.status(404).json({ message: 'Tickets not found' });
     }
- 
+
     const totalTickets = tickets.length;
-    res.status(200).json({ tickets, totalTickets });
+
+    // Calculate unresolved tickets (status != 'Resolved')
+    const unresolvedTickets = tickets.filter(ticket => ticket.status !== 'Resolved').length;
+
+    // Calculate solved tickets (totalTickets - unresolvedTickets)
+    const solvedTickets = totalTickets - unresolvedTickets;
+
+    // Calculate unassigned tickets (supportAgentId === null)
+    const unassignedTickets = tickets.filter(ticket => !ticket.supportAgentId).length;
+
+    res.status(200).json({
+      tickets,
+      totalTickets,
+      unresolvedTickets,
+      solvedTickets,
+      unassignedTickets,
+    });
   } catch (error) {
     console.error("Error fetching all tickets:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
- 
+
+
+exports.getAllUnassignedTickets = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const query = await filterByRole(userId);
+
+    // Add condition to filter unassigned tickets
+    query.supportAgentId = null;
+
+    const tickets = await Ticket.find(query)
+      .populate({
+        path: 'customerId',
+        select: 'firstName image',
+      })
+      .populate({
+        path: 'region',
+        model: 'Region',
+        select: 'regionName',
+      })
+      .populate({
+        path: 'supervisor',
+        select: 'name email',
+      });
+
+    if (!tickets || tickets.length === 0) {
+      return res.status(404).json({ message: 'No unassigned tickets found' });
+    }
+
+    const totalTickets = tickets.length;
+    res.status(200).json({ tickets, totalTickets });
+  } catch (error) {
+    console.error("Error fetching unassigned tickets:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
  
  
  
