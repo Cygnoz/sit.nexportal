@@ -31,6 +31,7 @@ import BDAForm from "../BDAForm";
 import GraphTable from "../GraphTable";
 import BDAViewAward from "./BDAViewAward";
 import BDAViewForm from "./BDAViewForm";
+import UserRoundCheckIcon from "../../../../assets/icons/UserRoundCheckIcon";
 
 
 
@@ -69,6 +70,8 @@ const BDAView = ({staffId}: Props) => {
   const iId=staffId?staffId:id
   const {request:getBDA}=useApi('get',3002);
   const {request: deleteABda}=useApi('delete',3002);
+  const {request: deactivateBDA}=useApi('put',3002);
+
   const [data, setData] = useState<{
     bdaData: any;
     bdaViewDetails: BDAViewDetails;
@@ -89,7 +92,6 @@ const BDAView = ({staffId}: Props) => {
     { icon: <LeadsCardIcon />, number: "₹89,567", title: "Total Revenue Generated", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
     { icon: <LeadsCardIcon />, number:data.bdaViewDetails.bdaDetails?.totalLicensesSold?data.bdaViewDetails.bdaDetails?.totalLicensesSold:0, title: "Pending Tasks", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
 
-    // { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
   ];
 
   const [isModalOpen, setIsModalOpen] = useState({
@@ -97,16 +99,18 @@ const BDAView = ({staffId}: Props) => {
     viewBda: false,
     awards:false,
     confirm:false,
+    deactiveBda:false,
   });
 
   // Function to toggle modal visibility
-  const handleModalToggle = (editBda = false, viewBda = false,awards=false, confirm=false,) => {
+  const handleModalToggle = (editBda = false, viewBda = false,awards=false, confirm=false,deactiveBda=false) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editBda: editBda,
       viewBda: viewBda,
       awards:awards,
       confirm:confirm,
+      deactiveBda:deactiveBda,
     }));
     getOneBDA();
   };
@@ -157,6 +161,30 @@ const BDAView = ({staffId}: Props) => {
     } catch (err) {
       console.error("Delete error:", err);
       toast.error("Failed to delete the BDA.");
+    }
+  };
+
+  const handleDeactivate = async () => {
+    const body = {
+      status: data.bdaData?.status === "Active" ? 'Deactive' : 'Active'
+    }
+    try {
+      const { response, error } = await deactivateBDA(`${endPoints.DEACTIVATE_BDA}/${iId}`, body);
+      console.log(response);
+      console.log(error, "error message");
+
+
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/bda");
+
+      } else {
+        console.log(error?.response?.data?.message);
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the lead.");
     }
   };
 
@@ -353,7 +381,7 @@ const BDAView = ({staffId}: Props) => {
             </div>
             
             <div className="flex space-x-6 bottom-0  mt-10 ">
-            <div onClick={()=>handleModalToggle(true,false,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
+            <div onClick={()=>handleModalToggle(true,false,false,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
               <div className="w-8 h-8 mb-2  rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -364,7 +392,7 @@ const BDAView = ({staffId}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
              </div>
 
-            <div onClick={()=>handleModalToggle(false,true,false,false)} className="flex flex-col cursor-pointer  items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,true,false,false,false)} className="flex flex-col cursor-pointer  items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -375,7 +403,7 @@ const BDAView = ({staffId}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
             </div>
 
-            <div onClick={()=>handleModalToggle(false,false,true,false)} className="flex flex-col cursor-pointer items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,false,true,false,false)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -386,18 +414,30 @@ const BDAView = ({staffId}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
             </div>
 
-            <div className="flex flex-col  items-center space-y-1">
-              <div className="w-8 h-8 mb-2 rounded-full">
-              <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <DeActivateIcon size={18} color="#D52B1E4D" />
-                   </div>
-                    </div>
+            <div onClick={()=>handleModalToggle(false,false,false,false,true)} className="flex flex-col  items-center space-y-1">
+            <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+              {data.bdaData?.status === "Active" ?
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
+                  </div>
+                </div>
+                :
+                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                </div>
               </div>
-              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
-            </div>
 
-            <div onClick={()=>handleModalToggle(false,false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
+                  }
+
+              </div>
+              <p className="text-center text-[#D4D4D4] text-xs font-medium ms-2">
+                {data.bdaData?.status === "Active" ? "Deactivate" : "Activate"}
+              </p>
+                          </div>
+
+            <div onClick={()=>handleModalToggle(false,false,false,true,false)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -466,7 +506,24 @@ const BDAView = ({staffId}: Props) => {
           prompt="Are you sure want to delete this BDA?"
           onClose={() => handleModalToggle()}
         />
-      </Modal>       
+      </Modal>    
+
+            <Modal
+        open={isModalOpen.deactiveBda}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDeactivate}
+          prompt={
+            data.bdaData?.status === "Active"
+              ? "Are you sure you want to deactivate this BDA?"
+              : "Are you sure you want to activate this BDA?"
+          }
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>   
 
 
   </>

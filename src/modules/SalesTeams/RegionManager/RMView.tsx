@@ -22,6 +22,7 @@ import RMViewAward from "./RMViewAward";
 import Trash from "../../../assets/icons/Trash";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 type Props = {
   staffId?:string
 };
@@ -35,23 +36,26 @@ interface AreaData {
 const RMView = ({staffId}: Props) => {
   
   const topRef = useRef<HTMLDivElement>(null);
-    
-      useEffect(() => {
-        // Scroll to the top of the referenced element
-        topRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, []);
+
+  useEffect(() => {
+    // Scroll to the top of the referenced element
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
     editRM: false,
     viewRM: false,
     awardRM: false,
-    confirm:false,
+    confirm: false,
+    deactiveRM: false,
   });
   const handleModalToggle = (
     editRM = false,
     viewRM = false,
     awardRM = false,
-    confirm=false,
+    confirm = false,
+    deactiveRM = false,
+
   ) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
@@ -59,12 +63,13 @@ const RMView = ({staffId}: Props) => {
       viewRM: viewRM,
       awardRM: awardRM,
       confirm: confirm,
+      deactiveRM: deactiveRM,
     }));
     getARM();
   };
 
   const { request: getaRM } = useApi("get", 3002);
-  const {request:deleteaRM}=useApi("delete",3002)
+  const { request: deleteaRM } = useApi("delete", 3002)
   const { id } = useParams();
   const iId=staffId?staffId:id
   const [getData, setGetData] = useState<{
@@ -107,7 +112,7 @@ const RMView = ({staffId}: Props) => {
       toast.error("Failed to delete the Region Manager.");
     }
   };
-  
+
 
 
   // Data for HomeCards
@@ -128,16 +133,16 @@ const RMView = ({staffId}: Props) => {
     },
     {
       icon: <AreaManagerIcon size={24} />,
-      number:getData?.rmData?.totalCounts?.totalBdas,
+      number: getData?.rmData?.totalCounts?.totalBdas,
       title: "Total BDA's",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
     },
   ];
 
- 
+
   // Define the columns with strict keys
-  const columns: { key:any; label: string }[] = [
+  const columns: { key: any; label: string }[] = [
     { key: "areaCode", label: "Area Code" },
     { key: "areaName", label: "Area Name" },
     { key: "region", label: "Region" },
@@ -149,6 +154,7 @@ const RMView = ({staffId}: Props) => {
   const [totalAreaManaged, setTotalAreaManaged] = useState([]);
   const [totalAreaManagers, setTotalAreaManagers] = useState([]);
   const [totalBdas, setTotalBdas] = useState([]);
+  const { request: deactivateRM } = useApi('put', 3002)
 
   const getRMInsiIdes = async () => {
     try {
@@ -158,9 +164,9 @@ const RMView = ({staffId}: Props) => {
 
       if (response && !error) {
         const data = response.data;
-        console.log("dTAA",data.totalBdas);
+        console.log("dTAA", data.totalBdas);
 
-        
+
 
         // Set the values for each key separately
         const rawData = response.data.totalAreaManaged || [];
@@ -185,8 +191,39 @@ const RMView = ({staffId}: Props) => {
     getRMInsiIdes();
   }, []);
 
-  
- 
+  // For debugging
+  console.log("rmViewData", getData.rmData);
+
+  const handleDeactivate = async () => {
+    const body = {
+      status: getData?.rmData?.regionManager?.status === "Active" ? 'Deactive' : 'Active'
+    }
+    try {
+      const { response, error } = await deactivateRM(`${endPoints.DEACTIVATE_RM}/${iId}`, body);
+      console.log(response);
+      console.log(error, "error message");
+
+
+      if (response) {
+        toast.success(response.data.message);
+        getARM()
+        navigate("/region-manager");
+
+      } else {
+        console.log(error?.response?.data?.message);
+
+        toast.error(error?.response?.data?.message || "An error occurred");
+
+
+      }
+    } catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the lead.");
+    }
+  };
+
+
+
 
   return (
     <>
@@ -220,7 +257,7 @@ const RMView = ({staffId}: Props) => {
                 <div className="flex items-center gap-4 text-white">
                   <div className="flex items-center gap-2">
                     <div className="w-25 h-25 bg-blue ms-2 py-2 items-center justify-center rounded-full ">
-                      {getData?.rmData?.regionManager?.user?.userImage && getData?.rmData?.regionManager?.user?.userImage>50 ? (
+                      {getData?.rmData?.regionManager?.user?.userImage && getData?.rmData?.regionManager?.user?.userImage > 50 ? (
                         <img
                           className="w-16 h-16 rounded-full"
                           src={getData?.rmData?.regionManager?.user?.userImage}
@@ -307,78 +344,90 @@ const RMView = ({staffId}: Props) => {
                         Joining Date
                       </p>
                       <p className="text-xs">
-  {getData?.rmData?.regionManager?.dateOfJoining
-    ? new Date(getData.rmData.regionManager.dateOfJoining).toLocaleDateString("en-GB")
-    : "N/A"}
-</p>
+                        {getData?.rmData?.regionManager?.dateOfJoining
+                          ? new Date(getData.rmData.regionManager.dateOfJoining).toLocaleDateString("en-GB")
+                          : "N/A"}
+                      </p>
                     </div>
                   </div>
 
-                 <div className="flex gap-3">
-                 <div className="flex flex-col w-fit items-center space-y-1">
-                    <div
-                      onClick={() => handleModalToggle(true, false, false, false)}
-                      className="w-8 h-8 mb-2 rounded-full cursor-pointer"
-                    >
-                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                        <div className="ms-2 mt-2">
-                          <EditIcon size={18} color="#F0D5A0" />
+                  <div className="flex gap-3">
+                    <div className="flex flex-col w-fit items-center space-y-1">
+                      <div
+                        onClick={() => handleModalToggle(true, false, false, false, false)}
+                        className="w-8 h-8 mb-2 rounded-full cursor-pointer"
+                      >
+                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                          <div className="ms-2 mt-2">
+                            <EditIcon size={18} color="#F0D5A0" />
+                          </div>
                         </div>
                       </div>
+                      <p className="text-center ms-3">Edit Profile</p>
                     </div>
-                    <p className="text-center ms-3">Edit Profile</p>
-                  </div>
 
-                  <div className="flex flex-col  items-center space-y-1">
-                    <div
-                      onClick={() => handleModalToggle(false, true, false, false)}
-                      className="w-8 h-8 mb-2 rounded-full cursor-pointer"
-                    >
-                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                        <div className="ms-2 mt-2">
-                          <ViewRoundIcon size={18} color="#B6D6FF" />
+                    <div className="flex flex-col  items-center space-y-1">
+                      <div
+                        onClick={() => handleModalToggle(false, true, false, false, false)}
+                        className="w-8 h-8 mb-2 rounded-full cursor-pointer"
+                      >
+                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                          <div className="ms-2 mt-2">
+                            <ViewRoundIcon size={18} color="#B6D6FF" />
+                          </div>
                         </div>
                       </div>
+                      <p className="text-center ms-3">View Details</p>
                     </div>
-                    <p className="text-center ms-3">View Details</p>
-                  </div>
 
-                  <div className="flex flex-col   items-center space-y-1">
-                    <div
-                      onClick={() => handleModalToggle(false, false, true, false)}
-                      className="w-8 h-8 mb-2 rounded-full cursor-pointer"
-                    >
-                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                        <div className="ms-2 mt-2">
-                          <AwardIcon size={18} color="#B6FFD7" />
+                    <div className="flex flex-col   items-center space-y-1">
+                      <div
+                        onClick={() => handleModalToggle(false, false, true, false, false)}
+                        className="w-8 h-8 mb-2 rounded-full cursor-pointer"
+                      >
+                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                          <div className="ms-2 mt-2">
+                            <AwardIcon size={18} color="#B6FFD7" />
+                          </div>
                         </div>
                       </div>
+                      <p className="text-center ms-3">Awards</p>
                     </div>
-                    <p className="text-center ms-3">Awards</p>
-                  </div>
 
-                  <div className="flex flex-col -ms-2 items-center space-y-1">
+                    <div onClick={() => handleModalToggle(false, false, false, false, true,)} className="flex flex-col -ms-2 items-center space-y-1">
                     <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                      <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                        <div className="ms-2 mt-2">
-                          <DeActivateIcon size={18} color="#D52B1E4D" />
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-center ms-3">DeActivate</p>
-                  </div>
-
-                  <div onClick={()=>handleModalToggle(false,false,false,true)} className="flex flex-col -ms-2 items-center space-y-1">
-                    <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2 ">
-                    <Trash size={18} color="#BC3126" />
+              {getData?.rmData?.regionManager?.status === "Active" ?
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
                   </div>
                 </div>
+                :
+                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                </div>
+              </div>
+
+                  }
+
+              </div>
+              <p className="text-center font-medium  text-xs ms-2">
+                {getData?.rmData?.regionManager?.status === "Active" ? "Deactivate" : "Activate"}
+              </p>
                     </div>
-                    <p className="text-center ms-3">Delete</p>
+
+                    <div onClick={() => handleModalToggle(false, false, false, true, false)} className="flex flex-col -ms-2 items-center space-y-1">
+                      <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                          <div className="ms-2 mt-2 ">
+                            <Trash size={18} color="#BC3126" />
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-center ms-3">Delete</p>
+                    </div>
                   </div>
-                 </div>
                 </div>
                 {/* HomeCards Section */}
 
@@ -454,7 +503,24 @@ const RMView = ({staffId}: Props) => {
           prompt="Are you sure want to delete this Region manager?"
           onClose={() => handleModalToggle()}
         />
-      </Modal>       
+      </Modal>
+      <Modal
+        open={isModalOpen.deactiveRM}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDeactivate}
+          prompt={
+            getData?.rmData?.regionManager?.status === "Active"
+              ? "Are you sure you want to deactivate this RM?"
+              : "Are you sure you want to activate this RM?"
+          }
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>
+
 
     </>
   );
