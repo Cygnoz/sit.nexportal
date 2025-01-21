@@ -32,6 +32,6 @@ export interface RMData {
     workPhone?: string;
     region: string;
     commission?: string; // Use number for percentage values
-    salaryAmount?:string
+    salaryAmount:string
     bankDetails?: BankDetails;
 }

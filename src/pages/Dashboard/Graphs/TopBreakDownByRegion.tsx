@@ -114,8 +114,8 @@ function TopBreakDownByRegion({}: Props) {
  />
  
  {/* Custom label in the center of the pie chart */}
- <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-[20%] z-50 text-center">
-   <p className="text-2xl font-bold">{totalStaffCount}</p>
+ <div className="absolute top-[28%] left-1/2 transform -translate-x-1/2 -translate-y-[20%] z-50 text-center">
+   <p className="text-xl font-semibold">{totalStaffCount}</p>
    <p className="text-md">Total Team</p>
  </div>
 
