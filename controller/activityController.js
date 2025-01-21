@@ -266,67 +266,69 @@ exports.getActivity = async (req, res) => {
     }
   };
 
+ 
+ 
   exports.getLeadsActivityDetails = async (req, res, next) => {
     try {
       const { leadId } = req.params;
       const { activityType, dateFilter } = req.query;
- 
+   
       if (!leadId) {
         return res.status(400).json({ message: "Lead ID is required" });
       }
- 
+   
       // Base query
       let query = { leadId };
       if (activityType) query.activityType = activityType;
- 
+   
       // Handle date filtering for Task or Meeting
       if (["Task", "Meeting"].includes(activityType) && dateFilter) {
         const currentDate = new Date();
         let startDate, endDate;
- 
+   
         switch (dateFilter) {
           case "tomorrow":
             startDate = new Date();
             startDate.setDate(currentDate.getDate() + 1);
             startDate.setHours(0, 0, 0, 0);
- 
+   
             endDate = new Date(startDate);
             endDate.setHours(23, 59, 59, 999);
             break;
- 
+   
           case "next7days":
             startDate = new Date();
             startDate.setDate(currentDate.getDate() + 1);
             startDate.setHours(0, 0, 0, 0);
- 
+   
             endDate = new Date();
             endDate.setDate(currentDate.getDate() + 7);
             endDate.setHours(23, 59, 59, 999);
             break;
- 
+   
           case "next30days":
             startDate = new Date();
             startDate.setDate(currentDate.getDate() + 1);
             startDate.setHours(0, 0, 0, 0);
- 
+   
             endDate = new Date();
             endDate.setDate(currentDate.getDate() + 30);
             endDate.setHours(23, 59, 59, 999);
             break;
- 
+   
           case "yesterday":
             startDate = new Date();
             startDate.setDate(currentDate.getDate() - 1);
             startDate.setHours(0, 0, 0, 0);
- 
+   
             endDate = new Date(startDate);
             endDate.setHours(23, 59, 59, 999);
             break;
- 
+   
           default:
             break;
         }
- 
+   
         // If startDate and endDate are defined, filter `dueDate`
         if (startDate && endDate) {
           query.dueDate = {
@@ -335,7 +337,7 @@ exports.getActivity = async (req, res) => {
           };
         }
       }
- 
+   
       // Fetch activities matching the query
       const activities = await Activity.find(query, {
         description: 1,
@@ -348,7 +350,7 @@ exports.getActivity = async (req, res) => {
         meetingTitle: 1,
         activityType: 1, // Added field
       }).sort({ createdAt: -1 });
- 
+   
       // Map data for response
       const activityDetails = activities.map(activity => {
         const activityInfo = {
@@ -357,7 +359,7 @@ exports.getActivity = async (req, res) => {
           createdAt: activity.createdAt,
           activityType: activity.activityType, // Added field
         };
- 
+   
         switch (activity.activityType) {
           case "Mail":
             activityInfo.emailSubject = activity.emailSubject;
@@ -375,23 +377,44 @@ exports.getActivity = async (req, res) => {
           default:
             break;
         }
- 
+   
         return activityInfo;
       });
- 
-      // Respond with the filtered activities
+   
+      // Aggregate to count the number of each activity type
+      const activityCounts = await Activity.aggregate([
+        { $match: { leadId } }, // Match the specific leadId
+        {
+          $group: {
+            _id: "$activityType",
+            count: { $sum: 1 }, // Count the number of activities of each type
+          },
+        },
+      ]);
+   
+      // Format the counts into a more user-friendly structure
+      const counts = activityCounts.reduce((acc, { _id, count }) => {
+        acc[_id] = count;
+        return acc;
+      }, {});
+   
+      // Respond with the filtered activities and counts
       res.status(200).json({
         message: "Filtered activities retrieved successfully",
         activities: activityDetails,
+        counts: {
+          Mail: counts.Mail || 0,
+          Note: counts.Note || 0,
+          Task: counts.Task || 0,
+          Meeting: counts.Meeting || 0,
+        },
       });
     } catch (error) {
       console.error("Error fetching filtered activities:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   };
- 
- 
- 
+   
  
  
  
