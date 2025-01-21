@@ -14,6 +14,28 @@ import No_Data_found from "../../../../assets/image/NO_DATA.png";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../../../components/modal/ConfirmModal";
 
+// Skeleton loader for notes
+const SkeletonNote = () => (
+  <div className="bg-[#FAFAFA] w-full h-fit rounded-xl my-5 p-5 animate-pulse">
+    <div className="flex justify-between">
+      <div className="flex gap-3">
+        <div className="bg-[#F3E6E6] rounded-full size-8 px-2 py-2">
+          <div className="w-5 h-5 bg-gray-300 rounded-full"></div>
+        </div>
+        <div className="w-36 h-5 bg-gray-300 rounded"></div>
+      </div>
+      <div className="w-28 h-4 bg-gray-300 rounded"></div>
+    </div>
+    <div className="flex justify-between mt-4">
+      <div className="w-3/4 h-4 bg-gray-300 rounded"></div>
+      <div className="flex gap-4">
+        <div className="w-12 h-4 bg-gray-300 rounded"></div>
+        <div className="w-12 h-4 bg-gray-300 rounded"></div>
+      </div>
+    </div>
+  </div>
+);
+
 const Notes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -21,6 +43,7 @@ const Notes = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [searchValue, setSearchValue] = useState<string>("");
   const [noteData, setNoteData] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true); // Loading state for skeleton
 
   const { request: getLeadNote } = useApi("get", 3001);
   const { request: deleteLead } = useApi("delete", 3001);
@@ -28,6 +51,7 @@ const Notes = () => {
 
   // Fetch Notes
   const getNotes = async () => {
+    setLoading(true); // Start loading
     try {
       const { response, error } = await getLeadNote(`${endPoints.GET_ALL_LEAD_ACTIVITIES}/${leadId}`);
       if (response && !error) {
@@ -35,12 +59,13 @@ const Notes = () => {
           .filter((activity: any) => activity?.activityType === "Note")
           .reverse();
         setNoteData(taskActivities);
-        
       } else {
-        console.error("API Error:", error.response.data.message);
+        console.error("API Error:", error.response?.data?.message);
       }
     } catch (err) {
       console.error("Error fetching notes:", err);
+    } finally {
+      setLoading(false); // End loading
     }
   };
 
@@ -50,7 +75,6 @@ const Notes = () => {
 
   // Refresh Notes After Adding/Editing
   const handleNoteAdded = () => {
-  
     setIsModalOpen(false); // Close modal after adding/editing
     getNotes(); // Fetch updated notes
   };
@@ -119,8 +143,10 @@ const Notes = () => {
           </Button>
         </div>
 
-        {/* Show "No Data Found" when filteredNotes is empty */}
-        {filteredNotes.length === 0 ? (
+        {/* Show Skeleton Loader while loading */}
+        {loading ? (
+          Array.from({ length: 3 }).map((_, index) => <SkeletonNote key={index} />)
+        ) : filteredNotes.length === 0 ? (
           <div className="flex justify-center flex-col items-center h-full">
             <img width={70} src={No_Data_found} alt="No Data Found" />
             <p className="font-bold text-red-700">No Notes Found!</p>
@@ -148,7 +174,7 @@ const Notes = () => {
               </div>
               <div className="flex justify-between p-5">
                 <div
-                  className="flex gap-4 ms-2 bg-[#FFFFFF] w-[680px] p-1 rounded"
+                  className="flex gap-4 ms-2 text-xs font-normal bg-[#FFFFFF] w-[680px] p-1 rounded"
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(note?.note || ""),
                   }}
@@ -160,7 +186,7 @@ const Notes = () => {
                   </div>
                   <div className="cursor-pointer" onClick={() => deleteModalToggle(note?._id)}>
                     <Trash color="#303F58" size={16} />
-                    <p className="text-[#303F58] text-xs font-normal mt-1">Delete</p>
+                    <p className="text-[#303F58] text-xs font-normal mt-1 -ml-2">Delete</p>
                   </div>
                 </div>
               </div>
