@@ -45,6 +45,7 @@ const baseSchema = {
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
   region: Yup.string().required("Region is required"),
   area: Yup.string().required("Area is required"),
+  salaryAmount:Yup.string().required("Salary Amount is required")
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -207,6 +208,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
       "region",
       "area",
       "workEmail",
+       "salaryAmount"
     ];
 
     if (!editId) {
@@ -724,6 +726,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
                       type="number"
                       error={errors.salaryAmount?.message}
                       {...register("salaryAmount")}
+                      required
                     />
               </div>
             </div>

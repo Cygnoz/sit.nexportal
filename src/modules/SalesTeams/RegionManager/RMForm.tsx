@@ -43,6 +43,7 @@ const baseSchema = {
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
   region: Yup.string().required("Region is required"),
+  salaryAmount:Yup.string().required("Salary Amount is required")
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -206,6 +207,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         !editId && "confirmPassword",
         "region",
         "workEmail",
+         "salaryAmount"
       ];
       if (!editId) {
         const rmCheck = await checkRM(); // Call checkRM function
@@ -675,6 +677,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                       type="number"
                       error={errors.salaryAmount?.message}
                       {...register("salaryAmount")}
+                      required
                     />
                 </div>
               </>

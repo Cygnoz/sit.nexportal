@@ -20,7 +20,7 @@ type Props = {
 
 const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
 
-  console.log(bdaDetails);
+  //console.log(bdaDetails);
   
 
   const navigate= useNavigate()
@@ -64,7 +64,7 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
     { key: "status", label: "Status" },
     { key: "areaName", label: "Area" },
   ];
-  console.log(bdaDetails);
+  //console.log(bdaDetails);
   
 
   const bdaData =bdaDetails.map((bda:any)=>({

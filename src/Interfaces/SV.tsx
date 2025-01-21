@@ -30,7 +30,7 @@ interface Address {
     country?:string
     region: string;
     commission?:string;
-    salaryAmount?:string
+    salaryAmount:string;
     bankDetails?: BankDetails;
     userImage?: string;  
   }
