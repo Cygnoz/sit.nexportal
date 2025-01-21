@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import EditIcon from '../../../../assets/icons/EditIcon';
-// import profileImage from '../../../../assets/image/AvatarImg.png';
 import rightArrow from '../../../../assets/image/right-arrow.png';
 import { endPoints } from '../../../../services/apiEndpoints';
 import { useParams } from 'react-router-dom';
@@ -14,31 +13,11 @@ const ActivityTimeline = () => {
   const [activityData, setActivityData] = useState<any[]>([]);
   const { id } = useParams();
 
-  const getActivityTimeline = async () => {
-    try {
-      const { response, error } = await getAllActivityTimeline(`${endPoints.ACTIVITY_TIMELINE}/${id}`);
-
-      if (response && !error) {
-        console.log('API Response:', response.data.activities); // Debugging
-        setActivityData(response.data.activities || []);
-      } else {
-        console.log('API Error:', error.response.data.message);
-      }
-    } catch (err) {
-      console.log('Fetch Error:', err);
-    }
-  };
-
-  useEffect(() => {
-    getActivityTimeline();
-  }, []);
-
   const [selectedPeriod, setSelectedPeriod] = useState({ label: 'All Timelines', value: '' });
   const [selectedActivity, setSelectedActivity] = useState({ label: 'All Activities', value: '' });
   const [displayDate, setDisplayDate] = useState('');
 
   const activityOptions = [
-  
     { label: 'Meeting', value: 'meeting' },
     { label: 'Mail', value: 'email' },
     { label: 'Note', value: 'note' },
@@ -46,14 +25,39 @@ const ActivityTimeline = () => {
   ];
 
   const periodOptions = [
-   
     { label: 'Today', value: 'today' },
     { label: 'Tomorrow', value: 'tomorrow' },
     { label: 'Yesterday', value: 'yesterday' },
-    { label: 'after 7 Days', value: 'before_7_days' },
-    { label: 'after 30 Days', value: 'before_30_days' },
+    { label: 'After 7 Days', value: 'after_7_days' },
+    { label: 'After 30 Days', value: 'after_30_days' },
   ];
 
+  // Fetch timeline data on component mount
+  useEffect(() => {
+    const fetchTimelineData = async () => {
+      try {
+        const { response, error } = await getAllActivityTimeline(`${endPoints.ACTIVITY_TIMELINE}/${id}`);
+        if (response && !error) {
+          setActivityData(response.data.activities || []);
+        } else {
+          console.error('API Error:', error.response?.data?.message || error.message);
+        }
+      } catch (err) {
+        console.error('Fetch Error:', err);
+      }
+    };
+
+    fetchTimelineData();
+  }, [id, getAllActivityTimeline]);
+
+  // Format date for display
+  const formatDate = (date: Date, label: string) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' } as const;
+    const dateString = date.toLocaleDateString('en-US', options);
+    return `${label}, ${dateString}`;
+  };
+
+  // Update display date based on selected period
   const updateDate = (selectedValue: string) => {
     const today = new Date();
     let formattedDate = '';
@@ -67,20 +71,20 @@ const ActivityTimeline = () => {
         yesterday.setDate(today.getDate() - 1);
         formattedDate = formatDate(yesterday, 'Yesterday');
         break;
-        case 'tomorrow':
-            const tomorrow = new Date(today);
-            tomorrow.setDate(today.getDate() + 1);
-            formattedDate = formatDate(tomorrow, 'Tomorrow');
-            break;
+      case 'tomorrow':
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        formattedDate = formatDate(tomorrow, 'Tomorrow');
+        break;
       case 'after_7_days':
         const after7Days = new Date(today);
         after7Days.setDate(today.getDate() + 7);
-        formattedDate = formatDate(after7Days, 'after 7 Days');
+        formattedDate = formatDate(after7Days, 'After 7 Days');
         break;
       case 'after_30_days':
         const after30Days = new Date(today);
         after30Days.setDate(today.getDate() + 30);
-        formattedDate = formatDate(after30Days, 'after 30 Days');
+        formattedDate = formatDate(after30Days, 'After 30 Days');
         break;
       default:
         formattedDate = '';
@@ -89,52 +93,57 @@ const ActivityTimeline = () => {
     setDisplayDate(formattedDate);
   };
 
-  const formatDate = (date: Date, label: string) => {
-    const options = { year: 'numeric', month: 'long', day: 'numeric' } as const;
-    const dateString = date.toLocaleDateString('en-US', options);
-    return `${label}, ${dateString}`;
-  };
-
+  // Handle activity filter selection
   const handleActivitySelection = (selectedOption: any) => {
-    console.log('Selected Activity:', selectedOption); // Debugging
     setSelectedActivity(selectedOption);
   };
 
+  // Handle timeline filter selection
   const handleTimelineSelection = (selectedOption: any) => {
-    console.log('Selected Timeline:', selectedOption); // Debugging
     setSelectedPeriod(selectedOption);
     updateDate(selectedOption?.value);
+    
   };
 
+  // Filter activities based on selected filters
   const filteredActivities = activityData.filter((activity) => {
-    if (!activity?.activityType) return false; // Ensure activityType exists
-  
-    const matchesActivity = 
-      selectedActivity.value === '' || 
+    if (!activity?.activityType) return false;
+
+    // Filter by activity type
+    const matchesActivity =
+      selectedActivity.value === '' ||
       selectedActivity.value.toLowerCase() === activity.activityType.toLowerCase();
-  
-    let DueDate = null;
-    if (activity.activityType === 'Meeting') {
-      DueDate = activity.dueDate ? new Date(activity.dueDate) : null;
-    } else if (activity.activityType === 'Task') {
-      DueDate = activity.dueDate ? new Date(activity.dueDate) : null;
-    }
-  
+
+    // Filter by timeline
+    const createdAt = activity.createdAt ? new Date(activity.createdAt) : '';
     const today = new Date();
-    let matchesPeriod = selectedPeriod.value === '';
-  
-    if (DueDate) {
+
+    let matchesPeriod = selectedPeriod.value === null; 
+
+    if (createdAt) {
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+
+      const after7Days = new Date(today);
+      after7Days.setDate(today.getDate() + 7);
+
+      const after30Days = new Date(today);
+      after30Days.setDate(today.getDate() + 30);
+
       matchesPeriod =
-        (selectedPeriod.value === 'today' && DueDate.toDateString() === today.toDateString()) ||
-        (selectedPeriod.value === 'yesterday' && DueDate.toDateString() === new Date(today.setDate(today.getDate() - 1)).toDateString()) ||
-        (selectedPeriod.value === 'tomorrow' && DueDate.toDateString() === new Date(today.setDate(today.getDate() + 1)).toDateString()) ||
-        (selectedPeriod.value === 'after_7_days' && DueDate >= new Date(today.setDate(today.getDate() + 7))) ||
-        (selectedPeriod.value === 'after_30_days' && DueDate >= new Date(today.setDate(today.getDate() + 30)));
+        (selectedPeriod.value === 'today' && createdAt.toDateString() === today.toDateString()) ||
+        (selectedPeriod.value === 'yesterday' && createdAt.toDateString() === yesterday.toDateString()) ||
+        (selectedPeriod.value === 'tomorrow' && createdAt.toDateString() === tomorrow.toDateString()) ||
+        (selectedPeriod.value === 'after_7_days' && createdAt >= after7Days) ||
+        (selectedPeriod.value === 'after_30_days' && createdAt >= after30Days);
     }
-  
+
     return matchesActivity && matchesPeriod;
   });
-  
+
   return (
     <div>
       <div className="w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
@@ -185,7 +194,18 @@ const ActivityTimeline = () => {
                 </p>
               </div>
               <div className="ms-20 -mt-4">
-                <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(timeline?.note || timeline?.taskTitle || timeline?.meetingTitle || timeline?.subject || timeline?.emailMessage || 'N/A') }} />
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      timeline?.note ||
+                        timeline?.taskTitle ||
+                        timeline?.meetingTitle ||
+                        timeline?.subject ||
+                        timeline?.emailMessage ||
+                        'N/A'
+                    ),
+                  }}
+                />
               </div>
             </div>
           ))

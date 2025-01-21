@@ -8,6 +8,8 @@ import { endPoints } from "../../../../services/apiEndpoints";
 import { LeadEmailData } from "../../../../Interfaces/LeadEmail";
 import Modal from "../../../../components/modal/Modal";
 import TasksForm from "../ViewModals/TasksForm";
+import ConfirmModal from "../../../../components/modal/ConfirmModal";
+import toast from "react-hot-toast";
 
 type Props = {
   leadData:any
@@ -16,8 +18,13 @@ type Props = {
 const Tasks = ({leadData}: Props) => {
   const [editId, setEditId] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [taskData, setTaskData]=useState<any[]>([])
+  const [deleteOpen, setDeleteOpen] = useState(false);
 
- 
+  const { request: deleteLead } = useApi("delete", 3001);
+  const {request : getLeadTask}=useApi('get',3001)
+
   const handleModalToggle = (editId?: any) => {
     setIsModalOpen((prev) => !prev);
    
@@ -25,8 +32,14 @@ const Tasks = ({leadData}: Props) => {
 
   };
 
-  const {request : getLeadTask}=useApi('get',3001)
-  const [taskData, setTaskData]=useState<any[]>([])
+  // Toggle Delete Confirmation Modal
+  const handledeleteToggle = (taskId?: string) => {
+    setDeleteOpen((prev) => !prev);
+    if (taskId) {
+      setDeleteId(taskId);
+    }
+  };
+
 
   const {id}=useParams()
 
@@ -78,6 +91,30 @@ const Tasks = ({leadData}: Props) => {
    
   ];
 
+  // Handle Delete Function
+  const handleDelete = async () => {
+    if (!deleteId) {
+      toast.error("No note selected for deletion.");
+      return;
+    }
+
+    try {
+      const { response, error } = await deleteLead(`${endPoints.LEAD_ACTIVITY}/${deleteId}`);
+      if (response) {
+        toast.success(response.data.message);
+        setTaskData((prevNotes) => prevNotes.filter((task) => task._id !== deleteId));
+        setDeleteOpen(false);
+      } else {
+        console.error("Delete Failed:", error?.response?.data?.message);
+        toast.error(error?.response?.data?.message || "Failed to delete the note.");
+      }
+    } catch (err) {
+      console.error("Delete Error:", err);
+      toast.error("Failed to delete the note.");
+    }
+  };
+
+
   return (
     <div>
          <div>
@@ -94,6 +131,7 @@ const Tasks = ({leadData}: Props) => {
             }}
             actionList={[
               { label: 'edit', function: handleModalToggle },
+              { label: 'delete', function: handledeleteToggle },
              
             ]}
             getTask={getTask}
@@ -101,6 +139,15 @@ const Tasks = ({leadData}: Props) => {
     </div>
     <Modal className="w-[45%]" open={isModalOpen} onClose={handleModalToggle}>
         <TasksForm editId={editId} onClose={handleModalToggle} />
+      </Modal>
+
+      
+      <Modal open={deleteOpen} align="center" onClose={() => handledeleteToggle()} className="w-[30%]">
+        <ConfirmModal
+          action={handleDelete}
+          prompt="Are you sure you want to delete this note?"
+          onClose={() => handledeleteToggle()}
+        />
       </Modal>
     </div>
   )

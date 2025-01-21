@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import { Bar, BarChart, CartesianGrid, LabelList, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory';
 import AwardIcon from "../../../assets/icons/AwardIcon";
 import ChevronRight from "../../../assets/icons/ChevronRight";
@@ -12,7 +12,6 @@ import Trash from "../../../assets/icons/Trash";
 import UserIcon from '../../../assets/icons/UserIcon';
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
 import BackgroundView from '../../../assets/image/AMView.png';
-import profileImage from '../../../assets/image/AvatarImg.png';
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import Modal from "../../../components/modal/Modal";
 import LicensersTable from '../../../components/ui/LicensersTable';
@@ -175,10 +174,11 @@ const AMView = ({ staffId }: Props) => {
   console.log("BDA Details:", bdaDetails);
   console.log("Licenser Details:", licenserDetails);
 
-  // const topPerformingBDA = bdaDetails.map((bda: any) => ({
-  //   CR: parseFloat(bda?.bdaConversionRate),
-  //   name: bda?.bdaName,
-  // }));
+  const topPerformingBDA = bdaDetails.map((bda: any) => ({
+    CR: parseFloat(bda?.bdaConversionRate),
+    name: bda?.bdaName,
+  }));
+  
   const handleDeactivate = async () => {
     const body = {
       status: getData?.amData?.status === 'Active' ? 'Deactive' : 'Active'
@@ -205,7 +205,6 @@ const AMView = ({ staffId }: Props) => {
 
 
   const roles = [
-    // { name: 'New', count: 50, color: '#1B6C75' }, // Updated color
     { name: 'New', count: 1239, color: '#30B777' }, // Updated color
     { name: 'In progress', count: 598, color: '#6ABAF3' }, // Updated color
     { name: 'Converted', count: 234, color: '#7CD5AB' }, // Updated color
@@ -220,81 +219,16 @@ const AMView = ({ staffId }: Props) => {
 
 
 
-  // Chart Data
-  const ChartData = [
-    { name: "Page A", uv: 3900, avatar: profileImage },
-    { name: "Page B", uv: 3000, avatar: profileImage },
-    { name: "Page C", uv: 2000, avatar: profileImage },
-    { name: "Page D", uv: 2780, avatar: profileImage },
-    { name: "Page E", uv: 1890, avatar: profileImage },
-    { name: "Page F", uv: 2390, avatar: profileImage },
-    { name: "Page G", uv: 3490, avatar: profileImage },
-    { name: "Page H", uv: 4000, avatar: profileImage },
-    { name: "Page G", uv: 3490, avatar: profileImage },
-    { name: "Page H", uv: 4000, avatar: profileImage },
-  ];
-
-  // Normalize the data
-  const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
-  const normalizedData = ChartData.map((entry) => ({
-    ...entry,
-    uv: (entry?.uv / maxValue) * 100,
-  }));
 
 
 
 
 
 
-  // Custom Bubble Component
-  const CustomBubble = (props: any) => {
-    const { x, y } = props;
 
-    if (x == null || y == null) return null;
-    return (
-      <div
-        style={{
-          position: "absolute",
-          left: `${x - 4}px`,
-          top: `${y - 8}px`,
-          width: "8px",
-          height: "8px",
-          backgroundColor: "#30B777",
-          borderRadius: "50%",
-        }}
-      />
-    );
-  };
 
-  // Custom Bar Shape with Curved Top
-  const CustomBarWithCurve = (props: any) => {
-    const { x, y, width, height, fill } = props;
-
-    if (!x || !y || !width || !height) return null;
-
-    const radius = width / 2;
-    const gap = 2;
-
-    return (
-      <>
-        <rect
-          x={x}
-          y={y + gap}
-          width={width}
-          height={height - radius - gap}
-          fill={fill}
-          rx={radius}
-          ry={radius}
-        />
-        <circle
-          cx={x + radius}
-          cy={y - radius + gap}
-          r={radius}
-          fill="#30B777"
-        />
-      </>
-    );
-  };
+  
+  
 
 
   const CustomLegend = () => {
@@ -352,6 +286,8 @@ const AMView = ({ staffId }: Props) => {
       amt: 2500,
     },
   ];
+
+  const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
 
 
 
@@ -535,61 +471,36 @@ const AMView = ({ staffId }: Props) => {
           </div>
         </div>
         <div className="col-span-8">
-          <div className='w-full h-fit p-4 bg-white rounded-lg'>
-            <p className="text-[#303F58] text-lg font-bold p-3">Top performing BDA's</p>
-            <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
 
-            <div className="relative">
-              <ResponsiveContainer width="100%" minHeight={400}>
-                <BarChart
-                  className="h-fit"
-                  barGap={54}
-                  barCategoryGap="40%"
-                  width={800}
-                  height={350}
-                  data={normalizedData}
-                >
-                  {/* Cartesian Grid */}
-                  <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
-
-                  {/* Y-Axis */}
-                  <YAxis
-                    tickFormatter={(tick) => `${tick}%`}
-                    domain={[0, 100]}
-                    ticks={[0, 20, 40, 60, 80, 100]}
-                    axisLine={false}
-                    tickLine={false}
-                  />
-
-                  {/* Bar with custom curved shape */}
-                  <Bar
-                    dataKey="uv"
-                    fill="#B9E3CF"
-                    barSize={8}
-                    shape={<CustomBarWithCurve />}
-                  >
-                    {/* Add bubbles at the top */}
-                    <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
-
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-              <div className='flex ms-28 gap-[53px] -mt-2'>
-                {ChartData.map((chart) => (
-                  <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
-                ))
-                }
-              </div>
-
-
-            </div>
-          </div>
-
-
-
-
-
-
+               <div className="p-3 bg-white w-full space-y-2 rounded-lg">
+                <p className="text-[#303F58] text-lg font-bold">
+                   Top performing BDA's
+                 </p>
+                 <p className="text-[#4B5C79] text-xs font-normal">
+                   Based on lead Conversion Performance Metric
+                 </p>
+                  
+                  <div className="mt-2 custom-scrollbar " style={{ overflowX: 'auto' }}>
+                    {/* Wrapper for dynamic width */}
+                    <div style={{ width: '100%' }} className="-ms-4 mt-3">
+                      <ResponsiveContainer width="100%" minHeight={380}>
+                      <BarChart
+                        data={topPerformingBDA}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                        <YAxis axisLine={false}   tickFormatter={(value) => `${value}%`} tickLine={false} domain={[0, 100]} />
+                        <Tooltip />
+                        <Bar barSize={30} dataKey="CR" radius={10}>
+                          {topPerformingBDA?.map((entry: any, index: any) => (
+                            <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
         </div>
       </div>
 

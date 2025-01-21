@@ -1,7 +1,7 @@
 export interface LeadMeetingData{
     leadId?:string;
     activityType?:string;
-    meetingTitle?:string;
+    meetingTitle:string;
     addNotes?:string;
     meetingType?:string;
     dueDate?:string;
@@ -10,4 +10,5 @@ export interface LeadMeetingData{
     meetingLocation?:string;
     location?:string;
     landMark?:string;
+    meetingNotes?:string;
 }
