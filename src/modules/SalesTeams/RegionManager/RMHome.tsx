@@ -75,7 +75,7 @@ const RMHome = () => {
     { key: "loginEmail", label: "Email Address" },
     { key: "user.phoneNo", label: "Phone No" },
     { key: "regionName", label: "Region" },
-    { key: "dateOfJoining", label: "Date Of Joining" },
+    { key: "status", label: "Status" },
   ];
 
   // Data for HomeCards

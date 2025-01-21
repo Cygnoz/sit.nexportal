@@ -130,7 +130,7 @@ const AMHome = () => {
     { key: "user.phoneNo", label: "Phone No" },
     { key: "regionName", label: "Region" },
     { key: "areaName", label: "Area" },
-    { key: "dateOfJoining", label: "Date of Joining" },
+    { key: "status", label: "Status" },
   ];
 
   const name = "Name";

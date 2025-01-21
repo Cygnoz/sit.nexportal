@@ -14,6 +14,9 @@ function TopPerformingAM({ graphData }: Props) {
     CR: data?.conversionRate,
     avatar: data?.userImage || profileImage, // Use a default avatar if not provided
   }));
+  
+  console.log("chart",chartData);
+  
 
   
   

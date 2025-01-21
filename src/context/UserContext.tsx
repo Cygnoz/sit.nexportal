@@ -3,13 +3,14 @@ import { rolePermissions, Role } from '../types/rolePermissions';
 
 // Define a User type with a role property
 interface User {
-  role: Role | null;
+  role: Role | null |undefined;
   userName:string
   userImage:string
   empId:string
   employeeId:string
   id:string
   email:string;
+  userId:string
 }
 
 // Create a Context with a default value of undefined for the user

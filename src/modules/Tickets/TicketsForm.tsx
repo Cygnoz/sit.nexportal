@@ -12,6 +12,7 @@ import useApi from "../../Hooks/useApi";
 import toast from "react-hot-toast";
 import { TicketsData } from "../../Interfaces/Tickets";
 import { useUser } from "../../context/UserContext";
+import { useRegularApi } from "../../context/ApiContext";
 
 type Props = {
   onClose: () => void;
@@ -33,8 +34,8 @@ function TicketsForm({ onClose, editId }: Props) {
   const { request: getAllRequestor } = useApi("get", 3004);
   const { request: getTicket } = useApi("get", 3004);
   const [allrequestor, setAllRequestor] = useState<any[]>([]);
-  const { request: getAllSA } = useApi("get", 3003);
-  const [allSA, setAllSA] = useState<any[]>([]);
+  const {dropDownSA}=useRegularApi()
+  const [allSa,setAllSa]=useState<any[]>([])
   // const [data, setData] = useState('')
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -43,7 +44,6 @@ function TicketsForm({ onClose, editId }: Props) {
     handleSubmit,
     formState: { errors },
     clearErrors,
-    
     watch,
     setValue,
   } = useForm<TicketsData>({
@@ -125,48 +125,27 @@ function TicketsForm({ onClose, editId }: Props) {
       console.log(err);
     }
   };
-  console.log(allrequestor);
 
   useEffect(() => {
     getRequestors();
-  }, []);
-
-  const getSAs = async () => {
-    try {
-      const { response, error } = await getAllSA(endPoints.SUPPORT_AGENT);
-      console.log("res", response);
-      console.log("err", error);
-      if (response && !error) {
-        // console.log("edea",response.data.supportAgent);
-
-        const transformedSA =
-          response.data.supportAgent?.map((SA: any) => ({
-            label: SA?.user?.userName,
-            value: String(SA?._id),
-          })) || [];
-        setAllSA(transformedSA);
-        console.log(transformedSA);
-        if (user?.role == "Support Agent") {
-          const filteredSA: any = response.data.supportAgent?.find(
-            (sa: any) => sa?.user?._id === user?.id
-          );
-
-          console.log("filter", filteredSA);
-
-          setValue("supportAgentId", filteredSA?._id);
-        }
-      } else {
-        console.log(error?.response?.data?.message || "Failed to fetch data.");
-      }
-    } catch (err) {
-      console.error("Error:", err);
-      toast.error("An unexpected error occurred.");
+    const saList = dropDownSA?.map((sa: any) => ({
+      label: sa?.userName,
+      value: sa?._id,
+    })) || []; // Ensure `saList` is always an array
+    
+    
+    setAllSa(saList);
+    if(user?.role=="Support Agent"){
+      const loginedSA:any=dropDownSA?.find((sa:any)=>sa?._id===user?.userId)
+      console.log("logined",loginedSA);
+      setValue("supportAgentId",loginedSA?._id)
     }
-  };
+  }, [dropDownSA]); 
+  
 
-  useEffect(() => {
-    getSAs();
-  }, []);
+  
+
+ 
 
   const setFormValues = (data: TicketsData) => {
     console.log(data);
@@ -262,7 +241,7 @@ function TicketsForm({ onClose, editId }: Props) {
                   label="Assigned To"
                   placeholder="Select Agent"
                   error={errors.supportAgentId?.message}
-                  options={allSA}
+                  options={allSa}
                   onChange={(selectedValue) => {
                     handleInputChange("supportAgentId");
                     setValue("supportAgentId", selectedValue);

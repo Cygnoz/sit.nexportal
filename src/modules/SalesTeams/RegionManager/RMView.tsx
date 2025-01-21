@@ -22,7 +22,10 @@ import RMViewAward from "./RMViewAward";
 import Trash from "../../../assets/icons/Trash";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
-
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+type Props = {
+  staffId?:string
+};
 interface AreaData {
   areaCode: string;
   areaName: string;
@@ -30,7 +33,8 @@ interface AreaData {
   areaManagers: string;
 }
 
-const RMView = () => {
+const RMView = ({staffId}: Props) => {
+  
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,14 +47,14 @@ const RMView = () => {
     viewRM: false,
     awardRM: false,
     confirm: false,
-    deactivateRM: false,
+    deactiveRM: false,
   });
   const handleModalToggle = (
     editRM = false,
     viewRM = false,
     awardRM = false,
     confirm = false,
-    deactivateRM = false,
+    deactiveRM = false,
 
   ) => {
     setIsModalOpen((prevState: any) => ({
@@ -59,7 +63,7 @@ const RMView = () => {
       viewRM: viewRM,
       awardRM: awardRM,
       confirm: confirm,
-      deactivateRM: deactivateRM,
+      deactiveRM: deactiveRM,
     }));
     getARM();
   };
@@ -67,13 +71,14 @@ const RMView = () => {
   const { request: getaRM } = useApi("get", 3002);
   const { request: deleteaRM } = useApi("delete", 3002)
   const { id } = useParams();
+  const iId=staffId?staffId:id
   const [getData, setGetData] = useState<{
     rmData: any;
   }>({ rmData: [] });
 
   const getARM = async () => {
     try {
-      const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${id}`);
+      const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${iId}`);
       if (response && !error) {
         setGetData((prevData) => ({
           ...prevData,
@@ -88,14 +93,14 @@ const RMView = () => {
   };
   useEffect(() => {
     getARM();
-  }, [id]);
-
+  }, [iId]);
+ 
 
   const navigate = useNavigate();
 
   const handleDelete = async () => {
     try {
-      const { response, error } = await deleteaRM(`${endPoints.GET_ALL_RM}/${id}`);
+      const { response, error } = await deleteaRM(`${endPoints.GET_ALL_RM}/${iId}`);
       if (response) {
         toast.success(response.data.message);
         navigate("/region-manager");
@@ -145,15 +150,15 @@ const RMView = () => {
   ];
 
 
-  const { request: getRMInside } = useApi('get', 3002)
+  const {request:getRMInsiIde}=useApi('get',3002)
   const [totalAreaManaged, setTotalAreaManaged] = useState([]);
   const [totalAreaManagers, setTotalAreaManagers] = useState([]);
   const [totalBdas, setTotalBdas] = useState([]);
   const { request: deactivateRM } = useApi('put', 3002)
 
-  const getRMInsides = async () => {
+  const getRMInsiIdes = async () => {
     try {
-      const { response, error } = await getRMInside(`${endPoints.RM}/${id}/details`);
+      const { response, error } = await getRMInsiIde(`${endPoints.RM}/${iId}/details`);
       console.log(response, "res");
       console.log(error, "err");
 
@@ -183,7 +188,7 @@ const RMView = () => {
   };
 
   useEffect(() => {
-    getRMInsides();
+    getRMInsiIdes();
   }, []);
 
   // For debugging
@@ -191,11 +196,10 @@ const RMView = () => {
 
   const handleDeactivate = async () => {
     const body = {
-      status: getData?.rmData?.status === "Active" ? 'Deactivate' : 'Active'
+      status: getData?.rmData?.regionManager?.status === "Active" ? 'Deactive' : 'Active'
     }
     try {
-      const { response, error } = await deactivateRM(`${endPoints.DEACTIVATE_RM}/${id}`, body);
-      console.log(id);     
+      const { response, error } = await deactivateRM(`${endPoints.DEACTIVATE_RM}/${iId}`, body);
       console.log(response);
       console.log(error, "error message");
 
@@ -327,10 +331,10 @@ const RMView = () => {
                     </div>
 
                     <div className="text-center w-24">
-                      <p className="text-xs text-[#D4D4D4] py-2">Employee ID</p>
+                      <p className="text-xs text-[#D4D4D4] py-2">Employee iId</p>
                       <p className="text-xs">
-                        {getData?.rmData?.regionManager?.user?.employeeId
-                          ? getData?.rmData?.regionManager?.user?.employeeId
+                        {getData?.rmData?.regionManager?.user?.employeeiId
+                          ? getData?.rmData?.regionManager?.user?.employeeiId
                           : "N/A"}
                       </p>
                     </div>
@@ -391,14 +395,26 @@ const RMView = () => {
                     </div>
 
                     <div onClick={() => handleModalToggle(false, false, false, false, true,)} className="flex flex-col -ms-2 items-center space-y-1">
-                      <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                          <div className="ms-2 mt-2">
-                            <DeActivateIcon size={18} color="#D52B1E4D" />
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-center ms-3">DeActivate</p>
+                    <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+              {getData?.rmData?.regionManager?.status === "Active" ?
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
+                  </div>
+                </div>
+                :
+                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                </div>
+              </div>
+
+                  }
+
+              </div>
+              <p className="text-center font-medium  text-xs ms-2">
+                {getData?.rmData?.regionManager?.status === "Active" ? "Deactivate" : "Activate"}
+              </p>
                     </div>
 
                     <div onClick={() => handleModalToggle(false, false, false, true, false)} className="flex flex-col -ms-2 items-center space-y-1">
@@ -466,7 +482,7 @@ const RMView = () => {
         <RMViewForm onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.editRM} onClose={() => handleModalToggle()}>
-        <RMForm editId={id} onClose={() => handleModalToggle()} />
+        <RMForm editId={iId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal
         open={isModalOpen.awardRM}
@@ -489,7 +505,7 @@ const RMView = () => {
         />
       </Modal>
       <Modal
-        open={isModalOpen.deactivateRM}
+        open={isModalOpen.deactiveRM}
         align="center"
         onClose={() => handleModalToggle()}
         className="w-[30%]"
@@ -497,7 +513,7 @@ const RMView = () => {
         <ConfirmModal
           action={handleDeactivate}
           prompt={
-            getData?.rmData?.status === "Active"
+            getData?.rmData?.regionManager?.status === "Active"
               ? "Are you sure you want to deactivate this RM?"
               : "Are you sure you want to activate this RM?"
           }

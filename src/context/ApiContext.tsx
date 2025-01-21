@@ -12,6 +12,7 @@ interface DropdownApi {
   regions:[],
   areas:[],
   bdas:[],
+  supportAgent:[],
   message:string;
 }
 type ApiContextType = {
@@ -25,6 +26,7 @@ type ApiContextType = {
   dropdownRegions?: DropdownApi["regions"];
   dropDownAreas?:DropdownApi["areas"]
   dropDownBdas?:DropdownApi["bdas"]
+  dropDownSA?:DropdownApi["supportAgent"]
  
 };
 
@@ -67,6 +69,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchDropdown = async () => {
     try {
       const { response, error } = await getAllDropdown(endPoints.DROPDOWN_DATA);
+      console.log("resDropdown",response);
       if (response && !error) {
         setDropdownApi(response.data);
       }
@@ -216,7 +219,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       customersCounts,
       dropdownRegions: dropdownApi?.regions || [],
       dropDownAreas:dropdownApi?.areas||[],
-      dropDownBdas:dropdownApi?.bdas||[]
+      dropDownBdas:dropdownApi?.bdas||[],
+      dropDownSA:dropdownApi?.supportAgent||[]
     }}  >
       {children}
     </ApiContext.Provider>

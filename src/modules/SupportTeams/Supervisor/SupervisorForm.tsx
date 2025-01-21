@@ -657,6 +657,13 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                   error={errors.commission?.message}
                   options={data.wc}
                 />
+                <Input
+                      placeholder="Enter Amount"
+                      label="Salary Amount"
+                      type="number"
+                      error={errors.salaryAmount?.message}
+                      {...register("salaryAmount")}
+                    />
                 </div>
               </div>
             )}

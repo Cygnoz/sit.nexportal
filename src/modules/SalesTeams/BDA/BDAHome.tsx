@@ -79,7 +79,7 @@ const BDAHome = () => {
     { key: "user.phoneNo", label: "Phone No" },
     { key: "regionName", label: "Region" },
     { key: "areaName", label: "Area" },
-    { key: "dateOfJoining", label: "Date Of Joining" },
+    { key: "status", label: "Status" },
   ];
 
   const getBDAs = async () => {
