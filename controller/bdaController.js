@@ -12,7 +12,7 @@ const filterByRole = require("../services/filterByRole");
 const AreaManager = require("../database/model/areaManager");
 const RegionManager = require("../database/model/regionManager");
 const Activity = require("../database/model/activity");
-
+const ActivityLog = require('../database/model/activityLog')
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
 

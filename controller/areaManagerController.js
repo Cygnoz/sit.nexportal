@@ -12,7 +12,7 @@ const RegionManager = require("../database/model/regionManager");
 const filterByRole = require("../services/filterByRole");
 const regionManager = require("../database/model/regionManager");
 const Bda = require("../database/model/bda");
-
+const ActivityLog = require('../database/model/activityLog')
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
 
@@ -615,8 +615,6 @@ Best regards,
 // The CygnoNex Team
 // NexPortal
 // Support: notify@cygnonex.com
-
-
 exports.getAreaManagerDetails = async (req, res) => {
   try {
     const { id } = req.params; // `id` is the AreaManager ID
@@ -631,71 +629,69 @@ exports.getAreaManagerDetails = async (req, res) => {
     const areaId = areaManager.area;
     const areaManagerName = areaManager.user?.userName || "N/A";
  
-    // Step 3: Calculate total leads (only 'Lead' status) and converted leads
-    const totalCustomers = await Leads.countDocuments({
-      areaId,
-      // customerStatus: "Lead", // Only count leads with 'Lead' status
-    });
- 
+    // Step 3: Calculate total leads (all leads under this AreaManager)
     const totalLeads = await Leads.countDocuments({
-      // areaId,
-      customerStatus: { $nin: ["Trial", "Licenser"] }, // Exclude "Trial" and "Licenser"
-    });
-   
- 
- 
-    const convertedLeads = await Leads.countDocuments({
-      // areaManager: id,
       areaId,
-      customerStatus: "Lead" , // Non-leads are considered converted
-    });
+     customerStatus: { $nin: ["Trial", "Licenser"] }, // Exclude "Trial" and "Licenser"
+   });
  
-    // console.log('covertedLeads:',convertedLeads)
-    // console.log('totalLeads:',totalLeads)
-    // Step 4: Calculate total licensers
+ 
+   const leadStatuses = ["New", "Contacted", "Lost", "In Progress", "Won"];
+ 
+   const leadStatusDetails = await Promise.all(
+   leadStatuses.map(async (status) => {
+    const count = await Leads.countDocuments({
+      areaId,
+      leadStatus: status,
+      customerStatus: "Lead", // Filter by customerStatus "Lead"
+     });
+ 
+     const percentage =
+      totalLeads > 0 ? ((count / totalLeads) * 100).toFixed(2) : "0.00";
+ 
+     return {
+      status,
+      count,
+      percentage: `${percentage}%`,
+    };
+  })
+);
+ 
+    // Step 5: Calculate converted leads and licensers
+    const convertedLeads = await Leads.countDocuments({
+      areaId,
+      customerStatus: { $in: ["Trial", "Licenser"] },
+    });
+    const totalCustomers = await Leads.countDocuments({ areaId });
     const totalLicensers = await Leads.countDocuments({
-      // areaManager: id,
       areaId,
       customerStatus: "Licenser",
     });
  
- 
     const areaManagerConversionRate =
-    totalCustomers > 0 ? ((convertedLeads / totalCustomers) * 100).toFixed(2) : "0";
+      totalCustomers > 0
+        ? Math.min(((convertedLeads / totalCustomers) * 100).toFixed(2), 100)
+        : "0";
  
- 
- 
-    // Step 5: Fetch BDAs under the given area
+    // Step 6: Fetch BDAs under the given area
     const bdas = await Bda.find({ area: areaId });
  
-    // Step 6: Prepare BDA details with conversion rates
+    // Step 7: Prepare BDA details with conversion rates
     const bdaDetails = await Promise.all(
       bdas.map(async (bda) => {
         const bdaUser = await User.findById(bda.user);
-   
-        // Count all leads assigned to the BDA (regardless of status)
         const totalLeadsForBda = await Leads.countDocuments({ bdaId: bda._id });
-   
-        // Count converted leads for the BDA
         const convertedLeadsForBda = await Leads.countDocuments({
           bdaId: bda._id,
-          customerStatus: { $ne: "Lead" }, // Non-leads are considered converted
+          customerStatus: { $ne: "Lead" },
         });
- 
- 
-    console.log('convertedLeadsForBda:',convertedLeadsForBda)
-    console.log('totalLeadsForBda:',totalLeadsForBda)
-        // Adjust the conversion rate to cap at 100%
         const bdaConversionRate =
           totalLeadsForBda > 0
-            ? Math.min(
-                ((convertedLeadsForBda / totalLeadsForBda) * 100).toFixed(2),
-                100
-              )
+            ? Math.min(((convertedLeadsForBda / totalLeadsForBda) * 100).toFixed(2), 100)
             : "0";
-   
+ 
         const area = await Area.findById(bda.area);
-   
+ 
         return {
           bdaId: bda._id,
           bdaName: bdaUser?.userName || "N/A",
@@ -705,10 +701,9 @@ exports.getAreaManagerDetails = async (req, res) => {
         };
       })
     );
-   
-    // Step 7: Fetch licensers under the AreaManager
+ 
+    // Step 8: Fetch licensers under the AreaManager
     const licensers = await Leads.find({
-      // areaManager: id,
       areaId,
       customerStatus: "Licenser",
     }).select("firstName licensorStatus startDate endDate");
@@ -721,10 +716,10 @@ exports.getAreaManagerDetails = async (req, res) => {
       endDate: licenser.endDate,
     }));
  
-    // Step 8: Total BDA count
+    // Step 9: Total BDA count
     const totalBdaCount = bdas.length;
  
-    // Step 9: Response with conversion rates, details, and licensers
+    // Step 10: Response with all details
     res.status(200).json({
       areaManagerDetails: {
         areaManagerName,
@@ -735,6 +730,7 @@ exports.getAreaManagerDetails = async (req, res) => {
       totalCustomers,
       totalLicensers,
       totalBdaCount,
+      leadStatusDetails, // Added lead status details
       bdaDetails,
       licenserDetails,
     });

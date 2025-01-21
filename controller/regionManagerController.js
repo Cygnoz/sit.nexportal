@@ -7,6 +7,7 @@ const Bda = require("../database/model/bda");
 const Commission = require("../database/model/commission");
 const RegionManager = require("../database/model/regionManager");
 const bcrypt = require("bcryptjs");
+const ActivityLog = require('../database/model/activityLog')
 const crypto = require("crypto");
 const { ObjectId } = require("mongoose").Types;
 const nodemailer = require("nodemailer");
