@@ -330,8 +330,8 @@ const TeamOverview = ({ id }: Props) => {
                   
                   <div className="mt-2 custom-scrollbar " style={{ overflowX: 'auto' }}>
                     {/* Wrapper for dynamic width */}
-                    <div style={{ width: '100%' }} className="-ms-4 mt-3">
-                      <ResponsiveContainer width="100%" minHeight={380}>
+                    <div style={{ width: '100%' , height: '340px' }} className="-ms-4 mt-3">
+                      <ResponsiveContainer width="100%" minHeight={340}>
                       <BarChart
                         data={topPerformingBDA}
                       >
