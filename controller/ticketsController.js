@@ -197,7 +197,7 @@ exports.getTicket = async (req, res) => {
     const ticket = await Ticket.findById(ticketId)
       .populate({
         path: 'customerId',
-        select: 'firstName image',
+        select: 'firstName image organizationName email phone',
       })
       .populate({
         path: 'region',
