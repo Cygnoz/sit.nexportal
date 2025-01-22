@@ -390,6 +390,8 @@ exports.convertLeadToTrial = async (req, res, next) => {
             startDate, // Save formatted date
             endDate,    // Save formatted date
             organizationId,
+            organizationName,
+            email
           },
           { new: true } // Return the updated document
         );

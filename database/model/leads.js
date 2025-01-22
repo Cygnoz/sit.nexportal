@@ -45,7 +45,8 @@ const leadSchema = new Schema({
   customerStatus:{ type: String },
 
   
-  organizationId:{ type: String }
+  organizationId:{ type: String },
+  organizationName:{ type: String }
 
 },
   { timestamps: true } 
