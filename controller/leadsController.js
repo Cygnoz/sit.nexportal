@@ -184,28 +184,25 @@ exports.getAllLeads = async (req, res) => {
 };
 
 
-
-
-
 exports.editLead = async (req, res, next) => {
   try {
     const { id } = req.params;
     const data = cleanLeadData(req.body);
     const { regionId, areaId , bdaId } = data;
-
+ 
     // Fetch the existing document to get the user field
 const existingLead = await Leads.findById(id);
 if (!existingLead) {
   return res.status(404).json({ message: "Lead  not found" });
 }
-
-
+ 
+ 
     // Check for duplicate user details, excluding the current document
     const duplicateCheck = await checkDuplicateUser(data.firstName, data.email, data.phone, id);
     if (duplicateCheck) {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
-
+ 
     const { regionExists, areaExists , bdaExists } = await dataExist( regionId, areaId , bdaId);
  
     if (!validateRegionAndArea( regionExists, areaExists, bdaExists ,res )) return;
@@ -215,14 +212,21 @@ if (!existingLead) {
    
     Object.assign(existingLead, data);
     const updatedLead = await existingLead.save();
-
+ 
     if (!updatedLead) {
       return res.status(404).json({ message: "Lead not found" });
     }
-
-    res.status(200).json({
-      message: "Lead updated successfully"
-    });
+ 
+  // Determine the response message based on customerStatus
+  const responseMessage = existingLead.customerStatus === 'Trial'
+  ? "Trial updated successfully"
+  : "Lead updated successfully";
+ 
+  res.status(200).json({
+    message: responseMessage,
+  });
+ 
+ 
     ActivityLog(req, "Successfully", updatedLead._id);
     next()
   } catch (error) {
@@ -232,6 +236,55 @@ if (!existingLead) {
    next();
   }
 };
+
+
+
+
+// exports.editLead = async (req, res, next) => {
+//   try {
+//     const { id } = req.params;
+//     const data = cleanLeadData(req.body);
+//     const { regionId, areaId , bdaId } = data;
+
+//     // Fetch the existing document to get the user field
+// const existingLead = await Leads.findById(id);
+// if (!existingLead) {
+//   return res.status(404).json({ message: "Lead  not found" });
+// }
+
+
+//     // Check for duplicate user details, excluding the current document
+//     const duplicateCheck = await checkDuplicateUser(data.firstName, data.email, data.phone, id);
+//     if (duplicateCheck) {
+//       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
+//     }
+
+//     const { regionExists, areaExists , bdaExists } = await dataExist( regionId, areaId , bdaId);
+ 
+//     if (!validateRegionAndArea( regionExists, areaExists, bdaExists ,res )) return;
+ 
+//     if (!validateInputs( data, regionExists, areaExists, bdaExists ,res)) return;
+ 
+   
+//     Object.assign(existingLead, data);
+//     const updatedLead = await existingLead.save();
+
+//     if (!updatedLead) {
+//       return res.status(404).json({ message: "Lead not found" });
+//     }
+
+//     res.status(200).json({
+//       message: "Lead updated successfully"
+//     });
+//     ActivityLog(req, "Successfully", updatedLead._id);
+//     next()
+//   } catch (error) {
+//     console.error("Error editing Lead:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//     ActivityLog(req, "Failed");
+//    next();
+//   }
+// };
 
 
 exports.deleteLead = async (req, res, next) => {
