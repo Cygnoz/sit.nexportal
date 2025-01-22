@@ -13,6 +13,7 @@ const NodeCache = require('node-cache');
 const otpCache = new NodeCache({ stdTTL: 180 }); // 180 seconds
 const filterByRole = require("../services/filterByRole");
 const SupportAgent = require("../database/model/supportAgent");
+const Ticket = require("../database/model/ticket");
 
 
 // Login 
@@ -1167,35 +1168,47 @@ exports.getRegionsAreasBdas = async (req, res) => {
     const formattedBdas = bdas.map(bda => ({
       _id: bda._id,
       area: bda.area,
-      region:bda.region,
+      region: bda.region,
       userName: bda.user?.userName || 'N/A'
     }));
 
+    // Fetch active Support Agents
     const supportagents = await SupportAgent.find({ status: "Active" })
       .populate({
         path: 'user',
         model: User,
         select: 'userName'
       })
-      .select("_id user");
+      .select("_id user region");
 
-    // Format BDAs to include userName directly
-    const formattedSupport = supportagents.map(supportAgent => ({
-      _id: supportAgent._id,
-      userName: supportAgent.user?.userName || 'N/A'
+    // Fetch unsolved tickets count for each support agent
+    const formattedSupport = await Promise.all(supportagents.map(async (supportAgent) => {
+      const unsolvedTicketsCount = await Ticket.countDocuments({
+        supportAgentId: supportAgent._id,
+        status: { $ne: "Resolved" }
+      });
+
+      return {
+        _id: supportAgent._id,
+        region: supportAgent.region,
+        userName: supportAgent.user?.userName || 'N/A',
+        unsolvedTickets: unsolvedTicketsCount
+      };
     }));
+
     // Send the response
     res.status(200).json({
       regions,
       areas,
       bdas: formattedBdas,
-      supportAgent: formattedSupport
+      supportAgents: formattedSupport
     });
   } catch (error) {
     console.error('Error fetching regions, areas, and BDAs:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 
 
 exports.getCountriesData = (req, res) => {
