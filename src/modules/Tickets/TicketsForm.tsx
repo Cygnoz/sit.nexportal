@@ -29,6 +29,7 @@ const validationSchema = Yup.object({
 
 function TicketsForm({ onClose, editId }: Props) {
   const { user } = useUser();
+  const {regionId}=useRegularApi()
   const { request: addTickets } = useApi("post", 3004);
   const { request: editTickets } = useApi("put", 3004);
   const { request: getAllRequestor } = useApi("get", 3004);
@@ -61,6 +62,9 @@ function TicketsForm({ onClose, editId }: Props) {
   if (fileInputRef?.current) {
     fileInputRef.current.value = ""; // Clear the input field
   }
+
+  console.log("sa",dropDownSA);
+  
 
   const Priority = [
     { label: "Low", value: "Low" },
@@ -128,19 +132,32 @@ function TicketsForm({ onClose, editId }: Props) {
 
   useEffect(() => {
     getRequestors();
-    const saList = dropDownSA?.map((sa: any) => ({
-      label: sa?.userName,
-      value: sa?._id,
-    })) || []; // Ensure `saList` is always an array
-    
-    
-    setAllSa(saList);
-    if(user?.role=="Support Agent"){
-      const loginedSA:any=dropDownSA?.find((sa:any)=>sa?._id===user?.userId)
-      console.log("logined",loginedSA);
-      setValue("supportAgentId",loginedSA?._id)
+  
+    let saList: any = []; // Initialize as an empty array
+  
+    if (user?.role === "Supervisor") {
+      saList = dropDownSA
+        ?.filter((drop:any) => drop.region === regionId)
+        .map((sa: any) => ({
+          label: `${sa?.userName}-${sa?.unsolvedTickets}`,
+          value: sa?._id,
+        })) || [];
+    } else {
+      saList = dropDownSA?.map((sa: any) => ({
+        label: `${sa?.userName}-${sa?.unsolvedTickets}`,
+        value: sa?._id,
+      })) || [];
     }
-  }, [dropDownSA]); 
+  
+    setAllSa(saList); // Set the filtered or mapped `saList`
+  
+    if (user?.role === "Support Agent") {
+      const loggedInSA: any = dropDownSA?.find((sa: any) => sa?._id === user?.userId);
+      console.log("loggedIn", loggedInSA);
+      setValue("supportAgentId", loggedInSA?._id);
+    }
+  }, [dropDownSA]);
+  
   
 
   

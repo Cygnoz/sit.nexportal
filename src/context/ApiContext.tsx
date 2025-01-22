@@ -11,9 +11,13 @@ interface DropdownApi {
   regions:[],
   areas:[],
   bdas:[],
-  supportAgent:[],
+  supportAgents:[],
   message:string;
   commissions:[];
+}
+interface ticketsCountBell{
+  allUnassigned?:number 
+  allTickets?:number 
 }
 type ApiContextType = {
   allRegions?: RegionData[];
@@ -26,7 +30,10 @@ type ApiContextType = {
   dropdownRegions?: DropdownApi["regions"];
   dropDownAreas?:DropdownApi["areas"]
   dropDownBdas?:DropdownApi["bdas"]
-  dropDownSA?:DropdownApi["supportAgent"]
+  dropDownSA?:DropdownApi["supportAgents"]
+  allTicketsCount?:ticketsCountBell |undefined
+  allRms?:any,
+  regionId?:any
   dropDownWC?:DropdownApi["commissions"]
  
 };
@@ -43,14 +50,19 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
  const {request:getAllCustomersCounts}=useApi('get',3001);
   const { request: getAllCountries } = useApi("get", 3003);
   const { request: getAllDropdown } = useApi("get", 3003);
+  const { request: getaRM } = useApi("get", 3002);
+  const { request: getaSV } = useApi("get", 3003);
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);
   const [allBDA, setAllBDA] = useState<BDAData[]>([]);
   const [allCountries, setAllCountries] = useState<[]>([]);
+  const [regionId,setRegionId]=useState<any>(null)
+  // const [areaId,setAreaId]=useState<any>(null)
+  const [allTicketsCount, setAllTicketsCount] = useState<ticketsCountBell | undefined>();
   const [totalCounts,setTotalCounts]=useState<TotalCounts>();
  const [customersCounts,setTotalCustomersCounts]=useState<TotalCustomersCount>()
-
+ const { request: getAllTickets } = useApi("get", 3004);
 
   // Fetch all regions
   const fetchRegions = async () => {
@@ -69,10 +81,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchDropdown = async () => {
     try {
       const { response, error } = await getAllDropdown(endPoints.DROPDOWN_DATA);
-      //console.log("resDropdown",response);
-      if (response && !error) {
-        console.log(response.data);
-        
+      if (response && !error) { 
         setDropdownApi(response.data);
       }
     } catch (err) {
@@ -80,8 +89,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
- 
- 
+  
   
 
   // Fetch all areas
@@ -163,8 +171,53 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
+  const getTicketsCounts = async () => {
+    try {
+      const { response, error } = await getAllTickets(endPoints.GET_TICKETS);
   
+      if (response && !error) {
+        setAllTicketsCount((prev)=>({...prev,allUnassigned:response.data?.unassignedTickets,allTickets:response.data.unresolvedTickets}))
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+
+  const getASV = async () => {
+    try {
+      const { response, error } = await getaSV(
+        `${endPoints.SUPER_VISOR}/${user?.userId}`
+      );
+      if (response && !error) {
+        setRegionId(response.data.region._id)
+        console.log("svResponse",response.data);
+        
+      } else {
+        console.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.error("Error fetching Super Visor data:", err);
+    }
+  };
   
+  const getARM = async () => {
+    try {
+      const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${user?.userId}`);
+      console.log("res",response);
+      
+      if (response && !error) {
+       setRegionId(response.data.regionManager.region._id)
+      } else {
+        console.error(error.response.data.message);
+      }
+    } catch (err) {
+      console.error("Error fetching AM data:", err);
+    }
+  };
+
+
 
   useEffect(() => {
     const fetchData = () => {
@@ -176,6 +229,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       getBDAs();
       getAllUsersCounts();
       getAllCustomerCounts();
+      getTicketsCounts()
+      if(user?.role==="Supervisor"){
+        getASV()
+      }else if(user?.role==="Region Manager"){
+        getARM()
+      }
     };
   
     // Fetch data immediately on mount
@@ -204,7 +263,9 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       dropdownRegions: dropdownApi?.regions || [],
       dropDownAreas:dropdownApi?.areas||[],
       dropDownBdas:dropdownApi?.bdas||[],
-      dropDownSA:dropdownApi?.supportAgent||[],
+      dropDownSA:dropdownApi?.supportAgents||[],
+      allTicketsCount,
+      regionId,
       dropDownWC:dropdownApi?.commissions||[]
     }}  >
       {children}

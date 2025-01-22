@@ -16,17 +16,22 @@ import Table from "../../../components/ui/Table";
 import { endPoints } from "../../../services/apiEndpoints";
 import AreaForm from "./AreaForm";
 import toast from "react-hot-toast";
+import { useRegularApi } from "../../../context/ApiContext";
+
 
 
 
 const AreaHome = () => {
-  // const {totalCounts}=useRegularApi()
+  // const {allRms}=useRegularApi()
+  const {regionId}=useRegularApi()
   const navigate=useNavigate()
   const [allAreas,setAllAreas]=useState<AreaData[]>([]);
   const {request:getAllArea}=useApi('get',3003)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId,setEditId]=useState('')
-
+  
+  
+  
   // Function to toggle modal visibility
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
@@ -70,8 +75,6 @@ const AreaHome = () => {
           totalBda: response.data.totalBda || 0,
           totalLeads: response.data.totalLeads || 0,
         });
-  
-        console.log("Areas", transformedAreas);
       } else {
         console.error(error?.response?.data?.message || "Failed to fetch data.");
       }
@@ -84,9 +87,7 @@ const AreaHome = () => {
   useEffect(() => {
     getAreas();
   }, []);
-    console.log(allAreas);
   
-
   // Data for HomeCards
   const homeCardData = [
     {
@@ -220,7 +221,7 @@ const AreaHome = () => {
       </div>
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[35%]">
-        <AreaForm editId={editId} onClose={handleModalToggle} />
+        <AreaForm regionId={regionId} editId={editId} onClose={handleModalToggle} />
       </Modal>
     </>
   );
