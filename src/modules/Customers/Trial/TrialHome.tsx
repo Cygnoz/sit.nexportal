@@ -16,6 +16,8 @@ import { endPoints } from "../../../services/apiEndpoints";
 import { useEffect, useState } from "react";
 import { LeadData } from "../../../Interfaces/Lead";
 import { useRegularApi } from "../../../context/ApiContext";
+import Modal from "../../../components/modal/Modal";
+import TrialForm from "./TrialForm";
 
 
 
@@ -23,15 +25,41 @@ import { useRegularApi } from "../../../context/ApiContext";
   
 const TrialHome = () => {
   const {customersCounts}=useRegularApi()
+  const [editId, setEditId] = useState("");
 
   const {request:getAllTrial}=useApi('get',3001)
   const [allTrials,setAllTrials]=useState<LeadData[]>([])
    const navigate=useNavigate()
+
+   
+  // State to manage modal visibility
+  const [isModalOpen, setIsModalOpen] = useState({
+
+    leadForm: false,
+  });
+
+  // Function to toggle modal visibility
+  const handleModalToggle = (
+   
+    leadForm = false
+  ) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+     
+      leadForm: leadForm,
+    }));
+    getTrials()
+  };
     
       const handleView=(id:any)=>{
         navigate(`/trial/${id}`)
       }
     
+      
+  const handleEdit = (id: any) => {
+    setEditId(id);
+    handleModalToggle(true);
+  };
 
       // Data for HomeCards
   const homeCardData = [
@@ -90,6 +118,7 @@ const TrialHome = () => {
 
   
   return (
+    <>
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -119,9 +148,14 @@ const TrialHome = () => {
         }}
         actionList={[
             { label: 'view', function: handleView },
+            { label: 'edit', function: handleEdit },
           ]} />
       </div>
     </div>
+    <Modal open={isModalOpen.leadForm} onClose={() => handleModalToggle()}>
+        <TrialForm editId={editId} onClose={() => handleModalToggle()} />
+      </Modal>
+    </>
   )
 }
 

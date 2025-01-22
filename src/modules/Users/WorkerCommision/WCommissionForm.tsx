@@ -19,12 +19,18 @@ type Props = {
 
 const validationSchema = Yup.object({
   profileName: Yup.string().required("First name is required"),
-  commissionPercentage:  Yup.number()
+  commissionPoint:  Yup.number()
       .nullable()
-      .transform((value, originalValue) => (originalValue === "" ? null : value)).required("commissionPercentage is required"),
-  thresholdAmount: Yup.number()
+      .transform((value, originalValue) => (originalValue === "" ? null : value)).required("commissionPoint is required"),
+ recurringPoint: Yup.number()
   .nullable()
-  .transform((value, originalValue) => (originalValue === "" ? null : value)).required("thresholdAmount is required"),
+  .transform((value, originalValue) => (originalValue === "" ? null : value)).required("recurring point is required"),
+  perPointValue: Yup.number()
+  .nullable()
+  .transform((value, originalValue) => (originalValue === "" ? null : value)).required("perPointValue is required"),
+  thresholdLicense: Yup.number()
+  .nullable()
+  .transform((value, originalValue) => (originalValue === "" ? null : value)).required("thresholdLicense is required"),
 });
 
 function WCommissionForm({ onClose , editId }: Props) {
@@ -115,7 +121,7 @@ function WCommissionForm({ onClose , editId }: Props) {
       <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
       
 
-          <div className=" my-2 w-full  gap-4 space-y-2">
+          <div className=" my-2 w-full  gap-4 space-y-4">
         
               <Input
                 required
@@ -128,21 +134,52 @@ function WCommissionForm({ onClose , editId }: Props) {
               />
               <Input
                 required
-                label="Commission Percentage"
+                label="Threshold No Of License"
                 type="number"
                 step="any"
-                placeholder="Enter Percentage"
-                error={errors.commissionPercentage?.message}
-                {...register("commissionPercentage")}
+                placeholder="Enter No Of License"
+                error={errors.thresholdLicense?.message}
+                {...register("thresholdLicense")}
               />
               <Input
                 required
-                label="Threshold Amount"
+                label="Commission Pointt"
                 type="number"
                 step="any"
+                placeholder="Enter CommissionPoint "
+                error={errors.commissionPoint?.message}
+                {...register("commissionPoint")}
+
+              />
+                <Input
+                required
+                label="Recurring Point"
+                type="number"
+                step="any"
+                placeholder="Enter Recurring Point"
+                error={errors.recurringPoint?.message}
+                {...register("recurringPoint")}
+
+              />
+                <Input
+                required
+                label="Per PointValue"
+                type="number"
+                step="any"
+                placeholder="Enter Point Value"
+                error={errors.perPointValue?.message}
+                {...register("perPointValue")}
+                
+
+              />
+                <Input
+               
+                label="Remark"
+                type="text"
+                step="any"
                 placeholder="Enter Amount"
-                error={errors.thresholdAmount?.message}
-                {...register("thresholdAmount")}
+                error={errors.remark?.message}
+                {...register("remark")}
 
               />
 
