@@ -12,6 +12,7 @@ const RegionManager = require("../database/model/regionManager");
 const Bda = require('../database/model/bda')
 const filterByRole = require("../services/filterByRole");
 
+const Activity = require("../database/model/activity")
 
 
 
