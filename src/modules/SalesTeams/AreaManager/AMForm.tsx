@@ -94,7 +94,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   const { request: getAM } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
   
-  const { dropDownAreas, dropdownRegions, allCountries, allWc } = useRegularApi();
+  const { dropDownAreas, dropdownRegions, allCountries, dropDownWC} = useRegularApi();
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -300,16 +300,22 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
       setData((prevData) => ({ ...prevData, state: transformedState }));
     }
   }, [watch("country"), allCountries]);
+
+  
   useEffect(() => {
-    const filteredCommissions = allWc?.map((commission: any) => ({
+    const filteredCommissions = dropDownWC?.map((commission: any) => ({
       label: commission.profileName,
       value: String(commission._id), // Ensure `value` is a string
     }));
+  
     setData((prevData: any) => ({
       ...prevData,
       workerCommission: filteredCommissions,
+      
     }));
-  }, [allWc]);
+  }, [dropDownWC]);
+
+ 
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

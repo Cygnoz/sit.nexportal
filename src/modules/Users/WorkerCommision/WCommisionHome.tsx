@@ -45,9 +45,12 @@ const WCommisionHome = () => {
     try {
       const { response, error } = await deleteWC(`${endPoints.WC}/${deleteId}`);
       if (response && !error) {
-        setAllWC((prev) => prev.filter((wc: any) => wc._id !== deleteId));
-        toast.success(response.data.message || "Commission deleted successfully");
         getWC(); // Refresh the list
+        setAllWC((prev) => prev.filter((wc: any) => wc._id !== deleteId));
+        
+        
+        toast.success(response.data.message || "Commission deleted successfully");
+      
       } else {
         console.error(error);
         toast.error("Failed to delete commission");
@@ -69,14 +72,10 @@ const WCommisionHome = () => {
     try {
       const { response, error } = await getALLWC(endPoints.WC);
       if (response && !error) {
-        const transformedRegions = response.data.commissions?.map(
-          (commission: any) => ({
-            ...commission,
-            createdAt: new Date(commission.createdAt)
-            .toLocaleDateString("en-GB") // Extracts the date part
-          })
-        );
-        setAllWC(transformedRegions);
+        console.log(response.data.commissions);
+       
+        setAllWC(response.data.commissions);
+       
       } else {
         // console.log(error);
       }
@@ -94,9 +93,10 @@ const WCommisionHome = () => {
   // Define the columns with strict keys
   const columns: { key: keyof WCData; label: string }[] = [
     { key: "profileName", label: "ProfileName" },
-    { key: "commissionPercentage", label: "Percentage" },
-    { key: "thresholdAmount", label: "Threshold Amt" },
-    { key: "createdAt", label: "Created Date" },
+    { key: "thresholdLicense", label: "Threshold License" },
+    { key: "commissionPoint", label: "Commission Point" },
+    { key: "recurringPoint", label: "Recurring Pointt" },
+    { key: "perPointValue", label: "per Point Value" },
   ];
  
   return (

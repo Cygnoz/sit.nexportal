@@ -61,7 +61,7 @@ const editValidationSchema = Yup.object().shape({
 
 const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const { request: addRM } = useApi("post", 3002);
-  const { dropdownRegions, allWc, allCountries } = useRegularApi();
+  const { dropdownRegions, dropDownWC, allCountries } = useRegularApi();
   const { request: editRM } = useApi("put", 3002);
   const { request: getRM } = useApi("get", 3002);
   const { request: checkRm } = useApi("get", 3002);
@@ -262,7 +262,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
   // UseEffect for updating wc
   useEffect(() => {
-    const filteredCommission = allWc?.map((commission: any) => ({
+    const filteredCommission = dropDownWC?.map((commission: any) => ({
       label: commission.profileName,
       value: String(commission._id),
     }));
@@ -272,7 +272,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       ...prevData,
       wc: filteredCommission,
     }));
-  }, [allWc]);
+  }, [dropDownWC]);
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({

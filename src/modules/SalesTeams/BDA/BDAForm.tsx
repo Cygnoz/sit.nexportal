@@ -62,7 +62,7 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
-  const { dropDownAreas, dropdownRegions, allWc, allCountries } = useRegularApi();
+  const { dropDownAreas, dropdownRegions, dropDownWC, allCountries } = useRegularApi();
   const { request: addBDA } = useApi("post", 3002);
   const { request: editBDA } = useApi("put", 3002);
   const { request: getBDA } = useApi("get", 3002);
@@ -264,7 +264,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
 
   // UseEffect for updating wc
   useEffect(() => {
-    const filteredCommission = allWc?.map((commission: any) => ({
+    const filteredCommission = dropDownWC?.map((commission: any) => ({
       label: commission.profileName,
       value: String(commission._id),
     }));
@@ -274,7 +274,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
       ...prevData,
       wc: filteredCommission,
     }));
-  }, [allWc]);
+  }, [dropDownWC]);
 
   // UseEffect for updating countries
   useEffect(() => {
