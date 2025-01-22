@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Bell from "../../assets/icons/Bell";
 import Notebook from "../../assets/icons/Notebook";
@@ -11,6 +11,8 @@ import useApi from "../../Hooks/useApi";
 import { TicketsData as BaseTicketsData } from "../../Interfaces/Tickets";
 import { endPoints } from "../../services/apiEndpoints";
 import CreateTickets from "./TicketsForm";
+import { useUser } from "../../context/UserContext";
+import { useRegularApi } from "../../context/ApiContext";
 
 type Props = {};
 
@@ -22,12 +24,22 @@ interface TicketsData extends BaseTicketsData {
 }
 
 function TicketsHome({ }: Props) {
+  const {user}=useUser()
+  const {allTicketsCount}=useRegularApi()
+  const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
   const { request: getAllTickets } = useApi("get", 3004);
  const [allTickets, setAllTickets] = useState<any[]>([]);
  const [filteredTickets, setFilteredTickets] = useState<any[]>([]);
+ const [filterWorking,setFilterWorking]=useState<boolean>(false)
   const navigate = useNavigate();
-  const [activeLabel, setActiveLabel] = useState<string | null>('Total Tickets');
-
+  const [allTicketss, setAllTicketss] = useState({
+    unResolvedTickets: 0,
+    resolvedTickets: 0,
+    totalTickets: 0,
+    unAssignedTickets:0
+  });
+  const [activeLabel, setActiveLabel] = useState<any>(null);
+ 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId, setEditId] = useState("");
@@ -47,11 +59,7 @@ function TicketsHome({ }: Props) {
     navigate(`/ticket/${id}`);
   };
 
-  const [allTicketss, setAllTicketss] = useState({
-    unResolvedTickets: 0,
-    resolvedTickets: 0,
-    totalTickets: 0,
-  });
+  
   
   const getTickets = async () => {
     try {
@@ -59,9 +67,6 @@ function TicketsHome({ }: Props) {
   
       if (response && !error) {
         const currentTime = new Date();
-  
-        // Extract ticket data and other metrics
-        
         const transformTicket = response.data?.tickets?.map((ticket: any) => ({
           ...ticket,
           name: ticket?.supportAgentId?.user?.userName,
@@ -70,10 +75,10 @@ function TicketsHome({ }: Props) {
         })) || [];
         setAllTickets(transformTicket)
         setAllTicketss({
-          
-          unResolvedTickets: response.data?.unResolvedTickets || 0,
-          resolvedTickets: response.data?.resolvedTickets || 0,
-          totalTickets: response.data?.totalTickets || 0,
+          unResolvedTickets: response.data?.unresolvedTickets|| 0,
+          resolvedTickets: response.data?.solvedTickets || 0,
+          unAssignedTickets:response.data?.unassignedTickets||0,
+          totalTickets: response.data?.totalTickets|| 0,
         });
       }
     } catch (err) {
@@ -133,42 +138,54 @@ function TicketsHome({ }: Props) {
   
 
 useEffect(() => {
-  getTickets(); // Fetch tickets initially when the component mounts
-}, []);
+  getTickets();
+}, [unassignedTickets]);
 
 
-const handleSort = (type: string) => {
-  let sortedTickets = [];
-  setActiveLabel(type);
-  switch (type) {
-    case "Total Tickets":
-      sortedTickets = allTickets; // All tickets
-      break;
-    case "Unresolved Tickets":
-      sortedTickets = allTickets.filter(ticket => ticket.status !== "Resolved");
-      break;
-    case "Unassigned Tickets":
-      sortedTickets = allTickets.filter(
-        ticket => !ticket.supportAgentId || ticket.supportAgentId === undefined
-      );
-      break;
-    case "Solved Tickets":
-      sortedTickets = allTickets.filter(ticket => ticket.status === "Resolved");
-      break;
-    default:
-      sortedTickets = allTickets;
+const handleSort = useCallback(
+  (type: string) => {
+    let sortedTickets = [];
+    setActiveLabel(type);
+    setFilterWorking(false)
+    
+    switch (type) {
+      case "Total Tickets":
+        sortedTickets = allTickets; // All tickets
+        break;
+      case "Un Resolved Tickets":
+        sortedTickets = allTickets.filter(ticket => ticket.status !== "Resolved");
+        break;
+      case "Un Assigned Tickets":
+        sortedTickets = allTickets.filter(
+          ticket => !ticket.supportAgentId || ticket.supportAgentId === undefined
+        );
+        break;
+      case "Solved Tickets":
+        sortedTickets = allTickets.filter(ticket => ticket.status === "Resolved");
+        break;
+      default:
+        sortedTickets = allTickets;
+    }
+
+    setFilteredTickets(sortedTickets); // Update the filtered list
+  },
+  [allTickets] // Dependencies for the callback
+);
+
+useEffect(() => {
+
+ if(!filterWorking){
+  if (user?.role !== "Support Agent" && unassignedTickets > 0) {
+    handleSort("Unassigned Tickets");
+  } else if(user?.role==="Support Agent") {
+    handleSort("Unresolved Tickets");
+  }else{
+    handleSort('Total Tickets')
   }
-
-  setFilteredTickets(sortedTickets); // Update the filtered list
-};
-
-
-
-
-
-
-
+ }
  
+}, [user?.role, unassignedTickets, handleSort]); // Add necessary dependencies
+
 
   // Define the columns with strict keys
   const columns: { key: keyof TicketsData; label: string }[] = [
@@ -183,7 +200,10 @@ const handleSort = (type: string) => {
   const priority = "Priority";
   const status = "Status";
 
-  const handleFilter = ({ options }: { options: string }) => {
+
+  const handleFilter = ({ options }: { options?: string }) => {
+    handleSort(activeLabel)
+    setFilterWorking(true)
     // Define custom order for Priority and Status
     const priorityOrder:any = { High: 1, Medium: 2, Low: 3 };
     const statusOrder:any = { Open: 1, "In progress": 2, Resolved: 3 };
@@ -209,12 +229,14 @@ const handleSort = (type: string) => {
     }
   };
   
+  console.log("filter",filteredTickets);
+  
 
   const sort = {
     sortHead: "Sort",
     sortList: [
       {
-        label: "Sort by Name",
+        label: "Sort by Reque",
         icon: <UserIcon size={14} color="#4B5C79" />,
         action: () => handleFilter({ options: requestor }),
       },
@@ -234,16 +256,11 @@ const handleSort = (type: string) => {
  
   const ticketData = [
     { label: "Total Tickets", value: allTicketss?.totalTickets || 0 },
-    { label: "Unresolved Tickets", value: allTicketss?.unResolvedTickets || 0 },
-    { label: "Unassigned Tickets", value: 0 },
+    { label: "Un Resolved Tickets", value: allTicketss?.unResolvedTickets || 0 },
+    { label: "Un Assigned Tickets", value: allTicketss.unAssignedTickets ||0 },
     { label: "Solved Tickets", value: allTicketss?.resolvedTickets || 0 },
   ];
   
-
-  console.log("allti",allTicketss);
-  
-
- 
   
 
   return (
@@ -279,7 +296,7 @@ const handleSort = (type: string) => {
             {/* Table Section */}
             <div >
               <div className="flex justify-between p-3">
-                <h1 className="text-xl font-bold">Unsolved Tickets</h1>
+                <h1 className="text-xl font-bold">{activeLabel}</h1>
                 <SortBy sort={sort} />
               </div>
               <Table<TicketsData>

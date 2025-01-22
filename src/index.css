@@ -12,6 +12,14 @@ body{
   background-color: #f5f5f8;
 }
 
+.ql-toolbar {
+  background-color: #f4f4f4; /* Set your desired background color here */
+  border: none; /* Optional: Remove border */
+}
+.ql-container {
+  border: none !important; /* Ensure content area has no border */
+}
+
 .hide-scrollbar {
   /* For Firefox */
   scrollbar-width: none;

@@ -5,6 +5,8 @@ import Settings from "../assets/icons/Settings";
 import { NavList } from "../components/list/NavLists";
 import SearchBar from "../components/ui/SearchBar";
 import UserModal from "./Logout/UserModal";
+import { useRegularApi } from "../context/ApiContext";
+import { useUser } from "../context/UserContext";
 
 interface HeaderProps {
   searchValue: string;
@@ -12,7 +14,15 @@ interface HeaderProps {
   scrollToActiveTab: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToActiveTab }) => {
+const Header: React.FC<HeaderProps> = ({
+  searchValue,
+  setSearchValue,
+  scrollToActiveTab,
+}) => {
+  const { allTicketsCount } = useRegularApi();
+  const { user } = useUser();
+  const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
+  const allTickets = allTicketsCount?.allTickets ?? 0;
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1); // Manage focused item index
   const navigate = useNavigate();
@@ -25,8 +35,6 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
       route.key.trim().toLowerCase().includes(searchValue.toLowerCase()) ||
       route.label.trim().toLowerCase().includes(searchValue.toLowerCase())
   );
-  
-  
 
   const handleSelect = (route: any) => {
     setDropdownVisible(false);
@@ -65,7 +73,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        searchBarRef.current && 
+        searchBarRef.current &&
         !searchBarRef.current.contains(event.target as Node) &&
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -79,7 +87,6 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
- 
 
   return (
     <div
@@ -101,7 +108,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
             className="absolute z-10 w-full mt-1 bg-white border max-h-96 overflow-y-scroll custom-scrollbar border-gray-300 rounded shadow"
           >
             {filteredNavList.length === 0 ? (
-              <li className="px-4 py-2 text-red-500 text-center font-bold">No module found!</li>
+              <li className="px-4 py-2 text-red-500 text-center font-bold">
+                No module found!
+              </li>
             ) : (
               filteredNavList.map((route: any, index: number) => (
                 <li
@@ -120,21 +129,39 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
       </div>
 
       <div className="flex ms-14 justify-center items-center gap-2 cursor-pointer" />
-      <div className="flex items-center gap-4 ml-auto">
-        <div className="tooltip" data-tooltip="Settings">
+      <div className="flex items-center gap-4 ml-auto cursor-pointer">
+        <div
+          onClick={() => navigate("/settings/target")}
+          className="tooltip"
+          data-tooltip="Settings"
+        >
           <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
             <Settings color="#768294" />
           </p>
         </div>
-        <div className="tooltip" data-tooltip="Notification">
+        <div
+          onClick={() => navigate("/ticket")}
+          className="tooltip relative cursor-pointer"
+          data-tooltip="Notification"
+        >
+         {(user?.role === "Support Admin" || user?.role === "Supervisor" || user?.role === "Super Admin") && unassignedTickets > 0 ? (
+  <div className="h-5 w-5 absolute rounded-full -top-2 bg-red-600 text-white flex items-center justify-center">
+    <p className="text-xs font-semibold">{unassignedTickets}</p>
+  </div>
+) : (
+  user?.role === "Support Agent" &&allTickets>0&& (
+    <div className="h-5 w-5 absolute rounded-full -top-2 bg-red-600 text-white flex items-center justify-center">
+      <p className="text-xs font-semibold">{allTickets}</p>
+    </div>
+  )
+)}
+
           <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
             <Bell />
           </p>
         </div>
-       <UserModal/>
-
+        <UserModal />
       </div>
-      
     </div>
   );
 };

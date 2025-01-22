@@ -51,7 +51,7 @@ const SettingsHome: FC<SettingsHomeProps> = ({
   // Effect to update currentPage when location changes
   useEffect(() => {
     setCurrentPage(location.pathname); // This will update the current page whenever the location changes
-  }, [location]);
+  }, []);
 
   return (
     <div className="pb-12 flex h-full text-[#303F58]">

@@ -285,9 +285,12 @@ const Table = <T extends object>({
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr
-                onClick={() =>
-                  actionList?.find((data) => data.label === "view")?.function(row?._id)
-                }
+                onClick={() =>{
+                  if( row?.name !== undefined && from == "ticket"){
+                    actionList?.find((data) => data.label === "view")?.function(row?._id)
+                  }
+                 
+                }}
                 key={rowIndex}
                 className="hover:bg-gray-50 z-10 cursor-pointer"
               >
@@ -341,31 +344,46 @@ const Table = <T extends object>({
                     className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
                     onClick={(e) => e.stopPropagation()} // Stop propagation for action cells
                   >
-                    <div className="flex justify-center gap-2">
-                      {actionList?.map((action, index) => {
-                        if (["edit", "view", "delete"].includes(action.label)) {
-                          return (
-                            <p
-                              key={index}
-                              className="cursor-pointer"
-                              onClick={(e) => {
-                                e.stopPropagation(); // Prevent triggering the `tr` onClick
-                                action.function(row?._id);
-                              }}
-                            >
-                              {action.label === "edit" ? (
-                                <PencilLine color="#4B5C79" size={16} />
-                              ) : action.label === "view" ? (
-                                <Eye color="#4B5C79" size={16} />
-                              ) : (
-                                <Trash color="#4B5C79" size={16} />
-                              )}
-                            </p>
-                          );
-                        }
-                        return null;
-                      })}
-                    </div>
+                   <div className="flex justify-center gap-2">
+  {actionList?.map((action, index) => {
+    if (["edit", "view", "delete"].includes(action.label)) {
+      return (
+        <p
+          key={index}
+          className="cursor-pointer"
+          onClick={(e) => {
+            e.stopPropagation(); // Prevent triggering the `tr` onClick
+            action.function(row?._id);
+          }}
+        >
+          {action.label === "edit" ? (
+            row?.name === undefined && from === "ticket" ? (
+              <Button
+                                 variant="primary"
+                                 className="h-8 text-sm border rounded-lg"
+                                 size="lg"
+                               >
+                                 Assign
+                               </Button>
+            ) : (
+              <PencilLine color="#4B5C79" size={16} />
+            )
+          ) : action.label === "view" ? (
+            row?.name == undefined && from !== "ticket" && 
+              (
+              <Eye color="#4B5C79" size={16} />
+            )
+          ) : (
+            <Trash color="#4B5C79" size={16} />
+          )}
+        </p>
+      );
+    }
+    return null;
+  })}
+</div>
+
+
                   </td>
                 )}
               </tr>
