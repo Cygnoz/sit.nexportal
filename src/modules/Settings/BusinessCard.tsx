@@ -14,19 +14,16 @@ import cygnoz from '../../assets/image/cygnoz.com.png'
 import profile from '../../assets/image/AvatarImg.png'
 import PhoneIcon from "../../assets/icons/PhoneIcon"
 import LocationIcon from "../../assets/icons/LocationIcon"
-import cygnozC from '../../assets/image/cygnoz c png.png'
-import busniessIcon from '../../assets/image/businesscardLogo.png'
-import c from '../../assets/image/card-c.png'
-import polygon from '../../assets/image/polygon.png'
-import dotsImage from '../../assets/image/BCardDots.png'
 import previewFront from '../../assets/image/preview-card-front.png'
 import previewBack from '../../assets/image/preview-card-back.png'
+import { Layout1Front, Layout2Front, Layout3Front } from "../../components/ui/BSLayout"
 
 type Props = {}
 
 function BusinessCard({ }: Props) {
     const tabs = ["Layout", "Content"]
     const [activeTab, setActiveTab] = useState<string>("Layout");
+
 
     const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({
         "Profile Photo": true,
@@ -75,251 +72,33 @@ function BusinessCard({ }: Props) {
                     <div className="me-4 p-2 bg-[#FFFFFF] rounded-lg mt-4">
 
                         {activeTab === "Layout" && (
-                            <div>
-                                <div className="flex justify-between mt-4">
-                                    <p className="my-2 text-[#303F58] text-base font-bold">Select Template</p>
-                                    <div className="flex items-center border bg-[#FFFFFF] rounded-lg w-80 h-9 px-3 my-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Search template"
-                                            className="flex-grow outline-none text-sm text-[#8F99A9]"
-                                        />
+                                <div>
+                                    <div className="flex justify-between mt-4">
+                                        <p className="my-2 text-[#303F58] text-base font-bold">Select Template</p>
+                                        <div className="flex items-center border bg-[#FFFFFF] rounded-lg w-80 h-9 px-3 my-2">
+                                            <input
+                                                type="text"
+                                                placeholder="Search template"
+                                                className="flex-grow outline-none text-sm text-[#8F99A9]"
+                                            />
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div className="grid grid-cols-2 gap-3 p-2">
-                                    <div className="bg-[#184D81] min-h-[200px] relative rounded-lg w-full h-fit overflow-hidden">
-                                    <img className="w-40 h-[72px] absolute right-3" src={c} alt="" />
-                                        <div className="flex gap-1 p-3">
-                                            <div>
-                                                <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
-                                            </div>
-                                            <div className="border-r">
-                                                <p className="text-[#FFFFFF] font-light text-[10px] mx-2">Name</p>
-                                                <p className="text-[#FFFFFF] font-semibold text-xs mx-2">John Doe</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
-                                                <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
-                                            </div>
-                                        </div>
-                                       
-                                          
-                                       
-
-
-                                        <div className="flex">
-                                            <div className="bg-[#2795FB] w-56 h-fit p-1 rounded-e-full">
-                                                <div className="flex justify-between px-2">
-                                                    <div>
-                                                        <p className="text-[#FFFFFF] font-light text-[10px]">Employee ID</p>
-                                                        <p className="text-[#FFFFFF] font-medium text-xs">RM-210215</p>
-                                                    </div>
-                                                    <div className="me-6">
-                                                        <p className="text-[#FFFFFF] font-light text-[10px]">Region</p>
-                                                        <p className="text-[#FFFFFF] font-medium text-xs">Ernakulam</p>
-                                                    </div>
-
-                                                </div>
-
-                                            </div>
-                                        </div>
-
-                                        <div className="px-3">
-                                            <p className="text-[#FFFFFF] font-light text-[10px] my-2">Personal Address & Mail</p>
-                                            <div className="grid grid-cols-2 gap-1">
-                                                <div className="flex gap-2">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
-                                                        <div className="p-1">
-                                                            <EmailIcon size={11} color="#FFFFFF" />
-                                                        </div>
-
-                                                    </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
-
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                        <PhoneIcon size={11} color="#FFFFFF" />
-
-                                                    </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
-
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                        <LocationIcon size={12} color="#FFFFFF" />
-
-                                                    </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
-
-                                                </div>
-
-
-                                            </div>
-                                        </div>
-
-                                        <div className="flex justify-between p-2 relative">
-                                            <img src={cygnoz} className="w-24 h-5" alt="" />
-                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
-                                        </div>
+                                    <div className="grid grid-cols-2 gap-3 p-2">
                                         <div>
-                                            <img className="w-32 h-32 -mt-32 rounded-b-lg ml-auto" src={busniessIcon} alt="" />
-                                        </div>
-                                    </div>
-
-                                    <div className="bg-[#184D81] min-h-[200px] relative rounded-lg w-full h-fit overflow-hidden">
-                                    <img className="w-40 h-[72px] absolute -right-8" src={c} alt="" />
-                                        <div className="flex gap-4 p-3">
-                                            <div>
-                                                <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
-                                            </div>
-                                            <div>
-                                                <p className="text-[#FFFFFF] font-light text-[10px]">Name</p>
-                                                <p className="text-[#FFFFFF] font-semibold text-xs">John Doe</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
-                                                <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
-                                            </div>
-
+                                           <Layout1Front/> 
                                         </div>
 
-                                        <div className="flex p-2 justify-between">
-                                            <div className="bg-[#2795FB] w-fit h-6 p-1 rounded-xl">
-                                                <div className="flex gap-3 px-1">
-                                                    <p className="text-[#FFFFFF] font-light text-xs">Employee ID</p>
-                                                    <p className="text-[#FFFFFF] font-semibold text-xs">RM-210215</p>
-                                                </div>
-                                            </div>
-                                            <div className="bg-[#2795FB] w-fit h-fit p-1 rounded-xl">
-                                                <div className="flex gap-3 px-1">
-                                                    <p className="text-[#FFFFFF] font-light text-xs">Region</p>
-                                                    <p className="text-[#FFFFFF] font-semibold text-xs">Ernakulam</p>
-                                                </div>
-                                            </div>
+                                        <div>
+                                        <Layout2Front/>
                                         </div>
 
-                                        <div className="px-3">
-                                            <p className="text-[#FFFFFF] font-light text-[10px] my-1">Personal Address & Mail</p>
-                                            <div className="grid grid-cols-2 gap-1">
-                                                <div className="flex gap-2">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
-                                                        <div className="p-1">
-                                                            <EmailIcon size={11} color="#FFFFFF" />
-                                                        </div>
-
-                                                    </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
-
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                        <PhoneIcon size={11} color="#FFFFFF" />
-
-                                                    </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
-
-                                                </div>
-                                                <div className="flex gap-2">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                        <LocationIcon size={12} color="#FFFFFF" />
-
-                                                    </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
-
-                                                </div>
-
-
-                                            </div>
-                                        </div>
-
-                                        <div className="flex justify-between p-3">
-                                            <img src={cygnoz} className="w-24 h-5" alt="" />
-                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-1 z-10">Engineering your business for the world</p>
-                                        </div>
-                                        <div className="relative">
-                                            <img className="w-48 h-48 -bottom-20 -right-14 absolute" src={polygon} alt="" />
+                                        <div>
+                                            <Layout3Front/>
                                         </div>
 
                                     </div>
-
-                                    <div className="bg-[#184D81] min-h-[200px] relative z-20 flex flex-col justify-between  rounded-lg w-full overflow-hidden">
-                                    <img className="w-24 h-28 top-14 right-11 absolute -z-10" style={{ transform: 'rotate(-30deg)' }} src={cygnozC} alt="" />
-                                    <img className="w-16 h-[74px] right-0 top-14 absolute" src={dotsImage} alt="" />
-                                       
-                                       <div>
-                                       <div className="flex gap-2 p-3 justify-between">
-                                            <div className="flex gap-1">
-                                                <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
-                                                <div>
-                                                    <p className="text-[#FFFFFF] font-semibold text-[10px]">John Doe</p>
-                                                    <p className="text-[#FFFFFF] font-semibold text-[10px]">Regional Manager</p>
-                                                </div>
-                                            </div>
-                                            <div className="bg-[#2795FB] w-fit h-6 p-1 rounded-xl">
-                                                <div className="flex gap-3 px-1">
-                                                    <p className="text-[#FFFFFF] font-light text-xs">Employee ID</p>
-                                                    <p className="text-[#FFFFFF] font-semibold text-xs">RM-210215</p>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="flex px-3 gap-4">
-                                            <p className="text-[#FFFFFF] font-light text-xs">Region</p>
-                                            <p className="text-[#FFFFFF] font-semibold text-xs">Ernakulam</p>
-                                        </div>
-                                       </div>
-
-                                        
-                                        
-
-                                        <div className="px-3 grid grid-cols-2 z-20">
-                                            
-                                            <div className="gap-1">
-                                                <div className="flex gap-2">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
-                                                        <div className="p-1">
-                                                            <EmailIcon size={11} color="#FFFFFF" />
-                                                        </div>
-
-                                                    </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
-
-                                                </div>
-                                                <div className="flex gap-2 mt-1">
-                                                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                        <PhoneIcon size={11} color="#FFFFFF" />
-
-                                                    </div>
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
-
-                                                </div>
-                                                <div className="flex py-1 gap-5">
-                                                    <div className="flex gap-2">
-                                                        <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                            <LocationIcon size={12} color="#FFFFFF" />
-
-                                                        </div>
-                                                        <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
-
-                                                    </div>
-                                                   
-                                                </div>
-                                            </div>
-                                            <div className="flex flex-col justify-end mb-2">
-                                                        <div>
-                                                        <img src={cygnoz} className="w-24 h-5 ml-auto" alt="" />
-                                                        <p className="text-[#FFFFFF] font-light text-[7px] w-fit ml-auto">Engineering your business for the world</p>
-                                                        </div>
-                                                    </div>
-                                        </div>
-
-                                    </div>
-
                                 </div>
-                            </div>
-
                         )}
 
                         {activeTab === "Content" && (
@@ -656,178 +435,6 @@ function BusinessCard({ }: Props) {
                 <div className="col-span-4">
                     <div className="p-4 bg-[#F5F9FC] rounded-lg mt-4">
                         <p className="my-2 text-[#000000] text-base font-medium">Preview</p>
-
-                        {/* <div className="my-4">
-                        
-                            <div className="bg-[#184D81] rounded-lg w-full h-fit relative">
-                                
-                                    <img className="w-32 h-[72px] absolute left-56" src={c} alt="" />
-                                    <img className="w-32 h-32 rounded-b-lg absolute top-[88px] left-[235px]" src={busniessIcon} alt="" />
-
-                                <div className="flex gap-1 p-3">
-                                    {toggleStates["Profile Photo"] && (
-                                        <div>
-                                            <img className="w-8 h-8 rounded-full" src={profile} alt="abc" />
-                                        </div>
-                                    )}
-
-                                    {toggleStates["Name"] && (
-                                        <div className="border-r">
-                                            <p className="text-[#FFFFFF] font-light text-[10px] mx-2">Name</p>
-                                            <p className="text-[#FFFFFF] font-semibold text-xs mx-2">John Doe</p>
-
-
-                                        </div>
-                                    )}
-
-                                    {toggleStates["Designation"] && (
-                                        <div>
-                                            <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
-                                            <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
-                                        </div>
-                                    )}
-
-                                </div>
-
-
-                                <div className="flex">
-                                    <div className="bg-[#2795FB] w-56 h-fit p-1 rounded-e-full">
-                                        <div className="flex justify-between px-2">
-
-                                            {toggleStates["Employee ID"] && (
-                                                <div>
-                                                    <p className="text-[#FFFFFF] font-light text-[10px]">Employee ID</p>
-                                                    <p className="text-[#FFFFFF] font-medium text-xs">RM-210215</p>
-                                                </div>
-                                            )}
-
-                                            {toggleStates["Region"] && (
-                                                <div className="me-6">
-                                                    <p className="text-[#FFFFFF] font-light text-[10px]">Region</p>
-                                                    <p className="text-[#FFFFFF] font-medium text-xs">Ernakulam</p>
-                                                </div>
-                                            )}
-
-                                        </div>
-
-                                    </div>
-                                </div>
-
-                                <div className="px-3">
-                                    <p className="text-[#FFFFFF] font-light text-[10px] my-2">Personal Address & Mail</p>
-                                    <div className="grid grid-cols-2 gap-1">
-                                        <div className="flex gap-2">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
-                                                <div className="p-1">
-                                                    <EmailIcon size={11} color="#FFFFFF" />
-                                                </div>
-
-                                            </div>
-                                            {toggleStates["Email"] && (
-                                                <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
-                                            )}
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                <PhoneIcon size={11} color="#FFFFFF" />
-
-                                            </div>
-                                            
-                                            {toggleStates["phoneNo"] && (
-                                                <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
-                                            )}
-
-                                        </div>
-                                        <div className="flex gap-2">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                <LocationIcon size={12} color="#FFFFFF" />
-
-                                            </div>
-                                            {toggleStates["Address"] && (
-                                                <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
-                                            )}
-                                        </div>
-
-
-                                    </div>
-                                </div>
-
-                                <div className="flex justify-between p-2 relative">
-                                    {toggleStates["Company Logo"] && (
-                                        <img src={cygnoz} className="w-14 h-5" alt="" />
-                                    )}
-                                    {toggleStates["Logo Title"] && (
-                                        <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
-                                    )}
-                                </div>
-                               
-                            </div>
-                        </div> */}
-
-                        {/* <div className="my-2">
-                           
-                            <div className="bg-[#184D81] rounded-lg w-full h-[221px]">
-                                <div className="flex gap-1 p-3">
-                                    <div>
-                                        {toggleStates["Company Logo"] && (
-                                            <img className="w-32 h-8" src={cygnoz} alt="abc" />
-                                        )}
-                                        {toggleStates["Logo Title"] && (
-                                            <p className="text-[#FFFFFF] font-normal text-[10px] py-1">Engineering your business for the world</p>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="justify-end">
-                                    <img className="w-32 h-[72px] ml-auto me-6 -mt-[84px]" src={c} alt="" />
-                                </div>
-
-
-                                {toggleStates["CompanyInfo"] && (
-                                    <div className="px-3 mt-10">
-                                        <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
-                                        <div className="grid grid-cols-2 gap-1">
-                                            <div className="flex gap-2">
-                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5">
-                                                    <div className="p-1">
-                                                        <EmailIcon size={11} color="#FFFFFF" />
-                                                    </div>
-
-                                                </div>
-                                                <p className="text-[#FFFFFF] font-light text-[9px]"> john.doe@example.com</p>
-
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                    <PhoneIcon size={11} color="#FFFFFF" />
-
-                                                </div>
-                                                {toggleStates["phoneNo"] && (
-                                                    <p className="text-[#FFFFFF] font-light text-[9px]"> +919633564547</p>
-                                                )}
-
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-                                                    <LocationIcon size={12} color="#FFFFFF" />
-
-                                                </div>
-                                                <p className="text-[#FFFFFF] font-light text-[9px]">2972 Westheimer Rd. Santa Ana, Illinois 85486 </p>
-
-                                            </div>
-
-
-                                        </div>
-                                    </div>
-                                )}
-
-                                <div>
-                                    <img className="w-32 h-32 -mt-24 rounded-b-lg ml-auto" src={busniessIcon} alt="" />
-                                </div>
-                            </div>
-
-                        </div> */}
-
-
                         <div
                             className="my-2 bg-cover bg-center bg-no-repeat rounded-lg relative"
                             style={{ backgroundImage: `url(${previewFront})`, minHeight: '250px' }}
@@ -913,7 +520,7 @@ function BusinessCard({ }: Props) {
                                 {/* Footer Section */}
                                 <div className="flex justify-between mt-4">
                                     {toggleStates["Company Logo"] && (
-                                        <img src={cygnoz} className="w-14 h-5" alt="Company Logo" />
+                                        <img src={cygnoz} className="w-24 h-5" alt="Company Logo" />
                                     )}
                                     {toggleStates["Logo Title"] && (
                                         <p className="text-[#FFFFFF] font-normal text-[10px] py-1">
