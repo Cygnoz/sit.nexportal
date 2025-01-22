@@ -3,7 +3,6 @@ import useApi from "../Hooks/useApi";
 import { AreaData } from "../Interfaces/Area";
 import { BDAData } from "../Interfaces/BDA";
 import { RegionData } from "../Interfaces/Region";
-import { WCData } from "../Interfaces/WC";
 import { endPoints } from "../services/apiEndpoints";
 import { useUser } from "./UserContext";
 import { TotalCounts } from "../Interfaces/Counts";
@@ -14,6 +13,7 @@ interface DropdownApi {
   bdas:[],
   supportAgents:[],
   message:string;
+  commissions:[];
 }
 interface ticketsCountBell{
   allUnassigned?:number 
@@ -22,7 +22,7 @@ interface ticketsCountBell{
 type ApiContextType = {
   allRegions?: RegionData[];
   allAreas?: AreaData[];
-  allWc?: WCData[];
+ 
   allCountries?: any;
   allBDA?: BDAData[];
   totalCounts?: TotalCounts;
@@ -34,6 +34,8 @@ type ApiContextType = {
   allTicketsCount?:ticketsCountBell |undefined
   allRms?:any,
   regionId?:any
+  dropDownWC?:DropdownApi["commissions"]
+ 
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -42,7 +44,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUser();
   const { request: getAllRegion } = useApi("get", 3003);
   const { request: getAllArea } = useApi("get", 3003);
-  const { request: getAllWc } = useApi("get", 3003);
+ // const { request: getAllWc } = useApi("get", 3003);
   const { request: getAllBDA } = useApi("get", 3002);
   const {request:getAllCounts}=useApi('get',3003);
  const {request:getAllCustomersCounts}=useApi('get',3001);
@@ -53,7 +55,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);
-  const [allWc, setAllWc] = useState<WCData[]>([]);
   const [allBDA, setAllBDA] = useState<BDAData[]>([]);
   const [allCountries, setAllCountries] = useState<[]>([]);
   const [regionId,setRegionId]=useState<any>(null)
@@ -105,26 +106,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const getWC = async () => {
-    try {
-      const { response, error } = await getAllWc(endPoints.WC);
-      if (response && !error) {
-        const transformedRegions = response.data.commissions?.map(
-          (commission: any) => ({
-            ...commission,
-            createdAt: new Date(commission.createdAt)
-              .toISOString()
-              .split("T")[0], // Extracts the date part
-          })
-        );
-        setAllWc(transformedRegions);
-      } else {
-      //  console.log(error);
-      }
-    } catch (err) {
-      // console.log(err);
-    }
-  };
+  
 
   const getCountries = async () => {
     try {
@@ -242,7 +224,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       fetchRegions();
       fetchDropdown();
       fetchAreas();
-      getWC();
+    
       getCountries();
       getBDAs();
       getAllUsersCounts();
@@ -259,7 +241,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     fetchData();
   
     // Set an interval to fetch data every 5 seconds
-    const intervalId = setInterval(fetchData, 3000);
+    const intervalId = setInterval(fetchData, 1000);
   
     // Cleanup interval on unmount
     return () => clearInterval(intervalId);
@@ -273,7 +255,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     value={{
       allRegions,
       allAreas,
-      allWc,
+      
       allCountries,
       allBDA,
       totalCounts,
@@ -284,6 +266,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       dropDownSA:dropdownApi?.supportAgents||[],
       allTicketsCount,
       regionId,
+      dropDownWC:dropdownApi?.commissions||[]
     }}  >
       {children}
     </ApiContext.Provider>

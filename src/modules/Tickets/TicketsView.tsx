@@ -81,6 +81,9 @@ const TicketsView = ({}: Props) => {
   //   setNewMessage(e.target.value);
   // };
 
+  console.log(setMessages);
+  
+
 
 
   return (

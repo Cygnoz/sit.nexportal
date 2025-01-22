@@ -39,7 +39,7 @@ const SettingsHome: FC<SettingsHomeProps> = ({
         item.name.toLowerCase().includes(searchValue.toLowerCase())
       )
     );
-  }, [searchValue, initialSidebarList]);
+  }, [searchValue]);
 
   // Update route and highlight tab
   const handleSideBarTab = (path: string) => {
@@ -50,8 +50,8 @@ const SettingsHome: FC<SettingsHomeProps> = ({
 
   // Effect to update currentPage when location changes
   useEffect(() => {
-    setCurrentPage(location.pathname); // This will update the current page whenever the location changes
-  }, []);
+    setCurrentPage(location.pathname); // Update current page whenever location changes
+  }, [location.pathname]);
 
   return (
     <div className="pb-12 flex h-full text-[#303F58]">

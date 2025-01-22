@@ -1,7 +1,10 @@
 
   export interface WCData {
     profileName: string,
-    commissionPercentage: number,
-    thresholdAmount: number,
-    createdAt?: string;
+    commissionPoint: number,
+    recurringPoint: number,
+    perPointValue: number,
+    thresholdLicense: number,
+    remark?:string,
   }
+

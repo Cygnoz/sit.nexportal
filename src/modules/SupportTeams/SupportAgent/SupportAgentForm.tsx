@@ -64,7 +64,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   onClose,
   editId,
 }) => {
-  const { dropdownRegions, allWc, allCountries } = useRegularApi();
+  const { dropdownRegions, dropDownWC, allCountries } = useRegularApi();
   const { request: addSA } = useApi("post", 3003);
   const { request: editSA } = useApi("put", 3003);
   const { request: getSA } = useApi("get", 3003);
@@ -198,7 +198,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
 
   // UseEffect for updating wc
   useEffect(() => {
-    const filteredCommission = allWc?.map((commission: any) => ({
+    const filteredCommission = dropDownWC?.map((commission: any) => ({
       label: commission.profileName,
       value: String(commission._id),
     }));
@@ -208,7 +208,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
       ...prevData,
       wc: filteredCommission,
     }));
-  }, [allWc]);
+  }, [dropDownWC]);
 
   // UseEffect for updating countries
   useEffect(() => {
