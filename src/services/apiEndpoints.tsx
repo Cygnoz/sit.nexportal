@@ -96,5 +96,7 @@ export const endPoints = {
 
   //LOGOUT
   LOGOUT:"/logout", 
-  
+
+  // Ticket Rising
+  UNASSIGNED_TICKETS:'/unassigned-ticket'
 };

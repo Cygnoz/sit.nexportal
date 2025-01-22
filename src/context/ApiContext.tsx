@@ -27,6 +27,7 @@ type ApiContextType = {
   dropDownAreas?:DropdownApi["areas"]
   dropDownBdas?:DropdownApi["bdas"]
   dropDownSA?:DropdownApi["supportAgent"]
+  allUnassigned?:any
  
 };
 
@@ -39,6 +40,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { request: getAllWc } = useApi("get", 3003);
   const { request: getAllBDA } = useApi("get", 3002);
   const {request:getAllCounts}=useApi('get',3003);
+  const {request:getUnAssinged}=useApi('get',3004)
  const {request:getAllCustomersCounts}=useApi('get',3001);
   const { request: getAllCountries } = useApi("get", 3003);
   const { request: getAllDropdown } = useApi("get", 3003);
@@ -48,6 +50,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const [allWc, setAllWc] = useState<WCData[]>([]);
   const [allBDA, setAllBDA] = useState<BDAData[]>([]);
   const [allCountries, setAllCountries] = useState<[]>([]);
+  const [allUnassigned, setAllUnassigned] = useState<[]>([]);
   const [totalCounts,setTotalCounts]=useState<TotalCounts>();
  const [customersCounts,setTotalCustomersCounts]=useState<TotalCustomersCount>()
 
@@ -69,7 +72,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const fetchDropdown = async () => {
     try {
       const { response, error } = await getAllDropdown(endPoints.DROPDOWN_DATA);
-      console.log("resDropdown",response);
       if (response && !error) {
         setDropdownApi(response.data);
       }
@@ -179,7 +181,20 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }
 
-  
+  const getUnAssingedTickets=async()=>{
+    try{
+      const {response,error}=await getUnAssinged(endPoints.UNASSIGNED_TICKETS)
+      // console.log("unass",response);
+      
+      if(response && !error){
+       setAllUnassigned(response.data)
+      }else{
+        console.log("err",error);
+      }
+    }catch(err){
+      console.log(err);
+    }
+  };
   
 
   useEffect(() => {
@@ -192,6 +207,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       getBDAs();
       getAllUsersCounts();
       getAllCustomerCounts();
+      getUnAssingedTickets()
     };
   
     // Fetch data immediately on mount
@@ -220,7 +236,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       dropdownRegions: dropdownApi?.regions || [],
       dropDownAreas:dropdownApi?.areas||[],
       dropDownBdas:dropdownApi?.bdas||[],
-      dropDownSA:dropdownApi?.supportAgent||[]
+      dropDownSA:dropdownApi?.supportAgent||[],
+      allUnassigned
     }}  >
       {children}
     </ApiContext.Provider>

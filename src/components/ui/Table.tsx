@@ -41,6 +41,7 @@ interface TableProps<T> {
   noPagination?: boolean;
   maxHeight?: string;
   skeltonCount?:number
+  from?:string
 }
 
 const Table = <T extends object>({
@@ -51,7 +52,8 @@ const Table = <T extends object>({
   noAction,
   noPagination,
   maxHeight,
-  skeltonCount=8
+  skeltonCount=8,
+  from
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -208,14 +210,22 @@ const Table = <T extends object>({
 
   
   useEffect(() => {
-    const timeout = setTimeout(() => {
+    if(from!=="ticket"){
+      const timeout = setTimeout(() => {
+        if (data?.length === 0) {
+          setNoDataFound(true);
+        } else {
+          setNoDataFound(false);
+        }
+      }, 3000);
+      return () => clearTimeout(timeout);
+    }else{
       if (data?.length === 0) {
         setNoDataFound(true);
       } else {
         setNoDataFound(false);
       }
-    }, 3000);
-    return () => clearTimeout(timeout);
+    }
   }, [data]);
 
   return (

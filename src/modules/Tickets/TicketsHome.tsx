@@ -24,7 +24,9 @@ interface TicketsData extends BaseTicketsData {
 function TicketsHome({ }: Props) {
   const { request: getAllTickets } = useApi("get", 3004);
  const [allTickets, setAllTickets] = useState<any[]>([]);
+ const [filteredTickets, setFilteredTickets] = useState<any[]>([]);
   const navigate = useNavigate();
+  const [activeLabel, setActiveLabel] = useState<string | null>('Total Tickets');
 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -59,6 +61,7 @@ function TicketsHome({ }: Props) {
         const currentTime = new Date();
   
         // Extract ticket data and other metrics
+        
         const transformTicket = response.data?.tickets?.map((ticket: any) => ({
           ...ticket,
           name: ticket?.supportAgentId?.user?.userName,
@@ -77,9 +80,12 @@ function TicketsHome({ }: Props) {
       console.log(err);
     }
   };
+
+  
+  
   
   const calculateTimeAgo = (date: Date, currentTime: Date) => {
-    const diffInSeconds = Math.floor((currentTime.getTime() - date.getTime()) / 1000);
+    const diffInSeconds = Math.floor((currentTime.getTime() - date.getTime()) / 1000)+3;
     if(diffInSeconds==0) return `Just now`
     if (diffInSeconds < 60) return `${diffInSeconds} seconds ago`;
     const diffInMinutes = Math.floor(diffInSeconds / 60);
@@ -92,13 +98,13 @@ function TicketsHome({ }: Props) {
 
   // Inside the TicketsHome component:
   useEffect(() => {
+    setFilteredTickets(allTickets)
     let interval:any;
     let timeout:any;
-  
-    if (allTickets.length === 1) {
+    if (filteredTickets.length === 1) {
       timeout = setTimeout(() => {
         interval = setInterval(() => {
-          setAllTickets((prevTickets) =>
+          setFilteredTickets((prevTickets) =>
             prevTickets.map((ticket) => ({
               ...ticket,
               timeAgo: calculateTimeAgo(new Date(ticket.openingDate), new Date()),
@@ -106,9 +112,9 @@ function TicketsHome({ }: Props) {
           );
         }, 1000); // Update every second
       }, 2000); // Delay execution by 2 seconds
-    } else if (allTickets.length >= 2) {
+    } else if (filteredTickets.length >= 2) {
       interval = setInterval(() => {
-        setAllTickets((prevTickets) =>
+        setFilteredTickets((prevTickets) =>
           prevTickets.map((ticket) => ({
             ...ticket,
             timeAgo: calculateTimeAgo(new Date(ticket.openingDate), new Date()),
@@ -129,6 +135,36 @@ function TicketsHome({ }: Props) {
 useEffect(() => {
   getTickets(); // Fetch tickets initially when the component mounts
 }, []);
+
+
+const handleSort = (type: string) => {
+  let sortedTickets = [];
+  setActiveLabel(type);
+  switch (type) {
+    case "Total Tickets":
+      sortedTickets = allTickets; // All tickets
+      break;
+    case "Unresolved Tickets":
+      sortedTickets = allTickets.filter(ticket => ticket.status !== "Resolved");
+      break;
+    case "Unassigned Tickets":
+      sortedTickets = allTickets.filter(
+        ticket => !ticket.supportAgentId || ticket.supportAgentId === undefined
+      );
+      break;
+    case "Solved Tickets":
+      sortedTickets = allTickets.filter(ticket => ticket.status === "Resolved");
+      break;
+    default:
+      sortedTickets = allTickets;
+  }
+
+  setFilteredTickets(sortedTickets); // Update the filtered list
+};
+
+
+
+
 
 
 
@@ -154,22 +190,22 @@ useEffect(() => {
   
     if (options === "Requestor") {
       // Sort alphabetically by requestor name
-      const sortedTickets = [...allTickets].sort((a, b) =>
+      const sortedTickets = [...filteredTickets].sort((a, b) =>
         b?.name?.localeCompare(a?.name)
       );
       setAllTickets(sortedTickets);
     } else if (options === "Priority") {
       // Sort based on custom Priority order
-      const sortedTickets = [...allTickets].sort(
+      const sortedTickets = [...filteredTickets].sort(
         (a, b) => priorityOrder[b?.priority] - priorityOrder[a?.priority]
       );
       setAllTickets(sortedTickets);
     } else if (options === "Status") {
       // Sort based on custom Status order
-      const sortedTickets = [...allTickets].sort(
+      const sortedTickets = [...filteredTickets].sort(
         (a, b) => statusOrder[b?.status] - statusOrder[a?.status]
       );
-      setAllTickets(sortedTickets);
+      setFilteredTickets(sortedTickets);
     }
   };
   
@@ -196,7 +232,18 @@ useEffect(() => {
   };
 
  
+  const ticketData = [
+    { label: "Total Tickets", value: allTicketss?.totalTickets || 0 },
+    { label: "Unresolved Tickets", value: allTicketss?.unResolvedTickets || 0 },
+    { label: "Unassigned Tickets", value: 0 },
+    { label: "Solved Tickets", value: allTicketss?.resolvedTickets || 0 },
+  ];
+  
 
+  console.log("allti",allTicketss);
+  
+
+ 
   
 
   return (
@@ -216,32 +263,16 @@ useEffect(() => {
 
         <div className="grid grid-cols-12 gap-3">
         <div className="col-span-3 cursor-pointer">
-        <div className="flex justify-between mt-5 bg-[#E7EDF2] py-4 px-3">
-    <p>Total Tickets</p>
-    <p>{allTicketss?.totalTickets || 0}</p>
-  </div>
-  <div className="flex justify-between   py-4 px-3">
-    <p>Unresolved Tickets</p>
-    <p>{allTicketss?.unResolvedTickets || 0}</p>
-  </div>
- 
-  <div className="flex justify-between py-4 px-3">
-    <p>Unassigned Tickets</p>
-    <p>0</p>
-  </div>
- 
-  <div className="flex justify-between py-4 px-3">
-    <p>Recently Updated Tickets</p>
-    <p>0</p>
-  </div>
-  <div className="flex justify-between py-4 px-3">
-    <p>Pending Tickets</p>
-    <p>0</p>
-  </div>
-  <div className="flex justify-between py-4 px-3">
-    <p>Recently Solved Tickets</p>
-    <p>{allTicketss?.resolvedTickets || 0}</p>
-  </div>
+  {ticketData.map((item, index) => (
+    <div
+      key={index}
+      onClick={() => handleSort(item.label)}
+      className={`flex justify-between py-4 px-3 ${item.label===activeLabel ? " bg-[#E7EDF2]" : ""}`}
+    >
+      <p>{item.label}</p>
+      <p>{item.value}</p>
+    </div>
+  ))}
 </div>
 
           <div className="col-span-9 w-[100%]">
@@ -252,7 +283,7 @@ useEffect(() => {
                 <SortBy sort={sort} />
               </div>
               <Table<TicketsData>
-                data={allTickets.length==0?[]:allTickets}
+                data={filteredTickets&&filteredTickets}
                 columns={columns}
                 headerContents={{
                   title: "Ticket Details",
@@ -263,6 +294,7 @@ useEffect(() => {
                   { label: 'view', function: handleView },
                   { label: 'edit', function: handleEdit },
                 ]}
+                from="ticket"
               />
 
             </div>

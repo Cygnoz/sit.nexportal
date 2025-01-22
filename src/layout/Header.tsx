@@ -25,8 +25,8 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
       route.key.trim().toLowerCase().includes(searchValue.toLowerCase()) ||
       route.label.trim().toLowerCase().includes(searchValue.toLowerCase())
   );
-  // State to manage modal visibility
-
+  
+  
 
   const handleSelect = (route: any) => {
     setDropdownVisible(false);
