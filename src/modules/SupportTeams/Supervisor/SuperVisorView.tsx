@@ -29,6 +29,7 @@ import ConfirmModal from "../../../components/modal/ConfirmModal";
 import { endPoints } from "../../../services/apiEndpoints";
 import SVViewAward from "./SVViewAward";
 import SupervisorForm from "./SupervisorForm";
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 
 
 
@@ -57,12 +58,14 @@ const SuperVisorView = ({staffId}: Props) => {
     viewSV: false,
     awardSV: false,
     confirm: false,
+    deactiveSv:false,
   });
   const handleModalToggle = (
     editSV = false,
     viewSV = false,
     awardSV = false,
     confirm=false,
+    deactiveSv=false,
   ) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
@@ -70,6 +73,7 @@ const SuperVisorView = ({staffId}: Props) => {
       viewSV: viewSV,
       awardSV: awardSV,
       confirm: confirm,
+      deactiveSv:deactiveSv,
     }));
     getASV();
   };
@@ -80,6 +84,7 @@ const SuperVisorView = ({staffId}: Props) => {
   const [ticketSummary, setTicketSummary] = useState<any>({});
   
   const {request:deleteaSV}=useApi('delete',3003)
+  const {request :deactivateSV}=useApi('put',3003);
   const { request: getaSV } = useApi("get", 3003);
   const { id } = useParams();
   const iId=staffId?staffId:id
@@ -126,6 +131,29 @@ const SuperVisorView = ({staffId}: Props) => {
   
 
   const navigate=useNavigate()
+
+  const handleDeactivate = async () => {
+    const body = {
+      status: getData.svData?.status === "Active" ? 'Deactive' : 'Active'
+    }
+    try {
+      const { response, error } = await deactivateSV(`${endPoints.DEACTIVATE_SV}/${iId}`, body);
+      console.log(response);
+      console.log(error, "error message");
+
+
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/supervisor");
+      } else {
+        console.log(error?.response?.data?.message);
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the supervisor.");
+    }
+  };
 
   
   const getInsideViewSV = async () => {
@@ -369,7 +397,7 @@ const SuperVisorView = ({staffId}: Props) => {
               <div className="flex py-2 mt-24 space-x-6">
                 <div className="flex flex-col items-center ">
                   <div
-                    onClick={() => handleModalToggle(true, false, false)}
+                    onClick={() => handleModalToggle(true, false, false, false,false)}
                     className="w-8 h-8 mb-2 rounded-full border-white cursor-pointer"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -385,7 +413,7 @@ const SuperVisorView = ({staffId}: Props) => {
 
                 <div className="flex flex-col  items-center ">
                   <div
-                    onClick={() => handleModalToggle(false, true, false)}
+                    onClick={() => handleModalToggle(false, true, false, false, false)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -401,7 +429,7 @@ const SuperVisorView = ({staffId}: Props) => {
 
                 <div className="flex flex-col   items-center ">
                   <div
-                    onClick={() => handleModalToggle(false, false, true)}
+                    onClick={() => handleModalToggle(false, false, true,false,false)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -415,21 +443,31 @@ const SuperVisorView = ({staffId}: Props) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col  items-center ">
-                  <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                      <div className="ms-2 mt-2">
-                        <DeActivateIcon size={18} color="#D52B1E4D" />
-                      </div>
-                    </div>
+                <div onClick={() => handleModalToggle(false, false, false, false, true)} className="flex flex-col  items-center ">
+                <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+              {getData.svData?.status === "Active" ?
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
                   </div>
-                  <p className="text-center font-medium  text-white text-xs ms-3">
-                    DeActivate
-                  </p>
+                </div>
+                :
+                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                </div>
+              </div>
+
+                  }
+
+              </div>
+              <p className="text-center font-medium text-[#D4D4D4] text-xs ms-2">
+                {getData.svData?.status === "Active" ? "Deactivate" : "Activate"}
+              </p>
                 </div>
 
                 <div className="flex flex-col  items-center">
-                <div onClick={() => handleModalToggle(false, false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div onClick={() => handleModalToggle(false, false, false, true,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                     <div className="ms-2 mt-2">
                       <Trash size={18} color="#BC3126" />
@@ -476,7 +514,24 @@ const SuperVisorView = ({staffId}: Props) => {
           prompt="Are you sure want to delete this Supervisor?"
           onClose={() => handleModalToggle()}
         />
-      </Modal>      
+      </Modal>    
+      <Modal
+        open={isModalOpen.deactiveSv}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDeactivate}
+          prompt={
+            getData.svData?.status === "Active"
+              ? "Are you sure you want to deactivate this Supervisor?"
+              : "Are you sure you want to activate this Supervisor?"
+          }
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>
+  
     </>
   );
 };

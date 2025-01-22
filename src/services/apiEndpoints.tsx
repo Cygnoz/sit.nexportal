@@ -25,6 +25,7 @@ export const endPoints = {
   GET_ALL_RM: "/region-managers",
   CHECK_RM:'/region-manager-check',
   TOP_PERFORMANCE:'/top-performers',
+  DEACTIVATE_RM:'/deactivateRm',
 
   //Country and State
   GET_COUNTRY: "/countries",
@@ -32,6 +33,7 @@ export const endPoints = {
   // Area Manager
   AM: "/area-manager",
   CHECK_AM:'/area-manager-check',
+  DEACTIVATE_AM:'/deactivateAm',
 
   //Worker Commission
   WC: "/commissions",
@@ -42,13 +44,16 @@ export const endPoints = {
   BDA: "/bda",
   CHECK_BDA:'/bda-check',
   BDA_DETAILS:'/bda-details',
+  DEACTIVATE_BDA:'/deactivateBda',
 
   //SuperVisor
   SUPER_VISOR: "/supervisor",
   CHECK_SV:"/supervisor-check",
+  DEACTIVATE_SV:'/deactivateSupervisor',
+
   //Support Agent
   SUPPORT_AGENT: "/supportAgent",
-
+  DEACTIVATE_SA:'/deactivateSupportAgent',
 
   // Lead
   LEADS: "/leads",

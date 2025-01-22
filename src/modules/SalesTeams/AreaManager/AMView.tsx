@@ -21,6 +21,7 @@ import AMForm from './AMForm';
 import AMViewAward from './AMViewAward';
 import AMViewCardandTable from "./AMViewCardandTable";
 import AMViewForm from "./AMViewForm";
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 
 
 // import AMViewAward from './AMViewAward';
@@ -32,13 +33,18 @@ interface AMData {
   startDate: string;
   endDate: string;
 }
-
-
-type Props = {
-  staffId?:any
+interface InsideAmData {
+  totalLeads: number;
 }
 
-const AMView = ({staffId }: Props) => {
+type Props = {
+  staffId?: any
+  
+}
+
+const AMView = ({ staffId }: Props) => {
+  const [insideAmData, setInsideAmData] = useState<InsideAmData | null>(null);
+ 
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,12 +57,14 @@ const AMView = ({staffId }: Props) => {
     editAM: false,
     viewAM: false,
     awardAM: false,
-    confirm:false,
+    confirm: false,
+    deactiveAM: false,
   });
   const { request: getaAM } = useApi('get', 3002)
   const { id } = useParams()
-  const iId=staffId?staffId:id
-  const {request:deleteaAM}=useApi('delete',3002)
+  const iId = staffId ? staffId : id
+  const { request: deleteaAM } = useApi('delete', 3002)
+  const { request: deactivateAM } = useApi('put', 3002)
   const [getData, setGetData] = useState<{
     amData: any;
   }>
@@ -66,8 +74,8 @@ const AMView = ({staffId }: Props) => {
     try {
       const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${iId}`);
       if (response && !error) {
-        console.log("res",response.data);
-        
+        //console.log("res", response.data);
+
         setGetData((prevData) => ({
           ...prevData,
           amData: response.data
@@ -84,10 +92,10 @@ const AMView = ({staffId }: Props) => {
   useEffect(() => {
     getAAM();
   }, [iId])
-  console.log(getData);
+  // console.log(getData);
 
- 
-    
+
+
   const handleDelete = async () => {
     try {
       const { response, error } = await deleteaAM(`${endPoints.GET_ALL_AM}/${iId}`);
@@ -106,19 +114,20 @@ const AMView = ({staffId }: Props) => {
 
   const navigate = useNavigate()
 
-  const handleModalToggle = (editAM = false, viewAM = false, awardAM = false, confirm=false,) => {
+  const handleModalToggle = (editAM = false, viewAM = false, awardAM = false, confirm = false, deactiveAM = false,) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editAM: editAM,
       viewAM: viewAM,
       awardAM: awardAM,
       confirm: confirm,
+      deactiveAM: deactiveAM,
     }));
     getAAM()
   }
 
   const handleView = (id: any) => {
-    if(id){
+    if (id) {
       navigate(`/licenser/${id}`)
     }
     console.log(id);
@@ -133,9 +142,11 @@ const AMView = ({staffId }: Props) => {
     { key: "endDate", label: "End Date" },
   ];
   const { request: getInsideAM } = useApi('get', 3002);
-  const [insideAmData, setInsideAmData] = useState();
   const [bdaDetails, setBdaDetails] = useState([]);
   const [licenserDetails, setLicenserDetails] = useState([]);
+
+  const [pieData, setPieData] = useState<any[]>([]);
+  const [roles, setRoles] = useState<any[]>([]);
 
   const getInsideViewAM = async () => {
     try {
@@ -145,15 +156,66 @@ const AMView = ({staffId }: Props) => {
         // Extract bdaDetails and licenserDetails separately
         setBdaDetails(response.data.bdaDetails || []);
         const licenserData = response.data.licenserDetails || []
-        const processData = licenserData.map((item:any)=>({
+        const leadlicenserData = response.data.leadStatusDetails || []
+        const processData = licenserData.map((item: any) => ({
           ...item,
-          firstName:item.firstName,
-          licensorStatus:item.licensorStatus,
-          startDate:item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A',
-          endDate:item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'
+          firstName: item.firstName,
+          licensorStatus: item.licensorStatus,
+          startDate: item.startDate ? new Date(item.startDate).toLocaleDateString() : 'N/A',
+          endDate: item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'
 
         }))
+      
+        
         setLicenserDetails(processData);
+
+            // Function to map index to color
+            const getColorForIndex = (index: number) => {
+              const colors = ['#1B6C75', '#30B777', '#6ABAF3', '#7CD5AB', '#00B5B5'];
+              return colors[index] || '#808080'; // Default color for out-of-bounds index
+            };
+  
+      
+
+
+// Dynamically map leadlicenserData to updatedRoles
+const updatedRoles = leadlicenserData.map((statusDetail: any, index:any) => ({
+  name: statusDetail.status || "Unknown", // Fallback for missing status
+  Count: statusDetail.count ?? 0,         // Use Count, default to 0 if missing
+ color: getColorForIndex(index),         // Assign colors based on index
+}));
+
+
+
+
+
+if (updatedRoles.length > 0) {
+ setRoles(updatedRoles)
+} else {
+  console.error("No roles to update. Check leadlicenserData.");
+}
+
+
+
+      
+          // Filter out roles with Count 0 and create pie chart data
+          const pieChartData = updatedRoles
+            .filter((role:any) => role.Count > 0) // Only include roles with Count > 0
+            .map((role:any) => ({
+              x: role.name,
+              y: role.Count,
+              color: role.color,
+            }));
+
+          // Update state
+          setRoles(updatedRoles);
+          setPieData(pieChartData);
+
+          
+
+       
+
+
       } else {
         console.error(error.response.data.message);
       }
@@ -166,44 +228,48 @@ const AMView = ({staffId }: Props) => {
     getInsideViewAM();
   }, []);
 
+
+
+  
+
+  //console.log(pieData);
+
   console.log("Inside AM Data:", insideAmData);
-  console.log("BDA Details:", bdaDetails);
-  console.log("Licenser Details:", licenserDetails);
+  //console.log("BDA Details:", bdaDetails);
+  //console.log("Licenser Details:", licenserDetails);
+  //console.log("lead status", leadStatusDetails);
 
   const topPerformingBDA = bdaDetails.map((bda: any) => ({
     CR: parseFloat(bda?.bdaConversionRate),
     name: bda?.bdaName,
   }));
+
+  const handleDeactivate = async () => {
+    const body = {
+      status: getData?.amData?.status === 'Active' ? 'Deactive' : 'Active'
+    }
+    try {
+      const { response, error } = await deactivateAM(`${endPoints.DEACTIVATE_AM}/${iId}`, body)
+      console.log(response, 'res');
+      console.log(error, 'err message');
+      if (response && !error) {
+        console.log(response.data);
+        toast.success(response.data.message)
+        navigate('/area-manager')
+      }
+      else {
+        console.log(error?.response?.data?.message);
+        toast.error(error?.response?.data?.message)
+      }
+    }
+    catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the lead.");
+    }
+  }
   
 
 
-  const roles = [
-    { name: 'New', count: 1239, color: '#30B777' }, // Updated color
-    { name: 'In progress', count: 598, color: '#6ABAF3' }, // Updated color
-    { name: 'Converted', count: 234, color: '#7CD5AB' }, // Updated color
-    { name: 'Lost', count: 89, color: '#00B5B5' } // Updated color
-  ];
-
-  const pieData = roles.map((role) => ({
-    x: role.name,
-    y: role.count,
-    color: role.color
-  }));
-
-
-
-
-
-
-
-
-
-
-
-  
-  
-
- 
   const CustomLegend = () => {
     return (
       <div
@@ -219,7 +285,7 @@ const AMView = ({staffId }: Props) => {
     );
   };
 
- 
+
 
   const datas = [
     {
@@ -276,7 +342,7 @@ const AMView = ({staffId }: Props) => {
           {/* Profile Picture */}
           <div className="bg-gray-300 rounded-full overflow-hidden">
             {
-              getData.amData?.user?.userImage && getData.amData?.user?.userImage>50 ?
+              getData.amData?.user?.userImage && getData.amData?.user?.userImage > 50 ?
                 <img className="w-16 h-16 rounded-full" src={getData.amData?.user?.userImage} alt="" />
                 :
                 <p className="w-16 h-16    bg-black rounded-full flex justify-center items-center">
@@ -320,7 +386,7 @@ const AMView = ({staffId }: Props) => {
             </div>
             <div className="flex ms-auto -mt-6 ">
               <div className="flex flex-col items-center space-y-1 ">
-                <div onClick={() => handleModalToggle(true, false, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div onClick={() => handleModalToggle(true, false, false, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                     <div className="ms-2 mt-2">
                       <EditIcon size={18} color="#C4A25D" />
@@ -331,7 +397,7 @@ const AMView = ({staffId }: Props) => {
               </div>
 
               <div className="flex flex-col  items-center space-y-1">
-                <div onClick={() => handleModalToggle(false, true, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div onClick={() => handleModalToggle(false, true, false, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                     <div className="ms-2 mt-2">
                       <ViewRoundIcon size={18} color="#B6D6FF" />
@@ -342,7 +408,7 @@ const AMView = ({staffId }: Props) => {
               </div>
 
               <div className="flex flex-col  items-center space-y-1">
-                <div onClick={() => handleModalToggle(false, false, true, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div onClick={() => handleModalToggle(false, false, true, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                     <div className="ms-2 mt-2">
                       <AwardIcon size={18} color="#B6FFD7" />
@@ -352,20 +418,32 @@ const AMView = ({staffId }: Props) => {
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
               </div>
 
-              <div className="flex flex-col  items-center space-y-1">
+              <div onClick={() => handleModalToggle(false, false, false, false, true)} className="flex flex-col  items-center space-y-1">
                 <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                    <div className="ms-2 mt-2">
-                      <DeActivateIcon size={18} color="#D52B1E4D" />
+                  {getData?.amData?.status === "Active" ?
+                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                      <div className="ms-2 mt-2">
+                        <DeActivateIcon size={18} color="#D52B1E4D" />
+                      </div>
                     </div>
-                  </div>
+                    :
+                    <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                      <div className="ms-2 mt-2">
+                        <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                      </div>
+                    </div>
+
+                  }
+
                 </div>
-                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
+                <p className="text-center text-[#D4D4D4] font-medium  text-xs ms-2">
+                  {getData?.amData?.status === "Active" ? "Deactivate" : "Activate"}
+                </p>
               </div>
 
 
               <div className="flex flex-col  items-center space-y-1">
-                <div onClick={() => handleModalToggle(false, false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div onClick={() => handleModalToggle(false, false, false, true, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                     <div className="ms-2 mt-2">
                       <Trash size={18} color="#BC3126" />
@@ -384,18 +462,17 @@ const AMView = ({staffId }: Props) => {
 
       </div>
       {/* Card & table */}
-      <AMViewCardandTable
-        bdaDetails={bdaDetails}
-        insideAmData={insideAmData}
-        />
+      <AMViewCardandTable bdaDetails={bdaDetails} insideAmData={insideAmData}/>
       {/* Charts */}
       <div className="grid grid-cols-12 mb-5 gap-4">
         <div className="col-span-4 h-full">
           <div className="bg-white rounded-lg w-full h-full  p-3">
             <h1 className="text-[#303F58] text-lg font-bold p-3">Lead status distribution</h1>
             <div className="-mt-3 relative">
-              <div className='absolute top-[35%] left-[39%] z-20 text-center -mt-4'>
-                <p className='text-xl font-semibold ms-4'>3456</p>
+              
+              <div className='absolute top-[35%] left-[38%] z-20 text-center -mt-7'>
+              <p className='text-xl font-semibold ms-4'>{insideAmData?.totalLeads || 0}</p>
+
                 <p className='text-xs ms-4'>Total Leads</p>
               </div>
               <VictoryPie
@@ -406,7 +483,7 @@ const AMView = ({staffId }: Props) => {
                   y: roles.map(role => role.name),
                 }}
                 theme={VictoryTheme.clean}
-                labels={({ datum }) => `${((datum.y / roles.reduce((acc, role) => acc + role.count, 0)) * 100).toFixed(1)}%`}
+                labels={({ datum }) => `${((datum.y / roles.reduce((acc, role) => acc + role.Count, 0)) * 100).toFixed(1)}%`}
                 labelComponent={<VictoryLabel style={{ fill: '#303F58', fontSize: 15, marginLeft: -50 }} />}
                 style={{
                   data: {
@@ -423,7 +500,7 @@ const AMView = ({staffId }: Props) => {
                         <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
                         <span className="text-gray-800 font-medium text-xs">{role.name}</span>
                       </div>
-                      <span className=" text-gray-600 text-xs">{role.count}</span>
+                      <span className=" text-gray-600 text-xs">{role.Count}</span>
                     </div>
                   ))}
                 </div>
@@ -432,64 +509,36 @@ const AMView = ({staffId }: Props) => {
           </div>
         </div>
         <div className="col-span-8">
-          {/* <div className='w-full h-fit p-4 bg-white rounded-lg'>
-            <p className="text-[#303F58] text-lg font-bold p-3">Top performing BDA's</p>
-            <p className='text-[#4B5C79] text-xs font-normal p-3'>Based on lead Conversion Performance Metric</p>
 
-           <div className="mt-2 custom-scrollbar " style={{ overflowX: 'auto' }}>
-                  {/* Wrapper for dynamic width */}
-                  {/* <div style={{ width: '100%' }} className="-ms-4">
-                    <ResponsiveContainer minWidth={500} minHeight={280}>
-                    <BarChart
-                      width={chartData?.length > 0 ? Math.max(chartData?.length * 55, 530) : 500}
-                      height={280}
-                      data={chartData}
-                    >
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                      <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
-                      <Tooltip />
-                      <Bar barSize={30} dataKey="CR" radius={10}>
-                        {chartData?.map((entry: any, index: any) => (
-                          <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
-                        ))}
-                      </Bar>
-                    </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                </div> */}
-          {/* </div>  */}
+          <div className="p-3 bg-white w-full space-y-2 rounded-lg">
+            <p className="text-[#303F58] text-lg font-bold">
+              Top performing BDA's
+            </p>
+            <p className="text-[#4B5C79] text-xs font-normal">
+              Based on lead Conversion Performance Metric
+            </p>
 
-
-               <div className="p-3 bg-white w-full space-y-2 rounded-lg">
-                <p className="text-[#303F58] text-lg font-bold">
-                   Top performing BDA's
-                 </p>
-                 <p className="text-[#4B5C79] text-xs font-normal">
-                   Based on lead Conversion Performance Metric
-                 </p>
-                  
-                  <div className="mt-2 custom-scrollbar " style={{ overflowX: 'auto' }}>
-                    {/* Wrapper for dynamic width */}
-                    <div style={{ width: '100%' }} className="-ms-4 mt-3">
-                      <ResponsiveContainer width="100%" minHeight={380}>
-                      <BarChart
-                        data={topPerformingBDA}
-                      >
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                        <YAxis axisLine={false}   tickFormatter={(value) => `${value}%`} tickLine={false} domain={[0, 100]} />
-                        <Tooltip />
-                        <Bar barSize={30} dataKey="CR" radius={10}>
-                          {topPerformingBDA?.map((entry: any, index: any) => (
-                            <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
-                          ))}
-                        </Bar>
-                      </BarChart>
-                      </ResponsiveContainer>
-                    </div>
-                  </div>
-                </div>
+            <div className="mt-2 custom-scrollbar " style={{ overflowX: 'auto' }}>
+              {/* Wrapper for dynamic width */}
+              <div style={{ width: '100%' }} className="-ms-4 mt-3">
+                <ResponsiveContainer width="100%" minHeight={380}>
+                  <BarChart
+                    data={topPerformingBDA}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                    <YAxis axisLine={false} tickFormatter={(value) => `${value}%`} tickLine={false} domain={[0, 100]} />
+                    <Tooltip />
+                    <Bar barSize={30} dataKey="CR" radius={10}>
+                      {topPerformingBDA?.map((entry: any, index: any) => (
+                        <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -509,62 +558,62 @@ const AMView = ({staffId }: Props) => {
         <div className="py-3 bg-white p-2 w-full">
           <div className="py-1 ms-2 flex justify-between">
             <h2 className="font-bold">Leads Converted by Area Manager Over Time</h2>
-           
+
           </div>
           <div className="mt-5 w-full">
-          <ResponsiveContainer width="100%" minHeight={400}>
-            <LineChart
-              width={1250}
-              height={400}
-              data={datas}
-              margin={{
-                top: 5,
-                right: 30,
-                left: 20,
-                bottom: 5,
-              }}
-            >
-              <CartesianGrid strokeDasharray="3 3" vertical={false} />
-              <XAxis dataKey="name" axisLine={false} tickLine={false} />
-              <YAxis axisLine={false} tickLine={false} />
-              <Tooltip />
-              <Legend content={<CustomLegend />} />
-              <Line
-                type="monotone"
-                dataKey="Area1"
-                stroke="#e2b0ff"
-                strokeWidth={3}
-                dot={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="Area2"
-                stroke="#8884d8"
-                strokeWidth={3}
-                dot={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="Area3"
-                stroke="#82ca9d"
-                strokeWidth={3}
-                dot={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="Area4"
-                stroke="#d86a57"
-                strokeWidth={3}
-                dot={false}
-              />
-              <Line
-                type="monotone"
-                dataKey="Area5"
-                stroke="#6ab6ff"
-                strokeWidth={3}
-                dot={false}
-              />
-            </LineChart>
+            <ResponsiveContainer width="100%" minHeight={400}>
+              <LineChart
+                width={1250}
+                height={400}
+                data={datas}
+                margin={{
+                  top: 5,
+                  right: 30,
+                  left: 20,
+                  bottom: 5,
+                }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis axisLine={false} tickLine={false} />
+                <Tooltip />
+                <Legend content={<CustomLegend />} />
+                <Line
+                  type="monotone"
+                  dataKey="Area1"
+                  stroke="#e2b0ff"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area2"
+                  stroke="#8884d8"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area3"
+                  stroke="#82ca9d"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area4"
+                  stroke="#d86a57"
+                  strokeWidth={3}
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="Area5"
+                  stroke="#6ab6ff"
+                  strokeWidth={3}
+                  dot={false}
+                />
+              </LineChart>
             </ResponsiveContainer>
           </div>
         </div>
@@ -589,7 +638,26 @@ const AMView = ({staffId }: Props) => {
           prompt="Are you sure want to delete this Area manager?"
           onClose={() => handleModalToggle()}
         />
-      </Modal>       
+      </Modal>
+
+      <Modal
+        open={isModalOpen.deactiveAM}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDeactivate}
+          prompt={
+            getData?.amData?.status === "Active"
+              ? "Are you sure you want to deactivate this AM?"
+              : "Are you sure you want to activate this AM?"
+          }
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>
+
+
 
     </div>
   )

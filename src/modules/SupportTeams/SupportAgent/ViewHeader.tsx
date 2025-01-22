@@ -13,6 +13,7 @@ import UserIcon from "../../../assets/icons/UserIcon"
 import Trash from "../../../assets/icons/Trash"
 import ConfirmModal from "../../../components/modal/ConfirmModal"
 import toast from "react-hot-toast"
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon"
 
 type Props = {
   id:any
@@ -24,20 +25,22 @@ const ViewHeader = ({id}: Props) => {
         editSA:false,
         viewSA:false,
         confirm: false,
+        deacivateSA:false,
       });
     
-      const handleModalToggle = (editSA=false, viewSA=false, confirm=false,) => {
+      const handleModalToggle = (editSA=false, viewSA=false, confirm=false,deacivateSA=false) => {
         setIsModalOpen((prevState:any )=> ({
             ...prevState,
             editSA: editSA,
             viewSA: viewSA,
             confirm: confirm,
+            deacivateSA:deacivateSA,
         }));
         getASA()
     }
     
     const {request:deleteaSA}=useApi('delete',3003)
-
+    const {request: deactiveSA}=useApi('put',3003)
     const {request: getaSA}=useApi('get',3003)
     const [getData, setGetData] = useState<{
         saData:any;}>
@@ -79,6 +82,29 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
     }
   };
   const navigate = useNavigate()
+  const handleDeactivate = async () => {
+    const body = {
+      status: getData.saData?.status === "Active" ? 'Deactive' : 'Active'
+    }
+    try {
+      const { response, error } = await deactiveSA(`${endPoints.DEACTIVATE_SA}/${id}`, body);
+      console.log(response);
+      console.log(error, "error message");
+
+
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/supervisor");
+      } else {
+        console.log(error?.response?.data?.message);
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the supervisor.");
+    }
+  };
+
     
   return (
      <div>
@@ -127,7 +153,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
               </div>
               <div className="flex  mt-20 ms-auto me-2 gap-2">
               <div className="flex flex-col items-center">
-                <div onClick={()=>handleModalToggle(true,false,false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+                <div onClick={()=>handleModalToggle(true,false,false,false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <EditIcon size={18} color="#4B5C79" />
@@ -138,7 +164,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
               </div>
 
               <div className="flex flex-col  items-center">
-                <div onClick={()=>handleModalToggle(false,true,false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+                <div onClick={()=>handleModalToggle(false,true,false,false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <ViewRoundIcon size={18} color="#4B5C79" />
@@ -148,19 +174,31 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
                 <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium">View Details</p>
               </div>
 
-              <div className="flex flex-col  items-center">
-                <div className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+              <div onClick={() => handleModalToggle(false, false,false, true)} className="flex flex-col  items-center">
+              <div className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+              {getData.saData?.status === "Active" ?
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <DeActivateIcon size={18} color="#4B5C79" />
-                   </div>
-                    </div>
+                  <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
+                  </div>
                 </div>
-                <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium">DeActivate</p>
+                :
+                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                </div>
+              </div>
+
+                  }
+
+              </div>
+              <p className="text-center font-medium text-[#4B5C79] text-xs ms-2">
+                {getData.saData?.status === "Active" ? "Deactivate" : "Activate"}
+              </p>
               </div>
 
               <div className="flex flex-col  items-center">
-                <div onClick={() => handleModalToggle(false, false,true)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+                <div onClick={() => handleModalToggle(false, false,true, false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <Trash size={18} color="#BC3126" />
@@ -195,6 +233,23 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
           onClose={() => handleModalToggle()}
         />
       </Modal>  
+      <Modal
+        open={isModalOpen.deacivateSA}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDeactivate}
+          prompt={
+            getData.saData?.status === "Active"
+              ? "Are you sure you want to deactivate this Support Agent?"
+              : "Are you sure you want to activate this Support Agent?"
+          }
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>
+
     </div>
   )
 }

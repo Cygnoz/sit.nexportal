@@ -43,6 +43,7 @@ const baseSchema = {
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
   region: Yup.string().required("Region is required"),
+   salaryAmount:Yup.string().required("Salary Amount is required"),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -178,6 +179,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
         !editId && "confirmPassword",
         "region",
         "workEmail",
+        "salaryAmount"
       ];
       if(!editId){
         const rmCheck = await checkSV(); // Call checkRM function
@@ -663,6 +665,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                       type="number"
                       error={errors.salaryAmount?.message}
                       {...register("salaryAmount")}
+                      required
                     />
                 </div>
               </div>
