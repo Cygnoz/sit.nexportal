@@ -14,6 +14,7 @@ const otpCache = new NodeCache({ stdTTL: 180 }); // 180 seconds
 const filterByRole = require("../services/filterByRole");
 const SupportAgent = require("../database/model/supportAgent");
 const Ticket = require("../database/model/ticket");
+const Commission = require("../database/model/commission");
 
 
 // Login 
@@ -1196,12 +1197,16 @@ exports.getRegionsAreasBdas = async (req, res) => {
       };
     }));
 
+    // Fetch commissions
+    const commissions = await Commission.find({}).select("_id profileName");
+
     // Send the response
     res.status(200).json({
       regions,
       areas,
       bdas: formattedBdas,
-      supportAgents: formattedSupport
+      supportAgents: formattedSupport,
+      commissions
     });
   } catch (error) {
     console.error('Error fetching regions, areas, and BDAs:', error);
