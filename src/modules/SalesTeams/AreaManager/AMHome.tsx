@@ -17,11 +17,13 @@ import useApi from "../../../Hooks/useApi";
 import { AMData } from "../../../Interfaces/AM";
 import { endPoints } from "../../../services/apiEndpoints";
 import AMForm from "./AMForm";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 
 
 const AMHome = () => {
+   const {regionId }=useRegularApi()
   // const {totalCounts}=useRegularApi()
   const { request: getAllAM } = useApi('get', 3002)
   const [allAM, setAllAM] = useState<any[]>([]);
@@ -220,7 +222,7 @@ const AMHome = () => {
       </div>
       {/* Modal Section */}
       <Modal className="" open={isModalOpen} onClose={handleModalToggle}>
-        <AMForm editId={editId} onClose={handleModalToggle} />
+        <AMForm editId={editId}  regionId={regionId}  onClose={handleModalToggle} />
       </Modal>
     </div>
 

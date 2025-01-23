@@ -21,6 +21,7 @@ import { LicenserData } from "../../../Interfaces/Licenser";
 
 
 const LicensorHome = () => {
+  const {regionId ,areaId}=useRegularApi()
   const {customersCounts}=useRegularApi()
   const {request:getAllLicenser}=useApi('get',3001)
    const [allLicenser, setAllLicenser] = useState<LicenserData[]>([]);
@@ -159,7 +160,7 @@ const LicensorHome = () => {
     </div>
        {/* Modal Section */}
        <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[70%]">
-        <AddLicenser editId={editId} onClose={handleModalToggle} />
+        <AddLicenser regionId={regionId}  editId={editId} areaId={areaId} onClose={handleModalToggle} />
       </Modal>
     </>
   )

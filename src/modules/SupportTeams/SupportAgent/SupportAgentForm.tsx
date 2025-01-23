@@ -30,6 +30,7 @@ import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 interface AddSupportAgentProps {
   onClose: () => void;
   editId?: string;
+  regionId?:any
 }
 
 const baseSchema = {
@@ -62,13 +63,15 @@ const editValidationSchema = Yup.object().shape({
 
 const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   onClose,
-  editId,
+  editId
+  ,regionId
 }) => {
   const { dropdownRegions, dropDownWC, allCountries } = useRegularApi();
   const { request: addSA } = useApi("post", 3003);
   const { request: editSA } = useApi("put", 3003);
   const { request: getSA } = useApi("get", 3003);
   const [submit, setSubmit] = useState(false);
+  const [regionData, setRegionData] = useState<any[]>([]);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     wc: { label: string; value: string }[];
@@ -183,18 +186,21 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-  // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = dropdownRegions?.map((region: any) => ({
-      value: String(region._id),
+    // Map the regions into the required format for regions data
+    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
+      value: String(region._id), // Ensure `value` is a string
     }));
-    // Update the state without using previous `data` state
-    setData((prevData: any) => ({
-      ...prevData,
-      regions: filteredRegions,
-    }));
-  }, [dropdownRegions]);
+
+
+  setRegionData(filteredRegions)
+ if(regionId){
+    setValue("region",regionId)
+  
+    
+  }
+},[dropdownRegions,regionId])
 
   // UseEffect for updating wc
   useEffect(() => {
@@ -607,6 +613,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                 <Select
                   required
                   placeholder="Select Region"
+                  readOnly={regionId?true:false}
                   label="Select Region"
                   value={watch("region")}
                   onChange={(selectedValue) => {
@@ -614,7 +621,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                     handleInputChange("region");
                   }}
                   error={errors.region?.message}
-                  options={data.regions}
+                  options={regionData}
                 />
 
                 <Select

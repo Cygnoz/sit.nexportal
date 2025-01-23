@@ -34,6 +34,7 @@ type ApiContextType = {
   allTicketsCount?:ticketsCountBell |undefined
   allRms?:any,
   regionId?:any
+  areaId?:any
   dropDownWC?:DropdownApi["commissions"]
  
 };
@@ -51,6 +52,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { request: getAllCountries } = useApi("get", 3003);
   const { request: getAllDropdown } = useApi("get", 3003);
   const { request: getaRM } = useApi("get", 3002);
+  const { request: getaAM } = useApi('get', 3002)
+
   const { request: getaSV } = useApi("get", 3003);
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
@@ -58,6 +61,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const [allBDA, setAllBDA] = useState<BDAData[]>([]);
   const [allCountries, setAllCountries] = useState<[]>([]);
   const [regionId,setRegionId]=useState<any>(null)
+  const [areaId,setAreaId]=useState<any>(null)
   // const [areaId,setAreaId]=useState<any>(null)
   const [allTicketsCount, setAllTicketsCount] = useState<ticketsCountBell | undefined>();
   const [totalCounts,setTotalCounts]=useState<TotalCounts>();
@@ -217,6 +221,23 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
+  const getAAM = async () => {
+    try {
+      const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${user?.userId}`);
+      console.log("res", response);
+
+      if (response && !error) {  
+        setAreaId(response.data.area._id)
+        setRegionId(response.data.region._id)
+       } else {
+         console.error(error.response.data.message);
+       }
+    }
+    catch (err) {
+      console.error("Error fetching AM data:", err);
+    }
+  }
+
 
 
   useEffect(() => {
@@ -234,6 +255,9 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         getASV()
       }else if(user?.role==="Region Manager"){
         getARM()
+      }
+      else if(user?.role==="Area Manager"){
+        getAAM()
       }
     };
   
@@ -266,6 +290,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       dropDownSA:dropdownApi?.supportAgents||[],
       allTicketsCount,
       regionId,
+      areaId,
       dropDownWC:dropdownApi?.commissions||[]
     }}  >
       {children}
