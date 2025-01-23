@@ -31,6 +31,12 @@ import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 interface AddAreaManagerProps {
   onClose: () => void; // Prop for handling modal close
   editId?: string;
+  regionId?:any
+  
+}
+interface RegionData {
+  label: string;
+  value: string;
 }
 
 const baseSchema = {
@@ -61,7 +67,7 @@ const editValidationSchema = Yup.object().shape({
   ...baseSchema,
 });
 
-const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
+const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => {
   const {
     register,
     handleSubmit,
@@ -93,6 +99,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
   const { request: editAM } = useApi("put", 3002);
   const { request: getAM } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
+    const [regionData, setRegionData] = useState<RegionData[]>([]);
   
   const { dropDownAreas, dropdownRegions, allCountries, dropDownWC} = useRegularApi();
 
@@ -247,16 +254,21 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
     setSubmit(false);
   };
 
+
   useEffect(() => {
     // Map the regions into the required format for regions data
-    const filteredRegions = dropdownRegions?.map((region: any) => ({
+    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
 
-    // Set the data object with updated regions
-    setData((prevData: any) => ({ ...prevData, regions: filteredRegions }));
-  }, [dropdownRegions]);
+  setRegionData(filteredRegions)
+  if(regionId){
+    setValue("region",regionId)
+  }
+},[dropdownRegions,regionId])
+
+
 
   useEffect(() => {
     // Filter areas based on the selected region
@@ -264,7 +276,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
       (area: any) => area?.region === watch("region")
     );
 
-    console.log("dee",filteredAreas);
+    //console.log("dee",filteredAreas);
     
     // Map the filtered areas to the required format
     const transformedAreas = filteredAreas?.map((area: any) => ({
@@ -687,6 +699,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
                 <Select
                   required
                   placeholder="Select Region"
+                  readOnly={regionId?true:false}
                   label="Select Region"
                   value={watch("region")}
                   onChange={(selectedValue) => {
@@ -695,7 +708,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId }) => {
                     setValue("area", "");
                   }}
                   error={errors.region?.message}
-                  options={data.regions}
+                  options={regionData}
                 />
                 <Select
                   required

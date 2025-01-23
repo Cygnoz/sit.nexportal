@@ -24,6 +24,7 @@ import TrialForm from "./TrialForm";
 
   
 const TrialHome = () => {
+  const {regionId ,areaId}=useRegularApi()
   const {customersCounts}=useRegularApi()
   const [editId, setEditId] = useState("");
 
@@ -153,7 +154,7 @@ const TrialHome = () => {
       </div>
     </div>
     <Modal open={isModalOpen.leadForm} onClose={() => handleModalToggle()}>
-        <TrialForm editId={editId} onClose={() => handleModalToggle()} />
+        <TrialForm editId={editId}  regionId={regionId} areaId={areaId} onClose={() => handleModalToggle()} />
       </Modal>
     </>
   )

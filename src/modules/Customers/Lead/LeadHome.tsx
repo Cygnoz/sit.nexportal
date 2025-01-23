@@ -13,13 +13,15 @@ import useApi from "../../../Hooks/useApi";
 import { LeadData } from "../../../Interfaces/Lead";
 import { endPoints } from "../../../services/apiEndpoints";
 import ImportLeadModal from "./ImportLeadModal";
-import LeadForm from "./LeadForm";
+//import LeadForm from "./LeadForm";
 import { useRegularApi } from "../../../context/ApiContext";
 import { useResponse } from "../../../context/ResponseContext";
+import LeadForm from "./LeadForm";
 
 type Props = {};
 
 function LeadHome({}: Props) {
+  const {regionId ,areaId}=useRegularApi()
   const { customersCounts } = useRegularApi();
   const { request: getAllLeads } = useApi("get", 3001);
   const { setCustomerData } = useResponse();
@@ -27,6 +29,8 @@ function LeadHome({}: Props) {
   const { request: getLead } = useApi("get", 3001);
   const [editId, setEditId] = useState("");
   const navigate = useNavigate();
+
+  
 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
@@ -202,7 +206,7 @@ function LeadHome({}: Props) {
       </div>
       {/* Modal controlled by state */}
       <Modal open={isModalOpen.leadForm} onClose={() => handleModalToggle()}>
-        <LeadForm editId={editId} onClose={() => handleModalToggle()} />
+        <LeadForm editId={editId}  regionId={regionId} areaId={areaId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal
         open={isModalOpen.import}

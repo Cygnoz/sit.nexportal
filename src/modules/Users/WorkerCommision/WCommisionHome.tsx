@@ -96,7 +96,7 @@ const WCommisionHome = () => {
     { key: "thresholdLicense", label: "Threshold License" },
     { key: "commissionPoint", label: "Commission Point" },
     { key: "recurringPoint", label: "Recurring Pointt" },
-    { key: "perPointValue", label: "per Point Value" },
+    { key: "perPointValue", label: "Per Point Value" },
   ];
  
   return (

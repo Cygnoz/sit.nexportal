@@ -20,6 +20,7 @@ import AddSupervisor from "./SupervisorForm";
 
 
 const SupervisorHome = () => {
+ 
   const {totalCounts}=useRegularApi()
   const { request: getAllSV } = useApi("get", 3003);
   const [allSV, setAllSV] = useState<any[]>([]);
