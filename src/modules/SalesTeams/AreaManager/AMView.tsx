@@ -22,6 +22,7 @@ import AMViewAward from './AMViewAward';
 import AMViewCardandTable from "./AMViewCardandTable";
 import AMViewForm from "./AMViewForm";
 import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+import No_Data_found from "../../../assets/image/NO_DATA.png";
 
 
 // import AMViewAward from './AMViewAward';
@@ -74,7 +75,7 @@ const AMView = ({ staffId }: Props) => {
     try {
       const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${iId}`);
       if (response && !error) {
-        //console.log("res", response.data);
+        console.log("res", response.data);
 
         setGetData((prevData) => ({
           ...prevData,
@@ -464,6 +465,7 @@ if (updatedRoles.length > 0) {
       {/* Card & table */}
       <AMViewCardandTable bdaDetails={bdaDetails} insideAmData={insideAmData}/>
       {/* Charts */}
+    
       <div className="grid grid-cols-12 mb-5 gap-4">
         <div className="col-span-4 h-full">
           <div className="bg-white rounded-lg w-full h-full  p-3">
@@ -494,7 +496,8 @@ if (updatedRoles.length > 0) {
               />
               <div className='flex justify-center'>
                 <div className="space-y-3">
-                  {roles.map((role) => (
+                {roles.filter(role => role.count > 0).length > 0 ? (
+                  roles.map((role) => (
                     <div key={role.name} className="flex items-center gap-20 w-64 justify-between">
                       <div className="flex items-center gap-2">
                         <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
@@ -502,7 +505,13 @@ if (updatedRoles.length > 0) {
                       </div>
                       <span className=" text-gray-600 text-xs">{role.Count}</span>
                     </div>
-                  ))}
+                  ))
+                ) : (
+                  <div className="flex justify-center flex-col items-center">
+                    <img width={70} src={No_Data_found} alt="No Data Found" />
+                    <p className="font-bold text-red-700">No Records Found!</p>
+                  </div>
+                )}
                 </div>
               </div>
             </div>
@@ -541,7 +550,7 @@ if (updatedRoles.length > 0) {
           </div>
         </div>
       </div>
-
+     
       <div>
         <LicensersTable<AMData>
           data={licenserDetails}

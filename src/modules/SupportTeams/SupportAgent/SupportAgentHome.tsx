@@ -16,11 +16,13 @@ import Table from "../../../components/ui/Table";
 // import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import SupportAgentForm from "./SupportAgentForm";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 
   
 const SupportAgentHome = () => {
+  const {regionId  }=useRegularApi()
   // const {totalCounts}=useRegularApi()
   const { request: getAllSA } = useApi("get", 3003);
   const [allSA, setAllSA] = useState<any[]>([]);
@@ -224,7 +226,7 @@ const SupportAgentHome = () => {
      
     </div>
      <Modal open={isModalOpen} onClose={handleModalToggle}>
-     <SupportAgentForm  editId={editId} onClose={handleModalToggle} />
+     <SupportAgentForm  editId={editId}  regionId={regionId} onClose={handleModalToggle} />
    </Modal>
     </>
   )

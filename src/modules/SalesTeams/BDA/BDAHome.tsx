@@ -17,10 +17,12 @@ import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
 import { endPoints } from "../../../services/apiEndpoints";
 import BDAForm from "./BDAForm";
+import { useRegularApi } from "../../../context/ApiContext";
 
 
 
 const BDAHome = () => {
+  const {regionId ,areaId }=useRegularApi()
   const { request: getAllBDA } = useApi("get", 3002);
   const [allBDA, setAllBDA] = useState<any>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -208,7 +210,7 @@ const BDAHome = () => {
       
     </div>
     <Modal open={isModalOpen} onClose={handleModalToggle}>
-    <BDAForm editId={editId} onClose={handleModalToggle} />
+    <BDAForm editId={editId} regionId={regionId} areaId={areaId} onClose={handleModalToggle} />
   </Modal>
   </>
   );

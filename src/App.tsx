@@ -42,6 +42,8 @@ import PayrollView2 from './modules/Expense/Payroll/PayrollView2';
 import BusinessCard from './modules/Settings/BusinessCard';
 import Target from './modules/Settings/Target/Target';
 import { roles } from './components/ui/Roles';
+import ExpenseHome from './modules/Expense/ExpenseHome';
+// import ExpenseHome from './modules/Expense/ExpenseHome';
 
 
 
@@ -109,6 +111,7 @@ const parentRoutes = [
   { path: "payroll-slip", element: <PayrollSlip /> },
   { path: "payroll-view", element: <PayrollView /> },
   { path: "payroll-view2", element: <PayrollView2 /> },
+  { path: "expense", element: <ExpenseHome /> },
 ];
   
 
