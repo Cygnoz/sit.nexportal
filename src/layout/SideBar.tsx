@@ -59,9 +59,7 @@ const Sidebar = ({ setSearchValue, sidebarRef }: { setSearchValue: React.Dispatc
                 <ul>
                   {options.map((option) => {
                     const Icon = sidebarIcons[option];
-                    const route = sidebarRoutes[option];
-                    console.log(route);
-                    
+                    const route = sidebarRoutes[option];                    
                     return (
                       <li
                         key={option}

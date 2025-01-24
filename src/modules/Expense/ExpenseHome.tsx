@@ -5,7 +5,6 @@ import CoinIcon from "../../assets/icons/CoinIcon";
 import PackageCheck from "../../assets/icons/PackageCheck";
 import Button from "../../components/ui/Button";
 import HomeCard from "../../components/ui/HomeCards";
-import Table from "../../components/ui/Table";
 import CopyIcon from "../../assets/icons/CopyIcon";
 import ClockkIcon from "../../assets/icons/ClockkIcon";
 import Modal from "../../components/modal/Modal";
@@ -13,6 +12,7 @@ import { useState } from "react";
 import ExpenseForm from "./ExpenseForm";
 import HandCoinsIcon from "../../assets/icons/HandCoinsIcon";
 import CategoryForm from "./CategoryForm";
+import ExpenseTable from "./ExpenseTable";
 
 interface LeadViewData {
     task: string;
@@ -24,6 +24,21 @@ interface LeadViewData {
 
 type Props = {}
 const ExpenseHome = ({}: Props) => {
+
+  const handleView = () => {
+   // navigate(`/area-manager/${id}`)
+  }
+
+  const handleEdit = ( ) => {
+   // setEditId(id)
+    handleModalToggle()
+  }
+  
+  const handleDelete = ( ) => {
+    // setEditId(id)
+     handleModalToggle()
+   }
+  
 
  // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
@@ -80,20 +95,20 @@ const homeCardData = [
   ];
 
   const leadData: LeadViewData[] = [
-    { task: "BDA12345", dueDate: "Anjela John", bda: "(406) 555-0120", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Kristin Watson", bda: "(480) 555-0103", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Wade Warren", bda: "(702) 555-0122", button: "mark as completed", source: "", },
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "", },
+    { task: "BDA12345", dueDate: "Anjela John", bda: "(406) 555-0120", button: "mark as completed", source: "10/05/22", },
+    { task: "BDA12345", dueDate: "Kristin Watson", bda: "(480) 555-0103", button: "mark as completed", source: "10/05/22", },
+    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "10/05/22", },
+    { task: "BDA12345", dueDate: "Wade Warren", bda: "(702) 555-0122", button: "mark as completed", source: "10/05/22", },
+    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "10/05/22", },
   ];
   
     // Define the columns with strict keys
   const columns: { key: keyof LeadViewData; label: string }[] = [
-    { key: "task", label: "Task" },
-    { key: "dueDate", label: "Due Date" },
-    { key: "bda", label: "BDA" },
-    { key: "button", label: "" },
-    { key: "source", label: "" },
+    { key: "task", label: "Name" },
+    { key: "dueDate", label: "Category" },
+    { key: "bda", label: "Price" },
+    { key: "button", label: "Payment Method" },
+    { key: "source", label: "Date" },
   ];
 
 
@@ -135,11 +150,11 @@ const homeCardData = [
           ))}
         </div>
         <div>
-        <Table<LeadViewData>
+        <ExpenseTable<LeadViewData>
             data={leadData}
             columns={columns}
             headerContents={{
-            title: "Lead Details",
+          
             search: { placeholder: "Search" },
             sort: [
                   {
@@ -151,14 +166,19 @@ const homeCardData = [
                   }
                 ]
             }}
-            noAction
+            actionList={[
+              { label: 'edit', function: handleEdit },
+              { label: 'view', function: handleView },
+              { label: 'delete', function: handleDelete },
+            ]}
+            
         />
     </div>
     </div>
-    <Modal open={isModalOpen.addForm} onClose={() => handleModalToggle()}>
+    <Modal open={isModalOpen.addForm} onClose={() => handleModalToggle()} className="w-[60%]">
         <ExpenseForm onClose={() => handleModalToggle()} />
       </Modal>
-      <Modal open={isModalOpen.categoryAdd} onClose={() => handleModalToggle()}>
+      <Modal open={isModalOpen.categoryAdd} onClose={() => handleModalToggle()} className="w-[70%]">
         <CategoryForm onClose={() => handleModalToggle()} />
       </Modal>
     </>
