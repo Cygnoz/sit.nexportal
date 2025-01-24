@@ -2,7 +2,7 @@ import BuildingIcon from "../../assets/icons/BuildingIcon";
 import EmailIcon from "../../assets/icons/EmailIcon";
 import PhoneIcon from "../../assets/icons/PhoneIcon";
 import Input from "../../components/form/Input";
-import pic from "../../assets/image/IndiaLogo.png";
+// import pic from "../../assets/image/IndiaLogo.png";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../Hooks/useApi";
@@ -12,9 +12,12 @@ import "react-quill/dist/quill.snow.css"; // Import Quill styles
 import ChevronRight from "../../assets/icons/ChevronRight";
 import Button from "../../components/ui/Button";
 import NoImage from "../../components/ui/NoImage";
+import io from "socket.io-client"
+const socket = io(import.meta.env.VITE_REACT_APP_TICKETS)
 type Props = {};
 
 const TicketsView = ({}: Props) => {
+
   const [content, setContent] = useState<string>("");
   const Priority = [
     { label: "Low", color: "#4CAF50" }, // Green for Low priority
@@ -53,28 +56,56 @@ const TicketsView = ({}: Props) => {
 
   useEffect(() => {
     getOneTicket();
+    socket.emit("joinRoom",(ticketData?.supportAgentId?._id))
   }, [id]);
 
   console.log(ticketData);
 
   const [messages, setMessages] = useState([
     {
-      id: 1,
-      type: "received",
-      name: "Sara John",
-      time: "Today 04:07",
-      content:
-        "I’m sorry to hear that. Let me help you. Could you please share the exact error message or describe what happens when you try to upgrade?",
+      chatId: "chatId",
+      ticketId: "ticketId1",
+      senderId: id,
+      receiverId: "receiverUserId456",
+      message: "Hello, how can I help you?",
     },
     {
-      id: 2,
-      type: "sent",
-      name: "Leslie Alexander",
-      time: "Today 04:07",
-      content:
-        "I’m sorry to hear that. Let me help you. Could you please share the exact error message or describe what happens when you try to upgrade?",
+      chatId: "chatId",
+      ticketId: "ticketId2",
+      senderId: "senderUserId123",
+      receiverId: id,
+      message: "Hello, the software is loading for one hour.",
+    },
+    {
+      chatId: "chatId",
+      ticketId: "ticketId3",
+      senderId: id,
+      receiverId: "receiverUserId456",
+      message: "Could you please share more details about the issue you're facing? For example, when did it start, and have you tried restarting the application?",
+    },
+    {
+      chatId: "chatId",
+      ticketId: "ticketId4",
+      senderId: "senderUserId123",
+      receiverId: id,
+      message: "Yes, I have tried restarting the app several times, but it’s still not working. It keeps showing the loading icon and doesn’t progress beyond that.",
+    },
+    {
+      chatId: "chatId",
+      ticketId: "ticketId5",
+      senderId: id,
+      receiverId: "receiverUserId456",
+      message: "Thanks for the details. I’ll escalate this to our technical team. Meanwhile, can you confirm the app version you are using?",
+    },
+    {
+      chatId: "chatId",
+      ticketId: "ticketId6",
+      senderId: "senderUserId123",
+      receiverId: id,
+      message: "The app version is 1.2.3.",
     },
   ]);
+  
 
 
   // const handleInputChange = (e: any) => {
@@ -89,22 +120,12 @@ const TicketsView = ({}: Props) => {
   return (
     <>
       <div className="h-auto">
-        <div className="flex items-center text-[16px] space-x-2">
-          <p
-            onClick={() => navigate("/ticket")}
-            className="font-bold cursor-pointer text-[#820000] "
-          >
-            Ticket
-          </p>
+        <div className="grid grid-cols-12 bg-white shadow-md  h-full rounded-md">
+          <div className="col-span-2 p-2  h-full">
+          <div className="flex items-center text-[16px] my-2 space-x-2">
+          <p onClick={()=>navigate('/ticket')}  className="font-bold cursor-pointer  text-[#820000] ">Ticket</p>
           <ChevronRight color="#4B5C79" size={18} />
-          <p className="font-bold text-[#303F58] ">
-            {ticketData?.customerId?.firstName}
-          </p>
-        </div>
-        <div className="grid grid-cols-12 mt-5 h-full">
-          <div className="col-span-2 p-2 bg-white h-full">
-            <h1 className="font-normal text-[#303F58] text-sm">Requester</h1>
-            <div className="rounded-full flex items-center my-3 space-x-2">
+          <div className="rounded-full flex items-center my-3 space-x-2">
               {ticketData?.customerId?.image ? (
                 <img
                   className="w-6 h-6  rounded-full"
@@ -118,6 +139,8 @@ const TicketsView = ({}: Props) => {
                 {ticketData?.customerId?.firstName}
               </h2>
             </div>
+        </div>
+            
             <hr />
             <h1 className="font-normal text-[#303F58] text-sm mt-3">
               Assignee
@@ -171,78 +194,116 @@ const TicketsView = ({}: Props) => {
           </div>
 
           <div className="col-span-7 ">
-            <div className="bg-gray-100  h-full">
-              <div className="bg-white shadow-md rounded-md">
+            <div className="  h-full">
+              <div className="  border">
                 {/* Header */}
-                {/* <div className="border-b p-4">
+                <div className="border-b p-2">
                   <h1 className="text-lg font-bold text-gray-800">
-                    Subscription from the Basic plan to the Pro plan
+                  {ticketData?.subject}
                   </h1>
-                </div> */}
-
-                {/* Chat Box */}
-                <div className="p-4 space-y-4">
-                  {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${
-                        msg.type === "received"
-                          ? "justify-center ml-40"
-                          : "items-start"
-                      }`}
-                    >
-                      <div className="w-8 h-8">
-                        <img src={pic} alt="" />
-                      </div>
-                      <div className="ml-4">
-                        <div className="flex">
-                          <p className="text-sm font-bold text-[#4B5C79]">
-                            {msg.name}
-                          </p>
-                          <p className="text-xs text-gray-500 ms-2 mt-1">
-                            {msg.time}
-                          </p>
-                        </div>
-                        <p
-                          className={`mt-2 p-2 text-sm text-gray-700 ${
-                            msg.type === "received"
-                              ? "bg-[#E3E6D580]"
-                              : "bg-[#EEEEEE80]"
-                          }`}
-                        >
-                          {msg.content}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
                 </div>
 
+                {/* Chat Box */}
+                <div className={`p-2 space-y-4 h-[530px] overflow-auto custom-scrollbar`}>
+  {messages.map((msg) => (
+    <div
+      key={msg.ticketId} // Using ticketId as key to avoid issues with duplicate chatId
+      className={`flex ${
+        msg.senderId === id ? "justify-end" : "justify-start"
+      }`}
+    >
+    <div className="flex flex-col">
+   {msg.senderId===id?
+    <div className="flex gap-2 items-center justify-end w-full">
+    
+      <div className="flex justify-end items-center gap-2">
+          <p className="text-xs text-gray-500  ">
+            2.50 pm
+          </p>
+          <div className="bg-[#787878] h-2 w-2 rounded-full"/>
+
+   
+          <p className="text-sm font-bold text-[#4B5C79]">
+            You
+          </p>
+         
+        </div>
+       
+        <img className="w-8 h-8 rounded-full" src={ticketData?.supportAgentId?.user?.userImage} alt="" />
+    
+     </div>:
+     <div className="flex gap-2 items-center">
+   
+        <img className="w-8 h-8 rounded-full" src={ticketData?.customerId?.image} alt="" />
+      
+      <div className="flex justify-end items-center gap-2">
+          <p className="text-sm font-bold text-[#4B5C79]">
+             {msg.senderId}
+          </p>
+          <div className="bg-[#787878] h-2 w-2 rounded-full"/>
+          <p className="text-xs text-gray-500  ">
+            2.50 pm
+          </p>
+        </div>
+     </div>
+     }
+      <div className={`ml-4 ${msg.senderId === id ? "text-right" : ""}`}>
+       
+        <p
+          className={`mt-1  p-2  text-sm rounded-xl text-gray-700 ${
+            msg.senderId === id
+              ? "bg-[#E3E6D580] me-4 ms-6 rounded-tr-none text-start "
+              : "bg-[#EEEEEE80] ms-4 me-7 rounded-tl-none"
+          }`}
+        >
+          {msg.message}
+        </p>
+      </div>
+    </div>
+    </div>
+  ))}
+</div>
+
+
                 {/* Reply Section */}
-                <div className="border-t p-3 flex items-end space-x-2 mt-60 bg-white">
-  <ReactQuill
-    placeholder="Reply..."
+                <div className="border rounded-md p-3 bg-white flex items-end gap-2">
+  {/* Typing Area */}
+ <div className="w-[730px]">
+   <ReactQuill
+    placeholder="Type Something..."
     value={content}
     onChange={handleChange}
-    className="w-full rounded-md"
+    className="w-full rounded-md flex-1"
     theme="snow"
     modules={{
-      toolbar: [
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["bold", "italic", "underline", "strike"],
-        [{ color: [] }, { background: [] }],
-        ["link"],
-      ],
+      toolbar: "#custom-toolbar", // Attach custom toolbar
     }}
   />
+
+  {/* Toolbar at the bottom */}
+  <div id="custom-toolbar" className="flex items-center p-2 space-x-2 border-t bg-gray-100">
+    <button className="ql-bold"></button>
+    <button className="ql-italic"></button>
+    <button className="ql-underline"></button>
+    <button className="ql-strike"></button>
+    <select className="ql-color"></select>
+    <select className="ql-background"></select>
+    <button className="ql-link"></button>
+    <button className="ql-list" value="ordered"></button>
+    <button className="ql-list" value="bullet"></button>
+    
+  </div>
+ </div>
   <Button
-    variant="primary"
-    className="h-10 px-4 text-white bg-red-800 rounded-md hover:bg-red-700 focus:outline-none"
-    size="lg"
-    type="submit"
-  >
-    Send
-  </Button>
+      variant="primary"
+      className="h-10 px-4 text-white bg-red-800 rounded-md hover:bg-red-700 focus:outline-none"
+      size="lg"
+      type="submit"
+    >
+      Send
+    </Button>
 </div>
+
 
 
 
@@ -251,7 +312,7 @@ const TicketsView = ({}: Props) => {
             </div>
           </div>
 
-          <div className="col-span-3 p-3 bg-white">
+          <div className="col-span-3 p-3 ">
             <div className="rounded-full flex items-center my-3 space-x-2">
               {ticketData?.customerId?.image ? (
                 <img

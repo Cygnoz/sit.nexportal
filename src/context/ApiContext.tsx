@@ -192,7 +192,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       );
       if (response && !error) {
         setRegionId(response.data.region._id)
-        console.log("svResponse",response.data);
+        console.log("svResponsesdsfsdfsdfsdfsd",response.data);
         
       } else {
         console.error(error.response.data.message);
@@ -205,10 +205,9 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const getARM = async () => {
     try {
       const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${user?.userId}`);
-      console.log("res",response);
-      
       if (response && !error) {
        setRegionId(response.data.regionManager.region._id)
+
       } else {
         console.error(error.response.data.message);
       }
@@ -255,7 +254,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     value={{
       allRegions,
       allAreas,
-      
       allCountries,
       allBDA,
       totalCounts,

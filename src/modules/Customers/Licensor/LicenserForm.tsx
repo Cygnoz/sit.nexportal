@@ -195,18 +195,17 @@ function LicenserForm({ onClose, editId }: Props) {
     }));
   }, [dropDownBdas, watch("areaId")]);
 
-  useEffect(() => {
-    if (user?.role == "BDA") {
-      const filteredBDA: any = dropDownBdas?.find(
-        (bda: any) => bda?.user?.employeeId === user?.employeeId
+  useEffect(()=>{
+    if(user?.role=="BDA"){
+      const filteredBDA:any = dropDownBdas?.find(
+        (bda: any) => bda?._id === user?.userId
       );
-
-      console.log("Filtered BDA:", filteredBDA?._id);
-      setValue("areaId", filteredBDA?.area?._id || "");
-      setValue("regionId", filteredBDA?.region?._id || "");
-      setValue("bdaId", filteredBDA?._id || "");
+      setValue("areaId", filteredBDA?.area || "");
+        setValue("regionId", filteredBDA?.region || "");
+        setValue("bdaId", filteredBDA?._id || "");
+        
     }
-  }, [user, dropDownBdas]);
+  },[user,dropDownBdas])
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
