@@ -80,6 +80,8 @@ router.put("/bda/:id",verifyToken,checkPermission('Edit BDA'), bdaController.edi
 
 router.delete("/bda/:id",verifyToken,checkPermission('Delete BDA'), bdaController.deleteBda,ActivityLogGeneration('Delete BDA'));
 
+router.get("/bda/:id/trial-conversions",verifyToken,checkPermission('View BDA'), bdaController.getTrialConvertedOverTime);
+
 router.put("/deactivateBda/:id", verifyToken,checkPermission('Deactivate BDA'),bdaController.deactivateBda,ActivityLogGeneration('Deactivate BDA'));
 
 router.get('/get-activity-logs',verifyToken,checkPermission('View logs'),userController.getAllActivityLogs)

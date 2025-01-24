@@ -15,7 +15,7 @@ const Activity = require("../database/model/activity");
 const ActivityLog = require('../database/model/activityLog')
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
-
+const moment = require("moment");
 //Encrpytion
 function encrypt(text) {
   try {
@@ -897,6 +897,58 @@ exports.getLeadDetails = async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+exports.getTrialConvertedOverTime = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date } = req.query;
+    console.log(id,date);
+    
+    // Validate date input
+    if (!date) {
+      return res.status(400).json({ message: "Date query parameter is required" });
+    }
+
+    // Parse the provided date to extract month and year
+    const parsedDate = moment(date, "YYYY-MM-DD");
+    if (!parsedDate.isValid()) {
+      return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD" });
+    }
+
+    const month = parsedDate.month(); // 0-indexed month (0 = January)
+    const year = parsedDate.year();
+
+    // Get all days in the given month
+    const daysInMonth = parsedDate.daysInMonth();
+    const trialConvertedOverTime = [];
+
+    // Iterate over each day of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const currentDay = moment({ year, month, day }).startOf("day");
+      const nextDay = currentDay.clone().add(1, "day");
+      console.log(currentDay.toDate());
+      console.log(nextDay);
+      
+      // Query to count documents matching the trialDate for the current day
+      const conversionCount = await Leads.countDocuments({
+        bdaId: id,
+        trialDate: { $gte: currentDay.toDate(), $lt: nextDay.toDate() }
+      });
+
+      trialConvertedOverTime.push({
+        date: currentDay.format("YYYY-MM-DD"),
+        conversionCount,
+      });
+    }
+
+    // Respond with the results
+    res.status(200).json({ trialConvertedOverTime });
+  } catch (error) {
+    console.error("Error fetching trial conversion details:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
