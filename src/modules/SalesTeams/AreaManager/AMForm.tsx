@@ -11,10 +11,10 @@ import CheckIcon from "../../../assets/icons/CheckIcon";
 import DownloadIcon from "../../../assets/icons/DownloadIcon";
 import Trash from "../../../assets/icons/Trash";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
-import ViewIcon from "../../../assets/icons/ViewIcon";
-import bcardfront from "../../../assets/image/Business-card-front.png";
-import bcardback from "../../../assets/image/Business-card-back.png";
-import idcard from "../../../assets/image/ID-card 1.png";
+// import ViewIcon from "../../../assets/icons/ViewIcon";
+// import bcardfront from "../../../assets/image/Business-card-front.png";
+// import bcardback from "../../../assets/image/Business-card-back.png";
+// import idcard from "../../../assets/image/ID-card 1.png";
 import { AMData } from "../../../Interfaces/AM";
 import useApi from "../../../Hooks/useApi";
 import toast from "react-hot-toast";
@@ -25,8 +25,9 @@ import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
-import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
-import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
+import IdBcardModal from "../../../components/modal/IdBcardModal";
+// import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+// import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
 interface AddAreaManagerProps {
   onClose: () => void; // Prop for handling modal close
@@ -81,19 +82,10 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
   });
 
   const {request:checkAm}=useApi("put",3002)
-  const [isModalOpen, setIsModalOpen] = useState({
-    viewBusinesscard: false,
-    viewIdcard: false,
-  });
-
-  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false,) => {
-    setIsModalOpen((prevState: any) => ({
-      ...prevState,
-      viewBusinesscard:viewBusinesscard,
-      viewIdcard: viewIdcard,
-      
-    }));
-  }
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleModalToggle = () => {
+    setIsModalOpen((prev) => !prev);
+  };
 
   const { request: addAM } = useApi("post", 3002);
   const { request: editAM } = useApi("put", 3002);
@@ -137,7 +129,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
 
         if (response && !error) {
           toast.success(response.data.message); // Show success toast
-          onClose(); // Close the form/modal
+          handleModalToggle()
         } else {
           toast.error(error.response.data.message); // Show error toast
         }
@@ -197,7 +189,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
     "Company Information",
     "Upload Files",
     "Bank Information",
-    "ID & Business Card",
+    // "ID & Business Card",
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
@@ -396,7 +388,8 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
     if (
       errors &&
       Object.keys(errors).length > 0 &&
-      activeTab == "ID & Business Card"
+      activeTab =="Bank Information"
+
     ) {
       // Get the first error field
       const firstErrorField = Object.keys(errors)[0];
@@ -838,7 +831,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
               </div>
             </div>
           )}
-          {activeTab === "ID & Business Card" && (
+          {/* {activeTab === "ID & Business Card" && (
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                 <p className="text-[#303F58] text-base font-bold">
@@ -886,7 +879,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
                 </div>
               </div>
             </div>
-          )}
+          )} */}
         </div>
 
         <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
@@ -933,12 +926,17 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
       </form>
     
     </div>
-      <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
+      {/* <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
       <AMViewBCard onClose={() => handleModalToggle()} />
     </Modal>
     <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
       <AMIdCardView onClose={() => handleModalToggle()} />
-    </Modal>
+    </Modal> */}
+    <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <IdBcardModal 
+        parentOnClose={onClose}
+        onClose={handleModalToggle}/>
+      </Modal>
 
     </>
   );

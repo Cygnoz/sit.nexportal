@@ -17,11 +17,12 @@ import PhoneIcon from "../../assets/icons/PhoneIcon"
 // import previewFront from '../../assets/image/preview-card-front.png'
 // import previewBack from '../../assets/image/preview-card-back.png'
 import { Layout1Front, Layout2Front, Layout3Front, Layout1Back, Layout2Back, Layout3Back } from "../../components/ui/BSLayout"
-
+// 
 type Props = {}
 
 function BusinessCard({ }: Props) {
     const tabs = ["Layout", "Content"]
+    // const {request : addBusinessCard}=useApi('put',3003)
     const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({
         "Profile Photo": true,
         "Company Logo": true,

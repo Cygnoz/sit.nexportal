@@ -17,15 +17,16 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
-import bcardback from "../../../assets/image/Business-card-back.png";
-import bcardfront from "../../../assets/image/Business-card-front.png";
-import idcard from "../../../assets/image/ID-card 1.png";
-import ViewIcon from "../../../assets/icons/ViewIcon";
+// import bcardback from "../../../assets/image/Business-card-back.png";
+// import bcardfront from "../../../assets/image/Business-card-front.png";
+// import idcard from "../../../assets/image/ID-card 1.png";
+// import ViewIcon from "../../../assets/icons/ViewIcon";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
-import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
-import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
+// import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+// import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
+import IdBcardModal from "../../../components/modal/IdBcardModal";
 
 interface AddSVProps {
   onClose: () => void; // Prop for handling modal close
@@ -91,19 +92,10 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId  }) => {
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
-  const [isModalOpen, setIsModalOpen] = useState({
-    viewBusinesscard: false,
-    viewIdcard: false,
-  });
-
-  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false,) => {
-    setIsModalOpen((prevState: any) => ({
-      ...prevState,
-      viewBusinesscard:viewBusinesscard,
-      viewIdcard: viewIdcard,
-      
-    }));
-  }
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleModalToggle = () => {
+    setIsModalOpen((prev) => !prev);
+  };
 
   const onSubmit: SubmitHandler<SVData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
@@ -129,7 +121,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId  }) => {
 
         if (response && !error) {
           toast.success(response.data.message); // Show success toast
-          onClose(); // Close the form/modal
+          handleModalToggle()
         } else {
           toast.error(error.response.data.message); // Show error toast
         }
@@ -145,7 +137,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId  }) => {
     "Company Information",
     "Upload Files",
     "Bank Information",
-    "ID & Business Card",
+    // "ID & Business Card",
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
@@ -348,7 +340,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId  }) => {
   }, [editId]); // Trigger the effect when editId changes
 
   useEffect(() => {
-    if (errors && Object.keys(errors).length > 0 && activeTab=="ID & Business Card") {
+    if (errors && Object.keys(errors).length > 0 && activeTab=="Bank Information") {
       // Get the first error field
       const firstErrorField = Object.keys(errors)[0];
   
@@ -767,7 +759,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId  }) => {
               </div>
             )}
 
-            {activeTab === "ID & Business Card" && (
+            {/* {activeTab === "ID & Business Card" && (
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                   <p className="text-[#303F58] text-base font-bold">
@@ -811,12 +803,12 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId  }) => {
                       <ViewIcon size="13" color="#565148" />
                       View
                     </Button>
-                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
+                    <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
           <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
             {tabs.indexOf(activeTab) > 0 ? (
@@ -861,12 +853,11 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId  }) => {
           </div>
         </form>
       </div>
-      <Modal open={isModalOpen.viewBusinesscard} onClose={() => handleModalToggle()} className="w-[35%]">
-      <AMViewBCard onClose={() => handleModalToggle()} />
-    </Modal>
-    <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
-      <AMIdCardView onClose={() => handleModalToggle()} />
-    </Modal>
+      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <IdBcardModal
+        parentOnClose={onClose}
+        onClose={handleModalToggle}/>
+      </Modal>
     </>
   );
 };
