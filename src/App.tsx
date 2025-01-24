@@ -33,7 +33,7 @@ import TrialView from './modules/Customers/Trial/TrialView/TrialView';
 import LicenserView from './modules/Customers/Licensor/view/LicenserView';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
 import PraiseHome from './modules/Awards/Praise/PraiseHome';
-import TicketsView from './modules/Tickets/TicketsView';
+import TicketsView from './modules/Tickets/LiveChat';
 import SettingsHome from './modules/Settings/SettingsHome';
 import PayrollHome from './modules/Expense/Payroll/PayrollHome';
 import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';

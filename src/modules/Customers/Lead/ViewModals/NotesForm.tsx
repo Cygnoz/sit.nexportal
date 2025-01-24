@@ -6,11 +6,7 @@ import 'react-quill/dist/quill.snow.css';
 import 'quill-emoji/dist/quill-emoji.css';
 import { Quill } from 'react-quill';
 import 'quill-emoji';
-// import Pen from '../../../../assets/icons/Pen';
-// import Trash2 from '../../../../assets/icons/Trash2';
 import ReactDOMServer from 'react-dom/server';
-// import "./Quill.css";
-// import PencilLine from '../../../../assets/icons/PencilLine';
 import BoldIcon from '../../../../assets/icons/BoldIcon';
 import ItalicIcon from '../../../../assets/icons/ItalicIcon';
 import UnderlineIcon from '../../../../assets/icons/UnderlineIcon';
@@ -50,8 +46,6 @@ const NotesForm = ({ onClose, editId }: Props) => {
   const { request: getLeadNote } = useApi("get", 3001);
   const { request: editLeadNote } = useApi("put", 3001);
 
-
-  console.log("editId", editId);
 
   const { id } = useParams()
   console.log(id);

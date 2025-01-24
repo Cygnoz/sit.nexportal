@@ -221,7 +221,7 @@ const AreaHome = () => {
       </div>
       {/* Modal Section */}
       <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[35%]">
-        <AreaForm regionId={regionId} editId={editId} onClose={handleModalToggle} />
+        <AreaForm regionId={regionId}  editId={editId} onClose={handleModalToggle} />
       </Modal>
     </>
   );
