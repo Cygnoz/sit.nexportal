@@ -16,7 +16,7 @@ import io from "socket.io-client"
 const socket = io(import.meta.env.VITE_REACT_APP_TICKETS)
 type Props = {};
 
-const TicketsView = ({}: Props) => {
+const LiveChat = ({}: Props) => {
 
   const [content, setContent] = useState<string>("");
   const Priority = [
@@ -113,6 +113,12 @@ const TicketsView = ({}: Props) => {
   // };
 
   console.log(setMessages);
+  // console.log("senderId",ticketData?.supportAgentId?._id );
+  // console.log("ticketId",id);
+  // console.log("receverID",ticketData?.customerId?._id);
+  // console.log("msg",content);
+  
+  
   
 
 
@@ -204,7 +210,7 @@ const TicketsView = ({}: Props) => {
                 </div>
 
                 {/* Chat Box */}
-                <div className={`p-2 space-y-4 h-[530px] overflow-auto custom-scrollbar`}>
+                <div className={`p-2 space-y-4 h-[68vh] overflow-auto custom-scrollbar`}>
   {messages.map((msg) => (
     <div
       key={msg.ticketId} // Using ticketId as key to avoid issues with duplicate chatId
@@ -268,7 +274,8 @@ const TicketsView = ({}: Props) => {
                 {/* Reply Section */}
                 <div className="border rounded-md p-3 bg-white flex items-end gap-2">
   {/* Typing Area */}
- <div className="w-[730px]">
+ <div className="w-[89%]">
+
    <ReactQuill
     placeholder="Type Something..."
     value={content}
@@ -279,6 +286,7 @@ const TicketsView = ({}: Props) => {
       toolbar: "#custom-toolbar", // Attach custom toolbar
     }}
   />
+   
 
   {/* Toolbar at the bottom */}
   <div id="custom-toolbar" className="flex items-center p-2 space-x-2 border-t bg-gray-100">
@@ -424,4 +432,4 @@ const TicketsView = ({}: Props) => {
   );
 };
 
-export default TicketsView;
+export default LiveChat;

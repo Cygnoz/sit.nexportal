@@ -10,21 +10,18 @@ import DesignationIcon from "../../assets/icons/DesignationIcon"
 import AddressIcon from "../../assets/icons/AddressIcon"
 import CompanyInfoIcon from "../../assets/icons/CompanyInfoIcon"
 import CompanyLogoIcon from "../../assets/icons/CompanyLogoIcon"
-import cygnoz from '../../assets/image/cygnoz.com.png'
-import profile from '../../assets/image/AvatarImg.png'
+// import cygnoz from '../../assets/image/cygnoz.com.png'
+// import profile from '../../assets/image/AvatarImg.png'
 import PhoneIcon from "../../assets/icons/PhoneIcon"
-import LocationIcon from "../../assets/icons/LocationIcon"
-import previewFront from '../../assets/image/preview-card-front.png'
-import previewBack from '../../assets/image/preview-card-back.png'
-import { Layout1Front, Layout2Front, Layout3Front } from "../../components/ui/BSLayout"
+// import LocationIcon from "../../assets/icons/LocationIcon"
+// import previewFront from '../../assets/image/preview-card-front.png'
+// import previewBack from '../../assets/image/preview-card-back.png'
+import { Layout1Front, Layout2Front, Layout3Front, Layout1Back, Layout2Back, Layout3Back } from "../../components/ui/BSLayout"
 
 type Props = {}
 
 function BusinessCard({ }: Props) {
     const tabs = ["Layout", "Content"]
-    const [activeTab, setActiveTab] = useState<string>("Layout");
-
-
     const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({
         "Profile Photo": true,
         "Company Logo": true,
@@ -39,6 +36,20 @@ function BusinessCard({ }: Props) {
         "CompanyInfo": true,
     });
 
+    const layoutToggle={
+        "Profile Photo": true,
+        "Company Logo": true,
+        "Name": true,
+        "Employee ID": true,
+        "Email": true,
+        "Logo Title": true,
+        "Designation": true,
+        "Region": true,
+        "Address": true,
+        "phoneNo": true,
+        "CompanyInfo": true,
+    }
+
     // Toggle handler for individual item
     const handleToggle = (item: string) => {
         setToggleStates((prev) => ({
@@ -46,6 +57,34 @@ function BusinessCard({ }: Props) {
             [item]: !prev[item]
         }));
     };
+
+    const [activeTab, setActiveTab] = useState<string>("Layout");
+    type LayoutKeys = "Layout1" | "Layout2" | "Layout3";
+    interface LayoutProps {
+        toggleState?: Record<string, boolean>;
+    }
+    // Define the layoutComponents object with proper types
+    const layoutComponents: Record<
+        LayoutKeys,
+        { Front: React.FC<LayoutProps>; Back: React.FC<LayoutProps> }
+    > = {
+        Layout1: {
+            Front: Layout1Front,
+            Back: Layout1Back,
+        },
+        Layout2: {
+            Front: Layout2Front,
+            Back: Layout2Back,
+        },
+        Layout3: {
+            Front: Layout3Front,
+            Back: Layout3Back,
+        },
+    };
+
+    // State to manage the active layout
+    const [activeLayout, setActiveLayout] = useState<LayoutKeys>("Layout1");
+    const { Front: ActiveFront, Back: ActiveBack } = layoutComponents[activeLayout];
     return (
         <>
 
@@ -72,33 +111,44 @@ function BusinessCard({ }: Props) {
                     <div className="me-4 p-2 bg-[#FFFFFF] rounded-lg mt-4">
 
                         {activeTab === "Layout" && (
-                                <div>
-                                    <div className="flex justify-between mt-4">
-                                        <p className="my-2 text-[#303F58] text-base font-bold">Select Template</p>
-                                        <div className="flex items-center border bg-[#FFFFFF] rounded-lg w-80 h-9 px-3 my-2">
-                                            <input
-                                                type="text"
-                                                placeholder="Search template"
-                                                className="flex-grow outline-none text-sm text-[#8F99A9]"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-2 gap-3 p-2">
-                                        <div>
-                                           <Layout1Front/> 
-                                        </div>
-
-                                        <div>
-                                        <Layout2Front/>
-                                        </div>
-
-                                        <div>
-                                            <Layout3Front/>
-                                        </div>
-
+                            <div>
+                                <div className="flex justify-between mt-4">
+                                    <p className="my-2 text-[#303F58] text-base font-bold">Select Template</p>
+                                    <div className="flex items-center border bg-[#FFFFFF] rounded-lg w-80 h-9 px-3 my-2">
+                                        <input
+                                            type="text"
+                                            placeholder="Search template"
+                                            className="flex-grow outline-none text-sm text-[#8F99A9]"
+                                        />
                                     </div>
                                 </div>
+                                <div className="grid grid-cols-2 gap-3 p-2">
+                                    <div>
+                                        <button
+                                            className={`p-2 ${activeLayout === "Layout1" ? "bg-[#FFFFFF] border border-[#820000] rounded-2xl" : "bg-[#FFFFFF]"}`}
+                                            onClick={() => setActiveLayout("Layout1")}
+                                        >
+                                            <Layout1Front toggleState={layoutToggle} />
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button
+                                            className={`p-2 ${activeLayout === "Layout2" ? "bg-[#FFFFFF] border border-[#820000] rounded-2xl" : "bg-[#FFFFFF]"}`}
+                                            onClick={() => setActiveLayout("Layout2")}
+                                        >
+                                            <Layout2Front toggleState={layoutToggle} />
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <button
+                                            className={`p-2 ${activeLayout === "Layout3" ? "bg-[#FFFFFF] border border-[#820000] rounded-2xl" : "bg-[#FFFFFF]"}`}
+                                            onClick={() => setActiveLayout("Layout3")}
+                                        >
+                                            <Layout3Front toggleState={layoutToggle} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         )}
 
                         {activeTab === "Content" && (
@@ -435,164 +485,12 @@ function BusinessCard({ }: Props) {
                 <div className="col-span-4">
                     <div className="p-4 bg-[#F5F9FC] rounded-lg mt-4">
                         <p className="my-2 text-[#000000] text-base font-medium">Preview</p>
-                        <div
-                            className="my-2 bg-cover bg-center bg-no-repeat rounded-lg relative"
-                            style={{ backgroundImage: `url(${previewFront})`, minHeight: '250px' }}
-                        >
-                            {/* Overlay to ensure consistent background visibility */}
-                            <div className="absolute inset-0 rounded-lg"></div>
-
-                            {/* Content Section */}
-                            <div className="relative p-3">
-                                {/* Profile Section */}
-                                <div className="flex gap-1">
-                                    {toggleStates["Profile Photo"] && (
-                                        <div>
-                                            <img className="w-8 h-8 rounded-full" src={profile} alt="Profile" />
-                                        </div>
-                                    )}
-                                    {toggleStates["Name"] && (
-                                        <div className="border-r">
-                                            <p className="text-[#FFFFFF] font-light text-[10px] mx-2">Name</p>
-                                            <p className="text-[#FFFFFF] font-semibold text-xs mx-2">John Doe</p>
-                                        </div>
-                                    )}
-                                    {toggleStates["Designation"] && (
-                                        <div>
-                                            <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
-                                            <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Employee Info */}
-                                <div className="flex gap-4 mt-8">
-                                    {toggleStates["Employee ID"] && (
-                                        <div>
-                                            <p className="text-[#FFFFFF] font-light text-[10px]">Employee ID</p>
-                                            <p className="text-[#FFFFFF] font-medium text-xs">RM-210215</p>
-                                        </div>
-                                    )}
-                                    {toggleStates["Region"] && (
-                                        <div className="me-6">
-                                            <p className="text-[#FFFFFF] font-light text-[10px]">Region</p>
-                                            <p className="text-[#FFFFFF] font-medium text-xs">Ernakulam</p>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Contact Info */}
-                                <div className="px-3 mt-4">
-                                    <p className="text-[#FFFFFF] font-light text-[10px] my-2">Personal Address & Mail</p>
-                                    <div className="grid grid-cols-2 gap-2">
-                                        {/* Email */}
-                                        <div className="flex gap-2 items-center">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
-                                                <EmailIcon size={11} color="#FFFFFF" />
-                                            </div>
-                                            {toggleStates["Email"] && (
-                                                <p className="text-[#FFFFFF] font-light text-[9px]">john.doe@example.com</p>
-                                            )}
-                                        </div>
-                                        {/* Phone */}
-                                        <div className="flex gap-2 items-center">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
-                                                <PhoneIcon size={11} color="#FFFFFF" />
-                                            </div>
-                                            {toggleStates["phoneNo"] && (
-                                                <p className="text-[#FFFFFF] font-light text-[9px]">+919633564547</p>
-                                            )}
-                                        </div>
-                                        {/* Address */}
-                                        <div className="flex gap-2 items-center">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
-                                                <LocationIcon size={12} color="#FFFFFF" />
-                                            </div>
-                                            {toggleStates["Address"] && (
-                                                <p className="text-[#FFFFFF] font-light text-[9px]">
-                                                    2972 Westheimer Rd. Santa Ana, Illinois 85486
-                                                </p>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Footer Section */}
-                                <div className="flex justify-between mt-4">
-                                    {toggleStates["Company Logo"] && (
-                                        <img src={cygnoz} className="w-24 h-5" alt="Company Logo" />
-                                    )}
-                                    {toggleStates["Logo Title"] && (
-                                        <p className="text-[#FFFFFF] font-normal text-[10px] py-1">
-                                            Engineering your business for the world
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
+                        <div className="my-3">
+                            <ActiveFront toggleState={toggleStates}/>
                         </div>
-
-
-                        <div
-                            className="my-2 bg-cover bg-center bg-no-repeat rounded-lg relative"
-                            style={{ backgroundImage: `url(${previewBack})`, minHeight: '200px' }} // Ensure consistent minimum height
-                        >
-                            {/* Overlay for consistent background */}
-                            <div className="absolute inset-0 rounded-lg"></div>
-
-                            {/* Content Section */}
-                            <div className="relative flex gap-1 p-3">
-                                <div>
-                                    {toggleStates["Company Logo"] && (
-                                        <img className="w-32 h-8" src={cygnoz} alt="Company Logo" />
-                                    )}
-                                    {toggleStates["Logo Title"] && (
-                                        <p className="text-[#FFFFFF] font-normal text-[10px] py-1">
-                                            Engineering your business for the world
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-
-                            {toggleStates["CompanyInfo"] && (
-                                <div className="relative px-3 py-8">
-                                    <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
-                                    <div className="grid grid-cols-2 gap-1">
-                                        {/* Email */}
-                                        <div className="flex gap-2 items-center">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
-                                                <EmailIcon size={11} color="#FFFFFF" />
-                                            </div>
-                                            <p className="text-[#FFFFFF] font-light text-[9px]">
-                                                john.doe@example.com
-                                            </p>
-                                        </div>
-                                        {/* Phone */}
-                                        <div className="flex gap-2 items-center">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
-                                                <PhoneIcon size={11} color="#FFFFFF" />
-                                            </div>
-                                            {toggleStates["phoneNo"] && (
-                                                <p className="text-[#FFFFFF] font-light text-[9px]">
-                                                    +919633564547
-                                                </p>
-                                            )}
-                                        </div>
-                                        {/* Location */}
-                                        <div className="flex gap-2 items-center">
-                                            <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
-                                                <LocationIcon size={12} color="#FFFFFF" />
-                                            </div>
-                                            <p className="text-[#FFFFFF] font-light text-[9px]">
-                                                2972 Westheimer Rd. Santa Ana, Illinois 85486
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
+                        <div>
+                            <ActiveBack toggleState={toggleStates} />
                         </div>
-
-
-
                         <div className="flex gap-2 my-4 justify-between">
                             <Button variant="tertiary" className="w-28 h-10">
                                 <p className="ms-6">Cancel</p>

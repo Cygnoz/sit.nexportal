@@ -30,7 +30,15 @@ import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 interface BDAProps {
   onClose: () => void; // Prop for handling modal close
   editId?: string;
+  regionId?:any
+  areaId?:any
+  
 }
+interface RegionData {
+  label: string;
+  value: string;
+}
+
 
 const baseSchema = {
   userName: Yup.string().required("Full name is required"),
@@ -61,12 +69,16 @@ const editValidationSchema = Yup.object().shape({
   ...baseSchema,
 });
 
-const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
+const BDAForm: React.FC<BDAProps> = ({ onClose, editId ,regionId ,areaId }) => {
   const { dropDownAreas, dropdownRegions, dropDownWC, allCountries } = useRegularApi();
   const { request: addBDA } = useApi("post", 3002);
   const { request: editBDA } = useApi("put", 3002);
   const { request: getBDA } = useApi("get", 3002);
   const [submit, setSubmit] = useState(false);
+
+      const [regionData, setRegionData] = useState<RegionData[]>([]);
+      const [areaData, setAreaData] = useState<any[]>([]);
+
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     areas: { label: string; value: string }[];
@@ -232,35 +244,54 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-  // UseEffect for updating regions
+  // // UseEffect for updating regions
+  // useEffect(() => {
+  //   const filteredRegions = dropdownRegions?.map((region: any) => ({
+  //     value: String(region._id),
+  //     label: region.regionName,
+  //   }));
+  //   // Update the state without using previous `data` state
+  //   setData((prevData: any) => ({
+  //     ...prevData,
+  //     regions: filteredRegions,
+  //   }));
+  // }, [dropdownRegions]);
+
   useEffect(() => {
-    const filteredRegions = dropdownRegions?.map((region: any) => ({
-      value: String(region._id),
+    // Map the regions into the required format for regions data
+    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
+      value: String(region._id), // Ensure `value` is a string
     }));
-    // Update the state without using previous `data` state
-    setData((prevData: any) => ({
-      ...prevData,
-      regions: filteredRegions,
-    }));
-  }, [dropdownRegions]);
+
+
+  setRegionData(filteredRegions)
+ if(regionId){
+    setValue("region",regionId)
+    setValue("area",areaId)
+    
+  }
+},[dropdownRegions,regionId])
 
   // UseEffect for updating areas based on selected region
   useEffect(() => {
     const filteredAreas = dropDownAreas?.filter(
       (area: any) => area?.region=== watch("region")
     );
-    const transformedAreas = filteredAreas?.map((area: any) => ({
+    const transformedAreas:any = filteredAreas?.map((area: any) => ({
       label: area.areaName,
       value: String(area._id),
     }));
+    setAreaData(transformedAreas)
+    if(regionId && areaId){
+      setValue("region",regionId)
+      setValue("area",areaId)
+      }
 
-    // Update areas
-    setData((prevData: any) => ({
-      ...prevData,
-      areas: transformedAreas,
-    }));
-  }, [watch("region"), dropDownAreas]);
+  
+  }, [watch("region"), dropDownAreas,areaId,regionId]);
+  
+console.log(watch("region"));
 
   // UseEffect for updating wc
   useEffect(() => {
@@ -669,6 +700,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                <Select
                   required
                   placeholder="Select Region"
+                  readOnly={regionId?true:false}
                   label="Select Region"
                   value={watch("region")}
                   onChange={(selectedValue) => {
@@ -677,14 +709,15 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                     setValue("area", "");
                   }}
                   error={errors.region?.message}
-                  options={data.regions}
+                  options={regionData}
                 />
                 <Select
                   required
                   label="Select Area"
+                  readOnly={areaId?true:false}
                   placeholder={
-                    data.areas.length === 0
-                      ? watch("region")?.length > 0
+                    areaData.length === 0
+                      ? watch("region")?.length > 0 
                         ? "No Area Found"
                         : "Select Region"
                       : "Select Area"
@@ -695,7 +728,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                     handleInputChange("area");
                   }}
                   error={errors.area?.message}
-                  options={data.areas}
+                  options={areaData}
                 />
                 <Select
                   label="Choose Commission Profile"
@@ -830,8 +863,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                     <ViewIcon size="13" color="#565148" />
                     View
                   </Button>
-                  {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
+                  <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
                 </div>
               </div>
               <div className="bg-[#F5F9FC] p-3 rounded-2xl">
@@ -851,8 +884,8 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId }) => {
                     <ViewIcon size="13" color="#565148" />
                     View
                   </Button>
-                  {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
+                  <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
                 </div>
               </div>
             </div>

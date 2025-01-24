@@ -30,6 +30,8 @@ import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 interface AddSVProps {
   onClose: () => void; // Prop for handling modal close
   editId?: string;
+
+  
 }
 
 const baseSchema = {
@@ -59,13 +61,17 @@ const editValidationSchema = Yup.object().shape({
   ...baseSchema,
 });
 
-const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
+const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId  }) => {
   const { dropdownRegions, dropDownWC, allCountries } = useRegularApi();
   const {request:checkSVs}=useApi("get",3003)
   const { request: addSV } = useApi("post", 3003);
   const { request: editSV } = useApi("put", 3003);
   const { request: getSV } = useApi("get", 3003);
   const [submit, setSubmit] = useState(false);
+
+        
+  
+
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     wc: { label: string; value: string }[];
@@ -783,8 +789,8 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                       <ViewIcon size="13" color="#565148" />
                       View
                     </Button>
-                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
+                    <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
                   </div>
                 </div>
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">

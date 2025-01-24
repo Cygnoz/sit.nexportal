@@ -33,7 +33,7 @@ import TrialView from './modules/Customers/Trial/TrialView/TrialView';
 import LicenserView from './modules/Customers/Licensor/view/LicenserView';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
 import PraiseHome from './modules/Awards/Praise/PraiseHome';
-import TicketsView from './modules/Tickets/TicketsView';
+import TicketsView from './modules/Tickets/LiveChat';
 import SettingsHome from './modules/Settings/SettingsHome';
 import PayrollHome from './modules/Expense/Payroll/PayrollHome';
 import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';
@@ -42,6 +42,8 @@ import PayrollView2 from './modules/Expense/Payroll/PayrollView2';
 import BusinessCard from './modules/Settings/BusinessCard';
 import Target from './modules/Settings/Target/Target';
 import { roles } from './components/ui/Roles';
+import ExpenseHome from './modules/Expense/ExpenseHome';
+// import ExpenseHome from './modules/Expense/ExpenseHome';
 
 
 
@@ -109,6 +111,7 @@ const parentRoutes = [
   { path: "payroll-slip", element: <PayrollSlip /> },
   { path: "payroll-view", element: <PayrollView /> },
   { path: "payroll-view2", element: <PayrollView2 /> },
+  { path: "expense", element: <ExpenseHome /> },
 ];
   
 

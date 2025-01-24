@@ -21,7 +21,7 @@ body{
 }
 
 .ql-editor {
-  max-height: 80px; /* Adjust height as needed */
+  max-height: 75px; /* Adjust height as needed */
  /* Add padding for a better typing experience */
   flex-grow: 1;
 }

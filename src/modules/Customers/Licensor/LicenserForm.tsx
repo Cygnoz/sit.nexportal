@@ -22,7 +22,14 @@ import { useResponse } from "../../../context/ResponseContext";
 type Props = {
   onClose: () => void;
   editId?: string;
+  regionId?:any
+  areaId?:any
 };
+
+interface RegionData {
+  label: string;
+  value: string;
+}
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First name is required"),
@@ -37,7 +44,7 @@ const validationSchema = Yup.object({
   endDate: Yup.string().required("EndDate is required"),
 });
 
-function LicenserForm({ onClose, editId }: Props) {
+function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
   const [isOrgModal, setIsOrgModal] = useState(false);
   const handleModalToggle = (close = false) => {
     setIsOrgModal((prev) => !prev);
@@ -49,6 +56,9 @@ function LicenserForm({ onClose, editId }: Props) {
   const { request: addLicenser } = useApi("post", 3001);
   const { request: editLicenser } = useApi("put", 3001);
   const { request: getLicenser } = useApi("get", 3001);
+      const [regionData, setRegionData] = useState<RegionData[]>([]);
+      const [areaData, setAreaData] = useState<any[]>([]);
+
   const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries } =
     useRegularApi();
   const [data, setData] = useState<{
@@ -148,35 +158,43 @@ function LicenserForm({ onClose, editId }: Props) {
     }
   };
 
-  // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = dropdownRegions?.map((region: any) => ({
-      value: String(region._id),
+    // Map the regions into the required format for regions data
+    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
+      value: String(region._id), // Ensure `value` is a string
     }));
-    // Update the state without using previous `data` state
-    setData((prevData: any) => ({
-      ...prevData,
-      regions: filteredRegions,
-    }));
-  }, [dropdownRegions]);
 
-  // UseEffect for updating areas based on selected region
-  useEffect(() => {
+
+  setRegionData(filteredRegions)
+ if(regionId){
+    setValue("regionId",regionId)
+    setValue("areaId",areaId)
+    
+  }
+},[dropdownRegions,regionId])
+
+
+   // UseEffect for updating areas based on selected region
+   useEffect(() => {
     const filteredAreas = dropDownAreas?.filter(
-      (area: any) => area?.region === watch("regionId")
+      (area: any) => area?.region=== watch("regionId")
     );
-    const transformedAreas = filteredAreas?.map((area: any) => ({
+    const transformedAreas:any = filteredAreas?.map((area: any) => ({
       label: area.areaName,
       value: String(area._id),
     }));
+    setAreaData(transformedAreas)
+    if(regionId && areaId){
+      setValue("regionId",regionId)
+      setValue("areaId",areaId)
+      }
 
-    // Update areas
-    setData((prevData: any) => ({
-      ...prevData,
-      areas: transformedAreas,
-    }));
-  }, [watch("regionId"), dropDownAreas]);
+  
+  }, [watch("regionId"), dropDownAreas,areaId,regionId]);
+  
+console.log(watch("regionId"));
+
 
   // UseEffect for updating regions
   useEffect(() => {
@@ -436,7 +454,8 @@ function LicenserForm({ onClose, editId }: Props) {
               />
               <div className="col-span-2 gap-3 grid grid-cols-3">
                 <Select
-                  readOnly={user?.role == "BDA" ? true : false}
+                  readOnly={regionId || user?.role === "BDA"}
+
                   required
                   placeholder="Select Region"
                   label="Select Region"
@@ -448,10 +467,10 @@ function LicenserForm({ onClose, editId }: Props) {
                     setValue("bdaId", "");
                   }}
                   error={errors.regionId?.message}
-                  options={data.regions}
+                  options={regionData}
                 />
                 <Select
-                  readOnly={user?.role == "BDA" ? true : false}
+                readOnly={areaId || user?.role === "BDA"}
                   required
                   label="Select Area"
                   placeholder={
@@ -464,7 +483,7 @@ function LicenserForm({ onClose, editId }: Props) {
                     handleInputChange("areaId");
                   }}
                   error={errors.areaId?.message}
-                  options={data.areas}
+                  options={areaData}
                 />
                 <Select
                   readOnly={user?.role == "BDA" ? true : false}
