@@ -15,7 +15,7 @@ const filterByRole = require("../services/filterByRole");
 const SupportAgent = require("../database/model/supportAgent");
 const Ticket = require("../database/model/ticket");
 const Commission = require("../database/model/commission");
-
+const BusinessCard = require("../database/model/businessCard")
 
 // Login 
 exports.login =  async (req, res) => {
@@ -438,30 +438,35 @@ const roles = [
       { action: "View Region", note: "View Region" },
       { action: "Edit Region", note: "Edit Region" },
       { action: "Delete Region", note: "Delete Region" },
+      { action: "Deactivate Region", note: "Deactivate Region" },
 
       // Area
       { action: "Add Area", note: "Add Area" },
       { action: "View Area", note: "View Area" },
       { action: "Edit Area", note: "Edit Area" },
       { action: "Delete Area", note: "Delete Area" },
+      { action: "Deactivate Area", note: "Deactivate Area" },
 
       // Region Manager
       { action: "Add Region Manager", note: "Add Region Manager" },
       { action: "View Region Manager", note: "View Region Manager" },
       { action: "Edit Region Manager", note: "Edit Region Manager" },
       { action: "Delete Region Manager", note: "Delete Region Manager" },
+      { action: "Deactivate Region Manager", note: "Deactivate Region Manager" },
 
       // Area Manager
       { action: "Add Area Manager", note: "Add Area Manager" },
       { action: "View Area Manager", note: "View Area Manager" },
       { action: "Edit Area Manager", note: "Edit Area Manager" },
       { action: "Delete Area Manager", note: "Delete Area Manager" },
+      { action: "Deactivate Area Manager", note: "Deactivate Area Manager" },
 
       // BDA
       { action: "Add BDA", note: "Add BDA" },
       { action: "View BDA", note: "View BDA" },
       { action: "Edit BDA", note: "Edit BDA" },
       { action: "Delete BDA", note: "Delete BDA" },
+      { action: "Deactivate BDA", note: "Deactivate BDA" },
 
       // commission
       { action: "Add Commission", note: "Add Commission" },
@@ -474,12 +479,14 @@ const roles = [
       { action: "View Supervisor", note: "View Supervisor" },
       { action: "Edit Supervisor", note: "Edit Supervisor" },
       { action: "Delete Supervisor", note: "Delete Supervisor" },
+      { action: "Deactivate Supervisor", note: "Deactivate Supervisor" },
       
       // Support Agent
       { action: "Add Support Agent", note: "Add Support Agent" },
       { action: "View Support Agent", note: "View Support Agent" },
       { action: "Edit Support Agent", note: "Edit Support Agent" },
       { action: "Delete Support Agent", note: "Delete Support Agent" },
+      { action: "Deactivate Support Agent", note: "Deactivate Support Agent" },
 
       // Lead
       { action: "Add Lead", note: "Add Lead" },
@@ -488,11 +495,11 @@ const roles = [
       { action: "Delete Lead", note: "Delete Lead" },
 
       // Trial
-      { action: "Add Trial", note: "Add Trial" },
+      { action: "Convert Trial", note: "Convert Trial" },
       { action: "View Trial", note: "View Trial" },
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
-      { action: "Extend Trial", note: "Extend Trial" },
+      { action: "Convert Licenser", note: "Convert Licenser" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -505,13 +512,18 @@ const roles = [
       { action: "View Ticket", note: "View Ticket" },
       { action: "Edit Ticket", note: "Edit Ticket" },
       { action: "Delete Ticket", note: "Delete Ticket" },
-
+      
        // Praise
        { action: "Add Praise", note: "Add Praise" },
        { action: "View Praise", note: "View Praise" },
        { action: "Edit Praise", note: "Edit Praise" },
-       { action: "Edit Praise", note: "Edit Praise" },
- 
+       { action: "Delete Praise", note: "Delete Praise" },
+      
+       // Activity
+       { action: "Add Activity", note: "Add Activity" },
+       { action: "View Activity", note: "View Activity" },
+       { action: "Edit Activity", note: "Edit Activity" },
+       { action: "Delete Activity", note: "Delete Activity" },
     ],
   },
   {
@@ -1278,5 +1290,51 @@ exports.addOrUpdateRoles = async (req, res) => {
     console.error('Error adding or updating roles:', error);
     // Return error response
     res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+// PUT function to add or edit business card fields
+exports.updateBusinessCard = async (req, res) => {
+  try {
+    const updates = req.body;
+
+    // Validate request body
+    if (!updates || typeof updates !== "object") {
+      return res.status(400).json({ message: "Invalid request body" });
+    }
+
+    // Update the first document or create a new one if none exists
+    const updatedCard = await BusinessCard.findOneAndUpdate(
+      {},
+      { $set: updates },
+      { new: true, upsert: true } // `upsert: true` creates the document if it doesn't exist
+    );
+    const generatedDateTime = generateTimeAndDateForDB(
+      "Asia/Kolkata",
+      "DD/MM/YY",
+      "/"
+    );
+    const actionTime = generatedDateTime.dateTime;
+
+     // Log the operation
+        const activity = new ActivityLog({
+          userId: req.user.id,
+          operationId: updatedCard._id,
+          activity: `${req.user.userName} successfully Updated Business card settings.`,
+          timestamp: actionTime,
+          action: "Update",
+          status: "Succesfully",
+          screen: "Business card",
+        });
+        await activity.save();
+
+    res.status(200).json({
+      message: "Business card updated successfully",
+      businessCard: updatedCard,
+    });
+  } catch (error) {
+    console.error("Error updating business card:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

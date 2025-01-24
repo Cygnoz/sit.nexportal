@@ -26,6 +26,8 @@ router.post('/roles',userController.addOrUpdateRoles)
 router.get('/countries',userController.getCountriesData)
 router.get('/dropdown-data',userController.getRegionsAreasBdas)
 
+router.put("/business-cards",verifyToken,checkPermission('View Region'), userController.updateBusinessCard);
+
 router.get('/activity-logs/:id',verifyToken,checkPermission('View Region'), regionController.getActivityLogByOperationId);
 router.get('/area-activity-logs/:id',verifyToken,checkPermission('View Area'), areaController.getActivityLogByAreaId);
 
