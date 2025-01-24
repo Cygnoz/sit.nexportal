@@ -346,6 +346,7 @@ exports.convertLeadToTrial = async (req, res, next) => {
 
     const { leadId } = req.params; // Get the lead ID from request parameters
     const { organizationName,customerStatus, contactName, contactNum, email, password ,startDate,endDate} = req.body;
+    const trialDate = moment().format('YYYY-MM-DD');
 
 
     // Validate request body
@@ -391,7 +392,8 @@ exports.convertLeadToTrial = async (req, res, next) => {
             endDate,    // Save formatted date
             organizationId,
             organizationName,
-            email
+            email,
+            trialDate
           },
           { new: true } // Return the updated document
         );
@@ -997,8 +999,11 @@ exports.extendTrialDuration = async (req, res, next) => {
 exports.getStatistics = async (req, res) => {
   try {
     const userId = req.user.id;
+
     const query = await filterByRole(userId);
     
+    
+
     // Fetch all leads that match the query
     const leads = await Leads.find(query);
 
