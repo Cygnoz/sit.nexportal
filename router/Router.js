@@ -6,6 +6,8 @@ const TicketController = require('../controller/ticketsController')
 
 const PraiseController = require('../controller/praiseController')
 
+const chatController = require('../controller/ticketChat')
+
 const checkPermission = require('../controller/authController/permission');
 
 const { verifyToken } = require('../controller/authController/middleware');
@@ -22,6 +24,11 @@ router.get('/tickets',verifyToken,checkPermission('View Ticket'),TicketControlle
 router.get('/unassigned-ticket',verifyToken,checkPermission('View Ticket'),TicketController.getAllUnassignedTickets)
 
 router.get('/ticket/:ticketId',verifyToken,checkPermission('View Ticket'),TicketController.getTicket)
+
+//chat
+router.post('/chat', chatController.sendMessage);
+ 
+router.get('/history/:ticketId',chatController.getChatHistory);
 
 router.get('/getCustomers',TicketController.getCustomers)
 

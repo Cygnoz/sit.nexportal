@@ -179,6 +179,7 @@ exports.unassignedTickets = async (req, res, next) => {
 
     res.status(201).json({
       message: "Your ticket has been created successfully!",
+      ticketId:savedTicket._id
     });
     
     next();
