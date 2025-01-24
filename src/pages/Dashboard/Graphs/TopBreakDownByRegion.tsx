@@ -86,7 +86,7 @@ function TopBreakDownByRegion({}: Props) {
           <SelectDropdown
             setSelectedValue={setSelectedRegion}
             selectedValue={selectedRegion}
-            placeholder="All Regions"
+            placeholder="All Regions"      
             filteredData={getRegion}
             searchPlaceholder="Search Region"
             width="w-44"
