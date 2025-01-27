@@ -12,10 +12,10 @@ import CheckIcon from "../../../assets/icons/CheckIcon";
 import DownloadIcon from "../../../assets/icons/DownloadIcon";
 import Trash from "../../../assets/icons/Trash";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
-import bcardback from "../../../assets/image/Business-card-back.png";
-import idcard from "../../../assets/image/ID-card 1.png";
-import ViewIcon from "../../../assets/icons/ViewIcon";
-import bcardfront from "../../../assets/image/Business-card-front.png";
+// import bcardback from "../../../assets/image/Business-card-back.png";
+// import idcard from "../../../assets/image/ID-card 1.png";
+// import ViewIcon from "../../../assets/icons/ViewIcon";
+// import bcardfront from "../../../assets/image/Business-card-front.png";
 import useApi from "../../../Hooks/useApi";
 import { RMData } from "../../../Interfaces/RM";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
@@ -25,12 +25,15 @@ import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
-import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
-import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
+import IdBcardModal from "../../../components/modal/IdBcardModal";
+// import Modal from "../../../components/modal/Modal";
+// import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+// import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
 interface RMProps {
   onClose: () => void;
   editId?: string;
+  
 }
 const baseSchema = {
   userName: Yup.string().required("Full name is required"),
@@ -78,7 +81,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     "Company Information",
     "Upload Files",
     "Bank Information",
-    "ID & Business Card",
+    // "ID & Business Card",
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
@@ -94,17 +97,9 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
-  const [isModalOpen, setIsModalOpen] = useState({
-    viewBusinesscard: false,
-    viewIdcard: false,
-  });
-
-  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false) => {
-    setIsModalOpen((prevState: any) => ({
-      ...prevState,
-      viewBusinesscard: viewBusinesscard,
-      viewIdcard: viewIdcard,
-    }));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const handleModalToggle = () => {
+    setIsModalOpen((prev) => !prev);
   };
 
   const onSubmit: SubmitHandler<RMData> = async (data, event) => {
@@ -126,7 +121,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       if (response && !error) {
         console.log("Response:", response);
         toast.success(response.data.message); // Show success toast
-        onClose(); // Close the form/modal
+        handleModalToggle()
       } else if (error) {
         console.error("Error:", error.response || error.message);
         const errorMessage =
@@ -168,27 +163,22 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     if (
       errors &&
       Object.keys(errors).length > 0 &&
-      activeTab == "ID & Business Card"
+      activeTab === "Bank Information"
     ) {
-      // Get the first error field
       const firstErrorField = Object.keys(errors)[0];
-
-      // Find the tab containing this field
       const tabIndex: any = StaffTabsList.findIndex((tab) =>
         tab.validationField.includes(firstErrorField)
       );
 
-      // If a matching tab is found, switch to it
       if (tabIndex >= 0) {
         setActiveTab(tabs[tabIndex]);
       }
+
       const errorrs: any = errors;
-      // Log all errors
       Object.keys(errorrs).forEach((field) => {
         console.log(`${field}: ${errorrs[field]?.message}`);
       });
 
-      // Show the first error message in a toast
       toast.error(errorrs[firstErrorField]?.message);
     }
   }, [errors]);
@@ -369,7 +359,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
   return (
     <>
-      <div className="p-5 bg-white rounded shadow-md   hide-scrollbar">
+      <div className="p-5 bg-white rounded shadow-md hide-scrollbar">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="text-[#303F58] font-bold text-lg">
@@ -772,7 +762,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
               </div>
             )}
 
-            {activeTab === "ID & Business Card" && (
+            {/* {activeTab === "ID & Business Card" && (
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                   <p className="text-[#303F58] text-base font-bold">
@@ -820,7 +810,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
 
           <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
@@ -845,14 +835,16 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
             )}
             {tabs.indexOf(activeTab) === tabs.length - 1 ? (
               <Button
-                variant="primary"
-                className="h-8 text-sm border rounded-lg"
-                size="lg"
-                type="submit"
-                onClick={() => setSubmit(true)}
-              >
-                Done
-              </Button>
+              variant="primary"
+              className="h-8 text-sm border rounded-lg"
+              size="lg"
+              type="submit"
+              onClick={() => {
+                setSubmit(true);
+              }}
+            >
+              Done
+            </Button>
             ) : (
               <Button
                 variant="primary"
@@ -866,7 +858,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
           </div>
         </form>
       </div>
-      <Modal
+      {/* <Modal
         open={isModalOpen.viewBusinesscard}
         onClose={() => handleModalToggle()}
         className="w-[35%]"
@@ -879,6 +871,11 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         className="w-[35%]"
       >
         <AMIdCardView onClose={() => handleModalToggle()} />
+      </Modal> */}
+      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <IdBcardModal
+        parentOnClose={onClose}
+        onClose={handleModalToggle}/>
       </Modal>
     </>
   );

@@ -104,5 +104,8 @@ export const endPoints = {
   LOGOUT:"/logout", 
 
   // Ticket Rising
-  UNASSIGNED_TICKETS:'/unassigned-ticket'
+  UNASSIGNED_TICKETS:'/unassigned-ticket',
+
+  // BUSINESSCARD
+  BUSINESSCARD:'/business-cards',
 };
