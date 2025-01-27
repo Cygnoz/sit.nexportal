@@ -162,7 +162,6 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
             >
                 <AMIdCardView onClose={() => handleModalToggle()} />
             </Modal>
-
         </div>
     )
 }

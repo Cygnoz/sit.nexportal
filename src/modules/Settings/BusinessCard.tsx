@@ -79,7 +79,6 @@ function BusinessCard({ }: Props) {
         },
     };
 
-    // State to manage the active layout
     const [activeLayout, setActiveLayout] = useState<LayoutKeys>("Layout1");
     const { Front: ActiveFront, Back: ActiveBack } = layoutComponents[activeLayout];
 
@@ -102,7 +101,6 @@ function BusinessCard({ }: Props) {
                 console.log(error.response.data.message);
             }
         }
-
         catch (err) {
             console.error(err, "Error submiting bcard data")
         }

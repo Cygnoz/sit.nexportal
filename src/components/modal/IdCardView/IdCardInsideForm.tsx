@@ -78,6 +78,7 @@ const IdCardInsideForm = ({onClose}: Props) => {
 </div>
 
     </div> */}
+    
   <IdCardLayout/>
   
   </div>
