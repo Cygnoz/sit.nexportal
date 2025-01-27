@@ -15,7 +15,6 @@ const IdCardInsideForm = ({onClose}: Props) => {
         >
           &times;
         </button>
-
       </div>
     <div className="flex justify-center items-center   p-8 mx-5">
    

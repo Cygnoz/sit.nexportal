@@ -71,7 +71,6 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
         }
         console.log(businessCardData);
         
-    
     return (
         <div className="p-5 bg-white rounded shadow-md hide-scrollbar">
             <div className="flex justify-between items-center mb-4">

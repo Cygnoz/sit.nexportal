@@ -107,7 +107,6 @@ function BusinessCard({ }: Props) {
             console.error(err, "Error submiting bcard data")
         }
     }
-    
 
     useEffect(() => {
         if (businessCardData) {
