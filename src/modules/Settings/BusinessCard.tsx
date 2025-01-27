@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Button from "../../components/ui/Button"
 import UserIcon from "../../assets/icons/UserIcon"
 import EmailIcon from "../../assets/icons/EmailIcon"
@@ -17,27 +17,22 @@ import PhoneIcon from "../../assets/icons/PhoneIcon"
 // import previewFront from '../../assets/image/preview-card-front.png'
 // import previewBack from '../../assets/image/preview-card-back.png'
 import { Layout1Front, Layout2Front, Layout3Front, Layout1Back, Layout2Back, Layout3Back } from "../../components/ui/BSLayout"
+import useApi from "../../Hooks/useApi"
+import { endPoints } from "../../services/apiEndpoints"
+import toast from "react-hot-toast"
+import { useRegularApi } from "../../context/ApiContext"
 // 
 type Props = {}
 
 function BusinessCard({ }: Props) {
     const tabs = ["Layout", "Content"]
-    // const {request : addBusinessCard}=useApi('put',3003)
-    const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({
-        "Profile Photo": true,
-        "Company Logo": true,
-        "Name": true,
-        "Employee ID": true,
-        "Email": true,
-        "Logo Title": true,
-        "Designation": true,
-        "Region": true,
-        "Address": true,
-        "phoneNo": true,
-        "CompanyInfo": true,
-    });
+    const { request: addBusinessCard } = useApi('put', 3003)
+    // const [bcardData, setBcardData] = useState<any>(null)
+    const { businessCardData } = useRegularApi()
 
-    const layoutToggle={
+    const [toggleStates, setToggleStates] = useState<any>({});
+
+    const layoutToggle = {
         "Profile Photo": true,
         "Company Logo": true,
         "Name": true,
@@ -53,9 +48,10 @@ function BusinessCard({ }: Props) {
 
     // Toggle handler for individual item
     const handleToggle = (item: string) => {
-        setToggleStates((prev) => ({
+        setToggleStates((prev: any) => ({
             ...prev,
             [item]: !prev[item]
+
         }));
     };
 
@@ -86,6 +82,55 @@ function BusinessCard({ }: Props) {
     // State to manage the active layout
     const [activeLayout, setActiveLayout] = useState<LayoutKeys>("Layout1");
     const { Front: ActiveFront, Back: ActiveBack } = layoutComponents[activeLayout];
+
+
+    const handleSubmit = async () => {
+        const bCardData={
+            layout: activeLayout,
+            ...toggleStates
+        }
+        console.log(bCardData);
+        try {
+            const { response, error } = await addBusinessCard(endPoints.BUSINESSCARD,bCardData)            
+            console.log(response, "res");
+            console.log(error, "err");
+            if (response && !error) {
+                console.log(response.data);
+                toast.success(response.data.message)
+            }
+            else {
+                console.log(error.response.data.message);
+            }
+        }
+        catch (err) {
+            console.error(err, "Error submiting bcard data")
+        }
+    }
+
+    useEffect(() => {
+        if (businessCardData) {
+            const { layout, ...toggles } = businessCardData;
+
+            setActiveLayout(layout);
+            setToggleStates({
+                "Profile Photo": toggles?.profilePhoto,
+                "Company Logo": toggles?.companyLogo,
+                "Name": toggles?.name,
+                "Employee ID": toggles?.employeeId,
+                "Email": toggles?.email,
+                "Logo Title": toggles?.logoTitle,
+                "Designation": toggles?.designation,
+                "Region": toggles?.region,
+                "Address": toggles?.address,
+                "phoneNo": toggles?.phoneNo,
+                "CompanyInfo": toggles?.companyInfo,
+            });
+        }
+    }, []);
+    //   console.log(businessCardData);
+
+
+
     return (
         <>
 
@@ -487,7 +532,7 @@ function BusinessCard({ }: Props) {
                     <div className="p-4 bg-[#F5F9FC] rounded-lg mt-4">
                         <p className="my-2 text-[#000000] text-base font-medium">Preview</p>
                         <div className="my-3">
-                            <ActiveFront toggleState={toggleStates}/>
+                            <ActiveFront toggleState={toggleStates} />
                         </div>
                         <div>
                             <ActiveBack toggleState={toggleStates} />
@@ -496,7 +541,7 @@ function BusinessCard({ }: Props) {
                             <Button variant="tertiary" className="w-28 h-10">
                                 <p className="ms-6">Cancel</p>
                             </Button>
-                            <Button variant="primary" className="w-32 h-10">
+                            <Button onClick={handleSubmit} variant="primary" className="w-32 h-10">
                                 <p className="ms-9">Save</p>
                             </Button>
                         </div>
