@@ -15,12 +15,30 @@ const RecentActivityView: React.FC = () => {
   const { id } = useParams();
   const [data, setData] = useState<any[]>([]);
 
+
+  const parseTimestamp = (timestamp:any) => {
+    const [date, time] = timestamp.split(" "); // Split the date and time
+    const [day, month, year] = date.split("/"); // Split the day, month, and year
+    const [hours, minutes, seconds] = time.split(":"); // Split the hours, minutes, and seconds
+  
+    // Create a new Date object (assuming IST timezone is local)
+    return new Date(`${20 + year}-${month}-${day}T${hours}:${minutes}:${seconds}`);
+  };
+  
+  // Example usage:
+  const timestamp = "24/01/25 18:06:53 (IST)";
+  const parsedDate = parseTimestamp(timestamp);
+  
+
+
   const getRecentActivities = async () => {
     try {
       const { response, error } = await getActivities(
         `${endPoints.ACTIVITIES}/${id}`
       );
       if (response && !error) {
+       //console.log(response.data);
+        
         setData(response.data);
       } else {
         console.log(error.data.message);
@@ -33,6 +51,8 @@ const RecentActivityView: React.FC = () => {
   useEffect(() => {
     getRecentActivities();
   }, []);
+
+  
   // Updated screenIcons with an array for possible screen names
   const screenIcons = [
     {
@@ -103,18 +123,21 @@ const RecentActivityView: React.FC = () => {
                   </div>
                   {/* Activity Details */}
                   <div>
-                    <p className="text-gray-600 text-xs font-normal">
-                      {new Date(activity.timestamp).toLocaleDateString(
-                        "en-US",
-                        { year: "numeric", month: "short", day: "numeric" }
-                      )}
-                      <span className="text-xs font-normal ml-4">
-                        {new Date(activity.timestamp).toLocaleTimeString(
-                          "en-US",
-                          { hour: "2-digit", minute: "2-digit", hour12: true }
-                        )}
-                      </span>
-                    </p>
+                  <p className="text-gray-600 text-xs font-normal">
+  {parsedDate.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })}
+  <span className="text-xs font-normal ml-4">
+    {parsedDate.toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    })}
+  </span>
+</p>
+
 
                     <p className="text-gray-800 font-semibold text-xs">
                       {activity.activity}

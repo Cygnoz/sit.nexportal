@@ -183,6 +183,8 @@ function UserLogHome({}: Props) {
     { label: 'Support Agent', value: 'Support Agent' },
     { label: 'Region Manager', value: 'Region Manager' },
     { label: 'BDA', value: 'BDA' },
+    { label: 'Sales Admin', value: 'Sales Admin' },
+    { label: 'Support Admin', value: 'Support Admin' },
   ];
   
 

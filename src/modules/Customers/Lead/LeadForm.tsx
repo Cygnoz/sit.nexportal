@@ -174,7 +174,7 @@ const salutation = [
   
   }, [watch("regionId"), dropDownAreas,areaId,regionId]);
   
-console.log(watch("regionId"));
+//console.log(watch("regionId"));
 
 
   // UseEffect for updating regions
@@ -187,7 +187,7 @@ console.log(watch("regionId"));
       label: bda?.userName,
     }));
 
-    console.log(transformedBda);
+    //console.log(transformedBda);
     
     
     // Update the state without using previous `data` state

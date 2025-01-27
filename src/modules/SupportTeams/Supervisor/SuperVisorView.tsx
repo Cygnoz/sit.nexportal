@@ -224,7 +224,7 @@ const SuperVisorView = ({staffId}: Props) => {
     <>
       <div ref={topRef}>
         <div className="flex items-center text-[16px] my-2 space-x-2">
-          <p onClick={()=>navigate('/supervisor')}  className="font-bold cursor-pointer  text-[#820000] ">SuperVisor</p>
+          <p onClick={()=>navigate('/supervisor')}  className="font-bold cursor-pointer  text-[#820000] ">Supervisor</p>
           <ChevronRight color="#4B5C79" size={18} />
           <p className="font-bold text-[#303F58] ">
             {" "}
@@ -322,7 +322,7 @@ const SuperVisorView = ({staffId}: Props) => {
 
               </div>
               <p className="font-medium text-xs bg-[#D5DCB3] h-8 w-20 p-2 mt-4 rounded-2xl ml-40">
-                SuperVisor
+                Supervisor
               </p>
             </div>
             <hr />
@@ -389,7 +389,7 @@ const SuperVisorView = ({staffId}: Props) => {
               </div>
               <p className="text-sm font-normal  text-white  py-2">
                 {getData.svData?.dateOfJoining
-                  ? new Date(getData.svData.dateOfJoining).toLocaleDateString()
+                  ? new Date(getData.svData.dateOfJoining).toLocaleDateString("en-GB")
                   : "N/A"}
               </p>
               <hr />

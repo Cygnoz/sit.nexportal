@@ -232,7 +232,7 @@ const SAViewForm = ({ onClose }: Props) => {
                             <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Role </h3>
                             <div className="flex">
                                 <UserIcon color="#4B5C79" />
-                                <p className="text-sm font-semibold ms-2">Regional Manager</p>
+                                <p className="text-sm font-semibold ms-2">Support Agent</p>
 
                             </div>
                             <hr />

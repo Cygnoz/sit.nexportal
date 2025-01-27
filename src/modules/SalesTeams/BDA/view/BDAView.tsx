@@ -458,7 +458,7 @@ const BDAView = ({staffId}: Props) => {
       <div className=" mt-4">
         <Table<LeadData> data={data.bdaViewDetails.TransformedLead} columns={columns} headerContents={{
           title: "Leads Details",
-          search: { placeholder: 'Search BDA by Name' },
+          search: { placeholder: 'Search Lead Details' },
         }}
         actionList={[
           { label: 'view', function: handleView },
