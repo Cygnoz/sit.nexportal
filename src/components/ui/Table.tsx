@@ -383,7 +383,6 @@ const Table = <T extends object>({
   })}
 </div>
 
-
                   </td>
                 )}
               </tr>
