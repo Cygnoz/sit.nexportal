@@ -28,6 +28,9 @@ router.get('/dropdown-data',userController.getRegionsAreasBdas)
 
 router.put("/business-cards",verifyToken,checkPermission('View Region'), userController.updateBusinessCard);
 
+router.get('/business-card',verifyToken,checkPermission('View Region'), userController.getBusinessCard);
+
+
 router.get('/activity-logs/:id',verifyToken,checkPermission('View Region'), regionController.getActivityLogByOperationId);
 router.get('/area-activity-logs/:id',verifyToken,checkPermission('View Area'), areaController.getActivityLogByAreaId);
 

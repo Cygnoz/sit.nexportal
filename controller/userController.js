@@ -1338,3 +1338,26 @@ exports.updateBusinessCard = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+exports.getBusinessCard = async (req, res) => {
+  try {
+    // Find the first business card document
+    const businessCard = await BusinessCard.findOne({});
+
+    if (!businessCard) {
+      return res.status(404).json({
+        message: "Business card settings not found",
+      });
+    }
+
+    res.status(200).json({
+      message: "Business card settings retrieved successfully",
+      businessCard,
+    });
+  } catch (error) {
+    console.error("Error retrieving business card settings:", error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
