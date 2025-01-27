@@ -373,7 +373,7 @@ exports.convertLeadToTrial = async (req, res, next) => {
 
     // Send POST request to external API
     const response = await axios.post(
-      'https://dev.billbizz.cloud:5004/create-client',
+      '	https://billbizzapi.azure-api.net/organization/create-client',
       requestBody,
       axiosConfig
     );
