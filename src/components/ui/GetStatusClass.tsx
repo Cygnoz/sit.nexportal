@@ -6,6 +6,8 @@ export  const getStatusClass = (status: string | undefined) => {
         return "bg-cyan-800 text-center text-white py-1 px-2 rounded-lg";
       case "In progress":
         return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
+        case "Inprogress":
+          return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
       case "In Progress":
         return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
       case "Proposal":

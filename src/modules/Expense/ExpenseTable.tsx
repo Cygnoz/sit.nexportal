@@ -444,7 +444,7 @@ const ExpenseTable = <T extends object>({
         </table>
       </div>
 
-      {!noPagination && (
+      {data&&data.length > 10 && !noPagination && (
         <div className="flex justify-between items-center mt-4">
           <div className="text-xs text-[#71736B] font-medium flex gap-2">
             Showing {currentPage} of {totalPages || 1}

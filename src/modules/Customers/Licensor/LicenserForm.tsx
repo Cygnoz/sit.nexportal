@@ -390,7 +390,7 @@ console.log(watch("regionId"));
               />
               <Input
                 label="City"
-                placeholder="Enter Company Name"
+                placeholder="Enter City Name"
                 error={errors.city?.message}
                 {...register("city")}
               />

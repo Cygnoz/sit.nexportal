@@ -94,6 +94,8 @@ function RegionView({}: Props) {
           ...prevData,
           regionData: response.data,
         }));
+       // console.log(response.data);
+        
       } else {
         console.error(error.response.data.message);
       }
@@ -141,6 +143,7 @@ function RegionView({}: Props) {
       const {response,error}=await getAreaDetails(`${endPoints.GET_REGIONS}/${id}/areas`)
       if(response && !error){
        setData((prev)=>({...prev,regionAreaData:response.data}))
+       // console.log(response.data);
         
       }else{
         console.log(error.response.data.message);
@@ -366,10 +369,10 @@ function RegionView({}: Props) {
     <div className="flex flex-col w-full">
       <div className="flex justify-between items-center w-full mt-2">
         <div className="flex items-center gap-1">
-          {data?.regionData?.regionManager.userImage ? (
+          {data?.regionAreaData?.regionManager?.userImage && data?.regionAreaData?.regionManager?.userImage?.length > 50  ? (
             <img
               className="w-10 h-10 rounded-full"
-              src={data?.regionData?.regionManager.userImage}
+              src={data?.regionData?.regionManager?.userImage}
               alt="User Image"
             />
           ) : (
