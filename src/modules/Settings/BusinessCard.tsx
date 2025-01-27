@@ -102,6 +102,7 @@ function BusinessCard({ }: Props) {
                 console.log(error.response.data.message);
             }
         }
+        
         catch (err) {
             console.error(err, "Error submiting bcard data")
         }
