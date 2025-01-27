@@ -15,7 +15,7 @@ type Props = {
 const ViewOverflow = ({ leadData, getOneLead }: Props) => {
   const { request: editLead } = useApi("put", 3001);
   const [isOpen, setIsOpen] = useState(false);
-  const statuses = ["New", "Contacted", "In progress", "Proposal", "Lost", "Won"];
+  const statuses = ["New", "Contacted", "Inprogress", "Lost", "Won"];
   const [lead, setLead] = useState<any>();
   const dropdownRef = useRef(null);
 
@@ -23,8 +23,8 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
     const statusMap: { [key: string]: { bgColor: string; textColor: string } } = {
       New: { bgColor: "bg-blue-500", textColor: "text-white" },
       Contacted: { bgColor: "bg-cyan-800", textColor: "text-white" },
-      "In progress": { bgColor: "bg-yellow-100", textColor: "text-black" },
-      Proposal: { bgColor: "bg-violet-300", textColor: "text-black" },
+     Inprogress: { bgColor: "bg-yellow-100", textColor: "text-black" },
+     
       Lost: { bgColor: "bg-red-500", textColor: "text-white" },
       Won: { bgColor: "bg-green-500", textColor: "text-white" },
     };
@@ -151,10 +151,10 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
 
         <div className="flex justify-center items-center mt-2">
           <div className="flex h-10 items-center">
-            {renderStep(1, "New", ["New", "Contacted", "In progress", "Proposal", "Won", "Lost"])}
-            {renderStep(2, "Contacted", ["Contacted", "In progress", "Proposal", "Won", "Lost"])}
-            {renderStep(3, "In Progress", ["In progress", "Proposal", "Won", "Lost"])}
-            {renderStep(4, "Proposal", ["Proposal", "Won", "Lost"])}
+            {renderStep(1, "New", ["New", "Contacted", "Inprogress", "Won", "Lost"])}
+            {renderStep(2, "Contacted", ["Contacted", "Inprogress",  "Won", "Lost"])}
+            {renderStep(3, "Inprogress", ["Inprogress",  "Won", "Lost"])}
+            {renderStep(4, "Lost", ["Won", "Lost"])}
             {renderStep(5, lead?.leadStatus == 'Lost' ? 'Lost' : 'Won', [lead?.leadStatus == 'Lost' ? 'Lost' : 'Won'])}
           </div>
         </div>

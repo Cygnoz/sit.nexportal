@@ -211,7 +211,7 @@ const ExpenseForm = ({onClose}: Props) => {
 
           </div>
            )}
-              <div className=" flex justify-end gap-2 mt-6 pb-2 me-3">
+              <div className=" flex justify-end gap-2 mt-6 pb-2 ">
                                  <Button
                                    variant="tertiary"
                                    className="h-8 text-sm border rounded-lg"
