@@ -219,19 +219,25 @@ exports.addSupportAgent = async (req, res, next) => {
 exports.getSupportAgent = async (req, res) => {
   try {
     const { id } = req.params;
-
+ 
+    // Fetch the SupportAgent and populate fields
     const supportAgent = await SupportAgent.findById(id).populate([
       { path: "user", select: "userName phoneNo userImage email employeeId" },
       { path: "region", select: "regionName regionCode" },
       { path: "commission", select: "profileName" },
     ]);
-
+ 
     if (!supportAgent) {
       return res.status(404).json({ message: "Support Agent not found" });
     }
-
+ 
+    // Check if there's a Supervisor with the same region
+    const supervisor = await Supervisor.findOne({ region: supportAgent.region._id })
+      .populate({ path: "user", select: "userName" }); // Fetch supervisor name
+ 
+    // Decrypt fields if they exist
     const decryptField = (field) => (field ? decrypt(field) : field);
-
+ 
     supportAgent.adhaarNo = decryptField(supportAgent.adhaarNo);
     supportAgent.panNo = decryptField(supportAgent.panNo);
     if (supportAgent.bankDetails) {
@@ -239,13 +245,22 @@ exports.getSupportAgent = async (req, res) => {
         supportAgent.bankDetails.bankAccountNo
       );
     }
-
-    res.status(200).json(supportAgent);
+ 
+    // Add supervisor details to the response
+    const response = {
+      ...supportAgent.toObject(),
+      supervisor: supervisor
+        ? { name: supervisor.user.userName, id: supervisor._id }
+        : null,
+    };
+ 
+    res.status(200).json(response);
   } catch (error) {
     console.error("Error fetching Support Agent:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 exports.getAllSupportAgent = async (req, res) => {
   try {
