@@ -207,6 +207,7 @@ exports.addSupportAgent = async (req, res, next) => {
       message: "Support Agent added successfully",
       userId: newUser._id,
       SupportAgent: newSupportAgent._id,
+      newSupportAgent
     });
   } catch (error) {
     logOperation(req, "Failed");
