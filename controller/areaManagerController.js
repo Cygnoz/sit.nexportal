@@ -177,11 +177,17 @@ exports.addAreaManager = async (req, res, next) => {
         if (existingAreaManager) {
           return res.status(400).json({ message: "Area is already assigned to another Area Manager. Try adding another Area." });
         }
-         const [regionManager] = await Promise.all([
-                  RegionManager.findOne({ region: data.region })
-                ]);
+
+        const [regionManager, regionData] = await Promise.all([
+          RegionManager.findOne({ region: data.region }),
+          Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+        ]);
+        
+        //  const [regionManager] = await Promise.all([
+        //           RegionManager.findOne({ region: data.region })
+        //         ]);
                 
-                // Send specific error responses based on missing data
+        //         // Send specific error responses based on missing data
                 if (!regionManager) {
                   return res.status(404).json({ message: "Region Manager not found for the provided region." });
                 }
@@ -210,7 +216,11 @@ exports.addAreaManager = async (req, res, next) => {
       userId: newUser._id,
       areaManagerId: newAreaManager._id,
       newAreaManager,
-      employeeId:newUser.employeeId
+      employeeId:newUser.employeeId,
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
   } catch (error) {
     logOperation(req, "Failed");

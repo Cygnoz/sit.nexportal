@@ -172,10 +172,14 @@ exports.addBda = async (req, res, next) => {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
-    const [regionManager, areaManager] = await Promise.all([
-          RegionManager.findOne({ region: data.region }),
-          AreaManager.findOne({ area: data.area })
-        ]);
+    const [regionManager, areaManager, regionData] = await Promise.all([
+      RegionManager.findOne({ region: data.region }),
+      AreaManager.findOne({ area: data.area }),
+      Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+    ]);
+    
+   
+    
         
         // Send specific error responses based on missing data
         if (!regionManager) {
@@ -211,7 +215,11 @@ exports.addBda = async (req, res, next) => {
       userId: newUser._id,
       bdaId: newBda._id,
       newBda,
-      employeeId:newUser.employeeId
+      employeeId:newUser.employeeId,
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
   } catch (error) {
     logOperation(req, "Failed");
