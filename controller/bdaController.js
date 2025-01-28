@@ -210,6 +210,7 @@ exports.addBda = async (req, res, next) => {
       message: "BDA added successfully",
       userId: newUser._id,
       bdaId: newBda._id,
+      newBda
     });
   } catch (error) {
     logOperation(req, "Failed");

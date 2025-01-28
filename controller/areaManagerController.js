@@ -209,6 +209,7 @@ exports.addAreaManager = async (req, res, next) => {
       message: "Area Manager added successfully",
       userId: newUser._id,
       areaManagerId: newAreaManager._id,
+      newAreaManager
     });
   } catch (error) {
     logOperation(req, "Failed");
