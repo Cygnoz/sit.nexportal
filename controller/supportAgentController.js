@@ -181,6 +181,9 @@ exports.addSupportAgent = async (req, res, next) => {
         message: "supervisor not found for the provided region.",
       });
     }
+    const [ regionData] = await Promise.all([
+      Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+    ]);
 
     // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
 
@@ -208,7 +211,11 @@ exports.addSupportAgent = async (req, res, next) => {
       userId: newUser._id,
       SupportAgent: newSupportAgent._id,
       newSupportAgent,
-      employeeId:newUser.employeeId
+      employeeId:newUser.employeeId,
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
   } catch (error) {
     logOperation(req, "Failed");

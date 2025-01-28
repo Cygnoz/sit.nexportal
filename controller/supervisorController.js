@@ -177,6 +177,10 @@ exports.addSupervisor = async (req, res, next) => {
           return res.status(400).json({ message: "Region is already assigned to another Supervisor . Try adding another region." });
         }
 
+        const [ regionData] = await Promise.all([
+          Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+        ]);
+
     // const emailSent = await sendCredentialsEmail(data.email, data.password,data.userName);
 
     // if (!emailSent) {
@@ -202,7 +206,11 @@ exports.addSupervisor = async (req, res, next) => {
       userId: newUser._id,
       Supervisor: newSupervisor._id,
       newSupervisor,
-      employeeId:newUser.employeeId
+      employeeId:newUser.employeeId,
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
   } catch (error) {
     logOperation(req, "Failed");
