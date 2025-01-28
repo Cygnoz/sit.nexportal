@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
 import useApi from "../Hooks/useApi";
 import { AreaData } from "../Interfaces/Area";
 import { BDAData } from "../Interfaces/BDA";
@@ -8,13 +8,11 @@ import { useUser } from "./UserContext";
 import { TotalCounts } from "../Interfaces/Counts";
 import { TotalCustomersCount } from "../Interfaces/CustomerCounts";
 
-
 interface DropdownApi {
   regions: [];
   areas: [];
   bdas: [];
   supportAgents: [];
-  message: string;
   commissions: [];
 }
 
@@ -43,16 +41,12 @@ type ApiContextType = {
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
 
-export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
+export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { user } = useUser();
 
-
- 
-  
   // API hooks
   const { request: getAllRegion } = useApi("get", 3003);
   const { request: getAllArea } = useApi("get", 3003);
-  const { request: getAllBDA } = useApi("get", 3002);
   const { request: getAllCounts } = useApi("get", 3003);
   const { request: getAllCustomersCounts } = useApi("get", 3001);
   const { request: getAllCountries } = useApi("get", 3003);
@@ -61,12 +55,10 @@ export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
   const { request: getaRM } = useApi("get", 3002);
   const { request: getaAM } = useApi("get", 3002);
   const { request: getaSV } = useApi("get", 3003);
-
   // State variables
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
   const [allAreas, setAllAreas] = useState<AreaData[]>([]);
-  const [allBDA, setAllBDA] = useState<BDAData[]>([]);
   const [allCountries, setAllCountries] = useState<[]>([]);
   const [regionId, setRegionId] = useState<any>(null);
   const [areaId, setAreaId] = useState<any>(null);
@@ -74,150 +66,57 @@ export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
   const [totalCounts, setTotalCounts] = useState<TotalCounts>();
   const [customersCounts, setTotalCustomersCounts] = useState<TotalCustomersCount>();
 
-  // Fetch Functions
-  const fetchRegions = async () => {
+  // Fetching Data Functions
+  const fetchData = useCallback(async () => {
     try {
-      const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
-      if (response && !error) {
-        setAllRegions(response.data.regions);
+      const regionResponse = await getAllRegion(endPoints.GET_REGIONS);
+      setAllRegions(regionResponse?.response?.data?.regions || []);
+
+      const dropdownResponse = await getAllDropdown(endPoints.DROPDOWN_DATA);
+      setDropdownApi(dropdownResponse?.response?.data || null);
+
+      const areaResponse = await getAllArea(endPoints.GET_AREAS);
+      setAllAreas(areaResponse?.response?.data?.areas || []);
+
+      const countryResponse = await getAllCountries(endPoints.GET_COUNTRY);
+      setAllCountries(countryResponse?.response?.data?.[0]?.countries || []);
+
+      const ticketsResponse = await getAllTickets(endPoints.GET_TICKETS);
+      setAllTicketsCount({
+        allUnassigned: ticketsResponse?.response?.data?.unassignedTickets,
+        allTickets: ticketsResponse?.response?.data?.unresolvedTickets,
+      });
+
+      const countsResponse = await getAllCounts(endPoints.COUNTS);
+      setTotalCounts(countsResponse?.response?.data);
+
+      const customerCountsResponse = await getAllCustomersCounts(endPoints.CUSTOMERCOUNTS);      
+      setTotalCustomersCounts(customerCountsResponse?.response?.data);
+
+      if (user?.role === "Supervisor") {
+        const supervisorResponse = await getaSV(`${endPoints.SUPER_VISOR}/${user.userId}`);
+        setRegionId(supervisorResponse?.response?.data?.region?._id);
+      } else if (user?.role === "Region Manager") {
+        const regionManagerResponse = await getaRM(`${endPoints.GET_ALL_RM}/${user.userId}`);
+        setRegionId(regionManagerResponse?.response?.data?.regionManager?.region?._id);
+      } else if (user?.role === "Area Manager") {
+        const areaManagerResponse = await getaAM(`${endPoints.GET_ALL_AM}/${user.userId}`);
+        setRegionId(areaManagerResponse?.response?.data?.region?._id);
+        setAreaId(areaManagerResponse?.response?.data?.area?._id);
       }
-    } catch {}
-  };
-
-  const fetchDropdown = async () => {
-    try {
-      const { response, error } = await getAllDropdown(endPoints.DROPDOWN_DATA);
-      if (response && !error) {
-        setDropdownApi(response.data);
-      }
-    } catch {}
-  };
-
-  const fetchAreas = async () => {
-    try {
-      const { response, error } = await getAllArea(endPoints.GET_AREAS);
-      if (response && !error) {
-        setAllAreas(response.data.areas);
-      }
-    } catch {}
-  };
-
-  const getCountries = async () => {
-    try {
-      const { response, error } = await getAllCountries(endPoints.GET_COUNTRY);
-      if (response && !error) {
-        setAllCountries(response.data[0].countries);
-      }
-    } catch {}
-  };
-
-  const getBDAs = async () => {
-    try {
-      const { response, error } = await getAllBDA(endPoints.BDA);
-      if (response && !error) {
-        const transformedBDA =
-          response.data.bda?.map((bda: any) => ({
-            ...bda,
-            dateOfJoining: bda?.dateOfJoining
-              ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
-              : "N/A",
-            loginEmail: bda.user?.email,
-            bdaName: bda.user?.userName,
-          })) || [];
-        setAllBDA(transformedBDA);
-      }
-    } catch {}
-  };
-
-  const getAllUsersCounts = async () => {
-    try {
-      const { response, error } = await getAllCounts(endPoints.COUNTS);
-      if (response && !error) {
-        setTotalCounts(response.data);
-      }
-    } catch {}
-  };
-
-  const getAllCustomerCounts = async () => {
-    try {
-      const { response, error } = await getAllCustomersCounts(endPoints.CUSTOMERCOUNTS);
-      if (response && !error) {
-        setTotalCustomersCounts(response.data);
-      }
-    } catch {}
-  };
-
-  const getTicketsCounts = async () => {
-    try {
-      const { response, error } = await getAllTickets(endPoints.GET_TICKETS);
-      if (response && !error) {
-        setAllTicketsCount((prev) => ({
-          ...prev,
-          allUnassigned: response.data?.unassignedTickets,
-          allTickets: response.data.unresolvedTickets,
-        }));
-      }
-    } catch {}
-  };
-
-  const getASV = async () => {
-    try {
-      const { response, error } = await getaSV(`${endPoints.SUPER_VISOR}/${user?.userId}`);
-      if (response && !error) {
-        setRegionId(response.data.region._id);
-      }
-    } catch {}
-  };
-
-  const getARM = async () => {
-    try {
-      const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${user?.userId}`);
-      if (response && !error) {
-        setRegionId(response.data.regionManager.region._id);
-      }
-    } catch {}
-  };
-
-  const getAAM = async () => {
-    try {
-      const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${user?.userId}`);
-      if (response && !error) {
-        setAreaId(response.data.area._id);
-        setRegionId(response.data.region._id);
-      }
-    } catch {}
-  };
-
-  // useEffect to fetch data
-  useEffect(() => {
-    const fetchData = () => {
-      fetchRegions();
-      fetchDropdown();
-      fetchAreas();
-      getCountries();
-      getBDAs();
-      getAllUsersCounts();
-      getAllCustomerCounts();
-      getTicketsCounts();
-
-      if (user?.role === "Supervisor") getASV();
-      else if (user?.role === "Region Manager") getARM();
-      else if (user?.role === "Area Manager") getAAM();
-    };
-
-    
-
-    if (user ) {
-      fetchData();
-      const intervalId = setInterval(fetchData, 5000); // Fetch every 5 seconds
-      
-      return () => clearInterval(intervalId);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     }
-    
-  }, [user]);
+  }, [ user]);
 
+  useEffect(() => {
+    if (user) {
+      fetchData(); // Initial data fetch
+      // const intervalId = setInterval(fetchData, 10000); // Fetch every 10 seconds
 
-  
+      // return () => clearInterval(intervalId); // Clean up on unmount
+    }
+  }, [ user]);
 
   return (
     <ApiContext.Provider
@@ -225,7 +124,7 @@ export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
         allRegions,
         allAreas,
         allCountries,
-        allBDA,
+        allBDA: dropdownApi?.bdas || [],
         totalCounts,
         customersCounts,
         dropdownRegions: dropdownApi?.regions || [],

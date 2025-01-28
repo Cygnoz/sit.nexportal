@@ -107,4 +107,7 @@ export const endPoints = {
 
   // BUSINESSCARD
   BUSINESSCARD:'/business-cards',
+
+  // Chat History
+  CHAT_HISTORY:'/chat-history'
 };

@@ -43,6 +43,7 @@ import BusinessCard from './modules/Settings/BusinessCard';
 import Target from './modules/Settings/Target/Target';
 import { roles } from './components/ui/Roles';
 import ExpenseHome from './modules/Expense/ExpenseHome';
+import AgentChat from './modules/Tickets/Agentchat';
 // import ExpenseHome from './modules/Expense/ExpenseHome';
 
 
@@ -112,6 +113,7 @@ const parentRoutes = [
   { path: "payroll-view", element: <PayrollView /> },
   { path: "payroll-view2", element: <PayrollView2 /> },
   { path: "expense", element: <ExpenseHome /> },
+  { path: "agent-chat", element: <AgentChat /> },
 ];
   
 
