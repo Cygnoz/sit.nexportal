@@ -37,6 +37,7 @@ type ApiContextType = {
   regionId?: any;
   areaId?: any;
   dropDownWC?: DropdownApi["commissions"];
+  businessCardData?:any;
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -55,6 +56,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { request: getaRM } = useApi("get", 3002);
   const { request: getaAM } = useApi("get", 3002);
   const { request: getaSV } = useApi("get", 3003);
+  const {request : getAllBusinessCard} = useApi("get",3003)
+
   // State variables
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
   const [allRegions, setAllRegions] = useState<RegionData[]>([]);
@@ -65,6 +68,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const [allTicketsCount, setAllTicketsCount] = useState<TicketsCountBell | undefined>();
   const [totalCounts, setTotalCounts] = useState<TotalCounts>();
   const [customersCounts, setTotalCustomersCounts] = useState<TotalCustomersCount>();
+  const [businessCardData, setBusinessCardData]=useState<any>(null);
 
   // Fetching Data Functions
   const fetchData = useCallback(async () => {
@@ -92,7 +96,8 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
 
       const customerCountsResponse = await getAllCustomersCounts(endPoints.CUSTOMERCOUNTS);      
       setTotalCustomersCounts(customerCountsResponse?.response?.data);
-
+      const getAllBsCard = await getAllBusinessCard(endPoints.GET_ALL_BUSINESSCARD);      
+      setBusinessCardData(getAllBsCard?.response?.data.businessCard)
       if (user?.role === "Supervisor") {
         const supervisorResponse = await getaSV(`${endPoints.SUPER_VISOR}/${user.userId}`);
         setRegionId(supervisorResponse?.response?.data?.region?._id);
@@ -135,6 +140,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         regionId,
         areaId,
         dropDownWC: dropdownApi?.commissions || [],
+        businessCardData,
       }}
     >
       {children}

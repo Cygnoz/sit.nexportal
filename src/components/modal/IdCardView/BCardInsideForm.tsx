@@ -10,7 +10,7 @@ type Props = {
     onClose: () => void; // Prop for handling modal close
 }
 
-const AMViewBCard = ({onClose}: Props) => {
+const BCardInsideForm = ({onClose}: Props) => {
   return (
     <div>
       <div>
@@ -24,7 +24,7 @@ const AMViewBCard = ({onClose}: Props) => {
         >
           &times;
         </button>
-
+        
       </div>
       
       <div className="flex items-center justify-center p-2">
@@ -32,12 +32,9 @@ const AMViewBCard = ({onClose}: Props) => {
     className="bg-cover bg-center bg-no-repeat w-[400px] h-fit rounded-lg relative flex justify-center"
     style={{ backgroundImage: `url(${previewFront})`, minHeight: '250px' }}
 >
-    {/* Overlay to ensure consistent background visibility */}
     <div className="absolute inset-0 rounded-lg"></div>
 
-    {/* Content Section */}
     <div className="relative p-3">
-        {/* Profile Section */}
         <div className="flex gap-1">
                 <div>
                     <img className="w-8 h-8 rounded-full" src={profile} alt="Profile" />
@@ -52,7 +49,6 @@ const AMViewBCard = ({onClose}: Props) => {
                 </div>
         </div>
 
-        {/* Employee Info */}
         <div className="flex gap-4 mt-8">
                 <div>
                     <p className="text-[#FFFFFF] font-light text-[10px]">Employee ID</p>
@@ -64,25 +60,21 @@ const AMViewBCard = ({onClose}: Props) => {
                 </div>
         </div>
 
-        {/* Contact Info */}
         <div className="px-3 mt-4">
             <p className="text-[#FFFFFF] font-light text-[10px] my-2">Personal Address & Mail</p>
             <div className="grid grid-cols-2 gap-2">
-                {/* Email */}
                 <div className="flex gap-2 items-center">
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
                         <EmailIcon size={11} color="#FFFFFF" />
                     </div>
                         <p className="text-[#FFFFFF] font-light text-[9px]">john.doe@example.com</p>
                 </div>
-                {/* Phone */}
                 <div className="flex gap-2 items-center">
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
                         <PhoneIcon size={11} color="#FFFFFF" />
                     </div>
                         <p className="text-[#FFFFFF] font-light text-[9px]">+919633564547</p>
                 </div>
-                {/* Address */}
                 <div className="flex gap-2 items-center">
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
                         <LocationIcon size={12} color="#FFFFFF" />
@@ -94,7 +86,6 @@ const AMViewBCard = ({onClose}: Props) => {
             </div>
         </div>
 
-        {/* Footer Section */}
         <div className="flex justify-between mt-4">
                 <img src={cygnoz} className="w-14 h-5" alt="Company Logo" />
                 <p className="text-[#FFFFFF] font-normal text-[10px] py-1">
@@ -108,12 +99,10 @@ const AMViewBCard = ({onClose}: Props) => {
 <div className="flex items-center justify-center p-4">
     <div
     className="bg-cover bg-center bg-no-repeat w-[400px] h-fit items-center rounded-lg relative"
-    style={{ backgroundImage: `url(${previewBack})`, minHeight: '200px' }} // Ensure consistent minimum height
+    style={{ backgroundImage: `url(${previewBack})`, minHeight: '200px' }}
 >
-    {/* Overlay for consistent background */}
     <div className="absolute inset-0 rounded-lg"></div>
 
-    {/* Content Section */}
     <div className="relative flex gap-1 p-3">
         <div>
                 <img className="w-32 h-8" src={cygnoz} alt="Company Logo" />
@@ -126,7 +115,6 @@ const AMViewBCard = ({onClose}: Props) => {
         <div className="relative px-3 py-8">
             <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
             <div className="grid grid-cols-2 gap-1">
-                {/* Email */}
                 <div className="flex gap-2 items-center">
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
                         <EmailIcon size={11} color="#FFFFFF" />
@@ -135,7 +123,6 @@ const AMViewBCard = ({onClose}: Props) => {
                         john.doe@example.com
                     </p>
                 </div>
-                {/* Phone */}
                 <div className="flex gap-2 items-center">
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
                         <PhoneIcon size={11} color="#FFFFFF" />
@@ -144,7 +131,6 @@ const AMViewBCard = ({onClose}: Props) => {
                             +919633564547
                         </p>
                 </div>
-                {/* Location */}
                 <div className="flex gap-2 items-center">
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
                         <LocationIcon size={12} color="#FFFFFF" />
@@ -162,4 +148,4 @@ const AMViewBCard = ({onClose}: Props) => {
   )
 }
 
-export default AMViewBCard
+export default BCardInsideForm

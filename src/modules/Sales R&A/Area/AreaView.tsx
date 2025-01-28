@@ -322,7 +322,7 @@ const AreaView = ({ }: // status,
         <ConfirmModal
           action={handleDeactivate}
           prompt={
-            area?.status === "Active"
+            area?.area?.status === "Active"
               ? "Are you sure you want to deactivate this area?"
               : "Are you sure you want to activate this area?"
           }

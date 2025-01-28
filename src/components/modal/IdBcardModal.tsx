@@ -1,13 +1,16 @@
 import DownloadIcon from "../../assets/icons/DownloadIcon"
 import ViewIcon from "../../assets/icons/ViewIcon"
 import Button from "../ui/Button"
-import bcardback from "../../assets/image/Business-card-back.png";
+// import bcardback from "../../assets/image/Business-card-back.png";
 import idcard from "../../assets/image/ID-card 1.png";
-import bcardfront from "../../assets/image/Business-card-front.png";
+// import bcardfront from "../../assets/image/Business-card-front.png";
 import { useState } from "react";
 import Modal from "./Modal";
-import AMViewBCard from "./IdCardView/AMViewBCard";
-import AMIdCardView from "./IdCardView/AMIdCardView";
+import AMViewBCard from "./IdCardView/BCardInsideForm";
+import AMIdCardView from "./IdCardView/IdCardInsideForm";
+import { useRegularApi } from "../../context/ApiContext";
+import { Layout1Back, Layout1Front, Layout2Back, Layout2Front, Layout3Back, Layout3Front } from "../ui/BSLayout";
+// import { Layout1Front, Layout1Back, IdCardLayout } from "../ui/BSLayout";
 
 type Props = {
     onClose: () => void;
@@ -28,7 +31,46 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
         }));
     };
 
-
+    const {businessCardData}=useRegularApi()
+    interface LayoutProps {
+        toggleState?: Record<string, boolean>;
+    }
+    const layoutComponents: Record<
+            any,
+            { Front: React.FC<LayoutProps>; Back: React.FC<LayoutProps> }
+        > = {
+            Layout1: {
+                Front: Layout1Front,
+                Back: Layout1Back,
+            },
+            Layout2: {
+                Front: Layout2Front,
+                Back: Layout2Back,
+            },
+            Layout3: {
+                Front: Layout3Front,
+                Back: Layout3Back,
+            },
+        };
+    
+        // State to manage the active layout
+        const { Front: ActiveFront, Back: ActiveBack } = layoutComponents[businessCardData?.layout];
+        const { layout, ...toggles } = businessCardData;
+        const toggle = {
+            "Profile Photo": toggles?.profilePhoto,
+            "Company Logo": toggles?.companyLogo,
+            "Name": toggles?.name,
+            "Employee ID": toggles?.employeeId,
+            "Email": toggles?.email,
+            "Logo Title": toggles?.logoTitle,
+            "Designation": toggles?.designation,
+            "Region": toggles?.region,
+            "Address": toggles?.address,
+            "phoneNo": toggles?.phoneNo,
+            "CompanyInfo": toggles?.companyInfo,
+        }
+        console.log(businessCardData);
+        
     return (
         <div className="p-5 bg-white rounded shadow-md hide-scrollbar">
             <div className="flex justify-between items-center mb-4">
@@ -56,13 +98,17 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
                     <p className="text-[#303F58] text-base font-bold">
                         Business Card
                     </p>
-                    <p className="text-xs font-normal text-[#8F99A9] mt-1">
+                    {/* <p className="text-xs font-normal text-[#8F99A9] mt-1">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
                         do eiusmod tempor incididunt
-                    </p>
-                    <img src={bcardfront} width={220} className="my-3" alt="" />
-                    <img src={bcardback} width={220} className="mb-3" alt="" />
-                    <div className="flex gap-3 justify-end">
+                    </p> */}
+                    <div className="p-5">
+                    <ActiveFront toggleState={toggle}/>
+                    <ActiveBack toggleState={toggle}/>
+                    </div>
+                    {/* <Layout1Front/>
+                    <Layout1Back/> */}
+                    <div className="flex gap-3 justify-end py-3">
                         <Button
                             onClick={() => handleModalToggle(true, false)}
                             variant="tertiary"
@@ -83,7 +129,10 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
                         do eiusmod tempor incididunt
                     </p>
                     <img src={idcard} className="my-3" alt="" />
-                    <div className="flex gap-3 justify-end">
+                    {/* <div className="">
+                    <IdCardLayout/>
+                    </div> */}
+                    <div className="flex gap-3 justify-end py-3">
                         <Button
                             onClick={() => handleModalToggle(false, true)}
                             variant="tertiary"
@@ -113,7 +162,6 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
             >
                 <AMIdCardView onClose={() => handleModalToggle()} />
             </Modal>
-
         </div>
     )
 }

@@ -99,6 +99,7 @@ const Notes = () => {
     }
   };
 
+
   // Handle Delete Function
   const handleDelete = async () => {
     if (!deleteId) {

@@ -11,7 +11,7 @@ type Props = {
 const CategoryAddForm = ({ onClose }: Props) => {
     return (
         <div>
-            <div className="flex justify-between items-center p-3">
+            <div className="flex justify-between items-center p-1">
                 <div>
                     <h1 className="text-lg font-bold text-deepStateBlue ">
                         Add Category
@@ -27,7 +27,7 @@ const CategoryAddForm = ({ onClose }: Props) => {
                 </button>
             </div>
             <form className="w-full" >
-            <div className="grid grid-cols-1 gap-2 mt-4 p-2">
+            <div className="grid grid-cols-1 gap-2  p-2">
                 <Input
                     placeholder="Enter Category Name"
                     label="Category Name"
@@ -38,7 +38,7 @@ const CategoryAddForm = ({ onClose }: Props) => {
                 />
                
             </div>
-              <div className=" flex justify-end gap-2 mt-3 pb-2 me-3">
+              <div className=" flex justify-end gap-2 mt-3 pb-2 me-2">
                       <Button
                         variant="tertiary"
                         className="h-8 text-sm border rounded-lg"

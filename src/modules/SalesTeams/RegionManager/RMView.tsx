@@ -80,10 +80,14 @@ const RMView = ({staffId}: Props) => {
     try {
       const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${iId}`);
       if (response && !error) {
+       
         setGetData((prevData) => ({
           ...prevData,
+          
+          
           rmData: response.data,
         }));
+        
       } else {
         console.error(error.response.data.message);
       }

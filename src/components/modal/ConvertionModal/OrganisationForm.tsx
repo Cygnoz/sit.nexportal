@@ -165,8 +165,7 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
               Organization Creation
             </h3>
             <p className="text-[11px] text-[#8F99A9] mt-1">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt.
+            To implement an organizational structure that aligns with your business goals
             </p>
           </div>
           <p onClick={onClose} className="text-3xl cursor-pointer">
