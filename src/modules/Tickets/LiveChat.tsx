@@ -123,7 +123,9 @@ const LiveChat = ({}: Props) => {
       setMessages(chatHistory);
     });
 
-    newSocket.on("newMessage", (newMessage: Message) => {
+    newSocket.on("newMessage", (newMessage: Message) => {4
+
+      
       setMessages((prev) => [...prev, newMessage]);
     });
    
@@ -133,6 +135,9 @@ const LiveChat = ({}: Props) => {
     
   }, [id]);
 
+
+  console.log("Message",messages);
+  
  
 
   useEffect(() => {
