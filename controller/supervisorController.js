@@ -201,7 +201,8 @@ exports.addSupervisor = async (req, res, next) => {
       message: "Supervisor added successfully",
       userId: newUser._id,
       Supervisor: newSupervisor._id,
-      newSupervisor
+      newSupervisor,
+      employeeId:newUser.employeeId
     });
   } catch (error) {
     logOperation(req, "Failed");
