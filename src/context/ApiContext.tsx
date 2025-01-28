@@ -8,7 +8,6 @@ import { useUser } from "./UserContext";
 import { TotalCounts } from "../Interfaces/Counts";
 import { TotalCustomersCount } from "../Interfaces/CustomerCounts";
 
-
 interface DropdownApi {
   regions: [];
   areas: [];
@@ -39,6 +38,7 @@ type ApiContextType = {
   regionId?: any;
   areaId?: any;
   dropDownWC?: DropdownApi["commissions"];
+  businessCardData?:any;
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -61,6 +61,7 @@ export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
   const { request: getaRM } = useApi("get", 3002);
   const { request: getaAM } = useApi("get", 3002);
   const { request: getaSV } = useApi("get", 3003);
+  const {request : getAllBusinessCard} = useApi("get",3003)
 
   // State variables
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
@@ -73,6 +74,7 @@ export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
   const [allTicketsCount, setAllTicketsCount] = useState<TicketsCountBell | undefined>();
   const [totalCounts, setTotalCounts] = useState<TotalCounts>();
   const [customersCounts, setTotalCustomersCounts] = useState<TotalCustomersCount>();
+  const [businessCardData, setBusinessCardData]=useState<any>(null);
 
   // Fetch Functions
   const fetchRegions = async () => {
@@ -188,6 +190,17 @@ export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
     } catch {}
   };
 
+  const getBusinessCard = async()=>{
+    try{
+      const {response,error}= await getAllBusinessCard(endPoints.GET_ALL_BUSINESSCARD)
+      if(response && !error){
+        // console.log(response.data);        
+        setBusinessCardData(response.data?.businessCard)
+      }
+    }
+    catch{}
+  }
+
   // useEffect to fetch data
   useEffect(() => {
     const fetchData = () => {
@@ -199,6 +212,7 @@ export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
       getAllUsersCounts();
       getAllCustomerCounts();
       getTicketsCounts();
+      getBusinessCard();
 
       if (user?.role === "Supervisor") getASV();
       else if (user?.role === "Region Manager") getARM();
@@ -236,6 +250,7 @@ export const ApiProvider = ({ children,}: { children: React.ReactNode,  }) => {
         regionId,
         areaId,
         dropDownWC: dropdownApi?.commissions || [],
+        businessCardData,
       }}
     >
       {children}
