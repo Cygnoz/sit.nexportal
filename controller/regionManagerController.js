@@ -775,3 +775,99 @@ const getBdaDetails = async (regionId) => {
 
   return bdaDetails;
 };
+
+
+exports.topPerformingAreaManagers = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract regionManagerId (now 'id') from path params
+    const { month, year } = req.query; // Extract month and year from query params
+ 
+    if (!month || !year) {
+      return res.status(400).json({
+        message: "Month and year are required for filtering.",
+      });
+    }
+ 
+    // Find the regionManager and populate the region field
+    const regionManager = await RegionManager.findById(id).populate('region');
+   
+    if (!regionManager || !regionManager.region) {
+      return res.status(404).json({
+        message: "Region not found for the given Region Manager.",
+      });
+    }
+ 
+    const regionId = regionManager.region._id; // Extract regionId
+ 
+    // Set the start and end date for the given month and year
+    const startDate = new Date(year, month - 1, 1); // First day of the month
+    const endDate = new Date(year, month, 0); // Last day of the month
+ 
+    // Find all AreaManagers for the region, but only those who have been created by the target month and year
+    const areaManagers = await AreaManager.find({
+      region: regionId,
+      dateOfJoining: { $lte: endDate }, // Only fetch AreaManagers who joined on or before the end of the target month
+    })
+      .populate({
+        path: 'user',
+        select: 'userName userImage email phoneNo _id',
+      })
+      .populate({
+        path: 'area',
+        select: 'areaName _id',
+      });
+ 
+    if (!areaManagers.length) {
+      return res.status(404).json({
+        message: "No area managers found for the given region who have joined by the given date.",
+      });
+    }
+ 
+    // Calculate conversion rates for each area manager
+    const areaManagerPerformance = await Promise.all(
+      areaManagers.map(async (areaManager) => {
+        const totalCustomers = await Leads.countDocuments({
+          areaId: areaManager.area._id,
+          createdAt: { $gte: startDate, $lte: endDate },
+        });
+ 
+        const convertedLeads = await Leads.countDocuments({
+          areaId: areaManager.area._id,
+          createdAt: { $gte: startDate, $lte: endDate },
+          customerStatus: { $in: ["Trial", "Licenser"] },
+        });
+ 
+        const conversionRate =
+          totalCustomers > 0
+            ? ((convertedLeads / totalCustomers) * 100).toFixed(2) + "%"
+            : "0.00%";
+ 
+        return {
+          _id: areaManager._id,
+          user: areaManager.user,
+          area: {
+            id: areaManager.area._id,
+            name: areaManager.area.areaName,
+          },
+          conversionRate,
+        };
+      })
+    );
+ 
+    // Sort by conversion rate in descending order
+    areaManagerPerformance.sort(
+      (a, b) =>
+        parseFloat(b.conversionRate) - parseFloat(a.conversionRate)
+    );
+ 
+    res.status(200).json({
+      regionId,
+      month,
+      year,
+      topPerformingAreaManagers: areaManagerPerformance,
+    });
+  } catch (error) {
+    console.error("Error fetching top-performing area managers:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
