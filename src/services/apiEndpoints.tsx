@@ -108,4 +108,5 @@ export const endPoints = {
 
   // BUSINESSCARD
   BUSINESSCARD:'/business-cards',
+  GET_ALL_BUSINESSCARD:'/business-card',
 };
