@@ -204,7 +204,8 @@ exports.addRegionManager = async (req, res, next) => {
       message: "Region Manager added successfully",
       userId: newUser._id,
       regionManagerId: newRegionManager._id,
-      newRegionManager
+      newRegionManager,
+      employeeId:newUser.employeeId
     });
   } catch (error) {
     logOperation(req, "Failed");
