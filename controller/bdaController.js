@@ -902,6 +902,7 @@ exports.getLeadDetails = async (req, res) => {
   }
 };
 
+
 exports.getTrialConvertedOverTime = async (req, res) => {
   try {
     const { id } = req.params;
@@ -921,21 +922,28 @@ exports.getTrialConvertedOverTime = async (req, res) => {
     const month = parsedDate.month(); // 0-indexed month
     const year = parsedDate.year();
     const daysInMonth = parsedDate.daysInMonth();
+
     const trialConvertedOverTime = [];
+    let startDay = 1;
 
-    for (let day = 1; day <= daysInMonth; day++) {
-      const currentDay = moment({ year, month, day }).format("YYYY-MM-DD");
+    // Group data into 5-day intervals
+    while (startDay <= daysInMonth) {
+      const endDay = Math.min(startDay + 4, daysInMonth); // Ensure we don't exceed month-end
 
-      // Direct match on `trialDate`
+      const endDate = moment({ year, month, day: endDay }).format("YYYY-MM-DD");
+
+      // Sum conversion counts for the interval
       const conversionCount = await Leads.countDocuments({
         bdaId: id,
-        trialDate: currentDay, // Match directly as a string
+        trialDate: { $gte: moment({ year, month, day: startDay }).format("YYYY-MM-DD"), $lte: endDate },
       });
 
       trialConvertedOverTime.push({
-        date: currentDay,
+        date: endDate, // Use the last date of the interval as the key
         conversionCount,
       });
+
+      startDay += 5; // Move to the next interval
     }
 
     // Respond with the results
