@@ -203,9 +203,9 @@ exports.addSupervisor = async (req, res, next) => {
     next();
     return res.status(201).json({
       message: "Supervisor added successfully",
-      userId: newUser._id,
-      Supervisor: newSupervisor._id,
-      newSupervisor,
+      // userId: newUser._id,
+      // Supervisor: newSupervisor._id,
+      // newSupervisor,
       employeeId:newUser.employeeId,
       region:{
         _id: regionData._id,
@@ -329,7 +329,9 @@ exports.editSupervisor = async (req, res, next) => {
             message: "Region is already assigned to another Supervisor. Try adding another Region."
           });
         }
-
+        const [ regionData] = await Promise.all([
+          Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+        ]);
     // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
@@ -346,6 +348,10 @@ exports.editSupervisor = async (req, res, next) => {
 
     res.status(200).json({
       message: "Supervisor updated successfully",
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
     logOperation(req, "Successfully", updatedSupervisor._id);
     next();

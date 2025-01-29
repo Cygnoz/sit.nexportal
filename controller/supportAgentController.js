@@ -208,9 +208,9 @@ exports.addSupportAgent = async (req, res, next) => {
     next();
     return res.status(201).json({
       message: "Support Agent added successfully",
-      userId: newUser._id,
-      SupportAgent: newSupportAgent._id,
-      newSupportAgent,
+      // userId: newUser._id,
+      // SupportAgent: newSupportAgent._id,
+      // newSupportAgent,
       employeeId:newUser.employeeId,
       region:{
         _id: regionData._id,
@@ -398,7 +398,9 @@ exports.editSupportAgent = async (req, res, next) => {
         message: "supervisor not found for the provided region.",
       });
     }
-
+    const [ regionData] = await Promise.all([
+      Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+    ]);
     // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
@@ -415,6 +417,10 @@ exports.editSupportAgent = async (req, res, next) => {
 
     res.status(200).json({
       message: "Support Agent updated successfully",
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
     logOperation(req, "Successfully", updatedSupportAgent._id);
     next();
