@@ -126,15 +126,16 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
       const { response, error } = await fun(endpoint, data);
       if (response && !error) {
-        console.log("Response:", response);
-        // const {newRegionManager,employeeId}=response.data
-        // staffData={
-        //   ...newRegionManager,
-        //   employeeId
-        // }
+        console.log("Response:", response.data);
+        const {employeeId,region}=response.data
+       const  staffDetails={
+          ...watch(),
+          regionName:region?.regionName,
+          employeeId
+        }
         // staffData=response.data
-        setStaffData(response.data)
-         console.log("staff",staffData);       
+        setStaffData(staffDetails)
+        //  console.log("staff",staffData);       
         toast.success(response.data.message); // Show success toast
         handleModalToggle()
       } else if (error) {
@@ -198,6 +199,9 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     }
   }, [errors]);
 
+  console.log("err",errors);
+  
+
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
@@ -212,7 +216,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         !editId && "confirmPassword",
         "region",
         "workEmail",
-         "salaryAmount"
+        "salaryAmount"
       ];
       if (!editId) {
         const rmCheck = await checkRM(); // Call checkRM function

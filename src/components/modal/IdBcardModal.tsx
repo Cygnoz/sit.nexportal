@@ -20,6 +20,8 @@ type Props = {
 }
 
 const IdBcardModal = ({ onClose, parentOnClose, role, staffData}: Props) => {
+    console.log("staf",staffData);
+    
     const [isModalOpen, setIsModalOpen] = useState({
         viewBusinesscard: false,
         viewIdcard: false,

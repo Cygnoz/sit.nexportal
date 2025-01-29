@@ -44,6 +44,7 @@ import Target from './modules/Settings/Target/Target';
 import { roles } from './components/ui/Roles';
 import ExpenseHome from './modules/Expense/ExpenseHome';
 import AgentChat from './modules/Tickets/Agentchat';
+import TargetHome from './modules/Target/TargetHome';
 // import ExpenseHome from './modules/Expense/ExpenseHome';
 
 
@@ -114,6 +115,7 @@ const parentRoutes = [
   { path: "payroll-view2", element: <PayrollView2 /> },
   { path: "expense", element: <ExpenseHome /> },
   { path: "agent-chat", element: <AgentChat /> },
+  { path: "target", element: <TargetHome /> },
 ];
   
 

@@ -10,6 +10,7 @@ import TrialIcon from '../assets/icons/TrialIcon';
 import Licensor from '../assets/icons/Licensor';
 import Trophy from '../assets/icons/Trophy';
 import Settings from '../assets/icons/Settings';
+import TargetFlag from '../assets/icons/TargetFlag';
 
 // Define the available roles
 export type Role =
@@ -46,7 +47,8 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
     "User Log": UserIcon,
     "Worker Commission":UserIcon,
     "Praise":Trophy,
-    "Settings":Settings
+    "Settings":Settings,
+    "Target":TargetFlag
 
   };
 
@@ -63,6 +65,7 @@ const sidebarRoutes: { [key: string]: string } = {
     "Trial": "/trial",
     "Licenser": "/licenser",
     "Tickets": "/ticket",
+    "Target": "/target",
     "Expense": "/expense",
     "Payroll":"/payroll",
     "User": "/settings/users",
@@ -87,6 +90,7 @@ const rolePermissions: RolePermissions = {
     "Trial",
     "Licenser",
     "Tickets",
+    "Target",
     "Expense",
     "Payroll",
     "User",
