@@ -683,3 +683,54 @@ exports.getSupportAgentDetails = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
+exports.getTicketsOverTime = async (req, res) => {
+  try {
+    const { id } = req.params; // Support Agent ID
+    const { date } = req.query; // Date for filtering (YYYY-MM-DD)
+ 
+    // Validate the required parameters
+    if (!date) {
+      return res.status(400).json({ message: "Date query parameter is required" });
+    }
+ 
+    // Parse and validate the provided date
+    const parsedDate = moment(date, "YYYY-MM-DD");
+    if (!parsedDate.isValid()) {
+      return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD" });
+    }
+ 
+    const month = parsedDate.month(); // 0-based index
+    const year = parsedDate.year();
+    const daysInMonth = parsedDate.daysInMonth();
+    const ticketsOverTime = [];
+    let startDay = 1;
+ 
+    // Loop through 5-day intervals
+    while (startDay <= daysInMonth) {
+      const endDay = Math.min(startDay + 4, daysInMonth); // Ensure we don't exceed month-end
+      const startDate = moment({ year, month, day: startDay }).startOf("day").toDate();
+      const endDate = moment({ year, month, day: endDay }).endOf("day").toDate();
+ 
+      // Fetch ticket count for each interval
+      const ticketCount = await Ticket.countDocuments({
+        supportAgentId: new mongoose.Types.ObjectId(id), // 🛠 Fixed ObjectId issue
+        createdAt: { $gte: startDate, $lte: endDate },
+      });
+ 
+      ticketsOverTime.push({
+        date: moment({ year, month, day: endDay }).format("YYYY-MM-DD"),
+        ticketCount,
+      });
+ 
+      startDay += 5; // Move to the next interval
+    }
+ 
+    // Send the response
+    res.status(200).json({ ticketsOverTime });
+  } catch (error) {
+    console.error("Error fetching ticket details:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};

@@ -122,6 +122,8 @@ router.put("/deactivatesupportAgent/:id", verifyToken,checkPermission('Deactivat
 
 router.get("/supportAgent/:id/details",verifyToken,checkPermission('View Support Agent'), supportAgentController.getSupportAgentDetails);
 
+router.get("/tickets/overtime/:id",verifyToken,checkPermission('View Support Agent'), supportAgentController.getTicketsOverTime );
+
 // dashboard
 router.get("/counts",verifyToken,dashboardController.getDocumentCounts );
 

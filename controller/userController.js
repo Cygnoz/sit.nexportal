@@ -419,6 +419,9 @@ const roles = [
        { action: "View Activity", note: "View Activity" },
        { action: "Edit Activity", note: "Edit Activity" },
        { action: "Delete Activity", note: "Delete Activity" },
+
+      //  chat
+       { action: "View Chat", note: "View Chat" },
     ],
   },
   {
@@ -524,6 +527,9 @@ const roles = [
        { action: "View Activity", note: "View Activity" },
        { action: "Edit Activity", note: "Edit Activity" },
        { action: "Delete Activity", note: "Delete Activity" },
+
+       //  chat
+       { action: "View Chat", note: "View Chat" },
     ],
   },
   {
@@ -629,6 +635,9 @@ const roles = [
        { action: "View Activity", note: "View Activity" },
        { action: "Edit Activity", note: "Edit Activity" },
        { action: "Delete Activity", note: "Delete Activity" },
+
+       //  chat
+       { action: "View Chat", note: "View Chat" },
     ],
   },
   {
@@ -734,6 +743,9 @@ const roles = [
        { action: "View Activity", note: "View Activity" },
        { action: "Edit Activity", note: "Edit Activity" },
        { action: "Delete Activity", note: "Delete Activity" },
+
+       //  chat
+       { action: "View Chat", note: "View Chat" },
     ],
   },
   {
@@ -839,6 +851,9 @@ const roles = [
        { action: "View Activity", note: "View Activity" },
        { action: "Edit Activity", note: "Edit Activity" },
        { action: "Delete Activity", note: "Delete Activity" },
+
+       //  chat
+       { action: "View Chat", note: "View Chat" },
     ],
   },
   {
@@ -944,6 +959,9 @@ const roles = [
        { action: "View Activity", note: "View Activity" },
        { action: "Edit Activity", note: "Edit Activity" },
        { action: "Delete Activity", note: "Delete Activity" },
+
+       //  chat
+       { action: "View Chat", note: "View Chat" },
     ],
   },
   {
@@ -1049,6 +1067,9 @@ const roles = [
        { action: "View Activity", note: "View Activity" },
        { action: "Edit Activity", note: "Edit Activity" },
        { action: "Delete Activity", note: "Delete Activity" },
+
+       //  chat
+       { action: "View Chat", note: "View Chat" },
     ],
   },
   {
@@ -1154,6 +1175,9 @@ const roles = [
        { action: "View Activity", note: "View Activity" },
        { action: "Edit Activity", note: "Edit Activity" },
        { action: "Delete Activity", note: "Delete Activity" },
+
+       //  chat
+       { action: "View Chat", note: "View Chat" },
     ],
   }
 ];
