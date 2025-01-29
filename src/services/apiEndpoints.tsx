@@ -45,7 +45,7 @@ export const endPoints = {
   CHECK_BDA:'/bda-check',
   BDA_DETAILS:'/bda-details',
   DEACTIVATE_BDA:'/deactivateBda',
-  CONVERTED_BDA:'/bda/67852f3fe76c8b4af14ec3dd/trial-conversions?date=2025-1-24',
+//  CONVERTED_BDA:'/bda/67852f3fe76c8b4af14ec3dd/trial-conversions?date=2025-1-24',
 
   //SuperVisor
   SUPER_VISOR: "/supervisor",

@@ -384,8 +384,8 @@ const TargetTable = <T extends object>({
       style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
          className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
-       <div className="w-full p-4 h-14 bg-[#E3E6D5] my-4 rounded-2xl">
-  <div className="flex gap-4">
+       <div className="w-full p-4 h-14 bg-[#F5F9FC] my-4 rounded-2xl">
+  <div className="flex gap-4 justify-end">
     <p className="text-xl border-r-2 border-black pr-6">Month: Jan</p>
     <p className="text-xl pl-2">Year: 2015</p>
   </div>
@@ -530,7 +530,7 @@ const TargetTable = <T extends object>({
         </table>
       </div>
 
-      {!noPagination && (
+      {data&&data.length > 10 && !noPagination && (
         <div className="flex justify-between items-center mt-4">
           <div className="text-xs text-[#71736B] font-medium flex gap-2">
             Showing {currentPage} of {totalPages || 1}
@@ -571,17 +571,7 @@ const TargetTable = <T extends object>({
         </div>
       )}
 
-<div className="w-full p-4 h-fit bg-[#E3E6D5] my-4 rounded-2xl">
- <div className="flex justify-between">
- <div className=" gap-4">
-    <p className=" text-lg font-semibold">Total Target</p>
-    <p className="text-sm font-normal">Total targets Achieved by AM And RM</p>
-  </div>
-  <div className="p-2 text-lg font-semibold">
-    <p>2000</p>
-  </div>
- </div>
-</div>
+
     </div>
   );
 };

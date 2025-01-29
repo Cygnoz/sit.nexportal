@@ -187,17 +187,11 @@ const updatedRoles = leadlicenserData.map((statusDetail: any, index:any) => ({
 }));
 
 
-
-
-
 if (updatedRoles.length > 0) {
  setRoles(updatedRoles)
 } else {
   console.error("No roles to update. Check leadlicenserData.");
 }
-
-
-
       
           // Filter out roles with Count 0 and create pie chart data
           const pieChartData = updatedRoles
@@ -343,7 +337,7 @@ if (updatedRoles.length > 0) {
           {/* Profile Picture */}
           <div className="bg-gray-300 rounded-full overflow-hidden">
             {
-              getData.amData?.user?.userImage && getData.amData?.user?.userImage > 50 ?
+              getData.amData?.user?.userImage && getData.amData?.user?.userImage.length > 500 ?
                 <img className="w-16 h-16 rounded-full" src={getData.amData?.user?.userImage} alt="" />
                 :
                 <p className="w-16 h-16    bg-black rounded-full flex justify-center items-center">

@@ -87,6 +87,8 @@ const RMView = ({staffId}: Props) => {
           
           rmData: response.data,
         }));
+        console.log(response.data);
+        
         
       } else {
         console.error(error.response.data.message);
@@ -261,7 +263,7 @@ const RMView = ({staffId}: Props) => {
                 <div className="flex items-center gap-4 text-white">
                   <div className="flex items-center gap-2">
                     <div className="w-25 h-25 bg-blue ms-2 py-2 items-center justify-center rounded-full ">
-                      {getData?.rmData?.regionManager?.user?.userImage && getData?.rmData?.regionManager?.user?.userImage > 50 ? (
+                      {getData?.rmData?.regionManager?.user?.userImage && getData?.rmData?.regionManager?.user?.userImage.length > 500 ? (
                         <img
                           className="w-16 h-16 rounded-full"
                           src={getData?.rmData?.regionManager?.user?.userImage}
@@ -478,7 +480,7 @@ const RMView = ({staffId}: Props) => {
         </div>
 
         <div>
-          <RMViewBDAandGraph totalBdas={totalBdas} />
+          <RMViewBDAandGraph getData={getData.rmData}  totalBdas={totalBdas} />
         </div>
       </div>
       {/* Modal controlled by state */}
