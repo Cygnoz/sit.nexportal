@@ -46,7 +46,11 @@ const baseSchema = {
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
   region: Yup.string().required("Region is required"),
-  salaryAmount:Yup.string().required("Salary Amount is required")
+  salaryAmount:Yup.string().required("Salary Amount is required"),
+  address: Yup.object().shape({
+    street1: Yup.string().required("Street 1 is required"),
+    street2: Yup.string(), // Optional field
+  }),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -97,11 +101,15 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
+  // console.log("watch",watch());
+  
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
 
+  const [staffData, setStaffData] = useState<any>(null);
   const onSubmit: SubmitHandler<RMData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("data", data);
@@ -110,7 +118,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       console.warn("Submit flag is not set. Skipping submission.");
       return;
     }
-
     try {
       const endpoint = editId
         ? `${endPoints.GET_ALL_RM}/${editId}`
@@ -120,6 +127,14 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       const { response, error } = await fun(endpoint, data);
       if (response && !error) {
         console.log("Response:", response);
+        // const {newRegionManager,employeeId}=response.data
+        // staffData={
+        //   ...newRegionManager,
+        //   employeeId
+        // }
+        // staffData=response.data
+        setStaffData(response.data)
+         console.log("staff",staffData);       
         toast.success(response.data.message); // Show success toast
         handleModalToggle()
       } else if (error) {
@@ -139,8 +154,8 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       const { response, error } = await checkRm(
         `${endPoints.CHECK_RM}/${watch("region")}`
       );
-      console.log("res", response);
-      console.log("err", error);
+      // console.log("res", response);
+      // console.log("err", error);
 
       if (response && !error) {
         return true;
@@ -189,7 +204,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     let canProceed = true; // Default to true, modify if checkRM fails
 
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail", "address.street1"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
         !editId && "email",
@@ -342,6 +357,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         console.log("Transformed RM data:", transformedRM);
 
         setFormValues(transformedRM);
+        setStaffData(transformedRM)
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching RM data:", error);
@@ -356,7 +372,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       getOneRM();
     }
   }, [editId]); // Trigger the effect when editId changes
-
+  
   return (
     <>
       <div className="p-5 bg-white rounded shadow-md hide-scrollbar">
@@ -487,6 +503,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     />
                   </div>
                   <Input
+                    required
                     label="Address"
                     placeholder="Street 1"
                     error={errors.address?.street1?.message}
@@ -875,7 +892,10 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
       <IdBcardModal
         parentOnClose={onClose}
-        onClose={handleModalToggle}/>
+        onClose={handleModalToggle}
+        role="Region Manager"
+        staffData={staffData}
+        />
       </Modal>
     </>
   );

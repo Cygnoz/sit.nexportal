@@ -10,7 +10,7 @@ function ImagePlaceHolder({ uploadedImage }: Props) {
   return (
     <div
       className={`border-dashed border-2 rounded-xl flex items-center justify-center border-[#CDD4E0] w-[130px] ${
-        uploadedImage ? "h-auto" : "h-[140px]"
+        uploadedImage ? "h-auto" : "h-[160px]"
       } flex-col gap-2 bg-[#F6F6F6]`}
     >
       {uploadedImage ? (
@@ -25,6 +25,9 @@ function ImagePlaceHolder({ uploadedImage }: Props) {
           ></div>
           <p className="text-xs font-medium">Choose an Image</p>
           <div className="text-[10px] text-center">
+           
+            <p className="text-[#8F99A9]"> Support: JPG,PNG </p>
+            <p className="text-[#8F99A9]"> Size: 10MB </p>
             <p className="text-[#8F99A9]">Drop Your File here or</p>
             <p className="text-red-600">
               <u>Browse</u>
@@ -37,3 +40,5 @@ function ImagePlaceHolder({ uploadedImage }: Props) {
 }
  
 export default ImagePlaceHolder;
+
+

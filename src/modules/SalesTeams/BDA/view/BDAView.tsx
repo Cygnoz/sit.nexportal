@@ -326,15 +326,16 @@ const BDAView = ({staffId}: Props) => {
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
             <div className="w-14 h-14 rounded-full overflow-hidden">
-          {data.bdaData?.user?.userImage && data.bdaData?.user?.userImage>50 ?          
+          {data.bdaData?.user?.userImage && data.bdaData?.user?.userImage.length > 500  ?    (      
           <img
             src={data.bdaData?.user?.userImage} // Replace with the actual image URL
             alt="Profile"
             className="w-full h-full object-cover"
-          />:
+          />
+        ) : (
           <p className="w-14 h-14 bg-black rounded-full flex justify-center items-center">
                 <UserIcon color="white" size={40} />
-          </p>}
+          </p>)}
         </div>
           <p className="text-[#FFFEFB] text-2xl font-normal p-4">{data.bdaData?.user?.userName}</p>
             </div>
