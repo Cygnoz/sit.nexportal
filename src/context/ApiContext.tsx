@@ -117,14 +117,11 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (user) {
       fetchData(); // Initial data fetch
-      // const intervalId = setInterval(fetchData, 10000); // Fetch every 10 seconds
+      const intervalId = setInterval(fetchData, 10000); // Fetch every 10 seconds
 
-      // return () => clearInterval(intervalId); // Clean up on unmount
+      return () => clearInterval(intervalId); // Clean up on unmount
     }
-  }, [ user]);
-
-  console.log("busines",businessCardData);
-  
+  }, [ fetchData,user]);
 
   return (
     <ApiContext.Provider

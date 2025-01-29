@@ -286,7 +286,7 @@ const Table = <T extends object>({
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr
                 onClick={() =>{
-                  if( row?.name !== undefined && from == "ticket"){
+                  if( row?.name !== undefined || from !== "ticket"){
                     actionList?.find((data) => data.label === "view")?.function(row?._id)
                   }
                  
@@ -369,7 +369,7 @@ const Table = <T extends object>({
               <PencilLine color="#4B5C79" size={16} />
             )
           ) : action.label === "view" ? (
-            row?.name == undefined && from !== "ticket" && 
+            row?.name !== undefined || from !== "ticket" && 
               (
               <Eye color="#4B5C79" size={16} />
             )
