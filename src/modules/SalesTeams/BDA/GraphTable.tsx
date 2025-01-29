@@ -13,6 +13,8 @@ import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
 import { endPoints } from "../../../services/apiEndpoints";
+import { allMonths } from "../../../components/list/MonthList";
+import No_Data_found from "../../../assets/image/NO_DATA.png";
 
 interface TrailTableData {
   trailId: string;
@@ -27,42 +29,55 @@ type Props = {
 };
 
 const GraphTable = ({ bdaData }: Props) => {
-  console.log(bdaData);
+  //console.log("hhh",bdaData);
   const { request: getConvertionBda } = useApi("get", 3002);
-  
-  const navigate = useNavigate();
- // const id=bdaData?bdaData:id
 
-  const [selectedMonth, setSelectedMonth] =  useState<any>(null);
+  const navigate = useNavigate();
+  // const id=bdaData?bdaData:id
+
+  const [chartData, setChartData] = useState([]);
+  const [selectedMonth, setSelectedMonth] = useState<any>(allMonths[0]);
   const handleView = (id: any) => {
     navigate(`/trial/${id}`);
   };
 
-  
-    const getConvertion = async () => {
-      try {
-        const endPoint = selectedMonth ? `${endPoints.CONVERTED_BDA}/${selectedMonth.value}` : endPoints.CONVERTED_BDA;
-        const { response, error } = await getConvertionBda(endPoint);
-  
-        if (response && !error) {
-          // Transform the response data to match chart format
-       console.log(response.data);
-       
-        } else {
-          // console.error(error.data);
-        }
-      } catch (err) {
-        console.error(err);
+  //console.log(selectedMonth);
+
+
+
+  const getConvertion = async () => {
+    try {
+      const endPoint = `${endPoints.BDA}/${bdaData.bdaDetails.bda._id}/trial-conversions?date=${selectedMonth.key}`;
+      const { response, error } = await getConvertionBda(endPoint);
+      //console.log(endPoint);
+
+      if (response && !error) {
+        // Transform API data to chart data format
+        const transformedData = response.data.trialConvertedOverTime.map((item: any) => ({
+          name: formatDate(item.date), // Format the date to match "Jan 05"
+          CR: item.conversionCount,   // Use the conversionCount value for the chart
+        }));
+        // console.log(response.data);
+
+        setChartData(transformedData);
+      } else {
+        console.error("Error:", error?.data || "Unknown error occurred");
       }
-    };
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    
-      useEffect(() => {
-        getConvertion();
-       // handleFetchRegions();
-      }, []);
-  
+  useEffect(() => {
+    getConvertion();
+  }, [selectedMonth, bdaData]);
+  //console.log(allMonths);
 
+  const formatDate = (date: any) => {
+    // Convert "2024-08-05" to "Aug 05"
+    const options: any = { month: "short", day: "2-digit" };
+    return new Date(date).toLocaleDateString("en-US", options);
+  };
 
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
@@ -122,65 +137,35 @@ const GraphTable = ({ bdaData }: Props) => {
   //     { name: "Feb 25", Area1: 30, Area2: 45, Area3: 80, Area4: 65, Area5: 60 },
   //     { name: "Feb 28", Area1: 25, Area2: 35, Area3: 75, Area4: 60, Area5: 70 },
   //   ],
-    
+
   // };
 
-  const datas = [
-    {
-      name: "Jan 05",
-      Area1: 5673,
-      Area2: 5993,
-      Area3: 9466,
-      Area4: 2677,
-      Area5: 3778,
-      amt: 9000,
-    },
-    {
-      name: "Jan 10",
-      Area1: 4563,
-      Area2: 9467,
-      Area3: 6628,
-      Area4: 6738,
-      Area5: 3368,
-      amt: 9777,
-    },
-    {
-      name: "Jan 15",
-      Area1: 1298,
-      Area2: 3773,
-      Area3: 3783,
-      Area4: 4800,
-      Area5: 9367,
-      amt: 8000,
-    },
-    {
-      name: "Jan 20",
-      Area1: 1890,
-      Area2: 4098,
-      Area3: 9753,
-      Area4: 3667,
-      Area5: 3372,
-      amt: 6000,
-    },
-    {
-      name: "Jan 25",
-      Area1: 1890,
-      Area2: 2800,
-      Area3: 1890,
-      Area4: 4400,
-      Area5: 4800,
-      amt: 2181,
-    },
-    {
-      name: "Jan 30",
-      Area1: 1890,
-      Area2: 1800,
-      Area3: 1800,
-      Area4: 4800,
-      Area5: 4300,
-      amt: 2500,
-    },
-  ];
+  // const datas = [
+  //   {
+  //     name: "Jan 05",
+  //     CR:"10"
+  //   },
+  //   {
+  //     name: "Jan 10",
+  //     CR:"10"
+  //   },
+  //   {
+  //     name: "Jan 15",
+  //    CR:"10"
+  //   },
+  //   {
+  //     name: "Jan 20",
+  //    CR:"10"
+  //   },
+  //   {
+  //     name: "Jan 25",
+  //     CR:"10"
+  //   },
+  //   {
+  //     name: "Jan 30",
+  //     CR:"10"
+  //   },
+  // ];
 
   return (
     <div>
@@ -189,86 +174,60 @@ const GraphTable = ({ bdaData }: Props) => {
           <div className="py-3 bg-white p-2 rounded-lg">
             <div className="py-1 ms-2 flex justify-between">
               <h2 className="font-bold">Trial Converted By BDA Overtime</h2>
-              <div className="">
+              <div className="flex gap-1">
                 <label htmlFor="month-select"></label>
-                {/* <select
-                  className="bg-[#FEFDFA] rounded-lg"
-                  id="month-select"
-                  value={selectedMonth}
-                  onChange={(e) => setSelectedMonth(e.target.value)}
-                  style={{ padding: "5px", border: "1px solid #ccc" }}
-                >
-                  {Object.keys(datass).map((month) => (
-                    <option key={month} value={month}>
-                      {month}
-                    </option>
-                  ))}
-                </select> */}
-                  <SelectDropdown
-            setSelectedValue={setSelectedMonth}
-            selectedValue={selectedMonth}
-           //filteredData={datass}
-            searchPlaceholder="Search Month"
-            width="w-44"
-          />
+
+                <SelectDropdown
+                  setSelectedValue={setSelectedMonth}
+                  selectedValue={selectedMonth}
+                  filteredData={allMonths}
+                  //   searchPlaceholder="Search Month"
+                  width="w-44"
+                />
+                <SelectDropdown
+                  //setSelectedValue={setSelectedMonth}
+                  //selectedValue={selectedMonth}
+                 // filteredData={allYears}
+                  //   searchPlaceholder="Search Month"
+                  width="w-44"
+                />
               </div>
             </div>
             <div className="mt-5">
-               <ResponsiveContainer width="100%" minHeight={330}>
-              <LineChart
-                width={510}
-                height={330}
-                data={datas}
-                margin={{
-                  top: 5,
-                  right: 30,
-                  left: 2,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip />
+  {chartData.length > 0 ? (
+    <ResponsiveContainer width="100%" minHeight={330}>
+      <LineChart
+        width={510}
+        height={330}
+        data={chartData} // Use transformed data
+        margin={{
+          top: 5,
+          right: 30,
+          left: 2,
+          bottom: 5,
+        }}
+      >
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis dataKey="name" axisLine={false} tickLine={false} />
+        <YAxis axisLine={false} tickLine={false} />
+        <Tooltip />
+        <Line
+          type="monotone"
+          dataKey="CR" // Match the CR field in your data
+          stroke="#e2b0ff"
+          strokeWidth={3}
+          dot={false}
+        />
+      </LineChart>
+    </ResponsiveContainer>
+  ) : (
+    <div className="flex justify-center flex-col items-center">
+      <img width={70} src={No_Data_found} alt="No Data Found" />
+      <p className="font-bold text-red-700">No Records Found!</p>
+    </div>
+  )}
+</div>
 
-                <Line
-                  type="monotone"
-                  dataKey="Area1"
-                  stroke="#e2b0ff"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area2"
-                  stroke="#8884d8"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area3"
-                  stroke="#82ca9d"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area4"
-                  stroke="#d86a57"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area5"
-                  stroke="#6ab6ff"
-                  strokeWidth={3}
-                  dot={false}
-                />
-              </LineChart>
-              </ResponsiveContainer>
-            </div>
           </div>
         </div>
         <div className="col-span-7">

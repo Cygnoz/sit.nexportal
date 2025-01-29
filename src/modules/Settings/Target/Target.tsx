@@ -4,7 +4,7 @@ import Modal from "../../../components/modal/Modal";
 import TargetForm from "./TargetForm";
 import TargetTable from "./TargetTable";
 import TargetEditForm from "./TargetEditForm";
-
+// import Image from "../../../assets/image/Rectangle.png"
 interface TargetData {
   task: string;
   dueDate: string;
@@ -87,6 +87,22 @@ const Target = ({}: Props) => {
             </Button>
           </div>
         </div>
+        {/* <div className="w-full p-4 h-fit bg-[#E3E6D5] my-4 rounded-2xl">
+ <div className="flex justify-between">
+<div className="flex">
+<div>
+    <img src={Image} className="w-14 h-15" alt="" />
+  </div>
+ <div className="gap-4 ms-1">
+    <p className=" text-lg font-semibold text-[#4B5C79]">Total Target</p>
+    <p className="text-xs font-normal text-[#4B5C79]">Total targets Achieved by AM And RM</p>
+  </div>
+</div>
+  <div className="p-2 text-lg font-semibold">
+    <p className="text-[#820000] text-2xl font-bold">20</p>
+  </div>
+ </div>
+</div> */}
 
         <div>
           <TargetTable
