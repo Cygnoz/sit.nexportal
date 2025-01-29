@@ -480,6 +480,9 @@ exports.editBda = async (req, res, next) => {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
 
+    const [ regionData] = await Promise.all([
+      Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+    ]);
     // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
@@ -496,6 +499,10 @@ exports.editBda = async (req, res, next) => {
 
     res.status(200).json({
       message: "BDA updated successfully",
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
     logOperation(req, "Successfully", updatedBda._id);
     next();

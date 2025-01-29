@@ -206,9 +206,9 @@ exports.addRegionManager = async (req, res, next) => {
     next();
     return res.status(201).json({
       message: "Region Manager added successfully",
-      userId: newUser._id,
-      regionManagerId: newRegionManager._id,
-      newRegionManager,
+      // userId: newUser._id,
+      // regionManagerId: newRegionManager._id,
+      // newRegionManager,
       employeeId:newUser.employeeId,
       region:{
         _id: regionData._id,
@@ -358,6 +358,9 @@ exports.editRegionManager = async (req, res, next) => {
       });
     }
 
+    const [ regionData] = await Promise.all([
+      Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+    ]);
     // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
@@ -374,6 +377,10 @@ exports.editRegionManager = async (req, res, next) => {
 
     res.status(200).json({
       message: "Region Manager updated successfully",
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
     logOperation(req, "Successfully", updatedRegionManager._id);
     next();

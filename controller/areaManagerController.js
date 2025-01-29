@@ -213,9 +213,9 @@ exports.addAreaManager = async (req, res, next) => {
     next();
     return res.status(201).json({
       message: "Area Manager added successfully",
-      userId: newUser._id,
-      areaManagerId: newAreaManager._id,
-      newAreaManager,
+      // userId: newUser._id,
+      // areaManagerId: newAreaManager._id,
+      // newAreaManager,
       employeeId:newUser.employeeId,
       region:{
         _id: regionData._id,
@@ -431,6 +431,10 @@ exports.editAreaManager = async (req, res, next) => {
     if (duplicateCheck) {
       return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
     }
+
+    const [ regionData] = await Promise.all([
+      Region.findOne({ _id: data.region }).select('_id regionName'), // Fetch region data directly
+    ]);
     // Encrypt sensitive fields
     data = encryptSensitiveFields(data);
 
@@ -447,6 +451,10 @@ exports.editAreaManager = async (req, res, next) => {
 
     res.status(200).json({
       message: "Area Manager updated successfully",
+      region:{
+        _id: regionData._id,
+        regionName: regionData.regionName,
+      }
     });
     logOperation(req, "Successfully", updatedAreaManager._id);
     next();
