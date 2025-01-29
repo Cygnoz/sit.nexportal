@@ -27,6 +27,8 @@ router.get('/ticket/:ticketId',verifyToken,checkPermission('View Ticket'),Ticket
 
 //chat
 router.post('/chat', chatController.sendMessage);
+
+router.get('/chats/lead/:leadId',verifyToken,checkPermission('View Chat'), chatController.getChatByCustomer);
  
 router.get('/history/:ticketId',chatController.getChatHistory);
 

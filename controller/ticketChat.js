@@ -104,6 +104,92 @@ exports.getChatHistory = async (req, res) => {
   }
 };
  
+exports.getChatByCustomer = async (req, res) => {
+  try {
+    const { leadId } = req.params;
+ 
+    // Validate if the provided leadId exists in the Leads collection
+    const lead = await Leads.findById(leadId);
+    if (!lead) {
+      return res.status(404).json({ message: "Lead not found" });
+    }
+ 
+    // Find all ticketIds where the leadId appears as senderId or receiverId
+    const ticketIds = await Chat.distinct('ticketId', {
+      $or: [{ senderId: lead.email }, { receiverId: lead.email }],
+    });
+ 
+    if (ticketIds.length === 0) {
+      return res.status(404).json({ message: "No chat found for this lead" });
+    }
+ 
+    // Fetch all chats grouped by ticketId
+    const chatData = await Promise.all(
+      ticketIds.map(async (ticketId) => {
+        const messages = await Chat.find({ ticketId }).sort({ createdAt: -1 });
+ 
+        // Process messages to populate sender and receiver details
+        const processedMessages = await Promise.all(
+          messages.map(async (message) => {
+            const processedMessage = { ...message.toObject() };
+ 
+            // Fetch sender details
+            if (message.senderId) {
+              const lead = await Leads.findOne({ email: message.senderId });
+              if (lead) {
+                processedMessage.senderId = {
+                  name: lead.fullName || `${lead.firstName}`,
+                  role: 'Customer',
+                };
+              } else {
+                const user = await User.findById(message.senderId); // Support agent
+                if (user) {
+                  processedMessage.senderId = {
+                    name: user.userName,
+                    role: user.role,
+                  };
+                }
+              }
+            }
+ 
+            // Fetch receiver details
+            if (message.receiverId) {
+              const lead = await Leads.findOne({ email: message.receiverId });
+              if (lead) {
+                processedMessage.receiverId = {
+                  name: lead.fullName || `${lead.firstName}`,
+                  role: 'Customer',
+                };
+              } else {
+                const user = await User.findById(message.receiverId); // Support agent
+                if (user) {
+                  processedMessage.receiverId = {
+                    name: user.userName,
+                    role: user.role,
+                  };
+                }
+              }
+            }
+ 
+            return processedMessage;
+          })
+        );
+ 
+        return { ticketId, messages: processedMessages };
+      })
+    );
+ 
+    // Respond with the grouped chat data
+    res.status(200).json({
+      message: "Chats retrieved successfully",
+      data: chatData,
+    });
+  } catch (error) {
+    console.error("Error fetching chats for lead:", error);
+    res.status(500).json({ message: "Internal server error", error });
+  }
+};
+ 
  
  
 // // Get recent chats
