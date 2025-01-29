@@ -2,22 +2,24 @@ import DownloadIcon from "../../assets/icons/DownloadIcon"
 import ViewIcon from "../../assets/icons/ViewIcon"
 import Button from "../ui/Button"
 // import bcardback from "../../assets/image/Business-card-back.png";
-import idcard from "../../assets/image/ID-card 1.png";
+// import idcard from "../../assets/image/ID-card 1.png";
 // import bcardfront from "../../assets/image/Business-card-front.png";
 import { useState } from "react";
 import Modal from "./Modal";
-import AMViewBCard from "./IdCardView/BCardInsideForm";
-import AMIdCardView from "./IdCardView/IdCardInsideForm";
 import { useRegularApi } from "../../context/ApiContext";
-import { Layout1Back, Layout1Front, Layout2Back, Layout2Front, Layout3Back, Layout3Front } from "../ui/BSLayout";
+import { IdCardLayout, Layout1Back, Layout1Front, Layout2Back, Layout2Front, Layout3Back, Layout3Front } from "../ui/BSLayout";
+import BCardInsideForm from "./IdCardView/BCardInsideForm";
+import IdCardInsideForm from "./IdCardView/IdCardInsideForm";
 // import { Layout1Front, Layout1Back, IdCardLayout } from "../ui/BSLayout";
 
 type Props = {
     onClose: () => void;
     parentOnClose:()=> void;
+    role:"Region Manager" | "Area Manager" | "BDA" | "Supervisor" | "Support Agent";
+    staffData:any;
 }
 
-const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
+const IdBcardModal = ({ onClose, parentOnClose, role, staffData}: Props) => {
     const [isModalOpen, setIsModalOpen] = useState({
         viewBusinesscard: false,
         viewIdcard: false,
@@ -34,6 +36,8 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
     const {businessCardData}=useRegularApi()
     interface LayoutProps {
         toggleState?: Record<string, boolean>;
+        role?:any;
+        staffData?:any;
     }
     const layoutComponents: Record<
             any,
@@ -57,17 +61,17 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
         const { Front: ActiveFront, Back: ActiveBack } = layoutComponents[businessCardData?.layout];
         const { layout, ...toggles } = businessCardData;
         const toggle = {
-            "Profile Photo": toggles?.profilePhoto,
-            "Company Logo": toggles?.companyLogo,
-            "Name": toggles?.name,
-            "Employee ID": toggles?.employeeId,
-            "Email": toggles?.email,
-            "Logo Title": toggles?.logoTitle,
-            "Designation": toggles?.designation,
-            "Region": toggles?.region,
-            "Address": toggles?.address,
+            "profilePhoto": toggles?.profilePhoto,
+            "companyLogo": toggles?.companyLogo,
+            "name": toggles?.name,
+            "employeeId": toggles?.employeeId,
+            "email": toggles?.email,
+            "logoTitle": toggles?.logoTitle,
+            "designation": toggles?.designation,
+            "region": toggles?.region,
+            "address": toggles?.address,
             "phoneNo": toggles?.phoneNo,
-            "CompanyInfo": toggles?.companyInfo,
+            "companyInfo": toggles?.companyInfo,
         }
         console.log(businessCardData);
         
@@ -103,8 +107,8 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
                         do eiusmod tempor incididunt
                     </p> */}
                     <div className="p-5">
-                    <ActiveFront toggleState={toggle}/>
-                    <ActiveBack toggleState={toggle}/>
+                    <ActiveFront toggleState={toggle} role={role} staffData={staffData}/>
+                    <ActiveBack toggleState={toggle} staffData={staffData} />
                     </div>
                     {/* <Layout1Front/>
                     <Layout1Back/> */}
@@ -124,14 +128,14 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
                 </div>
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                     <p className="text-[#303F58] text-base font-bold">ID Card</p>
-                    <p className="text-xs font-normal text-[#8F99A9] mt-1">
+                    {/* <p className="text-xs font-normal text-[#8F99A9] mt-1">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
                         do eiusmod tempor incididunt
-                    </p>
-                    <img src={idcard} className="my-3" alt="" />
-                    {/* <div className="">
-                    <IdCardLayout/>
-                    </div> */}
+                    </p> */}
+                    {/* <img src={idcard} className="my-3" alt="" /> */}
+                    <div className="p-3">
+                    <IdCardLayout role={role} staffData={staffData}/>
+                    </div>
                     <div className="flex gap-3 justify-end py-3">
                         <Button
                             onClick={() => handleModalToggle(false, true)}
@@ -153,14 +157,14 @@ const IdBcardModal = ({ onClose, parentOnClose}: Props) => {
                 onClose={() => handleModalToggle()}
                 className="w-[35%]"
             >
-                <AMViewBCard onClose={() => handleModalToggle()} />
+                <BCardInsideForm onClose={() => handleModalToggle()} role={role} staffData={staffData} />
             </Modal>
             <Modal
                 open={isModalOpen.viewIdcard}
                 onClose={() => handleModalToggle()}
                 className="w-[35%]"
             >
-                <AMIdCardView onClose={() => handleModalToggle()} />
+                <IdCardInsideForm onClose={() => handleModalToggle()} />
             </Modal>
         </div>
     )

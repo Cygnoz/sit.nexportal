@@ -8,7 +8,7 @@ import CompanyIdIcon from "../../assets/icons/CompanyIdIcon"
 import LogoTitleIcon from "../../assets/icons/LogoTitleIcon"
 import DesignationIcon from "../../assets/icons/DesignationIcon"
 import AddressIcon from "../../assets/icons/AddressIcon"
-import CompanyInfoIcon from "../../assets/icons/CompanyInfoIcon"
+// import companyInfoIcon from "../../assets/icons/companyInfoIcon"
 import CompanyLogoIcon from "../../assets/icons/CompanyLogoIcon"
 // import cygnoz from '../../assets/image/cygnoz.com.png'
 // import profile from '../../assets/image/AvatarImg.png'
@@ -33,17 +33,17 @@ function BusinessCard({ }: Props) {
     const [toggleStates, setToggleStates] = useState<any>({});
 
     const layoutToggle = {
-        "Profile Photo": true,
-        "Company Logo": true,
-        "Name": true,
-        "Employee ID": true,
-        "Email": true,
-        "Logo Title": true,
-        "Designation": true,
-        "Region": true,
-        "Address": true,
+        "profilePhoto": true,
+        "companyLogo": true,
+        "name": true,
+        "employeeId": true,
+        "email": true,
+        "logoTitle": true,
+        "designation": true,
+        "region": true,
+        "address": true,
         "phoneNo": true,
-        "CompanyInfo": true,
+        "companyInfo": true,
     }
 
     // Toggle handler for individual item
@@ -59,6 +59,8 @@ function BusinessCard({ }: Props) {
     type LayoutKeys = "Layout1" | "Layout2" | "Layout3";
     interface LayoutProps {
         toggleState?: Record<string, boolean>;
+        role?:any;
+        staffData?:any;
     }
     // Define the layoutComponents object with proper types
     const layoutComponents: Record<
@@ -99,6 +101,7 @@ function BusinessCard({ }: Props) {
             }
             else {
                 console.log(error.response.data.message);
+                toast.error(error.response.data.message)
             }
         }
         catch (err) {
@@ -112,17 +115,17 @@ function BusinessCard({ }: Props) {
 
             setActiveLayout(layout);
             setToggleStates({
-                "Profile Photo": toggles?.profilePhoto,
-                "Company Logo": toggles?.companyLogo,
-                "Name": toggles?.name,
-                "Employee ID": toggles?.employeeId,
-                "Email": toggles?.email,
-                "Logo Title": toggles?.logoTitle,
-                "Designation": toggles?.designation,
-                "Region": toggles?.region,
-                "Address": toggles?.address,
+                "profilePhoto": toggles?.profilePhoto,
+                "companyLogo": toggles?.companyLogo,
+                "name": toggles?.name,
+                "employeeId": toggles?.employeeId,
+                "email": toggles?.email,
+                "logoTitle": toggles?.logoTitle,
+                "designation": toggles?.designation,
+                "region": toggles?.region,
+                "address": toggles?.address,
                 "phoneNo": toggles?.phoneNo,
-                "CompanyInfo": toggles?.companyInfo,
+                "companyInfo": toggles?.companyInfo,
             });
         }
     }, []);
@@ -213,7 +216,7 @@ function BusinessCard({ }: Props) {
                                                 </div>
                                                 <div>
                                                     <p className="text-[#4B5C79] text-sm font-medium">Profile Photo</p>
-                                                    <p className="text-[#B0B0B0] text-sm font-normal">Update your profile photo for display within the application.</p>
+                                                    <p className="text-[#B0B0B0] text-sm font-normal">Update your profilePhoto for display within the application.</p>
                                                 </div>
                                             </div>
 
@@ -223,8 +226,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Profile Photo"]}
-                                                        onChange={() => handleToggle("Profile Photo")}
+                                                        checked={toggleStates["profilePhoto"]}
+                                                        onChange={() => handleToggle("profilePhoto")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2
@@ -253,8 +256,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Company Logo"]}
-                                                        onChange={() => handleToggle("Company Logo")}
+                                                        checked={toggleStates["companyLogo"]}
+                                                        onChange={() => handleToggle("companyLogo")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -281,8 +284,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Name"]}
-                                                        onChange={() => handleToggle("Name")}
+                                                        checked={toggleStates["name"]}
+                                                        onChange={() => handleToggle("name")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -309,8 +312,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Employee ID"]}
-                                                        onChange={() => handleToggle("Employee ID")}
+                                                        checked={toggleStates["employeeId"]}
+                                                        onChange={() => handleToggle("employeeId")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -337,8 +340,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Email"]}
-                                                        onChange={() => handleToggle("Email")}
+                                                        checked={toggleStates["email"]}
+                                                        onChange={() => handleToggle("email")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -365,8 +368,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Logo Title"]}
-                                                        onChange={() => handleToggle("Logo Title")}
+                                                        checked={toggleStates["logoTitle"]}
+                                                        onChange={() => handleToggle("logoTitle")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -393,8 +396,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Designation"]}
-                                                        onChange={() => handleToggle("Designation")}
+                                                        checked={toggleStates["designation"]}
+                                                        onChange={() => handleToggle("designation")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -421,8 +424,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Region"]}
-                                                        onChange={() => handleToggle("Region")}
+                                                        checked={toggleStates["region"]}
+                                                        onChange={() => handleToggle("region")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -449,8 +452,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["Address"]}
-                                                        onChange={() => handleToggle("Address")}
+                                                        checked={toggleStates["address"]}
+                                                        onChange={() => handleToggle("address")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -493,7 +496,7 @@ function BusinessCard({ }: Props) {
                                         </div>
                                         <div className="flex p-4 gap-4">
                                             <div className="py-2">
-                                                <CompanyInfoIcon color="#768294" size={22} />
+                                                <CompanyLogoIcon color="#768294" size={22} />
                                             </div>
                                             <div>
                                                 <p className="text-[#4B5C79] text-sm font-medium">Company Info</p>
@@ -505,8 +508,8 @@ function BusinessCard({ }: Props) {
                                                         type="checkbox"
                                                         value=""
                                                         className="sr-only peer"
-                                                        checked={toggleStates["CompanyInfo"]}
-                                                        onChange={() => handleToggle("CompanyInfo")}
+                                                        checked={toggleStates["companyInfo"]}
+                                                        onChange={() => handleToggle("companyInfo")}
                                                     />
                                                     <div
                                                         className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
