@@ -12,12 +12,20 @@ import "react-quill/dist/quill.snow.css"; // Import Quill styles
 import ChevronRight from "../../assets/icons/ChevronRight";
 import Button from "../../components/ui/Button";
 import NoImage from "../../components/ui/NoImage";
-import io from "socket.io-client"
-const socket = io(import.meta.env.VITE_REACT_APP_TICKETS)
+import io, { Socket } from "socket.io-client";
+const AGENT_SOCKET_URL =import.meta.env.VITE_REACT_APP_TICKETS
 type Props = {};
+interface Message {
+  senderId: string;
+  receiverId: string;
+  ticketId: string;
+  message: string;
+  timestamp: string;
+}
 
 const LiveChat = ({}: Props) => {
-
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const {request:getChatHistory}=useApi('get',3004)
   const [content, setContent] = useState<string>("");
   const Priority = [
     { label: "Low", color: "#4CAF50" }, // Green for Low priority
@@ -54,71 +62,125 @@ const LiveChat = ({}: Props) => {
     }
   };
 
-  useEffect(() => {
-    getOneTicket();
-    socket.emit("joinRoom",(ticketData?.supportAgentId?._id))
-  }, [id]);
-
-  console.log(ticketData);
-
-  const [messages, setMessages] = useState([
-    {
-      chatId: "chatId",
-      ticketId: "ticketId1",
-      senderId: id,
-      receiverId: "receiverUserId456",
-      message: "Hello, how can I help you?",
-    },
-    {
-      chatId: "chatId",
-      ticketId: "ticketId2",
-      senderId: "senderUserId123",
-      receiverId: id,
-      message: "Hello, the software is loading for one hour.",
-    },
-    {
-      chatId: "chatId",
-      ticketId: "ticketId3",
-      senderId: id,
-      receiverId: "receiverUserId456",
-      message: "Could you please share more details about the issue you're facing? For example, when did it start, and have you tried restarting the application?",
-    },
-    {
-      chatId: "chatId",
-      ticketId: "ticketId4",
-      senderId: "senderUserId123",
-      receiverId: id,
-      message: "Yes, I have tried restarting the app several times, but it’s still not working. It keeps showing the loading icon and doesn’t progress beyond that.",
-    },
-    {
-      chatId: "chatId",
-      ticketId: "ticketId5",
-      senderId: id,
-      receiverId: "receiverUserId456",
-      message: "Thanks for the details. I’ll escalate this to our technical team. Meanwhile, can you confirm the app version you are using?",
-    },
-    {
-      chatId: "chatId",
-      ticketId: "ticketId6",
-      senderId: "senderUserId123",
-      receiverId: id,
-      message: "The app version is 1.2.3.",
-    },
-  ]);
   
 
+  
+
+  // const [messages, setMessages] = useState([
+  //   {
+  //     chatId: "chatId",
+  //     ticketId: "ticketId1",
+  //     senderId: id,
+  //     receiverId: "receiverUserId456",
+  //     message: "Hello, how can I help you?",
+  //   },
+  //   {
+  //     chatId: "chatId",
+  //     ticketId: "ticketId2",
+  //     senderId: "senderUserId123",
+  //     receiverId: id,
+  //     message: "Hello, the software is loading for one hour.",
+  //   },
+  //   {
+  //     chatId: "chatId",
+  //     ticketId: "ticketId3",
+  //     senderId: id,
+  //     receiverId: "receiverUserId456",
+  //     message: "Could you please share more details about the issue you're facing? For example, when did it start, and have you tried restarting the application?",
+  //   },
+  //   {
+  //     chatId: "chatId",
+  //     ticketId: "ticketId4",
+  //     senderId: "senderUserId123",
+  //     receiverId: id,
+  //     message: "Yes, I have tried restarting the app several times, but it’s still not working. It keeps showing the loading icon and doesn’t progress beyond that.",
+  //   },
+  //   {
+  //     chatId: "chatId",
+  //     ticketId: "ticketId5",
+  //     senderId: id,
+  //     receiverId: "receiverUserId456",
+  //     message: "Thanks for the details. I’ll escalate this to our technical team. Meanwhile, can you confirm the app version you are using?",
+  //   },
+  //   {
+  //     chatId: "chatId",
+  //     ticketId: "ticketId6",
+  //     senderId: "senderUserId123",
+  //     receiverId: id,
+  //     message: "The app version is 1.2.3.",
+  //   },
+  // ]);
+  
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const newSocket = io(AGENT_SOCKET_URL);
+    setSocket(newSocket);
+
+    newSocket.emit("joinRoom",id);
+
+    newSocket.on("chatHistory", (chatHistory: Message[]) => {
+      setMessages(chatHistory);
+    });
+
+    newSocket.on("newMessage", (newMessage: Message) => {4
+
+      
+      setMessages((prev) => [...prev, newMessage]);
+    });
+   
+    return () => {
+      newSocket.disconnect();
+    };
+    
+  }, [id]);
+
+
+  console.log("Message",messages);
+  
+ 
+
+  useEffect(() => {
+    getOneTicket();
+    getChatHis()
+  }, [id]);
+
+  const getChatHis=async()=>{
+    try{
+      const {response,error}=await getChatHistory(`${endPoints.CHAT_HISTORY}/${id}`)
+      if(response && !error){
+        console.log("rres",response.data);
+        
+      }
+    }catch(err){
+      console.log("er",err);
+      
+    }
+  }
+
+  const handleSubmit = () => {
+    if (content.trim() && socket) {
+      socket.emit("sendMessage", {
+        ticketId:id,
+        senderId:ticketData?.supportAgentId?._id ,
+        receiverId:ticketData?.customerId?._id,
+        message:content,
+      });
+      setContent("");
+    }
+  };
 
   // const handleInputChange = (e: any) => {
   //   setNewMessage(e.target.value);
   // };
 
-  console.log(setMessages);
+
   // console.log("senderId",ticketData?.supportAgentId?._id );
   // console.log("ticketId",id);
   // console.log("receverID",ticketData?.customerId?._id);
   // console.log("msg",content);
   
-  
+
   
 
 
@@ -306,7 +368,7 @@ const LiveChat = ({}: Props) => {
       variant="primary"
       className="h-10 px-4 text-white bg-red-800 rounded-md hover:bg-red-700 focus:outline-none"
       size="lg"
-      type="submit"
+      onClick={handleSubmit}
     >
       Send
     </Button>
