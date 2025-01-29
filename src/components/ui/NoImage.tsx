@@ -12,7 +12,7 @@ function NoImage({ iconSize = 15, roundedSize = 24 }: Props) {
         width: `${roundedSize}px`,
         height: `${roundedSize}px`,
       }}
-      className="border border-[#E7E8EB] bg-black rounded-full flex justify-center items-center"
+      className=" bg-black rounded-full flex justify-center items-center"
     >
       <UserIcon size={iconSize} color="white" />
     </p>

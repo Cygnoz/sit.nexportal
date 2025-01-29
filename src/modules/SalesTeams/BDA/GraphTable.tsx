@@ -13,8 +13,10 @@ import { useNavigate } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
 import { endPoints } from "../../../services/apiEndpoints";
-import { allMonths } from "../../../components/list/MonthList";
-import No_Data_found from "../../../assets/image/NO_DATA.png";
+import { months, years } from "../../../components/list/MonthYearList";
+import NoRecords from "../../../components/ui/NoRecords";
+
+
 
 interface TrailTableData {
   trailId: string;
@@ -36,7 +38,15 @@ const GraphTable = ({ bdaData }: Props) => {
   // const id=bdaData?bdaData:id
 
   const [chartData, setChartData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState<any>(allMonths[0]);
+  const [selectedMonth, setSelectedMonth] = useState<any>('');
+  const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
+  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1-1`);
+
+  useEffect(() => {
+    // Convert month name to number (1-12)
+    const monthIndex = months.findIndex((m) => m.value === selectedMonth.value) + 1;
+    setSelectedDate(`${selectedYear.value}-${monthIndex}-1`);
+  }, [selectedMonth, selectedYear]);
   const handleView = (id: any) => {
     navigate(`/trial/${id}`);
   };
@@ -47,7 +57,7 @@ const GraphTable = ({ bdaData }: Props) => {
 
   const getConvertion = async () => {
     try {
-      const endPoint = `${endPoints.BDA}/${bdaData.bdaDetails.bda._id}/trial-conversions?date=${selectedMonth.key}`;
+      const endPoint = `${endPoints.BDA}/${bdaData.bdaDetails.bda._id}/trial-conversions?date=${selectedData}`;
       const { response, error } = await getConvertionBda(endPoint);
       //console.log(endPoint);
 
@@ -70,7 +80,7 @@ const GraphTable = ({ bdaData }: Props) => {
 
   useEffect(() => {
     getConvertion();
-  }, [selectedMonth, bdaData]);
+  }, [selectedData, bdaData]);
   //console.log(allMonths);
 
   const formatDate = (date: any) => {
@@ -167,12 +177,13 @@ const GraphTable = ({ bdaData }: Props) => {
   //   },
   // ];
 
+
   return (
     <div>
       <div className="grid grid-cols-12 gap-4 mb-2">
         <div className="col-span-5">
           <div className="py-3 bg-white p-2 rounded-lg">
-            <div className="py-1 ms-2 flex justify-between">
+            <div className="py-1 ms-2 flex justify-between items-center">
               <h2 className="font-bold">Trial Converted By BDA Overtime</h2>
               <div className="flex gap-1">
                 <label htmlFor="month-select"></label>
@@ -180,16 +191,17 @@ const GraphTable = ({ bdaData }: Props) => {
                 <SelectDropdown
                   setSelectedValue={setSelectedMonth}
                   selectedValue={selectedMonth}
-                  filteredData={allMonths}
-                  //   searchPlaceholder="Search Month"
+                  filteredData={months}
+                    searchPlaceholder="Search Month"
                   width="w-44"
                 />
                 <SelectDropdown
-                  //setSelectedValue={setSelectedMonth}
-                  //selectedValue={selectedMonth}
-                 // filteredData={allYears}
-                  //   searchPlaceholder="Search Month"
-                  width="w-44"
+                  setSelectedValue={setSelectedYear}
+                  selectedValue={selectedYear}
+                 filteredData={years}
+        
+                 searchPlaceholder="Search Month"
+                  width="w-28"
                 />
               </div>
             </div>
@@ -221,10 +233,7 @@ const GraphTable = ({ bdaData }: Props) => {
       </LineChart>
     </ResponsiveContainer>
   ) : (
-    <div className="flex justify-center flex-col items-center">
-      <img width={70} src={No_Data_found} alt="No Data Found" />
-      <p className="font-bold text-red-700">No Records Found!</p>
-    </div>
+    <NoRecords parentHeight="320px"/>
   )}
 </div>
 

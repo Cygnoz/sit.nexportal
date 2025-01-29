@@ -34,6 +34,7 @@ import Trash from "../../../../assets/icons/Trash";
 import ConfirmModal from "../../../../components/modal/ConfirmModal";
 import toast from "react-hot-toast";
 import NoRecords from "../../../../components/ui/NoRecords";
+import NoImage from "../../../../components/ui/NoImage";
 
 type Props = {
 
@@ -291,6 +292,7 @@ const TrialView = ({ }: Props) => {
   }, [])
 
 
+ 
 
   return (
     <div>
@@ -311,7 +313,7 @@ const TrialView = ({ }: Props) => {
             Trail
           </p>
           <ChevronRight color="#4B5C79" size={18} />
-          <p className="font-bold text-[#303F58] ">{trial?.primaryContactName}</p>
+          <p className="font-bold text-[#303F58] ">{customerData?.firstName}</p>
         </div>
 
         {trialStatus && (
@@ -362,16 +364,30 @@ const TrialView = ({ }: Props) => {
                 </div>
               </div>
               <div className="flex gap-4">
-                <div className="w-14 h-14 rounded-full overflow-hidden">
+                {/* <div className="w-14 h-14 rounded-full overflow-hidden">
                   <img
-                    src={customerData?.image && customerData?.image > 50 ? customerData?.image : profileImage} // Replace with the actual image URL
+                    src={customerData?.image && customerData?.image > 20 ? customerData?.image : profileImage} // Replace with the actual image URL
                     alt="Profile"
                     className="w-full h-full object-cover"
                   />
-                </div>
-                <div className="mb-3 mt-3">
+                </div> */}
+                 
+              {customerData?.image?.length > 50 ? (
+                <img
+                  src={customerData?.image} // Replace with the actual image URL
+                  alt="Profile"
+                  className=" object-cover w-10 h-10 rounded-full "
+                />
+              ) : (
+                // <p className="w-full h-full    bg-black rounded-full flex justify-center items-center">
+                //   <UserIcon color="white" size={35} />
+                // </p>
+                <NoImage iconSize={25} roundedSize={40}/>
+              )}
+           
+                <div className="mb-3 ">
                   <p className="text-[#FFFFFF] text-xs font-semibold mb-3">
-                    {trial?.primaryContactName}
+                    {customerData?.firstName}
                   </p>
                   <p className="text-[#FFFFFF] text-xs font-normal">
 
@@ -387,7 +403,7 @@ const TrialView = ({ }: Props) => {
                 </span>
                 <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
                 <span className="text-[#FFFFFF] text-xs font-normal">
-                  {trial?.organizationName}
+                  {customerData?.organizationName}
                 </span>
               </div>
               <div className="flex gap-4 my-4 ">
@@ -397,7 +413,7 @@ const TrialView = ({ }: Props) => {
                 </span>
                 <div className="w-2 h-2 rounded-full mt-1 bg-white"></div>
                 <span className="text-[#FFFFFF] text-xs font-normal">
-                  {trial?.organizationId}
+                  {customerData?.organizationId}
                 </span>
               </div>
 
@@ -405,13 +421,13 @@ const TrialView = ({ }: Props) => {
                 <div className="flex gap-4 my-4 ">
                   <EmailIcon color="#FFFFFF" size={16} />
                   <p className="text-[#FFFFFF] text-xs font-normal">
-                    {trial?.primaryContactEmail}
+                    {customerData?.email}
                   </p>
                 </div>
                 <div className="flex gap-4 mb-2">
                   <PhoneRingIcon color="#FFFFFF" size={16} />
                   <p className="text-[#FFFFFF] text-xs font-normal">
-                    {trial?.primaryContactNum}
+                    {customerData?.phone}
                   </p>
                 </div>
               </div>
