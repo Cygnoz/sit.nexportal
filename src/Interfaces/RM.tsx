@@ -1,6 +1,6 @@
 
 interface Address {
-    street1?: string;
+    street1: string;
     street2?: string;
 }
  
@@ -18,7 +18,7 @@ export interface RMData {
     phoneNo: string;
     age?: number | null;
     bloodGroup?: string;
-    address?: Address;
+    address: Address;
     city?: string;
     country?: string
     state?: string;

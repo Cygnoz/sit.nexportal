@@ -7,7 +7,6 @@ import previewFront from '../../../assets/image/preview-card-front.png'
 import cygnoz from '../../../assets/image/cygnoz.com.png'
 import profile from '../../../assets/image/AvatarImg.png'
 import previewBack from '../../../assets/image/preview-card-back.png'
-import CompanyInfoIcon from "../../../assets/icons/CompanyInfoIcon"
 import AddressIcon from "../../../assets/icons/AddressIcon"
 import RegionIcon from "../../../assets/icons/RegionIcon"
 import DesignationIcon from "../../../assets/icons/DesignationIcon"
@@ -22,17 +21,17 @@ type Props = {}
 const BcardContent = ({ }: Props) => {
 
     const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({
-        "Profile Photo": true,
-        "Company Logo": true,
+        "profilePhoto": true,
+        "companyLogo": true,
         "Name": true,
         "Employee ID": true,
         "Email": true,
-        "Logo Title": true,
+        "logoTitle": true,
         "Designation": true,
         "Region": true,
         "Address": true,
         "phoneNo": true,
-        "CompanyInfo": true,
+        "companyInfo": true,
     });
 
     // Toggle handler for individual item
@@ -62,8 +61,8 @@ const BcardContent = ({ }: Props) => {
                                             <ProfilePhotoIcon color="#768294" size={24} />
                                         </div>
                                         <div>
-                                            <p className="text-[#4B5C79] text-sm font-medium">Profile Photo</p>
-                                            <p className="text-[#B0B0B0] text-sm font-normal">Update your profile photo for display within the application.</p>
+                                            <p className="text-[#4B5C79] text-sm font-medium">profilePhoto</p>
+                                            <p className="text-[#B0B0B0] text-sm font-normal">Update your profilePhoto for display within the application.</p>
                                         </div>
                                     </div>
 
@@ -73,8 +72,8 @@ const BcardContent = ({ }: Props) => {
                                                 type="checkbox"
                                                 value=""
                                                 className="sr-only peer"
-                                                checked={toggleStates["Profile Photo"]}
-                                                onChange={() => handleToggle("Profile Photo")}
+                                                checked={toggleStates["profilePhoto"]}
+                                                onChange={() => handleToggle("profilePhoto")}
                                             />
                                             <div
                                                 className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2
@@ -94,7 +93,7 @@ const BcardContent = ({ }: Props) => {
                                         <CompanyLogoIcon color="#768294" size={22} />
                                     </div>
                                     <div>
-                                        <p className="text-[#4B5C79] text-sm font-medium">Company Logo</p>
+                                        <p className="text-[#4B5C79] text-sm font-medium">companyLogo</p>
                                         <p className="text-[#B0B0B0] text-sm font-normal">Enable/Disable Picture</p>
                                     </div>
                                     <div className="ml-auto justify-end">
@@ -103,8 +102,8 @@ const BcardContent = ({ }: Props) => {
                                                 type="checkbox"
                                                 value=""
                                                 className="sr-only peer"
-                                                checked={toggleStates["Company Logo"]}
-                                                onChange={() => handleToggle("Company Logo")}
+                                                checked={toggleStates["companyLogo"]}
+                                                onChange={() => handleToggle("companyLogo")}
                                             />
                                             <div
                                                 className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -206,7 +205,7 @@ const BcardContent = ({ }: Props) => {
                                         <LogoTitleIcon color="#768294" size={22} />
                                     </div>
                                     <div>
-                                        <p className="text-[#4B5C79] text-sm font-medium">Logo Title</p>
+                                        <p className="text-[#4B5C79] text-sm font-medium">logoTitle</p>
                                         <p className="text-[#B0B0B0] text-sm font-normal">Enable/Disable Title</p>
                                     </div>
                                     <div className="ml-auto justify-end">
@@ -215,8 +214,8 @@ const BcardContent = ({ }: Props) => {
                                                 type="checkbox"
                                                 value=""
                                                 className="sr-only peer"
-                                                checked={toggleStates["Logo Title"]}
-                                                onChange={() => handleToggle("Logo Title")}
+                                                checked={toggleStates["logoTitle"]}
+                                                onChange={() => handleToggle("logoTitle")}
                                             />
                                             <div
                                                 className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -343,7 +342,7 @@ const BcardContent = ({ }: Props) => {
                                 </div>
                                 <div className="flex p-4 gap-4">
                                     <div className="py-2">
-                                        <CompanyInfoIcon color="#768294" size={22} />
+                                        <CompanyLogoIcon color="#768294" size={22} />
                                     </div>
                                     <div>
                                         <p className="text-[#4B5C79] text-sm font-medium">Company Info</p>
@@ -355,8 +354,8 @@ const BcardContent = ({ }: Props) => {
                                                 type="checkbox"
                                                 value=""
                                                 className="sr-only peer"
-                                                checked={toggleStates["CompanyInfo"]}
-                                                onChange={() => handleToggle("CompanyInfo")}
+                                                checked={toggleStates["companyInfo"]}
+                                                onChange={() => handleToggle("companyInfo")}
                                             />
                                             <div
                                                 className={`w-11 h-6 bg-gray-300 rounded-full peer-focus:ring-2 
@@ -385,7 +384,7 @@ const BcardContent = ({ }: Props) => {
 
                             <div className="relative p-3">
                                 <div className="flex gap-1">
-                                    {toggleStates["Profile Photo"] && (
+                                    {toggleStates["profilePhoto"] && (
                                         <div>
                                             <img className="w-8 h-8 rounded-full" src={profile} alt="Profile" />
                                         </div>
@@ -454,10 +453,10 @@ const BcardContent = ({ }: Props) => {
                                 </div>
 
                                 <div className="flex justify-between mt-4">
-                                    {toggleStates["Company Logo"] && (
-                                        <img src={cygnoz} className="w-24 h-5" alt="Company Logo" />
+                                    {toggleStates["companyLogo"] && (
+                                        <img src={cygnoz} className="w-24 h-5" alt="companyLogo" />
                                     )}
-                                    {toggleStates["Logo Title"] && (
+                                    {toggleStates["logoTitle"] && (
                                         <p className="text-[#FFFFFF] font-normal text-[10px] py-1">
                                             Engineering your business for the world
                                         </p>
@@ -475,10 +474,10 @@ const BcardContent = ({ }: Props) => {
 
                             <div className="relative flex gap-1 p-3">
                                 <div>
-                                    {toggleStates["Company Logo"] && (
-                                        <img className="w-32 h-8" src={cygnoz} alt="Company Logo" />
+                                    {toggleStates["companyLogo"] && (
+                                        <img className="w-32 h-8" src={cygnoz} alt="companyLogo" />
                                     )}
-                                    {toggleStates["Logo Title"] && (
+                                    {toggleStates["logoTitle"] && (
                                         <p className="text-[#FFFFFF] font-normal text-[10px] py-1">
                                             Engineering your business for the world
                                         </p>
@@ -486,7 +485,7 @@ const BcardContent = ({ }: Props) => {
                                 </div>
                             </div>
 
-                            {toggleStates["CompanyInfo"] && (
+                            {toggleStates["companyInfo"] && (
                                 <div className="relative px-3 py-8">
                                     <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
                                     <div className="grid grid-cols-2 gap-1">

@@ -1,5 +1,5 @@
 interface Address {
-    street1?: string;
+    street1: string;
     street2?: string;
   }
   
@@ -16,7 +16,7 @@ interface Address {
     phoneNo: string;
     age?: number |null;
     bloodGroup?: string;
-    address?: Address;
+    address: Address;
     adhaarNo?: string;
     panNo?: string;
     dateOfJoining?: string;

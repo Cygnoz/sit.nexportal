@@ -52,7 +52,11 @@ const baseSchema = {
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
   region: Yup.string().required("Region is required"),
   area: Yup.string().required("Area is required"),
-  salaryAmount:Yup.string().required("Salary Amount is required")
+  salaryAmount:Yup.string().required("Salary Amount is required"),
+  address: Yup.object().shape({
+    street1: Yup.string().required("Street 1 is required"),
+    street2: Yup.string(), // Optional field
+  }),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -200,7 +204,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
   let canProceed = true;
 
   if (tab === "Personal Information") {
-    fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
+    fieldsToValidate = ["userName", "phoneNo", "personalEmail", "address.street1"];
   } else if (tab === "Company Information") {
     fieldsToValidate = [
       ...(editId ? [] : ["email", "password", "confirmPassword"]),
@@ -550,6 +554,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
                   />
                 </div>
                 <Input
+                  required
                   label="Address"
                   placeholder="Street 1"
                   error={errors.address?.street1?.message}
@@ -935,7 +940,10 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
     <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
       <IdBcardModal 
         parentOnClose={onClose}
-        onClose={handleModalToggle}/>
+        onClose={handleModalToggle}
+        role="Area Manager"
+        staffData={watch()}
+        />
       </Modal>
 
     </>

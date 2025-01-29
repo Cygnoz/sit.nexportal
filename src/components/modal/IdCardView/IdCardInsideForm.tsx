@@ -69,7 +69,7 @@ const IdCardInsideForm = ({onClose}: Props) => {
         <div className="flex justify-center">
   <div className="text-center py-4">
     <div className="flex justify-center">
-      <img src={cygnoz} className="w-32 h-8" alt="Company Logo" />
+      <img src={cygnoz} className="w-32 h-8" alt="companyLogo" />
     </div>
     <p className="text-white font-normal text-[10px] py-1">
       Engineering your business for <br /> the world
