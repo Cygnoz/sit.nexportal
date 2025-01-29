@@ -17,7 +17,7 @@ import Table from "../../../components/ui/Table";
 import { useEffect, useState } from "react";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
-import { allMonths } from "../../../components/list/MonthList";
+import { months } from "../../../components/list/MonthYearList";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
 // import { allYears } from "../../../components/list/YearList";
 interface BDAData {
@@ -41,7 +41,7 @@ type Props = {
 const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
 
   //const [topPerformance,setTopPerformance]=useState('')
-  const [selectedMonth, setSelectedMonth] = useState<any>(allMonths[0]);
+  const [selectedMonth, setSelectedMonth] = useState<any>(months[0]);
   //const [selectedYear, setSelectedYear] = useState<any>(allYears[0]);
 
   const { request: TopPerformingAM } = useApi("get", 3002);
@@ -314,7 +314,7 @@ const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
                 <SelectDropdown
                   setSelectedValue={setSelectedMonth}
                   selectedValue={selectedMonth}
-                  filteredData={allMonths}
+                  filteredData={months}
                   //   searchPlaceholder="Search Month"
                   width="w-44"
                 />

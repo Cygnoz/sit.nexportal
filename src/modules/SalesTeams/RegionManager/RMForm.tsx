@@ -105,6 +105,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [empId,setEmpId]=useState('')
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
@@ -131,7 +132,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
        const  staffDetails={
           ...watch(),
           regionName:region?.regionName,
-          employeeId
+          employeeId:editId?empId:employeeId
         }
         // staffData=response.data
         setStaffData(staffDetails)
@@ -342,6 +343,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       if (response && !error) {
         const RM: any = response.data.regionManager; // Return the fetched data
         console.log("Fetched RM data:", RM);
+        setEmpId(RM.user?.employeeId)
         const { user, _id, ...rm } = RM;
         const transformedRM = RM
           ? {

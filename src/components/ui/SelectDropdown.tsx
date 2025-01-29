@@ -75,6 +75,7 @@ const SelectDropdown: React.FC<Props> = ({
   }, [dropdownRef]);
 
 
+  console.log("select",selectedValue);
   
 
   return (
