@@ -123,9 +123,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [ user]);
 
-  console.log("busines",businessCardData);
-  
-
   return (
     <ApiContext.Provider
       value={{

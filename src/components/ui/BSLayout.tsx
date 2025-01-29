@@ -681,7 +681,9 @@ export const Layout3Back: React.FC<LayoutProps> = ({ toggleState }) => {
     </div>
 }
 
-export const IdCardLayout: React.FC<LayoutProps> = () => {
+export const IdCardLayout: React.FC<LayoutProps> = ({}) => {
+    
+    
     return <div className="bg-cover bg-center bg-no-repeat w-[300px] h-fit rounded-lg relative px-3  justify-center"
         style={{ backgroundImage: `url(${idCardFront})`, minHeight: '100px' }}>
         {/* Profile Section */}

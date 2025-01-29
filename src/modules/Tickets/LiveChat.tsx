@@ -3,39 +3,51 @@ import EmailIcon from "../../assets/icons/EmailIcon";
 import PhoneIcon from "../../assets/icons/PhoneIcon";
 import Input from "../../components/form/Input";
 // import pic from "../../assets/image/IndiaLogo.png";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../Hooks/useApi";
 import { endPoints } from "../../services/apiEndpoints";
-import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Import Quill styles
 import ChevronRight from "../../assets/icons/ChevronRight";
-import Button from "../../components/ui/Button";
+import SAImage from '../../assets/image/SAImage.png'
+import CygnozLogo from '../../assets/image/CygnozLogo.png'
 import NoImage from "../../components/ui/NoImage";
+
 import io, { Socket } from "socket.io-client";
+import ArrowRight from "../../assets/icons/ArrowRight";
+import { useUser } from "../../context/UserContext";
 const AGENT_SOCKET_URL =import.meta.env.VITE_REACT_APP_TICKETS
 type Props = {};
-interface Message {
-  senderId: string;
-  receiverId: string;
-  ticketId: string;
-  message: string;
-  timestamp: string;
-}
+
 
 const LiveChat = ({}: Props) => {
+  const {user}=useUser()
   const [socket, setSocket] = useState<Socket | null>(null);
   const {request:getChatHistory}=useApi('get',3004)
-  const [content, setContent] = useState<string>("");
+  const textareaRef:any = useRef(null);
+  // const [content, setContent] = useState<string>("");
   const Priority = [
     { label: "Low", color: "#4CAF50" }, // Green for Low priority
     { label: "Medium", color: "#FFC107" }, // Yellow/Amber for Medium priority
     { label: "High", color: "#F44336" }, // Red for High priority
   ];
+  const Status = [
+    { label: "Open", color: "#4ade80" }, // Green for Low priority
+    { label: "Resolved", color: " #bbf7d0" }, // Yellow/Amber for Medium priority
+    { label: "In progress", color: "#fef9c3" }, // Red for High priority
+  ];
+  
 
-  const handleChange = (value: string) => {
-    setContent(value);
-  };
+  const [message, setMessage] = useState("");
+  const [messages, setMessages] = useState<any[]>([]);
+  const chatBoxRef:any = useRef(null);
+
+  useEffect(() => {
+    // Scroll to the bottom whenever messages change
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const navigate = useNavigate();
 
@@ -111,7 +123,7 @@ const LiveChat = ({}: Props) => {
   //   },
   // ]);
   
-  const [messages, setMessages] = useState<Message[]>([]);
+
 
   useEffect(() => {
     const newSocket = io(AGENT_SOCKET_URL);
@@ -119,11 +131,11 @@ const LiveChat = ({}: Props) => {
 
     newSocket.emit("joinRoom",id);
 
-    newSocket.on("chatHistory", (chatHistory: Message[]) => {
+    newSocket.on("chatHistory", (chatHistory: any) => {
       setMessages(chatHistory);
     });
 
-    newSocket.on("newMessage", (newMessage: Message) => {4
+    newSocket.on("newMessage", (newMessage: any) => {
 
       
       setMessages((prev) => [...prev, newMessage]);
@@ -149,7 +161,7 @@ const LiveChat = ({}: Props) => {
     try{
       const {response,error}=await getChatHistory(`${endPoints.CHAT_HISTORY}/${id}`)
       if(response && !error){
-        console.log("rres",response.data);
+        setMessages(response.data?.data?.reverse())
         
       }
     }catch(err){
@@ -158,15 +170,24 @@ const LiveChat = ({}: Props) => {
     }
   }
 
-  const handleSubmit = () => {
-    if (content.trim() && socket) {
+
+  
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // const plainText = DOMPurify.sanitize(content, { ALLOWED_TAGS: [] }).trim();
+    if (message.trim()&&message.length > 0 && socket ) {
       socket.emit("sendMessage", {
         ticketId:id,
         senderId:ticketData?.supportAgentId?._id ,
         receiverId:ticketData?.customerId?._id,
-        message:content,
+        message,
       });
-      setContent("");
+      setMessage("");
+      if (textareaRef.current) {
+        textareaRef.current.style.height = "19px"; // Reset height to auto
+ 
+      }
     }
   };
 
@@ -181,8 +202,40 @@ const LiveChat = ({}: Props) => {
   // console.log("msg",content);
   
 
-  
+  function formatTime(isoString:any) {
+    const date = new Date(isoString);
+    let hours = date.getHours();
+    const minutes = date.getMinutes();
+    const ampm = hours >= 12 ? "PM" : "AM";
+    
+    hours = hours % 12 || 12; // Convert to 12-hour format and handle midnight
+    const formattedMinutes = minutes < 10 ? `0${minutes}` : minutes;
+    
+    return `${hours}.${formattedMinutes} ${ampm}`;
+}
 
+const handleInput = (e:any) => {
+  const textarea = e.target;
+  textarea.style.height = "auto"; // Reset the height
+  const lineHeight = parseFloat(getComputedStyle(textarea).lineHeight); // Get the line height
+  const maxHeight = lineHeight * 3; // Max height for 3 rows
+  const minHeight = lineHeight * 1; // Min height for 1 row
+
+  // Set the new height within bounds
+  textarea.style.height = `${Math.min(
+    Math.max(textarea.scrollHeight, minHeight),
+    maxHeight
+  )}px`;
+
+  setMessage(textarea.value);
+};
+
+const handleKeyDown = (e:any) => {
+  if (e.key === "Enter") {
+    e.preventDefault(); // Prevents adding a new line
+    handleSubmit(e); // Manually trigger the form submission
+  }
+};
 
 
   return (
@@ -231,10 +284,10 @@ const LiveChat = ({}: Props) => {
 
             <hr />
             <div className="mt-3 my-2">
-              <h1 className="mt-2 font-normal text-sm">Subject</h1>
+              <h1 className="mt-2 font-normal text-sm">Desciption</h1>
 
               <h1 className="mt-3  font-normal text-sm text-[#4B5C79]">
-                {ticketData?.subject}
+                {ticketData?.description}
               </h1>
             </div>
             <hr />
@@ -259,74 +312,118 @@ const LiveChat = ({}: Props) => {
                 })}
               </div>
             </div>
+           
+         
           </div>
 
-          <div className="col-span-7 ">
-            <div className="  h-full">
-              <div className="  border">
+          <div className="col-span-7 h-full  border">
+           
+             
                 {/* Header */}
-                <div className="border-b p-2">
+                <div className="border-b p-2 flex items-center justify-between">
                   <h1 className="text-lg font-bold text-gray-800">
                   {ticketData?.subject}
                   </h1>
+                  <div className="mt-3 my-2">
+              <div className="flex items-center">
+                {Status.map((status) => {
+                  if (status.label === ticketData?.status) {
+                    return (
+                      <div key={status.label} className="flex items-center">
+                       
+                        <h1 style={{ backgroundColor: status.color }} className="py-1 px-2 rounded-md font-normal text-sm text-[#0f0f0f]">
+                          {ticketData?.status}
+                        </h1>
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </div>
+             
+            </div>
                 </div>
 
                 {/* Chat Box */}
-                <div className={`p-2 space-y-4 h-[68vh] overflow-auto custom-scrollbar`}>
+                <div ref={chatBoxRef} className={`p-2 space-y-4 h-[68vh] scroll-smooth overflow-auto hide-scrollbar`}>
   {messages.map((msg) => (
     <div
       key={msg.ticketId} // Using ticketId as key to avoid issues with duplicate chatId
       className={`flex ${
-        msg.senderId === id ? "justify-end" : "justify-start"
+        msg.senderId ===ticketData?.supportAgentId?._id ? "justify-end" : "justify-start"
       }`}
     >
     <div className="flex flex-col">
-   {msg.senderId===id?
+   {msg.senderId ===ticketData?.supportAgentId?._id?
     <div className="flex gap-2 items-center justify-end w-full">
     
       <div className="flex justify-end items-center gap-2">
           <p className="text-xs text-gray-500  ">
-            2.50 pm
+           {formatTime(msg?.createdAt)} 
           </p>
           <div className="bg-[#787878] h-2 w-2 rounded-full"/>
 
    
           <p className="text-sm font-bold text-[#4B5C79]">
-            You
+            {ticketData?.supportAgentId?.user?.userName}
           </p>
          
         </div>
        
-        <img className="w-8 h-8 rounded-full" src={ticketData?.supportAgentId?.user?.userImage} alt="" />
-    
+        {ticketData?.supportAgentId?.user?.userImage ? (
+                <img
+                  className="w-8 h-8 rounded-full"
+                  src={ticketData?.supportAgentId?.user?.userImage}
+                  alt=""
+                />
+              ) : (
+                <img src={SAImage} className='w-8 h-8 rounded-full ' alt="" />
+              )}
      </div>:
      <div className="flex gap-2 items-center">
    
-        <img className="w-8 h-8 rounded-full" src={ticketData?.customerId?.image} alt="" />
+   {ticketData?.customerId?.image ? (
+                <img
+                  className="w-6 h-6  rounded-full"
+                  src={ticketData?.customerId?.image}
+                  alt=""
+                />
+              ) : (
+                <NoImage roundedSize={25} iconSize={14} />
+              )}
       
       <div className="flex justify-end items-center gap-2">
           <p className="text-sm font-bold text-[#4B5C79]">
-             {msg.senderId}
+             {msg.senderId?.name}
           </p>
           <div className="bg-[#787878] h-2 w-2 rounded-full"/>
           <p className="text-xs text-gray-500  ">
-            2.50 pm
+          {formatTime(msg?.createdAt)}
           </p>
         </div>
      </div>
      }
-      <div className={`ml-4 ${msg.senderId === id ? "text-right" : ""}`}>
-       
-        <p
-          className={`mt-1  p-2  text-sm rounded-xl text-gray-700 ${
-            msg.senderId === id
-              ? "bg-[#E3E6D580] me-4 ms-6 rounded-tr-none text-start "
-              : "bg-[#EEEEEE80] ms-4 me-7 rounded-tl-none"
-          }`}
-        >
-          {msg.message}
-        </p>
-      </div>
+     <div
+  className={`ml-4 flex ${
+    msg.senderId === ticketData?.supportAgentId?._id ?"justify-end" : "justify-start"
+  }`}
+>
+  <p
+    className={`mt-1 p-2 text-sm rounded-xl text-gray-700 ${
+      msg.senderId === ticketData?.supportAgentId?._id
+        ? "bg-[#E3E6D580] me-3  rounded-tr-none text-start"
+        : "bg-[#EEEEEE80]  me-6  rounded-tl-none "
+    }`}
+    style={{
+      overflowWrap: "break-word", // Ensures long words break to the next line
+      wordBreak: "break-word", // Additional support for word breaking
+      maxWidth: "100%",// Prevents horizontal overflow
+    }}
+  >
+    {msg.message}
+  </p>
+</div>
+
     </div>
     </div>
   ))}
@@ -334,9 +431,9 @@ const LiveChat = ({}: Props) => {
 
 
                 {/* Reply Section */}
-                <div className="border rounded-md p-3 bg-white flex items-end gap-2">
+                {/* <form onSubmit={handleSubmit} className="border rounded-md p-3 bg-white flex items-end gap-2"> */}
   {/* Typing Area */}
- <div className="w-[89%]">
+ {/* <div className="w-[89%]">
 
    <ReactQuill
     placeholder="Type Something..."
@@ -351,7 +448,7 @@ const LiveChat = ({}: Props) => {
    
 
   {/* Toolbar at the bottom */}
-  <div id="custom-toolbar" className="flex items-center p-2 space-x-2 border-t bg-gray-100">
+  {/* <div id="custom-toolbar" className="flex items-center p-2 space-x-2 border-t bg-gray-100">
     <button className="ql-bold"></button>
     <button className="ql-italic"></button>
     <button className="ql-underline"></button>
@@ -362,24 +459,47 @@ const LiveChat = ({}: Props) => {
     <button className="ql-list" value="ordered"></button>
     <button className="ql-list" value="bullet"></button>
     
-  </div>
- </div>
-  <Button
+  </div> */}
+ {/* </div> */} 
+  {/* <Button
       variant="primary"
       className="h-10 px-4 text-white bg-red-800 rounded-md hover:bg-red-700 focus:outline-none"
       size="lg"
-      onClick={handleSubmit}
+      type="submit"
     >
       Send
-    </Button>
-</div>
+    </Button> */}
+     <form onSubmit={handleSubmit} className="border rounded-md  bg-white flex items-center gap-2 p-3">
+         
+         <img src={CygnozLogo} className='w-[22px]' alt="" />
+         
+        
+         <textarea
+  ref={textareaRef}
+  value={message}
+  readOnly={ ticketData?.status === "Resolved" || user?.role !== "Support Agent"}
+  onKeyDown={handleKeyDown}
+  onChange={(e) => handleInput(e)}
+  className="text-black w-full text-sm focus:outline-none overflow-x-auto resize-none hide-scrollbar"
+  placeholder="Type Something..."
+  rows={1}
+/>
+         <div className='flex space-x-2 items-center'>
+           {/* <Mic/> */}
+         <button type='submit' className="w-10 h-10 flex items-center justify-center rounded-full  bg-gradient-to-r from-[#5A0000] to-[#A80000] ">
+          <ArrowRight color='white' size={15}/>
+    
+          </button>
+         </div>
+       </form>
+{/* </form> */}
 
 
 
 
 
-              </div>
-            </div>
+             
+            
           </div>
 
           <div className="col-span-3 p-3 ">
