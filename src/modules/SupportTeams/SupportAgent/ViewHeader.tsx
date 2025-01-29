@@ -111,13 +111,13 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
         <div className="w-full space-y-3">
           <div className="h-[150px] relative flex flex-col  bg-white rounded-lg">
           {
-             getData.saData?.user?.userImage && getData.saData?.user?.userImage>50?
+             getData.saData?.user?.userImage && getData.saData?.user?.userImage.length > 500 ?(
              <img src={getData.saData?.user?.userImage} className="rounded-full absolute top-8 left-8 w-20 h-20 border-[3px] border-white"></img> 
-            :
+            ) : (
                 <p className="w-20 h-20 absolute top-8  left-8 bg-black rounded-full flex justify-center items-center">
                 <UserIcon color="white" size={35} />
               </p>
-                 }
+                 )}
             {/* <img src={profileImage} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-20 h-20"></img> */}
             <div className="h-[65px] bg-cover rounded-t-lg w-full flex justify-center" style={{ backgroundImage: `url(${supportAgentbg})` }}>
               <div className="flex mt-[88px] gap-8 ms-32">
@@ -127,7 +127,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
         </div>
         <div className="">
             <p className="text-[#8F99A9] text-xs font-medium mb-1">Email</p>
-            <p className="text-[#303F58] text-xs font-medium">{getData.saData?.personalEmail ? getData.saData?.personalEmail:'N/A'}</p>
+            <p className="text-[#303F58] text-xs font-medium">{getData.saData?.user?.email ? getData.saData?.user?.email:'N/A'}</p>
         </div>
         <div className="">
             <p className="text-[#8F99A9] text-xs font-medium mb-1">Phone</p>
@@ -143,7 +143,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
         </div>
         <div className="">
             <p className="text-[#8F99A9] text-xs font-medium mb-1">Assigned Supervisor</p>
-            <p className="text-[#303F58] text-xs font-medium">Thomas</p>
+            <p className="text-[#303F58] text-xs font-medium">{getData.saData?.supervisor?.name ? getData.saData?.supervisor?.name:'N/A'}</p>
         </div>
         <div className="">
             <p className="text-[#8F99A9] text-xs font-medium mb-1">Joining Date</p>

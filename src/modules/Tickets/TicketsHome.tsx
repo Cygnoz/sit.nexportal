@@ -176,15 +176,17 @@ useEffect(() => {
 
  if(!filterWorking){
   if (user?.role !== "Support Agent" && unassignedTickets > 0) {
-    handleSort("Unassigned Tickets");
+    handleSort("Un Assigned Tickets");
   } else if(user?.role==="Support Agent") {
-    handleSort("Unresolved Tickets");
+    handleSort("Un Resolved Tickets");
   }else{
     handleSort('Total Tickets')
   }
  }
  
 }, [user?.role, unassignedTickets, handleSort]); // Add necessary dependencies
+
+
 
 
   // Define the columns with strict keys

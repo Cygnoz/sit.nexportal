@@ -23,11 +23,11 @@ function TopBreakDownByRegion({}: Props) {
   const [getRegion, setGetRegion] = useState<any>();
   const [selectedRegion, setSelectedRegion] = useState<any>(null);
 
+  
   const getConvertion = async () => {
     try {
-      const endPoint = selectedRegion ? `${endPoints.TEAM_BREAK_DOWN}/${selectedRegion.value}` : endPoints.TEAM_BREAK_DOWN;
+      const endPoint = selectedRegion.value.length>0 ? `${endPoints.TEAM_BREAK_DOWN}/${selectedRegion.value}` : endPoints.TEAM_BREAK_DOWN;
       const { response, error } = await getConvertionRate(endPoint);
-
       if (response && !error) {
         const { areaManager, bda, regionManager, supervisor, supportAgent } = response.data;
 
