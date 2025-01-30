@@ -105,7 +105,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
         <div className={`w-8 h-10 border-x ${bgColor} ${label === 'New' && 'rounded-s-3xl'}`}>
           <p className={`text-center text-sm font-bold mt-[9px] ${textColor}`}>{step}</p>
         </div>
-        <div className={`w-40 h-10 ${bgColor} ${label === 'Won' ? 'rounded-e-3xl' : label === 'Lost' && 'rounded-e-3xl'}  border}`}>
+        <div className={`w-40 h-10 ${bgColor} ${label === 'Won'|| label === 'Lost'?'rounded-e-3xl':'' }  border}`}>
           <p className={`text-center text-sm font-bold mt-2 ${textColor}`}>{label}</p>
         </div>
       </>
@@ -154,8 +154,8 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
             {renderStep(1, "New", ["New", "Contacted", "Inprogress", "Won", "Lost"])}
             {renderStep(2, "Contacted", ["Contacted", "Inprogress",  "Won", "Lost"])}
             {renderStep(3, "Inprogress", ["Inprogress",  "Won", "Lost"])}
-            {renderStep(4, "Lost", ["Won", "Lost"])}
-            {renderStep(5, lead?.leadStatus == 'Lost' ? 'Lost' : 'Won', [lead?.leadStatus == 'Lost' ? 'Lost' : 'Won'])}
+            {/* {renderStep(4, "Lost", ["Won", "Lost"])} */}
+            {renderStep(4, lead?.leadStatus == 'Lost' ? 'Lost' : 'Won', [lead?.leadStatus == 'Lost' ? 'Lost' : 'Won'])}
           </div>
         </div>
 

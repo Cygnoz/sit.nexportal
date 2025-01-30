@@ -3,11 +3,11 @@ import { Role, rolePermissions } from '../types/rolePermissions';
 // Define categories for sidebar options based on teams
 const teamCategories = {
     "SALES R & A":["Region", "Area"],
-    "SALES TEAM": [ "Region Manager", "Area Manager", "BDA"],
+    "SALES TEAM": [ "Region Manager", "Area Manager", "BDA","Target"],
     "SUPPORT TEAM": ["Supervisor", "Support Agent"],
     CUSTOMERS: ["Lead", "Trial", "Licenser"],
     TICKETS: ["Tickets"],
-    EXPENSE:["Expense","Payroll"],
+    EXPENSES:["Expense","Payroll"],
     AWARDS:['Praise'],
     SETTINGS:['Settings']
     
@@ -29,10 +29,10 @@ export function getSidebarOptions(role: Role): Record<string, string[]> {
         SETTINGS:[]
     };
 
-    options.forEach(option => {
+    options?.forEach(option => {
         for (const [category, items] of Object.entries(teamCategories)) {
             if (items.includes(option)) {
-                categorizedOptions[category].push(option);
+                categorizedOptions[category]?.push(option);
             }
         }
     });
