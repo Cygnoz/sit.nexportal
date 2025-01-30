@@ -24,7 +24,7 @@ export function getSidebarOptions(role: Role): Record<string, string[]> {
         "SUPPORT TEAM": [],
         CUSTOMERS: [],
         TICKETS: [],
-        EXPENSE:[],
+        EXPENSES:[],
         AWARDS:[],
         SETTINGS:[]
     };

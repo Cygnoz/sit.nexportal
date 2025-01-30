@@ -14,6 +14,7 @@ import { getStatusClass } from "./GetStatusClass";
 import NoRecords from "./NoRecords";
 import SearchBar from "./SearchBar";
 import SortBy from "./SortBy";
+import { useUser } from "../../context/UserContext";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -212,7 +213,7 @@ const Table = <T extends object>({
   useEffect(() => {
     if(from!=="ticket"){
       const timeout = setTimeout(() => {
-        if (data?.length === 0) {
+        if (data?.length === 0 ) {
           setNoDataFound(true);
         } else {
           setNoDataFound(false);
@@ -226,8 +227,26 @@ const Table = <T extends object>({
         setNoDataFound(false);
       }
     }
-  }, [data]);
-
+  }, [data,searchValue]);
+  useEffect(() => {
+    if(from!=="ticket"){
+    
+        if (filteredData?.length === 0  && searchValue) {
+          setNoDataFound(true);
+        } else {
+          setNoDataFound(false);
+        }
+    }else{
+      if (filteredData?.length === 0) {
+        setNoDataFound(true);
+      } else {
+        setNoDataFound(false);
+      }
+    }
+   
+  }, [filteredData,searchValue]);
+ const {user}=useUser()
+ user?.role
   return (
     <div className="w-full  bg-white rounded-lg p-4 mb-4">
       {renderHeader()}
@@ -280,7 +299,7 @@ const Table = <T extends object>({
                   <NoRecords imgSize={70} textSize="md"/>
                 </td>
               </tr>
-            ) : data?.length === 0 ? (
+            ) : filteredData?.length === 0 ? (
               renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (

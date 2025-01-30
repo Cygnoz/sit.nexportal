@@ -12,7 +12,6 @@ interface SettingsHomeProps {
 
 const SettingsHome: FC<SettingsHomeProps> = ({
   initialSidebarList = [
-    { name: "Target", path: "/settings/target" },
     { name: "User", path: "/settings/users" },
     { name: "UserLog", path: "/settings/user-log" },
     { name: "Business Card", path: "/settings/business-card" },
