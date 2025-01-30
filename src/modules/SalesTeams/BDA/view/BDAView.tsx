@@ -32,6 +32,10 @@ import GraphTable from "../GraphTable";
 import BDAViewAward from "./BDAViewAward";
 import BDAViewForm from "./BDAViewForm";
 import UserRoundCheckIcon from "../../../../assets/icons/UserRoundCheckIcon";
+import SalaryInfoModal from "../../../../components/modal/SalaryInfoModal";
+import CommissionModal from "../../../../components/modal/CommissionModal";
+import SalaryRoundIcon from "../../../../assets/icons/SalaryRoundIcon";
+import CommissionRoundIcon from "../../../../assets/icons/CommissionRoundIcon";
 
 
 
@@ -100,10 +104,12 @@ const BDAView = ({staffId}: Props) => {
     awards:false,
     confirm:false,
     deactiveBda:false,
+    salary:false,
+    commission:false
   });
 
   // Function to toggle modal visibility
-  const handleModalToggle = (editBda = false, viewBda = false,awards=false, confirm=false,deactiveBda=false) => {
+  const handleModalToggle = (editBda = false, viewBda = false,awards=false, confirm=false,deactiveBda=false,salary=false,commission=false) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editBda: editBda,
@@ -111,6 +117,8 @@ const BDAView = ({staffId}: Props) => {
       awards:awards,
       confirm:confirm,
       deactiveBda:deactiveBda,
+      salary:salary,
+      commission:commission
     }));
     getOneBDA();
   };
@@ -365,7 +373,7 @@ const BDAView = ({staffId}: Props) => {
             </div>
 
 
-            <div className="flex gap-8 ms-6 my-12 space-x-8">
+            <div className="flex gap-8 ms-6 my-8 space-x-8">
               <div>
                 <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Role</p>
                 {/* <p>Employee ID</p> */}
@@ -381,8 +389,8 @@ const BDAView = ({staffId}: Props) => {
               </div>
             </div>
             
-            <div className="flex space-x-6 bottom-0  mt-10 ">
-            <div onClick={()=>handleModalToggle(true,false,false,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
+            <div className="flex space-x-10 bottom-0 ">
+            <div onClick={()=>handleModalToggle(true,false,false,false,false,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
               <div className="w-8 h-8 mb-2  rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -393,7 +401,7 @@ const BDAView = ({staffId}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
              </div>
 
-            <div onClick={()=>handleModalToggle(false,true,false,false,false)} className="flex flex-col cursor-pointer  items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,true,false,false,false,false,false)} className="flex flex-col cursor-pointer  items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -404,7 +412,7 @@ const BDAView = ({staffId}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
             </div>
 
-            <div onClick={()=>handleModalToggle(false,false,true,false,false)} className="flex flex-col cursor-pointer items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,false,true,false,false,false,false)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -415,7 +423,7 @@ const BDAView = ({staffId}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
             </div>
 
-            <div onClick={()=>handleModalToggle(false,false,false,false,true)} className="flex flex-col  items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,false,false,false,true,false,false)} className="flex flex-col  items-center space-y-1">
             <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
               {data.bdaData?.status === "Active" ?
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -438,7 +446,12 @@ const BDAView = ({staffId}: Props) => {
               </p>
                           </div>
 
-            <div onClick={()=>handleModalToggle(false,false,false,true,false)} className="flex flex-col cursor-pointer items-center space-y-1">
+           
+
+        </div>
+
+        <div className="flex space-x-14 bottom-0  mt-4 ms-16">
+        <div onClick={()=>handleModalToggle(false,false,false,true,false,false,false)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -449,6 +462,26 @@ const BDAView = ({staffId}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Delete</p>
             </div>
 
+            <div onClick={()=>handleModalToggle(false,false,false,false,false,true,false)} className="flex flex-col cursor-pointer  items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+              <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <SalaryRoundIcon size={18} color="#B6D6FF" />
+                   </div>
+                    </div> 
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Salary Info</p>
+            </div>
+            <div onClick={()=>handleModalToggle(false,false,false,true,false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+              <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <CommissionRoundIcon size={18} color="#B6FFFF" />
+                   </div>
+                    </div>
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Commission</p>
+            </div>
         </div>
            </div>
           </div>
@@ -525,6 +558,13 @@ const BDAView = ({staffId}: Props) => {
           onClose={() => handleModalToggle()}
         />
       </Modal>   
+      <Modal open={isModalOpen.salary} onClose={()=>handleModalToggle()} className="w-[45%]">
+    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
+  </Modal>
+
+  <Modal open={isModalOpen.commission} onClose={()=>handleModalToggle()} className="w-[45%]">
+    <CommissionModal  onClose={()=>handleModalToggle()} />
+  </Modal>
 
 
   </>

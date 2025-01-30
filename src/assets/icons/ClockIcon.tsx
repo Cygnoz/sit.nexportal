@@ -12,3 +12,4 @@ const ClockIcon = ({size}: Props) => {
 }
 
 export default ClockIcon
+
