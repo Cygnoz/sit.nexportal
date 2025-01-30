@@ -793,45 +793,46 @@ const getBdaDetails = async (regionId) => {
   return bdaDetails;
 };
 
-
 exports.topPerformingAreaManagers = async (req, res) => {
   try {
-    const { id } = req.params; // Extract regionManagerId (now 'id') from path params
-    const { month, year } = req.query; // Extract month and year from query params
+    const { id } = req.params; // Region Manager ID
+    const { date } = req.query; // Single query parameter for year and month (YYYY-MM)
  
-    if (!month || !year) {
+    if (!date || !/^\d{4}-\d{2}$/.test(date)) {
       return res.status(400).json({
-        message: "Month and year are required for filtering.",
+        message: "Date query parameter is required in YYYY-MM format.",
       });
     }
  
+    const [year, month] = date.split("-").map(Number);
+ 
     // Find the regionManager and populate the region field
-    const regionManager = await RegionManager.findById(id).populate('region');
-   
+    const regionManager = await RegionManager.findById(id).populate("region");
+ 
     if (!regionManager || !regionManager.region) {
       return res.status(404).json({
         message: "Region not found for the given Region Manager.",
       });
     }
  
-    const regionId = regionManager.region._id; // Extract regionId
+    const regionId = regionManager.region._id;
  
-    // Set the start and end date for the given month and year
-    const startDate = new Date(year, month - 1, 1); // First day of the month
-    const endDate = new Date(year, month, 0); // Last day of the month
+    // Set the start and end date for the given month
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0);
  
-    // Find all AreaManagers for the region, but only those who have been created by the target month and year
+    // Fetch AreaManagers in the given region who joined on or before the end of the target month
     const areaManagers = await AreaManager.find({
       region: regionId,
-      dateOfJoining: { $lte: endDate }, // Only fetch AreaManagers who joined on or before the end of the target month
+      dateOfJoining: { $lte: endDate },
     })
       .populate({
-        path: 'user',
-        select: 'userName userImage email phoneNo _id',
+        path: "user",
+        select: "userName userImage email phoneNo _id",
       })
       .populate({
-        path: 'area',
-        select: 'areaName _id',
+        path: "area",
+        select: "areaName _id",
       });
  
     if (!areaManagers.length) {
@@ -840,7 +841,7 @@ exports.topPerformingAreaManagers = async (req, res) => {
       });
     }
  
-    // Calculate conversion rates for each area manager
+    // Calculate conversion rates
     const areaManagerPerformance = await Promise.all(
       areaManagers.map(async (areaManager) => {
         const totalCustomers = await Leads.countDocuments({
@@ -873,14 +874,12 @@ exports.topPerformingAreaManagers = async (req, res) => {
  
     // Sort by conversion rate in descending order
     areaManagerPerformance.sort(
-      (a, b) =>
-        parseFloat(b.conversionRate) - parseFloat(a.conversionRate)
+      (a, b) => parseFloat(b.conversionRate) - parseFloat(a.conversionRate)
     );
  
     res.status(200).json({
       regionId,
-      month,
-      year,
+      date, // Return YYYY-MM
       topPerformingAreaManagers: areaManagerPerformance,
     });
   } catch (error) {
