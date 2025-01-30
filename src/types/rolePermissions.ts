@@ -72,7 +72,7 @@ const sidebarRoutes: { [key: string]: string } = {
     "User Log": "/settings/user-log",
     "Worker Commission":'/settings/worker-commission',
     "Praise":'/prises',
-    "Settings":'/settings/target'
+    "Settings":'/settings/users'
     
   };
 

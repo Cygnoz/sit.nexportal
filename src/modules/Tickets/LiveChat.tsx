@@ -16,14 +16,18 @@ import NoImage from "../../components/ui/NoImage";
 import io, { Socket } from "socket.io-client";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import { useUser } from "../../context/UserContext";
+import NoRecords from "../../components/ui/NoRecords";
 const AGENT_SOCKET_URL =import.meta.env.VITE_REACT_APP_TICKETS
 type Props = {};
 
 
 const LiveChat = ({}: Props) => {
   const {user}=useUser()
+  const [initialCurrentRoom,setInitialCurrentRoom]=useState<any>(null)
   const [socket, setSocket] = useState<Socket | null>(null);
+  const {request:getClientChats}=useApi('get',3004)
   const {request:getChatHistory}=useApi('get',3004)
+  const [loading, setLoading] = useState(false); 
   const textareaRef:any = useRef(null);
   // const [content, setContent] = useState<string>("");
   const Priority = [
@@ -32,14 +36,15 @@ const LiveChat = ({}: Props) => {
     { label: "High", color: "#F44336" }, // Red for High priority
   ];
   const Status = [
-    { label: "Open", color: "#4ade80" }, // Green for Low priority
-    { label: "Resolved", color: " #bbf7d0" }, // Yellow/Amber for Medium priority
-    { label: "In progress", color: "#fef9c3" }, // Red for High priority
+    { label: "Open", color: "#60A5FA" }, // Green (Bright & Readable)
+    { label: "Resolved", color: "#34D399" }, // Blue (Indicates Completion)
+    { label: "In progress", color: "#FACC15" }, // Yellow (Indicates Work in Progress)
   ];
   
 
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState<any[]>([]);
+  const [clientHistory,setClientHistory]=useState<any[]>([])
   const chatBoxRef:any = useRef(null);
 
   useEffect(() => {
@@ -63,8 +68,9 @@ const LiveChat = ({}: Props) => {
       if (response && !error) {
         const Tickets = response.data; // Return the fetched data
         console.log("tickets", Tickets);
-
         setTicketData(Tickets);
+        setInitialCurrentRoom(Tickets)
+        return Tickets
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching Tickets data:", error);
@@ -72,57 +78,14 @@ const LiveChat = ({}: Props) => {
     } catch (err) {
       console.error("Error fetching Tickets data:", err);
     }
+ 
   };
 
   
 
   
 
-  // const [messages, setMessages] = useState([
-  //   {
-  //     chatId: "chatId",
-  //     ticketId: "ticketId1",
-  //     senderId: id,
-  //     receiverId: "receiverUserId456",
-  //     message: "Hello, how can I help you?",
-  //   },
-  //   {
-  //     chatId: "chatId",
-  //     ticketId: "ticketId2",
-  //     senderId: "senderUserId123",
-  //     receiverId: id,
-  //     message: "Hello, the software is loading for one hour.",
-  //   },
-  //   {
-  //     chatId: "chatId",
-  //     ticketId: "ticketId3",
-  //     senderId: id,
-  //     receiverId: "receiverUserId456",
-  //     message: "Could you please share more details about the issue you're facing? For example, when did it start, and have you tried restarting the application?",
-  //   },
-  //   {
-  //     chatId: "chatId",
-  //     ticketId: "ticketId4",
-  //     senderId: "senderUserId123",
-  //     receiverId: id,
-  //     message: "Yes, I have tried restarting the app several times, but it’s still not working. It keeps showing the loading icon and doesn’t progress beyond that.",
-  //   },
-  //   {
-  //     chatId: "chatId",
-  //     ticketId: "ticketId5",
-  //     senderId: id,
-  //     receiverId: "receiverUserId456",
-  //     message: "Thanks for the details. I’ll escalate this to our technical team. Meanwhile, can you confirm the app version you are using?",
-  //   },
-  //   {
-  //     chatId: "chatId",
-  //     ticketId: "ticketId6",
-  //     senderId: "senderUserId123",
-  //     receiverId: id,
-  //     message: "The app version is 1.2.3.",
-  //   },
-  // ]);
-  
+ 
 
 
   useEffect(() => {
@@ -147,30 +110,82 @@ const LiveChat = ({}: Props) => {
     
   }, [id]);
 
+  useEffect(() => {
+    if (ticketData?.customerId?._id) {
+      getClientHistory(ticketData?.customerId?._id);
+    }
+  }, [ticketData]);
 
-  console.log("Message",messages);
+
+  const getClientHistory = async (customerId?: any) => {
+    setLoading(true); // Set loading to true before making the API call
+  
+    try {
+      const { response, error } = await getClientChats(`${endPoints.CHATS_LEAD}/${customerId}`);
+  
+      if (response && !error) {
+        const chatHistory = await Promise.all(
+          response?.data.data.map(async (item: any) => {
+            const { response } = await getaTicket(`${endPoints.TICKETS}/${item?.ticketId}`);
+            return {
+              ticketDetails: response?.data,
+              messages: item.messages || [],
+            };
+          })
+        );
+  
+        const currentRoom = chatHistory.find(history => history.ticketDetails._id === initialCurrentRoom._id);
+ 
+  if (currentRoom) {
+  // Remove the current room from the history and reverse the rest
+  const remainingHistory = chatHistory.filter(history => history.ticketDetails._id !== initialCurrentRoom._id).reverse();
+  
+  // Prepend the current room chat to the top of the reversed history
+  const updatedHistory = [currentRoom, ...remainingHistory];
+  
+  // Update the state
+  setClientHistory(updatedHistory);
+  }
+
+      } else {
+        console.log("err", error.response.data);
+      }
+    } catch (err) {
+      console.error("Error fetching client history:", err);
+    } finally {
+      setLoading(false); // Set loading to false after the API call completes
+    }
+  };
+
+
+  
   
  
 
   useEffect(() => {
-    getOneTicket();
+ getOneTicket();
     getChatHis()
   }, [id]);
 
+
+
   const getChatHis=async()=>{
     try{
-      const {response,error}=await getChatHistory(`${endPoints.CHAT_HISTORY}/${id}`)
+      const {response,error}=await getChatHistory(`${endPoints.CHAT_HISTORY}/${id}`)      
       if(response && !error){
         setMessages(response.data?.data?.reverse())
         
       }
     }catch(err){
-      console.log("er",err);
+      console.log("er",err); 
       
     }
   }
 
 
+  console.log("messages",messages);
+
+  
   
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -191,15 +206,7 @@ const LiveChat = ({}: Props) => {
     }
   };
 
-  // const handleInputChange = (e: any) => {
-  //   setNewMessage(e.target.value);
-  // };
 
-
-  // console.log("senderId",ticketData?.supportAgentId?._id );
-  // console.log("ticketId",id);
-  // console.log("receverID",ticketData?.customerId?._id);
-  // console.log("msg",content);
   
 
   function formatTime(isoString:any) {
@@ -236,6 +243,23 @@ const handleKeyDown = (e:any) => {
     handleSubmit(e); // Manually trigger the form submission
   }
 };
+const handleRoomClicked = (history?: any) => {
+  if (!history) return; // Handle undefined case
+ setMessage("")
+  const { ticketDetails, messages = [] } = history; // Ensure messages is defined
+  console.log("Message Length:", messages.length);
+
+  setMessages([]); // Clear previous messages
+  setTimeout(() => {
+    setMessages([...messages].reverse()); // Set new messages
+  }, 0);
+
+  setTicketData(ticketDetails);
+};
+
+
+
+console.log("initial",initialCurrentRoom);
 
 
   return (
@@ -477,7 +501,7 @@ const handleKeyDown = (e:any) => {
          <textarea
   ref={textareaRef}
   value={message}
-  readOnly={ ticketData?.status === "Resolved" || user?.role !== "Support Agent"}
+  readOnly={ ticketData?.status === "Resolved" || user?.role !== "Support Agent" ||initialCurrentRoom?._id!==ticketData?._id}
   onKeyDown={handleKeyDown}
   onChange={(e) => handleInput(e)}
   className="text-black w-full text-sm focus:outline-none overflow-x-auto resize-none hide-scrollbar"
@@ -554,59 +578,94 @@ const handleKeyDown = (e:any) => {
               </h1>
             </div>
             <hr />
-            <h1 className="mt-3 font-normal text-sm ">Notes</h1>
+            {/* <h1 className="mt-3 font-normal text-sm ">Notes</h1>
             <div className="mt-1">
               <Input />
-            </div>
+            </div> */}
 
             <div>
-              <h1 className="mt-2 text-sm font-semibold">
-                Interaction History
-              </h1>
-            </div>
-            <div>
-              {/* First Clickable Item */}
-              <div
-                className="relative mb-6 cursor-pointer hover:bg-gray-100 transition-colors duration-200 p-2"
-                onClick={() => console.log("First item clicked")}
-              >
-                <div className="absolute top-0 -ml-3 mt-5 h-full border-l-2 border-gray-300"></div>{" "}
-                {/* Vertical Line */}
-                <span className="absolute -left-4 top-0 h-3 w-3 bg-red-700 rounded-full ml-2 mt-4"></span>
-                <div className="text-sm text-gray-500 gap-4 ml-3 flex mt-2">
-                  <p className="font-normal text-xs">30/5/2024</p>
-                  <p className="font-normal text-xs">2.30pm</p>
-                </div>
-                <div className="flex justify-between items-center mt-1">
-                  <p className="ml-3 font-semibold text-xs">
-                    Lorem ipsum dolor sit amet consectetur
-                  </p>
-                  <button className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded">
-                    Open
-                  </button>
-                </div>
-              </div>
+  <h1 className="mt-2 text-sm font-semibold mb-2">Interaction History</h1>
+  <div className={`ps-2 ${clientHistory?.length > 5 && 'custom-scrollbar overflow-y-scroll'} h-96`}>
+  {loading ? (
+    // Skeleton UI while loading
+    Array.from({ length: 5 }).map((_, index) => (
+      <div key={index} className="relative p-2 animate-pulse">
+        <div className="absolute top-0 -ml-3 h-full border-l-2 border-gray-300"></div>
+        <span className="absolute -left-4 top-0 h-3 w-3 bg-gray-300 rounded-full ml-2"></span>
+        <div className="flex justify-between items-center">
+          <div className="text-sm text-gray-500 gap-4 ml-3 flex mt-2">
+            <p className="font-normal text-xs bg-gray-300 h-4 w-16 rounded"></p>
+            <p className="font-normal text-xs bg-gray-300 h-4 w-16 rounded"></p>
+          </div>
+        </div>
+        <div className="flex justify-between items-center mt-1">
+          <p className="ml-3 font-semibold text-xs bg-gray-300 h-4 w-32 rounded"></p>
+          <button className="px-3 py-1 text-sm bg-gray-300 rounded h-6 w-16"></button>
+        </div>
+      </div>
+    ))
+  ) : (
+    // Actual content when data is loaded
+    clientHistory.length>0?clientHistory?.map((history, index) => {
+      const { ticketDetails } = history;
+      const { createdAt, subject, status } = ticketDetails;
 
-              {/* Second Clickable Item */}
-              <div
-                className="relative mb-6 cursor-pointer hover:bg-gray-100 transition-colors duration-200 p-2"
-                onClick={() => console.log("Second item clicked")}
-              >
-                <div className="absolute top-0 -ml-3 -mt-12 h-full border-l-2 border-gray-300"></div>{" "}
-                {/* Vertical Line */}
-                <span className="absolute -left-4 top-0 h-3 w-3 bg-red-700 rounded-full ml-2 mt-4"></span>
-                <div className="text-sm text-gray-500 gap-4 ml-3 flex mt-2">
-                  <p className="font-normal text-xs">30/5/2024</p>
-                  <p className="font-normal text-xs">2.30pm</p>
-                </div>
-                <div className="flex justify-between items-center mt-1">
-                  <p className="ml-3 font-semibold text-xs">Sample ticket 2</p>
-                  <button className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded">
-                    Open
-                  </button>
-                </div>
-              </div>
+      // Format the date and time
+      const date = new Date(createdAt).toLocaleDateString();
+      const time = new Date(createdAt).toLocaleTimeString('en-US', {
+        hour: 'numeric',
+        minute: '2-digit',
+        hour12: true,
+      });
+
+      const isSelected = ticketData._id === history?.ticketDetails?._id;
+
+      return (
+        <div
+          key={index}
+          className={`relative cursor-pointer transition-colors duration-200 p-2 
+            ${isSelected ? "bg-gray-200" : "hover:bg-gray-200"}`}
+          onClick={() => handleRoomClicked(history)}
+        >
+          <div className="absolute top-0 -ml-3 h-full border-l-2 border-gray-300"></div>
+          <span className="absolute -left-4 top-0 h-3 w-3 bg-red-700 rounded-full ml-2"></span>
+          <div className="flex justify-between items-center">
+            <div className="text-sm text-gray-500 gap-4 ml-3 flex mt-2">
+              <p className="font-normal text-xs">{date}</p>
+              <p className="font-normal text-xs">{time}</p>
             </div>
+          </div>
+          <div className="flex justify-between items-center mt-1">
+            <p className="ml-3 font-semibold text-xs">{subject}</p>
+            <button
+              className="px-3 py-1 text-sm rounded flex justify-between items-center gap-2"
+              style={{
+                backgroundColor:
+                  Status.find((s) => s.label === status)?.color || "#e5e7eb",
+                color: "#0f0f0f",
+              }}
+            >
+              {status}
+              {initialCurrentRoom?._id === history?.ticketDetails?._id && (
+                <p className="h-3 animate-pulse w-3 rounded-full bg-red-500"></p>
+              )}
+            </button>
+          </div>
+        </div>
+      );
+    }
+  ):
+  
+    <NoRecords
+    text="No History Found"
+    parentHeight="380px"
+    imgSize={70}
+    textSize="sm"
+  />
+  )}
+</div>
+</div>
+
           </div>
         </div>
       </div>

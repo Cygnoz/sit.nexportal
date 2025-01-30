@@ -21,12 +21,14 @@ interface TicketsData extends BaseTicketsData {
   name: string;
   timeAgo: string;
   openingDate: string;
+  requestor:string
 }
 
 function TicketsHome({ }: Props) {
   const {user}=useUser()
   const {allTicketsCount}=useRegularApi()
   const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
+  const unresolveTickets=allTicketsCount?.allTickets??0
   const { request: getAllTickets } = useApi("get", 3004);
  const [allTickets, setAllTickets] = useState<any[]>([]);
  const [filteredTickets, setFilteredTickets] = useState<any[]>([]);
@@ -69,6 +71,7 @@ function TicketsHome({ }: Props) {
         const currentTime = new Date();
         const transformTicket = response.data?.tickets?.map((ticket: any) => ({
           ...ticket,
+          requestor:ticket?.customerId?.firstName,
           name: ticket?.supportAgentId?.user?.userName,
           openingDate: ticket?.openingDate,
           timeAgo: calculateTimeAgo(new Date(ticket?.openingDate), currentTime),
@@ -177,15 +180,16 @@ useEffect(() => {
  if(!filterWorking){
   if (user?.role !== "Support Agent" && unassignedTickets > 0) {
     handleSort("Un Assigned Tickets");
-  } else if(user?.role==="Support Agent") {
+  } else if(user?.role==="Support Agent" && unresolveTickets>0) {
     handleSort("Un Resolved Tickets");
   }else{
     handleSort('Total Tickets')
   }
  }
  
-}, [user?.role, unassignedTickets, handleSort]); // Add necessary dependencies
+}, [user?.role, unassignedTickets,unresolveTickets, handleSort]); // Add necessary dependencies
 
+console.log("un",unresolveTickets);
 
 
 
@@ -193,7 +197,7 @@ useEffect(() => {
   const columns: { key: keyof TicketsData; label: string }[] = [
     { key: "status", label: "Status" },
     { key: "subject", label: "Subject" },
-    { key: "name", label: "Requestor" },
+    { key: "requestor", label: "Requestor" },
     { key: "priority", label: "Priority" },
     { key: "timeAgo", label: "Requested" },
   ];

@@ -15,7 +15,6 @@ const RecentActivityView: React.FC = () => {
   const { id } = useParams();
   const [data, setData] = useState<any[]>([]);
 
-
   const parseTimestamp = (timestamp:any) => {
     const [date, time] = timestamp.split(" "); // Split the date and time
     const [day, month, year] = date.split("/"); // Split the day, month, and year
@@ -37,7 +36,7 @@ const RecentActivityView: React.FC = () => {
         `${endPoints.ACTIVITIES}/${id}`
       );
       if (response && !error) {
-       //console.log(response.data);
+       console.log(response.data);
         
         setData(response.data);
       } else {
@@ -169,10 +168,10 @@ const RecentActivityView: React.FC = () => {
         ) : (
           /* No Data Screen */
           <NoRecords
-            text="No Achievments Found"
+            text="No Activities Found"
             parentHeight="430px"
-            imgSize={90}
-            textSize="lg"
+            imgSize={80}
+            textSize="md"
           />
         )}
       </div>

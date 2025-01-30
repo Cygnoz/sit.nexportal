@@ -108,8 +108,10 @@ export const endPoints = {
 
   // BUSINESSCARD
   BUSINESSCARD:'/business-cards',
-
-  // Chat History
-  CHAT_HISTORY:'/chat-history',
   GET_ALL_BUSINESSCARD:'/business-card',
+  // Chat History
+  CHAT_HISTORY:'/history',
+  CHATS_LEAD:'/chats/lead'
+ 
+
 };
