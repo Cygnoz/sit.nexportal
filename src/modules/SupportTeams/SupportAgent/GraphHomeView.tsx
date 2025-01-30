@@ -4,17 +4,27 @@ import RatingStar from '../../../components/ui/RatingStar';
 import useApi from '../../../Hooks/useApi';
 import SelectDropdown from '../../../components/ui/SelectDropdown';
 import { useEffect, useState } from 'react';
-import { allMonths } from '../../../components/list/MonthList';
 import { endPoints } from '../../../services/apiEndpoints';
 import No_Data_found from '../../../assets/image/NO_DATA.png'
+import { months, years } from '../../../components/list/MonthYearList';
 
-type Props = {}
+type Props = {
+  id:any
+}
 
-const GraphHomeView = ({ }: Props) => {
+const GraphHomeView = ({ id}: Props) => {
 
   const { request: getTicketOvertime } = useApi('get', 3003)
-  const [selectedMonth, setSelectedMonth] = useState<any>(allMonths[0]);
+  const [selectedMonth, setSelectedMonth] = useState<any>(months[0]);
+  const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
+  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1-1`);
   const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+      // Convert month name to number (1-12)
+      const monthIndex = months.findIndex((m) => m.value === selectedMonth.value) + 1;
+      setSelectedDate(`${selectedYear.value}-${monthIndex}-1`);
+    }, [selectedMonth, selectedYear]);
   const formatDate = (date: any) => {
     // Convert "2024-08-05" to "Aug 05"
     const options: any = { month: "short", day: "2-digit" };
@@ -23,7 +33,7 @@ const GraphHomeView = ({ }: Props) => {
 
   const getOvertime = async () => {
     try {
-      const endPoint = `${endPoints.GET_TICKETS}/overtime/67855283aa6945d9faffcb38?date=${selectedMonth.key}`
+      const endPoint = `${endPoints.GET_TICKETS}/overtime/${id}?date=${selectedData}`
       const { response, error } = await getTicketOvertime(endPoint)
       console.log('res', response);
       console.log(endPoint);
@@ -35,6 +45,8 @@ const GraphHomeView = ({ }: Props) => {
           TC: item.ticketCount,
         }))
         setChartData(transformedData)
+        console.log(transformedData);
+        
       }
       else {
         console.log(error.response.data.message)
@@ -106,19 +118,19 @@ const GraphHomeView = ({ }: Props) => {
   //   },
 
   // ];
-  const [selectedYear, setSelectedYear]=useState({label:'Select Year',vale:''})
-  const handleYearSelection=(selectedOption:any)=>{
-    setSelectedYear(selectedOption)
-  }
+  // const [selectedYear, setSelectedYear]=useState({label:'Select Year',vale:''})
+  // const handleYearSelection=(selectedOption:any)=>{
+  //   setSelectedYear(selectedOption)
+  // }
 
-  const yearOptions=[
-    {label:'2020', value:'2020'},
-    {label:'2021', value:'2021'},
-    {label:'2022', value:'2022'},
-    {label:'2023', value:'2023'},
-    {label:'2024', value:'2024'},
-    {label:'2025', value:'2025'},
-  ]
+  // const yearOptions=[
+  //   {label:'2020', value:'2020'},
+  //   {label:'2021', value:'2021'},
+  //   {label:'2022', value:'2022'},
+  //   {label:'2023', value:'2023'},
+  //   {label:'2024', value:'2024'},
+  //   {label:'2025', value:'2025'},
+  // ]
 
   return (
     <div>
@@ -133,17 +145,17 @@ const GraphHomeView = ({ }: Props) => {
                 <SelectDropdown
                   setSelectedValue={setSelectedMonth}
                   selectedValue={selectedMonth}
-                  filteredData={allMonths}
+                  filteredData={months}
                   placeholder='Select Month'
-                  searchPlaceholder="Search Month"
+                 // searchPlaceholder="Search Month"
                   width="w-44"
                 />
                 <SelectDropdown
-                  setSelectedValue={handleYearSelection}
+                  setSelectedValue={setSelectedYear}
                   selectedValue={selectedYear}
-                  filteredData={yearOptions}
+                  filteredData={years}
                   placeholder='Select Year'
-                  searchPlaceholder="Search Year"
+                 // searchPlaceholder="Search Year"
                   width="w-44"
                 />
               </div>

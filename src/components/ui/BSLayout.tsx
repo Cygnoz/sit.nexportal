@@ -117,7 +117,7 @@ export const Layout1Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
         )}
 
 
-        <div className="flex justify-between p-2 relative">
+        <div className="flex justify-between p-2 relative mt-auto">
             {toggleState?.["companyLogo"] && (
                 <img src={cygnoz} className="w-24 h-5" alt="" />
             )}
@@ -223,7 +223,7 @@ export const Layout1Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
 
 export const Layout1Back: React.FC<LayoutProps> = ({ toggleState }) => {
     return <div
-        className="mt-4 bg-cover bg-center bg-no-repeat rounded-lg relative"
+        className="mt-4 bg-cover bg-center bg-no-repeat rounded-lg relative flex flex-col justify-between"
         style={{ backgroundImage: `url(${previewBack})`, minHeight: '200px' }} // Ensure consistent minimum height
     >
         {/* Overlay for consistent background */}
@@ -243,7 +243,7 @@ export const Layout1Back: React.FC<LayoutProps> = ({ toggleState }) => {
             </div>
         </div>
         {toggleState?.["companyInfo"] && (
-            <div className="relative px-3 py-7">
+            <div className="relative px-3 py-3">
                 <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
                 <div className="grid grid-cols-2 gap-1">
                     {/* Email */}
@@ -401,7 +401,7 @@ export const Layout2Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
 
         </div>
         {(toggleState?.["employeeId"] || toggleState?.["region"]) && (
-            <div className="flex p-2 justify-between">
+            <div className="flex p-2 justify-between mb-auto">
                 {toggleState?.["employeeId"] && (
                     <div className="bg-[#2795FB] w-fit h-6 p-1 rounded-xl">
                         <div className="flex gap-3 px-1">
@@ -514,7 +514,7 @@ export const Layout2Back: React.FC<LayoutProps> = ({ toggleState }) => {
     //     </div>
 
     // </div>
-    return <div className="mt-4 bg-cover bg-center bg-no-repeat rounded-lg relative"
+    return <div className="mt-4 bg-cover bg-center bg-no-repeat rounded-lg relative flex flex-col justify-between"
         style={{ backgroundImage: `url(${template1Front})`, minHeight: '200px' }}>
         <div className="p-3">
             {toggleState?.["companyLogo"] && (
@@ -657,7 +657,7 @@ export const Layout3Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
 }
 
 export const Layout3Back: React.FC<LayoutProps> = ({ toggleState }) => {
-    return <div className="mt-4 bg-cover bg-center bg-no-repeat rounded-lg relative"
+    return <div className="mt-4 bg-cover bg-center bg-no-repeat rounded-lg relative flex flex-col justify-between"
         style={{ backgroundImage: `url(${template2Back})`, minHeight: '200px' }}>
         <div className="p-3">
             {toggleState?.["companyLogo"] && (
@@ -668,7 +668,7 @@ export const Layout3Back: React.FC<LayoutProps> = ({ toggleState }) => {
             )}
         </div>
         {toggleState?.["companyInfo"] && (
-            <div className="relative px-3 py-6">
+            <div className="relative px-3 py-3">
                 <p className="text-[#FFFFFF] font-light text-[10px] my-2">Company Info</p>
                 <div className="grid grid-cols-2 gap-1">
                     {/* Email */}

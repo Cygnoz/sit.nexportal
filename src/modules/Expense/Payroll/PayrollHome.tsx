@@ -21,10 +21,26 @@ const PayrollHome = ({}: Props) => {
 
   
  
-  const handleView = () => {
-    navigate(`/payroll-slip`);
+  const handleView = (status: string) => {
+    let path = "/payroll-slip"; // Default path for "Paid"
+  
+    switch (status) {
+      case "Approval Granted":
+        path = "/payroll-view2";
+        break;
+      case "Pending Generation":
+        path = "/payroll-view";
+        break;
+      case "Paid":
+        path = "/payroll-slip"; // Explicitly set for "Paid"
+        break;
+      default:
+        path = "/payroll-slip"; // Fallback path
+    }
+  
+    navigate(path);
   };
-
+  
   const datas: TargetData[] = [
     { task: "BDA12345", dueDate: "Anjela John", status: "Approval Granted" ,salary:"100000" },
     { task: "BDA12345", dueDate: "Kristin Watson", status: "Pending Generation" ,salary:"100000"},
@@ -107,7 +123,7 @@ const PayrollHome = ({}: Props) => {
               ],
             }}
             actionList={[
-              { label: "view", function: () => handleView() },
+              { label: "view", function: handleView },
              
             ]}
           />

@@ -43,6 +43,7 @@ import BusinessCard from './modules/Settings/BusinessCard';
 import { roles } from './components/ui/Roles';
 import ExpenseHome from './modules/Expense/ExpenseHome';
 import TargetHome from './modules/Target/TargetHome';
+import PayrollView3 from './modules/Expense/Payroll/PayrollView3';
 // import ExpenseHome from './modules/Expense/ExpenseHome';
 
 
@@ -110,6 +111,7 @@ const parentRoutes = [
   { path: "payroll-slip", element: <PayrollSlip /> },
   { path: "payroll-view", element: <PayrollView /> },
   { path: "payroll-view2", element: <PayrollView2 /> },
+  { path: "payroll-view3", element: <PayrollView3 /> },
   { path: "expense", element: <ExpenseHome /> },
   { path: "target", element: <TargetHome /> },
 ];
