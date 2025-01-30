@@ -7,7 +7,8 @@ const User = require("../database/model/user");
 const moment = require("moment");
 const Lead = require("../database/model/leads");
 const filterByRole = require("../services/filterByRole");
- 
+const axios = require('axios');
+
 
 const Ticket = require("../database/model/ticket");
 const SupportAgent = require("../database/model/supportAgent");
@@ -63,8 +64,32 @@ exports.addLicenser = async (req, res , next ) => {
     if (!validateInputs( cleanedData, regionExists, areaExists, bdaExists ,res)) return;
  
     // const newLead = await createLead(cleanedData)
+
+    // Configure the request with timeout
+    const axiosConfig = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      timeout: 5000, // 5 seconds timeout
+    };
+    // Body for the POST request
+    const requestBody = {
+      organizationName:cleanedData.companyName,
+      contactName:firstName,
+      contactNum:phone,
+      email:email,
+      password:cleanedData.password,
+    };
+
+    // Send POST request to external API
+    const response = await axios.post(
+      '	https://billbizzapi.azure-api.net/organization/create-client',
+      requestBody,
+      axiosConfig
+    );
+    const organizationId = response.data.organizationId;
    
-    const savedLicenser = await createLicenser(cleanedData, regionId, areaId, bdaId ,  userId, userName );
+    const savedLicenser = await createLicenser(cleanedData, regionId, areaId, bdaId ,  userId, userName ,organizationId );
    console.log(savedLicenser._id);
    const licenserId = savedLicenser._id
     res.status(201).json({ message: "licenser added successfully", licenserId });
@@ -239,7 +264,7 @@ if (!existingLicenser) {
  
  
  
-async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName) {
+async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName , organizationId) {
   const { ...rest } = cleanedData;
  
   // Generate the next licenser ID
@@ -264,7 +289,8 @@ async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, user
     bdaId,
     true,
     userId,
-    userName
+    userName,
+    organizationId
   );
  
   return savedLicenser;
