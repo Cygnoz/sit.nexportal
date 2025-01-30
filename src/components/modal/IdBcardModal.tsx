@@ -164,7 +164,7 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData}: Props) => {
                 onClose={() => handleModalToggle()}
                 className="w-[35%]"
             >
-                <IdCardInsideForm onClose={() => handleModalToggle()} />
+                <IdCardInsideForm onClose={() => handleModalToggle()} role={role} staffData={staffData} />
             </Modal>
         </div>
     )

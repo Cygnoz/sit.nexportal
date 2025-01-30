@@ -106,10 +106,12 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
   const { request: checkBda } = useApi("put", 3002)
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [empId,setEmpId]=useState('')
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
 
+  const [staffData, setStaffData] = useState<any>(null);
   const onSubmit: SubmitHandler<BDAData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     if (submit) {
@@ -129,6 +131,14 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
         console.log("Error:", error);
 
         if (response && !error) {
+          const {employeeId,region}=response.data
+          const  staffDetails={
+            ...watch(),
+            regionName:region?.regionName,
+            employeeId:editId?empId:employeeId
+          }
+          // staffData=response.data
+          setStaffData(staffDetails)
           toast.success(response.data.message); // Show success toast
           handleModalToggle()
         } else {
@@ -364,7 +374,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
       if (response && !error) {
         const BDA = response.data; // Return the fetched data
         console.log("Fetched BDA data:", BDA);
-
+        setEmpId(BDA.user?.employeeId)
         const { user, _id, ...bda } = BDA;
 
         const transformedBDA = BDA
@@ -380,12 +390,14 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
             region: BDA.region?._id,
             area: BDA.area?._id,
             commission: BDA.commission?._id,
+            employeeId:BDA?.employeeId
           }
           : null;
 
         console.log("Transformed BDA data:", transformedBDA);
 
         setFormValues(transformedBDA);
+        // setStaffData(transformedBDA)
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching BDA data:", error);
@@ -402,8 +414,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
   useEffect(() => {
     if (errors && Object.keys(errors).length > 0 && activeTab == "Bank Information") {
       // Get the first error field
-      const firstErrorField = Object.keys(errors)[0];
-
+      let firstErrorField = Object.keys(errors)[0];
+      if (errors.address?.street1) {
+        firstErrorField = "address.street1";
+      }
       // Find the tab containing this field
       const tabIndex: any = StaffTabsList.findIndex((tab) =>
         tab.validationField.includes(firstErrorField)
@@ -420,7 +434,11 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
       });
 
       // Show the first error message in a toast
-      toast.error(errorrs[firstErrorField]?.message);
+      if (errorrs["address"] && errorrs["address"].street1) {
+        toast.error(errorrs["address"].street1.message);
+      } else if (firstErrorField) {
+        toast.error(errorrs[firstErrorField]?.message);
+      }
     }
   }, [errors]);
 
@@ -934,7 +952,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
           parentOnClose={onClose}
           onClose={handleModalToggle}
           role="BDA"
-          staffData={watch()} />
+          staffData={staffData} />
       </Modal>
     </>
   );

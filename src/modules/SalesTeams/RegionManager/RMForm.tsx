@@ -26,6 +26,7 @@ import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
 import IdBcardModal from "../../../components/modal/IdBcardModal";
+// import { get } from "lodash";
 // import Modal from "../../../components/modal/Modal";
 // import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
 // import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
@@ -105,6 +106,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [empId,setEmpId]=useState('')
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
@@ -126,15 +128,16 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
       const { response, error } = await fun(endpoint, data);
       if (response && !error) {
-        console.log("Response:", response);
-        // const {newRegionManager,employeeId}=response.data
-        // staffData={
-        //   ...newRegionManager,
-        //   employeeId
-        // }
+        console.log("Response:", response.data);
+        const {employeeId,region}=response.data
+       const  staffDetails={
+          ...watch(),
+          regionName:region?.regionName,
+          employeeId:editId?empId:employeeId
+        }
         // staffData=response.data
-        setStaffData(response.data)
-         console.log("staff",staffData);       
+        setStaffData(staffDetails)
+        //  console.log("staff",staffData);       
         toast.success(response.data.message); // Show success toast
         handleModalToggle()
       } else if (error) {
@@ -175,28 +178,37 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   };
 
   useEffect(() => {
-    if (
-      errors &&
-      Object.keys(errors).length > 0 &&
-      activeTab === "Bank Information"
-    ) {
-      const firstErrorField = Object.keys(errors)[0];
+    if (errors && Object.keys(errors).length > 0 && activeTab === "Bank Information") {
+      let firstErrorField = Object.keys(errors)[0];
+
+    // Handle nested errors like address.street1
+    if (errors.address?.street1) {
+      firstErrorField = "address.street1";
+    }
       const tabIndex: any = StaffTabsList.findIndex((tab) =>
         tab.validationField.includes(firstErrorField)
       );
-
+   
       if (tabIndex >= 0) {
         setActiveTab(tabs[tabIndex]);
       }
-
+   
       const errorrs: any = errors;
       Object.keys(errorrs).forEach((field) => {
         console.log(`${field}: ${errorrs[field]?.message}`);
       });
-
-      toast.error(errorrs[firstErrorField]?.message);
+   
+      // If the error is related to the 'address.street1' field
+      if (errorrs["address"] && errorrs["address"].street1) {
+        toast.error(errorrs["address"].street1.message);
+      } else if (firstErrorField) {
+        toast.error(errorrs[firstErrorField]?.message);
+      }
     }
   }, [errors]);
+
+  console.log("err",errors);
+  
 
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -212,7 +224,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         !editId && "confirmPassword",
         "region",
         "workEmail",
-         "salaryAmount"
+        "salaryAmount"
       ];
       if (!editId) {
         const rmCheck = await checkRM(); // Call checkRM function
@@ -338,6 +350,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       if (response && !error) {
         const RM: any = response.data.regionManager; // Return the fetched data
         console.log("Fetched RM data:", RM);
+        setEmpId(RM.user?.employeeId)
         const { user, _id, ...rm } = RM;
         const transformedRM = RM
           ? {
@@ -357,7 +370,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         console.log("Transformed RM data:", transformedRM);
 
         setFormValues(transformedRM);
-        setStaffData(transformedRM)
+        // setStaffData(transformedRM)
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching RM data:", error);
