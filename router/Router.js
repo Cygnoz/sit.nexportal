@@ -31,6 +31,10 @@ router.put('/lead/:id',verifyToken,checkPermission('Edit Lead'),leadController.e
 router.delete('/lead/:leadId',verifyToken,checkPermission('Delete Lead'),leadController.deleteLead,ActivityLogGeneration('Delete Lead'))
  
 router.get('/client/:id',verifyToken,checkPermission('View Trial'),leadController.getClientDetails)
+
+router.put("/trial/:leadId/hold",verifyToken,checkPermission('Hold Trial'), leadController.holdTrial,ActivityLogGeneration('Hold Trial'));
+ 
+router.put("/trial/:leadId/resume",verifyToken,checkPermission('Resume Trial'), leadController.resumeTrial,ActivityLogGeneration('Resume Trial'));
  
 //Trial
 router.put('/trial/:leadId',verifyToken,checkPermission('Convert Trial'),leadController.convertLeadToTrial,ActivityLogGeneration('Convert Trial'))

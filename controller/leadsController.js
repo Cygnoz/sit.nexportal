@@ -1067,3 +1067,64 @@ exports.getStatistics = async (req, res) => {
   }
 };
 
+
+
+
+ 
+// API to hold the trial
+exports.holdTrial = async (req, res, next) => {
+  try {
+    const { leadId } = req.params;
+ 
+    // Find the lead and update its trialStatus to "Hold"
+    const updatedLead = await Leads.findByIdAndUpdate(
+      leadId,
+      { trialStatus: "Hold" },
+      { new: true }
+    );
+ 
+    if (!updatedLead) {
+      return res.status(404).json({ message: "Lead not found." });
+    }
+ 
+    res.status(200).json({ message: "Trial status set to Hold.", lead: updatedLead });
+ 
+    // Log the activity
+    ActivityLog(req, "Succesfully", updatedLead._id);
+    next();
+  } catch (error) {
+    console.error("Error updating trial status to Hold:", error.message || error);
+    res.status(500).json({ message: "Internal server error." });
+    ActivityLog(req, "Failed");
+    next();
+  }
+};
+ 
+// API to resume the trial (change trialStatus back to "In Progress")
+exports.resumeTrial = async (req, res, next) => {
+  try {
+    const { leadId } = req.params;
+ 
+    // Find the lead and update its trialStatus to "In Progress"
+    const updatedLead = await Leads.findByIdAndUpdate(
+      leadId,
+      { trialStatus: "In Progress" },
+      { new: true }
+    );
+ 
+    if (!updatedLead) {
+      return res.status(404).json({ message: "Lead not found." });
+    }
+ 
+    res.status(200).json({ message: "Trial resumed successfully.", lead: updatedLead });
+ 
+    // Log the activity
+    ActivityLog(req, "Successfully", updatedLead._id);
+    next();
+  } catch (error) {
+    console.error("Error resuming trial:", error.message || error);
+    res.status(500).json({ message: "Internal server error." });
+    ActivityLog(req, "Failed");
+    next();
+  }
+};
