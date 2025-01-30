@@ -51,7 +51,7 @@ const GraphTable = ({ bdaData }: Props) => {
     navigate(`/trial/${id}`);
   };
 
-  //console.log(selectedMonth);
+  
 
 
 

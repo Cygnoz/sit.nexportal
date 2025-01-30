@@ -40,10 +40,8 @@ import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';
 import PayrollView from './modules/Expense/Payroll/PayrollView';
 import PayrollView2 from './modules/Expense/Payroll/PayrollView2';
 import BusinessCard from './modules/Settings/BusinessCard';
-import Target from './modules/Settings/Target/Target';
 import { roles } from './components/ui/Roles';
 import ExpenseHome from './modules/Expense/ExpenseHome';
-import AgentChat from './modules/Tickets/Agentchat';
 import TargetHome from './modules/Target/TargetHome';
 // import ExpenseHome from './modules/Expense/ExpenseHome';
 
@@ -106,15 +104,13 @@ const parentRoutes = [
   { path: "ticket/:id", element: <TicketsView /> },
   { path: "settings/user-log", element: <UserLogHome /> },
   { path: "settings/business-card", element: <BusinessCard /> },
-  { path: "settings/target", element: <Target /> },
   { path: "prises", element: <PraiseHome /> },
-  { path: "settings/target", element: <SettingsHome /> },
+  { path: "settings/users", element: <SettingsHome /> },
   { path: "payroll", element: <PayrollHome /> },
   { path: "payroll-slip", element: <PayrollSlip /> },
   { path: "payroll-view", element: <PayrollView /> },
   { path: "payroll-view2", element: <PayrollView2 /> },
   { path: "expense", element: <ExpenseHome /> },
-  { path: "agent-chat", element: <AgentChat /> },
   { path: "target", element: <TargetHome /> },
 ];
   
