@@ -40,30 +40,21 @@ const dataExist = async (regionId, areaId, bdaId) => {
  
  
  
- 
-exports.addLicenser = async (req, res , next ) => {
+exports.addLicenser = async (req, res, next) => {
   try {
     const { id: userId, userName } = req.user;
- 
     const cleanedData = cleanLicenserData(req.body);
- 
-    const { firstName , email, phone, regionId, areaId , bdaId } = cleanedData;
- 
- 
+    const { firstName, email, phone, regionId, areaId, bdaId } = cleanedData;
+
     // Check for duplicate user details
-   const duplicateCheck = await checkDuplicateUser(firstName, email, phone);
-   if (duplicateCheck) {
-     return res.status(400).json({ message: `Conflict: ${duplicateCheck}` }); // Return a success response with conflict details
-   }
- 
- 
-    const { regionExists, areaExists , bdaExists } = await dataExist( regionId, areaId , bdaId);
- 
-    if (!validateRegionAndArea( regionExists, areaExists, bdaExists ,res )) return;
- 
-    if (!validateInputs( cleanedData, regionExists, areaExists, bdaExists ,res)) return;
- 
-    // const newLead = await createLead(cleanedData)
+    const duplicateCheck = await checkDuplicateUser(firstName, email, phone);
+    if (duplicateCheck) {
+      return res.status(400).json({ message: `Conflict: ${duplicateCheck}` });
+    }
+
+    const { regionExists, areaExists, bdaExists } = await dataExist(regionId, areaId, bdaId);
+    if (!validateRegionAndArea(regionExists, areaExists, bdaExists, res)) return;
+    if (!validateInputs(cleanedData, regionExists, areaExists, bdaExists, res)) return;
 
     // Configure the request with timeout
     const axiosConfig = {
@@ -72,39 +63,56 @@ exports.addLicenser = async (req, res , next ) => {
       },
       timeout: 5000, // 5 seconds timeout
     };
+
     // Body for the POST request
     const requestBody = {
-      organizationName:cleanedData.companyName,
-      contactName:firstName,
-      contactNum:phone,
-      email:email,
-      password:cleanedData.password,
+      organizationName: cleanedData.companyName,
+      contactName: firstName,
+      contactNum: phone,
+      email: email,
+      password: cleanedData.password,
     };
 
     // Send POST request to external API
     const response = await axios.post(
-      '	https://billbizzapi.azure-api.net/organization/create-client',
+      'https://billbizzapi.azure-api.net/organization/create-client',
       requestBody,
       axiosConfig
     );
+
     const organizationId = response.data.organizationId;
-   
-    const savedLicenser = await createLicenser(cleanedData, regionId, areaId, bdaId ,  userId, userName ,organizationId );
-   console.log(savedLicenser._id);
-   const licenserId = savedLicenser._id
-    res.status(201).json({ message: "licenser added successfully", licenserId });
- 
-  // Pass operation details to middleware
-  ActivityLog(req, "successfully", savedLicenser._id);
-  next();
- 
+    const savedLicenser = await createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName, organizationId);
+
+    const licenserId = savedLicenser._id;
+    
+    // Send combined response
+    res.status(201).json({
+      message: "Licenser added successfully",
+      licenserId,
+      externalApiResponse: response.data, // Include external API response
+    });
+
+    // Log activity
+    ActivityLog(req, "successfully", licenserId);
+    next();
+
   } catch (error) {
     console.error("Error adding licenser:", error);
+
+    // If the error is from Axios, capture the response
+    if (error.response) {
+      return res.status(error.response.status).json({
+        message: "External API error",
+        details: error.response.data,
+      });
+    }
+
     res.status(500).json({ message: "Internal server error" });
     ActivityLog(req, "Failed");
     next();
   }
 };
+
  
  
 exports.getLicenser = async (req, res) => {
