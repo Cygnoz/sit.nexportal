@@ -112,6 +112,7 @@ const parentRoutes = [
   { path: "payroll-view2", element: <PayrollView2 /> },
   { path: "expense", element: <ExpenseHome /> },
   { path: "target", element: <TargetHome /> },
+
 ];
   
 
