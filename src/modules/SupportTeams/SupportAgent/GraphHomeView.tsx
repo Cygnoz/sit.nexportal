@@ -9,22 +9,22 @@ import No_Data_found from '../../../assets/image/NO_DATA.png'
 import { months, years } from '../../../components/list/MonthYearList';
 
 type Props = {
-  id:any
+  id: any
 }
 
-const GraphHomeView = ({ id}: Props) => {
+const GraphHomeView = ({ id }: Props) => {
 
   const { request: getTicketOvertime } = useApi('get', 3003)
   const [selectedMonth, setSelectedMonth] = useState<any>(months[0]);
-  const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
+  const [selectedYear, setSelectedYear] = useState<any>(years[years.length - 1])
   const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1-1`);
   const [chartData, setChartData] = useState([]);
 
   useEffect(() => {
-      // Convert month name to number (1-12)
-      const monthIndex = months.findIndex((m) => m.value === selectedMonth.value) + 1;
-      setSelectedDate(`${selectedYear.value}-${monthIndex}-1`);
-    }, [selectedMonth, selectedYear]);
+    // Convert month name to number (1-12)
+    const monthIndex = months.findIndex((m) => m.value === selectedMonth.value) + 1;
+    setSelectedDate(`${selectedYear.value}-${monthIndex}-1`);
+  }, [selectedMonth, selectedYear]);
   const formatDate = (date: any) => {
     // Convert "2024-08-05" to "Aug 05"
     const options: any = { month: "short", day: "2-digit" };
@@ -46,7 +46,7 @@ const GraphHomeView = ({ id}: Props) => {
         }))
         setChartData(transformedData)
         console.log(transformedData);
-        
+
       }
       else {
         console.log(error.response.data.message)
@@ -146,16 +146,16 @@ const GraphHomeView = ({ id}: Props) => {
                   setSelectedValue={setSelectedMonth}
                   selectedValue={selectedMonth}
                   filteredData={months}
-                  placeholder='Select Month'
-                 // searchPlaceholder="Search Month"
+                  // placeholder='Select Month'
+                   searchPlaceholder="Search Month"
                   width="w-44"
                 />
                 <SelectDropdown
                   setSelectedValue={setSelectedYear}
                   selectedValue={selectedYear}
                   filteredData={years}
-                  placeholder='Select Year'
-                 // searchPlaceholder="Search Year"
+                  // placeholder='Select Year'
+                   searchPlaceholder="Search Year"
                   width="w-44"
                 />
               </div>
@@ -175,8 +175,15 @@ const GraphHomeView = ({ id}: Props) => {
                     }}
                   >
                     <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                    <YAxis axisLine={false} tickLine={false} />
+                    <XAxis
+                      dataKey="name"
+                      axisLine={false}
+                      tickLine={false}
+                      padding={{ left: 20, right: 20 }}
+                    />
+                    <YAxis axisLine={false} tickLine={false}
+                      ticks={[0, 100, 200, 300, 400, 500]}
+                      domain={[0, 500]} />
                     <Tooltip />
 
                     <Line type="monotone" dataKey="Area1" stroke="#e2b0ff" strokeWidth={3} dot={false} />

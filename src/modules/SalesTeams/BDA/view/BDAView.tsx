@@ -552,7 +552,7 @@ const BDAView = ({staffId}: Props) => {
 
       <div className="p-3 bg-white w-full space-y-2 rounded-lg mt-4">
           <div className="flex justify-between">
-            <h2 className="font-bold p-2">Lead Engagement Over Time</h2>
+            <h2 className="font-bold p-2">License Retention Rate</h2>
             <SelectDropdown
               filteredData={activityOptions}
               selectedValue={selectedActivity}

@@ -35,10 +35,10 @@ export const Layout1Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
                     }
                 </div>
             )}
-            {`flex ${toggleState?.["name"] && toggleState?.["designation"] && "border-r"}` && (
+            {(toggleState?.["name"] || toggleState?.["designation"]) && (
                 <div className="flex">
                     {toggleState?.["name"] && (
-                        <div className="border-r">
+                        <div className={`${toggleState?.["designation"] ? "border-r" : ""}`}>
                             <p className="text-[#FFFFFF] font-light text-[10px] mx-2 text-start">Name</p>
                             <p className="text-[#FFFFFF] font-semibold text-xs mx-2">
                                 {staffData?.userName ? staffData?.userName : "John Doe"}
@@ -590,7 +590,7 @@ export const Layout3Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
                 </div>
                 {(toggleState?.["employeeId"] !== false && toggleState?.["employeeId"] !== undefined) && (
                     <div
-                        className={`w-fit h-7 p-1 rounded-2xl ${toggleState?.["employeeId"] ? "bg-[#2795FB]" : ""
+                        className={`w-fit h-7 p-1 rounded-2xl items-center ${toggleState?.["employeeId"] ? "bg-[#2795FB]" : ""
                             }`}
                     >
                         <div className="flex px-1 gap-2">
@@ -612,7 +612,7 @@ export const Layout3Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
 
             <div className="gap-1">
                 {toggleState?.["email"] && (
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 items-center">
                         <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
                             <div className="items-center">
                                 <EmailIcon size={11} color="#FFFFFF" />
@@ -622,7 +622,7 @@ export const Layout3Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
                     </div>
                 )}
                 {toggleState?.["phoneNo"] && (
-                    <div className="flex gap-2 mt-1">
+                    <div className="flex gap-2 mt-1 items-center">
                         <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
                             <PhoneIcon size={11} color="#FFFFFF" />
                         </div>
@@ -631,7 +631,7 @@ export const Layout3Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
                 )}
                 <div className="flex py-1 gap-5">
                     {toggleState?.["address"] && (
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 items-center">
                             <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
                                 <LocationIcon size={12} color="#FFFFFF" />
                             </div>
@@ -737,17 +737,17 @@ export const IdCardLayout: React.FC<LayoutProps> = ({ role, staffData }) => {
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
                         <EmailIcon size={11} color="#FFFFFF" />
                     </div>
-                    <p className="text-[#FFFFFF] font-light text-xs">{staffData?.email ? staffData?.email : 'john.doe@example.com'}</p>
+                    <p className="text-[#FFFFFF] font-light text-xs text-center">{staffData?.email ? staffData?.email : 'john.doe@example.com'}</p>
                 </div>
                 {/* Phone */}
-                <div className="flex gap-2 items-center mb-1  ">
+                <div className="flex gap-2 items-center mb-1">
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
                         <PhoneIcon size={11} color="#FFFFFF" />
                     </div>
                     <p className="text-[#FFFFFF] font-light text-xs">{staffData?.phoneNo ? staffData?.phoneNo : '+919633564547'}</p>
                 </div>
                 {/* Address */}
-                <div className="flex gap-2 items-start mb-1">
+                <div className="flex gap-2 items-center mb-1">
                     {/* Icon Container */}
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
                         <LocationIcon size={12} color="#FFFFFF" />
