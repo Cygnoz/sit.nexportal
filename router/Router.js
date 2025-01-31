@@ -74,6 +74,7 @@ router.delete("/activity/:activityId",verifyToken,checkPermission('Delete Activi
  
 router.get('/activities/:leadId',verifyToken,checkPermission('View Activity'),activityController.getLeadsActivityDetails);
  
+router.get("/leads/:leadId/engagement",verifyToken,checkPermission('View Activity'), activityController.getLeadEngagementOverTime);
  
  
 module.exports = router
