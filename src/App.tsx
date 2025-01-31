@@ -114,6 +114,7 @@ const parentRoutes = [
   { path: "payroll-view3/:id", element: <PayrollView3 /> },
   { path: "expense", element: <ExpenseHome /> },
   { path: "target", element: <TargetHome /> },
+
 ];
   
 
