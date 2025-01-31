@@ -47,7 +47,7 @@ function LeadForm({ onClose ,editId,regionId,areaId}: Props) {
       const [regionData, setRegionData] = useState<RegionData[]>([]);
       const [areaData, setAreaData] = useState<any[]>([]);
 
-  const {dropdownRegions,dropDownAreas,dropDownBdas}=useRegularApi()
+  const {dropdownRegions,dropDownAreas,dropDownBdas,refreshContext}=useRegularApi()
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     areas: { label: string; value: string }[];
@@ -246,6 +246,7 @@ const salutation = [
 
   useEffect(() => {
     getOneLead()
+    refreshContext({dropdown:true})
   }, [editId,user]);
 
 

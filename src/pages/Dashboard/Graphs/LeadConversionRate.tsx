@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import useApi from "../../../Hooks/useApi";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
-import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 
-type Props = {};
+type Props = {
+  allRegions?:any
+};
 
-function LeadConversionRate({}: Props) {
+function LeadConversionRate({allRegions}: Props) {
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
   const { request: getConvertionRate } = useApi("get", 3003);
-  const { allRegions } = useRegularApi();
+
 
   
   

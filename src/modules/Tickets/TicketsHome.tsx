@@ -26,7 +26,7 @@ interface TicketsData extends BaseTicketsData {
 
 function TicketsHome({ }: Props) {
   const {user}=useUser()
-  const {allTicketsCount}=useRegularApi()
+  const {allTicketsCount,refreshContext}=useRegularApi()
   const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
   const unresolveTickets=allTicketsCount?.allTickets??0
   const { request: getAllTickets } = useApi("get", 3004);
@@ -55,6 +55,7 @@ function TicketsHome({ }: Props) {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getTickets();
+    refreshContext({tickets:true})
   };
 
   const handleView = (id: any) => {
@@ -142,7 +143,15 @@ function TicketsHome({ }: Props) {
 
 useEffect(() => {
   getTickets();
-}, [unassignedTickets]);
+  refreshContext({tickets:true})
+}, []);
+
+useEffect(()=>{
+  if(unassignedTickets==0){
+    getTickets()
+    refreshContext({tickets:true})
+  }
+},[unassignedTickets])
 
 
 const handleSort = useCallback(
@@ -189,7 +198,6 @@ useEffect(() => {
  
 }, [user?.role, unassignedTickets,unresolveTickets, handleSort]); // Add necessary dependencies
 
-console.log("un",unresolveTickets);
 
 
 

@@ -1,18 +1,18 @@
-import DownloadIcon from "../../assets/icons/DownloadIcon"
-import ViewIcon from "../../assets/icons/ViewIcon"
-import Button from "../ui/Button"
+import DownloadIcon from "../../assets/icons/DownloadIcon";
+import ViewIcon from "../../assets/icons/ViewIcon";
+import Button from "../ui/Button";
 // import bcardback from "../../assets/image/Business-card-back.png";
 // import idcard from "../../assets/image/ID-card 1.png";
 // import bcardfront from "../../assets/image/Business-card-front.png";
-import { useState } from "react";
-import Modal from "./Modal";
+import { useEffect, useState } from "react";
 import { useRegularApi } from "../../context/ApiContext";
 import { IdCardLayout, Layout1Back, Layout1Front, Layout2Back, Layout2Front, Layout3Back, Layout3Front } from "../ui/BSLayout";
 import BCardInsideForm from "./IdCardView/BCardInsideForm";
 import IdCardInsideForm from "./IdCardView/IdCardInsideForm";
+import Modal from "./Modal";
 // import { Layout1Front, Layout1Back, IdCardLayout } from "../ui/BSLayout";
-import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 type Props = {
     onClose: () => void;
@@ -37,7 +37,10 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
         }));
     };
 
-    const { businessCardData } = useRegularApi()
+    const {businessCardData,refreshContext}=useRegularApi()
+    useEffect(()=>{
+        refreshContext({businessCard:true})
+    },[])
     interface LayoutProps {
         toggleState?: Record<string, boolean>;
         role?: any;

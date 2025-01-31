@@ -67,7 +67,7 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
-  const { dropdownRegions, dropDownWC, allCountries } = useRegularApi();
+  const { dropdownRegions, dropDownWC, allCountries,refreshContext } = useRegularApi();
   const { request: checkSVs } = useApi("get", 3003)
   const { request: addSV } = useApi("post", 3003);
   const { request: editSV } = useApi("put", 3003);
@@ -353,6 +353,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
 
   useEffect(() => {
     getOneSV();
+    refreshContext({dropdown:true})
   }, [editId]); // Trigger the effect when editId changes
 
   useEffect(() => {

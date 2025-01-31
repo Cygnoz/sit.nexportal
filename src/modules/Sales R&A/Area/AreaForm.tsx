@@ -32,7 +32,7 @@ const validationSchema = Yup.object({
 const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId,regionId }) => {
   const {request:addArea}=useApi('post',3003)
   const {request:editArea}=useApi('put',3003)
-  const {dropdownRegions}=useRegularApi()
+  const {dropdownRegions,refreshContext}=useRegularApi()
   const {request:getArea}=useApi('get',3003)
   const [regionData, setRegionData] = useState<RegionData[]>([]);
   const {
@@ -113,6 +113,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId,regionId }) => {
         }
       })();
     }
+    refreshContext({dropdown:true})
   }, [editId]);
   
 

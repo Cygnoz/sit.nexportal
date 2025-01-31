@@ -1,16 +1,17 @@
 import { VictoryLabel, VictoryPie, VictoryTheme } from "victory";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
 import { useEffect, useState } from "react";
-import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import No_Data_found from "../../../assets/image/NO_DATA.png";
 import NoRecords from "../../../components/ui/NoRecords";
 
-type Props = {}
+type Props = {
+  allRegions?:any
+}
 
-function TopBreakDownByRegion({}: Props) {
-  const { allRegions } = useRegularApi();
+function TopBreakDownByRegion({allRegions}: Props) {
+  
   const { request: getConvertionRate } = useApi("get", 3003);
   const [roles, setRoles] = useState([
     { name: 'Regional Managers', count: 0, color: '#1B6C75' },

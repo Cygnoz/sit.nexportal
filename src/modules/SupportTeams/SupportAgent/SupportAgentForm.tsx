@@ -71,7 +71,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   editId
   , regionId
 }) => {
-  const { dropdownRegions, dropDownWC, allCountries } = useRegularApi();
+  const { dropdownRegions, dropDownWC, allCountries,refreshContext } = useRegularApi();
   const { request: addSA } = useApi("post", 3003);
   const { request: editSA } = useApi("put", 3003);
   const { request: getSA } = useApi("get", 3003);
@@ -318,6 +318,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
 
   useEffect(() => {
     getOneSA();
+    refreshContext({dropdown:true})
   }, [editId]); // Trigger the effect when editId changes
 
   useEffect(() => {

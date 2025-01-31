@@ -24,7 +24,6 @@ import { useRegularApi } from "../../../context/ApiContext";
 
 const AMHome = () => {
    const {regionId }=useRegularApi()
-  // const {totalCounts}=useRegularApi()
   const { request: getAllAM } = useApi('get', 3002)
   const [allAM, setAllAM] = useState<any[]>([]);
   const [editId, setEditId] = useState('');

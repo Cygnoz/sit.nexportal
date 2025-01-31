@@ -7,6 +7,9 @@ import SearchBar from "../components/ui/SearchBar";
 import UserModal from "./Logout/UserModal";
 import { useRegularApi } from "../context/ApiContext";
 import { useUser } from "../context/UserContext";
+import { io } from 'socket.io-client';
+
+const socket = io(import.meta.env.VITE_REACT_APP_TICKETS);
 
 interface HeaderProps {
   searchValue: string;
@@ -19,7 +22,7 @@ const Header: React.FC<HeaderProps> = ({
   setSearchValue,
   scrollToActiveTab,
 }) => {
-  const { allTicketsCount } = useRegularApi();
+  const { allTicketsCount,refreshContext } = useRegularApi();
   const { user } = useUser();
   const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
   const allTickets = allTicketsCount?.allTickets ?? 0;
@@ -86,7 +89,14 @@ const Header: React.FC<HeaderProps> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+    
   }, []);
+  
+  socket.on('ticketCount', (count:any) => {
+    console.log(count);
+    
+    refreshContext({ tickets: true });
+  });
 
   return (
     <div
@@ -131,7 +141,7 @@ const Header: React.FC<HeaderProps> = ({
       <div className="flex ms-14 justify-center items-center gap-2 cursor-pointer" />
       <div className="flex items-center gap-4 ml-auto cursor-pointer">
         <div
-          onClick={() => navigate("/settings/target")}
+          onClick={() => navigate("/settings/users")}
           className="tooltip"
           data-tooltip="Settings"
         >

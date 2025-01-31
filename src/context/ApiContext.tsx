@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef, useMemo } from "react";
 import useApi from "../Hooks/useApi";
 import { AreaData } from "../Interfaces/Area";
 import { BDAData } from "../Interfaces/BDA";
@@ -32,12 +32,13 @@ type ApiContextType = {
   dropDownAreas?: DropdownApi["areas"];
   dropDownBdas?: DropdownApi["bdas"];
   dropDownSA?: DropdownApi["supportAgents"];
-  allTicketsCount?: TicketsCountBell | undefined;
+  allTicketsCount?: TicketsCountBell;
   allRms?: any;
   regionId?: any;
   areaId?: any;
   dropDownWC?: DropdownApi["commissions"];
-  businessCardData?:any;
+  businessCardData?: any;
+  refreshContext: (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean }) => Promise<void>;
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -56,7 +57,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { request: getaRM } = useApi("get", 3002);
   const { request: getaAM } = useApi("get", 3002);
   const { request: getaSV } = useApi("get", 3003);
-  const {request : getAllBusinessCard} = useApi("get",3003)
+  const { request: getAllBusinessCard } = useApi("get", 3003);
 
   // State variables
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
@@ -65,39 +66,67 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const [allCountries, setAllCountries] = useState<[]>([]);
   const [regionId, setRegionId] = useState<any>(null);
   const [areaId, setAreaId] = useState<any>(null);
-  const [allTicketsCount, setAllTicketsCount] = useState<TicketsCountBell | undefined>();
+  const [allTicketsCount, setAllTicketsCount] = useState<TicketsCountBell>();
   const [totalCounts, setTotalCounts] = useState<TotalCounts>();
   const [customersCounts, setTotalCustomersCounts] = useState<TotalCustomersCount>();
-  const [businessCardData, setBusinessCardData]=useState<any>(null);
+  const [businessCardData, setBusinessCardData] = useState<any>(null);
 
-  // Fetching Data Functions
-  const fetchData = useCallback(async () => {
+  // Use a ref to store previous fetched data to prevent unnecessary API calls
+  const prevDataRef = useRef<any>(null);
+
+  // Fetching Data Function
+  const fetchData = useCallback(async (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean }) => {
     try {
-      const regionResponse = await getAllRegion(endPoints.GET_REGIONS);
-      setAllRegions(regionResponse?.response?.data?.regions || []);
+      const fetchPromises = [];
 
-      const dropdownResponse = await getAllDropdown(endPoints.DROPDOWN_DATA);
-      setDropdownApi(dropdownResponse?.response?.data || null);
+      if (!options || options.dropdown) {
+        fetchPromises.push(getAllDropdown(endPoints.DROPDOWN_DATA).then(response => ({ dropdown: response?.response?.data || null })));
+      }
+      if (!options || options.regions) {
+        fetchPromises.push(getAllRegion(endPoints.GET_REGIONS).then(response => ({ regions: response?.response?.data?.regions || [] })));
+      }
+      if (!options || options.areas) {
+        fetchPromises.push(getAllArea(endPoints.GET_AREAS).then(response => ({ areas: response?.response?.data?.areas || [] })));
+      }
+      if (!options || options.countries) {
+        fetchPromises.push(getAllCountries(endPoints.GET_COUNTRY).then(response => ({ countries: response?.response?.data?.[0]?.countries || [] })));
+      }
+      if (!options || options.tickets) {
+        fetchPromises.push(getAllTickets(endPoints.GET_TICKETS).then(response => ({
+          tickets: {
+            allUnassigned: response?.response?.data?.unassignedTickets,
+            allTickets: response?.response?.data?.unresolvedTickets,
+          }
+        })));
+      }
+      if (!options || options.counts) {
+        fetchPromises.push(getAllCounts(endPoints.COUNTS).then(response => ({ counts: response?.response?.data })));
+      }
+      if (!options || options.customerCounts) {
+        fetchPromises.push(getAllCustomersCounts(endPoints.CUSTOMERCOUNTS).then(response => ({ customerCounts: response?.response?.data })));
+      }
+      if (!options || options.businessCard) {
+        fetchPromises.push(getAllBusinessCard(endPoints.GET_ALL_BUSINESSCARD).then(response => ({ businessCards: response?.response?.data.businessCard || null })));
+      }
 
-      const areaResponse = await getAllArea(endPoints.GET_AREAS);
-      setAllAreas(areaResponse?.response?.data?.areas || []);
+      const results = await Promise.all(fetchPromises);
 
-      const countryResponse = await getAllCountries(endPoints.GET_COUNTRY);
-      setAllCountries(countryResponse?.response?.data?.[0]?.countries || []);
+      const newData:any = results.reduce((acc, result) => ({ ...acc, ...result }), {});
 
-      const ticketsResponse = await getAllTickets(endPoints.GET_TICKETS);
-      setAllTicketsCount({
-        allUnassigned: ticketsResponse?.response?.data?.unassignedTickets,
-        allTickets: ticketsResponse?.response?.data?.unresolvedTickets,
-      });
+      // Compare new data with previous data to avoid unnecessary state updates
+      if (JSON.stringify(prevDataRef.current) !== JSON.stringify(newData)) {
+        if (newData.regions) setAllRegions(newData.regions);
+        if (newData.dropdown) setDropdownApi(newData.dropdown);
+        if (newData.areas) setAllAreas(newData.areas);
+        if (newData.countries) setAllCountries(newData.countries);
+        if (newData.tickets) setAllTicketsCount(newData.tickets);
+        if (newData.counts) setTotalCounts(newData.counts);
+        if (newData.customerCounts) setTotalCustomersCounts(newData.customerCounts);
+        if (newData.businessCards) setBusinessCardData(newData.businessCards);
+        prevDataRef.current = newData;
+      }
 
-      const countsResponse = await getAllCounts(endPoints.COUNTS);
-      setTotalCounts(countsResponse?.response?.data);
-
-      const customerCountsResponse = await getAllCustomersCounts(endPoints.CUSTOMERCOUNTS);      
-      setTotalCustomersCounts(customerCountsResponse?.response?.data);
-      const getAllBsCard = await getAllBusinessCard(endPoints.GET_ALL_BUSINESSCARD);      
-      setBusinessCardData(getAllBsCard?.response?.data.businessCard)
+      // Fetch user-specific region & area IDs
       if (user?.role === "Supervisor") {
         const supervisorResponse = await getaSV(`${endPoints.SUPER_VISOR}/${user.userId}`);
         setRegionId(supervisorResponse?.response?.data?.region?._id);
@@ -112,40 +141,43 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     } catch (error) {
       console.error("Error fetching data:", error);
     }
-  }, [ user]);
+  }, [user]);
+
+  const refreshContext = useCallback(async (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean }) => {
+    try {
+      await fetchData(options);
+    } catch (error) {
+      console.error("Error refreshing context data:", error);
+    }
+  }, [fetchData]);
 
   useEffect(() => {
     if (user) {
       fetchData(); // Initial data fetch
-      const intervalId = setInterval(fetchData, 10000); // Fetch every 10 seconds
-
-      return () => clearInterval(intervalId); // Clean up on unmount
     }
-  }, [ user,fetchData]);
+  }, [user, fetchData]);
 
-  return (
-    <ApiContext.Provider
-      value={{
-        allRegions,
-        allAreas,
-        allCountries,
-        allBDA: dropdownApi?.bdas || [],
-        totalCounts,
-        customersCounts,
-        dropdownRegions: dropdownApi?.regions || [],
-        dropDownAreas: dropdownApi?.areas || [],
-        dropDownBdas: dropdownApi?.bdas || [],
-        dropDownSA: dropdownApi?.supportAgents || [],
-        allTicketsCount,
-        regionId,
-        areaId,
-        dropDownWC: dropdownApi?.commissions || [],
-        businessCardData,
-      }}
-    >
-      {children}
-    </ApiContext.Provider>
-  );
+  // Memoize context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
+    allRegions,
+    allAreas,
+    allCountries,
+    allBDA: dropdownApi?.bdas || [],
+    totalCounts,
+    customersCounts,
+    dropdownRegions: dropdownApi?.regions || [],
+    dropDownAreas: dropdownApi?.areas || [],
+    dropDownBdas: dropdownApi?.bdas || [],
+    dropDownSA: dropdownApi?.supportAgents || [],
+    allTicketsCount,
+    regionId,
+    areaId,
+    dropDownWC: dropdownApi?.commissions || [],
+    businessCardData,
+    refreshContext
+  }), [allRegions, allAreas, allCountries, dropdownApi, totalCounts, customersCounts, allTicketsCount, regionId, areaId, businessCardData, refreshContext]);
+
+  return <ApiContext.Provider value={contextValue}>{children}</ApiContext.Provider>;
 };
 
 export const useRegularApi = () => {

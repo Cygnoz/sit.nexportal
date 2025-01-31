@@ -18,7 +18,7 @@ import RegionForm from "./RegionForm";
 // Define the type for data items
 
 const RegionHome = () => {
-  const { totalCounts } = useRegularApi();
+  const { totalCounts,refreshContext } = useRegularApi();
   const [allRegion, setAllRegion] = useState<RegionData[]>([]);
   const { request: getAllRegion } = useApi("get", 3003);
   const navigate = useNavigate();
@@ -30,6 +30,7 @@ const RegionHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getAllRegions();
+    refreshContext({counts:true})
   };
 
   const handleView = (id: any) => {

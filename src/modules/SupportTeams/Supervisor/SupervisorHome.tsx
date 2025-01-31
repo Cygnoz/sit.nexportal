@@ -21,7 +21,7 @@ import AddSupervisor from "./SupervisorForm";
 
 const SupervisorHome = () => {
  
-  const {totalCounts}=useRegularApi()
+  const {totalCounts,refreshContext}=useRegularApi()
   const { request: getAllSV } = useApi("get", 3003);
   const [allSV, setAllSV] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,6 +31,7 @@ const SupervisorHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getSVs();
+    refreshContext({dropdown:true})
   };
 
   const handleView = (id: any) => {

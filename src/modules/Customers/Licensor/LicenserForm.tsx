@@ -15,9 +15,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { useUser } from "../../../context/UserContext";
-import OrganisationForm from "../../../components/modal/ConvertionModal/OrganisationForm";
-import Modal from "../../../components/modal/Modal";
-import { useResponse } from "../../../context/ResponseContext";
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 type Props = {
   onClose: () => void;
@@ -37,6 +35,12 @@ const validationSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string().required("Phone is required"),
+   password: Yup.string()
+      .required("Password is required"),
+   confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password")], "Passwords must match")
+      .required("Confirm Password is required"),
+  companyName: Yup.string().required("Company Name  is required"),
   regionId: Yup.string().required("Region is required"),
   areaId: Yup.string().required("Area is required"),
   bdaId: Yup.string().required("Bda is required"),
@@ -45,13 +49,7 @@ const validationSchema = Yup.object({
 });
 
 function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
-  const [isOrgModal, setIsOrgModal] = useState(false);
-  const handleModalToggle = (close = false) => {
-    setIsOrgModal((prev) => !prev);
-    close && onClose();
-  };
 
-  const { setCustomerData } = useResponse();
   const { user } = useUser();
   const { request: addLicenser } = useApi("post", 3001);
   const { request: editLicenser } = useApi("put", 3001);
@@ -59,7 +57,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
       const [regionData, setRegionData] = useState<RegionData[]>([]);
       const [areaData, setAreaData] = useState<any[]>([]);
 
-  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries } =
+  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries,refreshContext } =
     useRegularApi();
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -109,13 +107,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
 
       if (response && !error) {
         toast.success(response.data.message);
-        const customerData = {
-          ...data,
-          licenserId: response.data.licenserId,
-        };
-        setCustomerData(customerData);
-        // Show success message
-        editId ? onClose() : handleModalToggle();
+        onClose()
       } else {
         toast.error(error.response?.data?.message || "An error occurred.");
       }
@@ -193,7 +185,6 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
   
   }, [watch("regionId"), dropDownAreas,areaId,regionId]);
   
-console.log(watch("regionId"));
 
 
   // UseEffect for updating regions
@@ -280,6 +271,7 @@ console.log(watch("regionId"));
 
   useEffect(() => {
     getOneLicenser();
+    refreshContext({dropdown:true,countries:true})
   }, [editId]);
 
   const handleInputChange = (field: keyof LicenserData) => {
@@ -333,8 +325,8 @@ console.log(watch("regionId"));
             )}
           </div>
           <div className="col-span-10">
-            <div className="grid grid-cols-2 gap-4">
-              <PrefixInput
+            <div className="grid grid-cols-3 gap-2">
+            <PrefixInput
                 required
                 label="First Name"
                 selectName="salutation"
@@ -358,17 +350,6 @@ console.log(watch("regionId"));
                 {...register("lastName")}
                 // onChange={() => handleInputChange("lastName")}
               />
-
-              <Input
-                required
-                label="Email"
-                type="email"
-                placeholder="Enter Email"
-                error={errors.email?.message}
-                {...register("email")}
-                // onChange={() => handleInputChange("email")}
-              />
-
               <CustomPhoneInput
                 required
                 label="Phone"
@@ -381,6 +362,35 @@ console.log(watch("regionId"));
                   setValue("phone", value); // Update the value of the phone field in React Hook Form
                 }}
               />
+              <Input
+                required
+                label="Email"
+                type="email"
+                placeholder="Enter Email"
+                error={errors.email?.message}
+                {...register("email")}
+                // onChange={() => handleInputChange("email")}
+              />
+
+             <InputPasswordEye
+             label="Password"
+             required
+             placeholder="Enter Password"
+             error={errors?.password?.message}
+                {...register("password")}
+             />
+             <InputPasswordEye
+             label="Confirm Password"
+             required
+             placeholder="Enter Password"
+             error={errors?.confirmPassword?.message}
+                {...register("confirmPassword")}
+             />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              
+
+              
 
               <Input
                 label="Address"
@@ -430,6 +440,7 @@ console.log(watch("regionId"));
               />
               <Input
                 label="Company Name"
+                required
                 placeholder="Enter Company Name"
                 error={errors.companyName?.message}
                 {...register("companyName")}
@@ -521,17 +532,7 @@ console.log(watch("regionId"));
           </div>
         </form>
       </div>
-      <Modal
-        open={isOrgModal}
-        align="center"
-        onClose={() => handleModalToggle(true)}
-        className="w-[35%]"
-      >
-        <OrganisationForm
-          type="licenser"
-          onClose={() => handleModalToggle(true)}
-        />
-      </Modal>
+      
     </>
   );
 }

@@ -7,6 +7,7 @@
 // import previewBack from '../../../assets/image/preview-card-back.png'
 import { Layout1Back, Layout1Front, Layout2Back, Layout2Front, Layout3Back, Layout3Front } from "../../ui/BSLayout";
 import { useRegularApi } from "../../../context/ApiContext";
+import { useEffect } from "react";
 
 type Props = {
     onClose: () => void; // Prop for handling modal close
@@ -16,7 +17,10 @@ type Props = {
 
 const BCardInsideForm = ({ onClose, role, staffData }: Props) => {
 
-    const { businessCardData } = useRegularApi()
+    const {businessCardData,refreshContext}=useRegularApi()
+    useEffect(()=>{
+        refreshContext({businessCard:true})
+    },[])
     interface LayoutProps {
         toggleState?: Record<string, boolean>;
         role?: any;

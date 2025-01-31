@@ -14,7 +14,6 @@ import { getStatusClass } from "./GetStatusClass";
 import NoRecords from "./NoRecords";
 import SearchBar from "./SearchBar";
 import SortBy from "./SortBy";
-import { useUser } from "../../context/UserContext";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -245,8 +244,6 @@ const Table = <T extends object>({
     }
    
   }, [filteredData,searchValue]);
- const {user}=useUser()
- user?.role
   return (
     <div className="w-full  bg-white rounded-lg p-4 mb-4">
       {renderHeader()}

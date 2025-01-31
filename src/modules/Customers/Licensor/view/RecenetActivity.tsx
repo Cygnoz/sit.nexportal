@@ -61,7 +61,7 @@ const formatTimestamp = (timestamp: string) => {
         </ul>
       </div>
       ) : (
-        <NoRecords text="No Achievments Found" parentHeight="430px" imgSize={90} textSize="lg"/>
+        <NoRecords text="No Activities Found" parentHeight="460px" imgSize={80} textSize="md"/>
       )}
     </div>
   );

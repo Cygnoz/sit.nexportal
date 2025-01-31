@@ -24,8 +24,7 @@ import TrialForm from "./TrialForm";
 
   
 const TrialHome = () => {
-  const {regionId ,areaId}=useRegularApi()
-  const {customersCounts}=useRegularApi()
+  const {regionId ,areaId,customersCounts,refreshContext}=useRegularApi()
   const [editId, setEditId] = useState("");
 
   const {request:getAllTrial}=useApi('get',3001)
@@ -50,6 +49,7 @@ const TrialHome = () => {
       leadForm: leadForm,
     }));
     getTrials()
+    refreshContext({customerCounts:true})
   };
     
       const handleView=(id:any)=>{
