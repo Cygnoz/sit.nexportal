@@ -8,6 +8,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  ResponsiveContainer,
   Tooltip,
   XAxis, YAxis
 } from 'recharts';
@@ -36,6 +37,7 @@ import SalaryInfoModal from "../../../../components/modal/SalaryInfoModal";
 import CommissionModal from "../../../../components/modal/CommissionModal";
 import SalaryRoundIcon from "../../../../assets/icons/SalaryRoundIcon";
 import CommissionRoundIcon from "../../../../assets/icons/CommissionRoundIcon";
+import SelectDropdown from "../../../../components/ui/SelectDropdown";
 
 
 
@@ -271,6 +273,38 @@ const BDAView = ({staffId}: Props) => {
   }, [iId]);
 
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
+  const retentionData = [
+    { name: 'Jan', uv: 4000, pv: 2400, amt: 2400 },
+    { name: 'Feb', uv: 3000, pv: 1398, amt: 2210 },
+    { name: 'Mar', uv: 2000, pv: 9800, amt: 2290 },
+    { name: 'Apr', uv: 2780, pv: 3908, amt: 2000 },
+    { name: 'May', uv: 1890, pv: 4800, amt: 2181 },
+    { name: 'Jun', uv: 4000, pv: 2400, amt: 2400 },
+    { name: 'Jul', uv: 3000, pv: 1398, amt: 2210 },
+    { name: 'Aug', uv: 2000, pv: 9800, amt: 2290 },
+    { name: 'Sep', uv: 2780, pv: 3908, amt: 2000 },
+    { name: 'Oct', uv: 1890, pv: 4800, amt: 2181 },
+    { name: 'Nov', uv: 2780, pv: 3908, amt: 2000 },
+    { name: 'Dec', uv: 1890, pv: 4800, amt: 2181 },
+  ]
+ 
+  const normalizedData = retentionData.map(item => ({
+    ...item,
+    uv: item.uv / 160,
+  }))
+  const [selectedActivity, setSelectedActivity] = useState({ label: 'Current Month', value: '' });
+  const handleActivitySelection = (selectedOption: any) => {
+    setSelectedActivity(selectedOption);
+  };
+ 
+  const activityOptions = [
+    { label: 'Previous Month', value: 'previousMonth' },
+    { label: 'Q1', value: 'q1' },
+    { label: 'Q2', value: 'q2' },
+    { label: 'Q3', value: 'q3' },
+  ];
+ 
+ 
 
   return (
     <>
@@ -515,6 +549,45 @@ const BDAView = ({staffId}: Props) => {
         />
         
       </div>
+
+      <div className="p-3 bg-white w-full space-y-2 rounded-lg mt-4">
+          <div className="flex justify-between">
+            <h2 className="font-bold p-2">License Retention Rate</h2>
+            <SelectDropdown
+              filteredData={activityOptions}
+              selectedValue={selectedActivity}
+              setSelectedValue={handleActivitySelection}
+              placeholder="Current Month"
+              searchPlaceholder="Search Month"
+              width="w-44" />
+          </div>
+          <div className="px-3 py-5">
+            <p className="text-[#4B5C79] text-sm font-normal">Average Retention</p>
+            <p className="text-[#272B3F] text-2xl font-normal">50%</p>
+          </div>
+          <div className="-ms-6 px-5">
+            <ResponsiveContainer width="100%" minHeight={300}>
+              <BarChart data={normalizedData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  ticks={[0, 5, 10, 15, 20, 25]}
+                  domain={[0, 25]}
+                  tickFormatter={(value) => `${value * 4}%`} // Convert to percentage
+                />
+                <Bar dataKey="uv" radius={[10, 10, 0, 0]}>
+                  {normalizedData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+ 
+ 
 
 
     </div>

@@ -155,7 +155,7 @@ useEffect(() => {
 
       {/* Graph & feedback */}
       <div>
-        <GraphHomeView />
+        <GraphHomeView id={iId} />
       </div>
     </div>
   );

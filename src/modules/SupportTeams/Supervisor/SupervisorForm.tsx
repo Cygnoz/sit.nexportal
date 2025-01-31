@@ -97,10 +97,12 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [empId,setEmpId]=useState('')
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
 
+  const [staffData, setStaffData] = useState<any>(null);
   const onSubmit: SubmitHandler<SVData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("data", data);
@@ -124,6 +126,14 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
         }
 
         if (response && !error) {
+          const {employeeId,region}=response.data
+       const  staffDetails={
+          ...watch(),
+          regionName:region?.regionName,
+          employeeId:editId?empId:employeeId
+        }
+        // staffData=response.data
+        setStaffData(staffDetails)
           toast.success(response.data.message); // Show success toast
           handleModalToggle()
         } else {
@@ -309,7 +319,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
       if (response && !error) {
         const SV = response.data; // Return the fetched data
         console.log("Fetched SV data:", SV);
-
+        setEmpId(SV.user?.employeeId)
         const { user, _id, ...sv } = SV;
 
         const transformedSV = SV
@@ -324,12 +334,14 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
             userImage: user?.userImage,
             region: SV.region?._id,
             commission: SV.commission?._id,
+            employeeId:user?.employeeId
           }
           : null;
 
         console.log("Transformed SV data:", transformedSV);
 
         setFormValues(transformedSV);
+        // setStaffData(transformedSV)
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching SV data:", error);
@@ -346,8 +358,10 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   useEffect(() => {
     if (errors && Object.keys(errors).length > 0 && activeTab == "Bank Information") {
       // Get the first error field
-      const firstErrorField = Object.keys(errors)[0];
-
+      let firstErrorField = Object.keys(errors)[0];
+      if (errors.address?.street1) {
+        firstErrorField = "address.street1";
+      }
       // Find the tab containing this field
       const tabIndex: any = StaffTabsList.findIndex((tab) =>
         tab.validationField.includes(firstErrorField)
@@ -364,8 +378,13 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
       });
 
       // Show the first error message in a toast
+     // If the error is related to the 'address.street1' field
+     if (errorrs["address"] && errorrs["address"].street1) {
+      toast.error(errorrs["address"].street1.message);
+    } else if (firstErrorField) {
       toast.error(errorrs[firstErrorField]?.message);
     }
+  }
   }, [errors]);
 
   return (
@@ -861,7 +880,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
           parentOnClose={onClose}
           onClose={handleModalToggle}
           role="Supervisor"
-          staffData={watch()}
+          staffData={staffData}
         />
       </Modal>
     </>

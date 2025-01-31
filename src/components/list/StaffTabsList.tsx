@@ -1,7 +1,7 @@
 export const StaffTabsList = [
     {
       tab: 'Personal Information',
-      validationField: ['userName', 'phoneNo',"address.street1"]
+      validationField: ['userName', 'phoneNo', 'address.street1']
     },
     {
       tab: 'Company Information',

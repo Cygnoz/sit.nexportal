@@ -2,9 +2,12 @@ import { IdCardLayout } from "../../ui/BSLayout"
 
 type Props = {
     onClose: () => void; // Prop for handling modal close
+    role:any;
+    staffData:any;
 }
 
-const IdCardInsideForm = ({onClose}: Props) => {
+const IdCardInsideForm = ({onClose, role, staffData}: Props) => {
+      
   return (
     <div>
        <div className="flex justify-end px-6 py-1">
@@ -79,7 +82,7 @@ const IdCardInsideForm = ({onClose}: Props) => {
 
     </div> */}
     
-  <IdCardLayout/>
+  <IdCardLayout role={role} staffData={staffData}/>
   
   </div>
   </div>

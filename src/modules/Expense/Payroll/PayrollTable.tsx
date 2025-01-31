@@ -42,7 +42,7 @@ interface TableProps<T> {
   };
   actionList?: {
     label: "view" | "edit" | "delete";
-    function: (id: any) => void;
+    function: (id: any, status:any) => void;
   }[];
   noAction?: boolean;
   noPagination?: boolean;
@@ -431,7 +431,7 @@ const PayrollTable = <T extends object>({
               renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
-                <tr onClick={() => actionList?.find((data) => data.label === "view")?.function(row?._id)}  key={rowIndex} className="hover:bg-gray-50 z-10 cursor-pointer">
+                <tr onClick={() => actionList?.find((data) => data.label === "view")?.function(row?._id, row?.status)}  key={rowIndex} className="hover:bg-gray-50 z-10 cursor-pointer">
                   <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
                     {(currentPage - 1) * rowsPerPage + rowIndex + 1}
                   </td>
@@ -492,7 +492,7 @@ const PayrollTable = <T extends object>({
                               <p
                                 key={index}
                                 className="cursor-pointer"
-                                onClick={() => action.function(row?._id)}
+                                onClick={() => action.function(row?._id, row?.status)}
                               >
                                 {action.label === "edit" ? (
                                   <PencilLine color="#4B5C79" size={16} />

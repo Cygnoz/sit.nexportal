@@ -156,7 +156,7 @@ function BusinessCard({ }: Props) {
 
             <div className="grid grid-cols-12">
                 <div className="col-span-8">
-                    <div className="me-4 p-2 bg-[#FFFFFF] rounded-lg mt-4">
+                    <div className="me-4 p-2 bg-[#FFFFFF] rounded-lg mt-4 mb-6">
 
                         {activeTab === "Layout" && (
                             <div>
