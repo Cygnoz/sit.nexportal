@@ -68,7 +68,7 @@ const editValidationSchema = Yup.object().shape({
 
 const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const { request: addRM } = useApi("post", 3002);
-  const { dropdownRegions, dropDownWC, allCountries } = useRegularApi();
+  const { dropdownRegions, dropDownWC, allCountries,refreshContext } = useRegularApi();
   const { request: editRM } = useApi("put", 3002);
   const { request: getRM } = useApi("get", 3002);
   const { request: checkRm } = useApi("get", 3002);
@@ -377,6 +377,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     if(editId){
       getOneRM();
     }
+    refreshContext({dropdown:true})
   }, [editId]); // Trigger the effect when editId changes
   
   return (

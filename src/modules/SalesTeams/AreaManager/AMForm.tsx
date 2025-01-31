@@ -97,7 +97,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
   const [submit, setSubmit] = useState(false);
     const [regionData, setRegionData] = useState<RegionData[]>([]);
   
-  const { dropDownAreas, dropdownRegions, allCountries, dropDownWC} = useRegularApi();
+  const { dropDownAreas, dropdownRegions, allCountries, dropDownWC,refreshContext} = useRegularApi();
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -422,6 +422,7 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId,regionId }) => 
     if(editId){
       getOneAM();
     }
+    refreshContext({dropdown:true})
   }, [editId]); // Trigger the effect when editId changes
 
   return (

@@ -22,7 +22,6 @@ import { useRegularApi } from "../../../context/ApiContext";
 
 
 const AreaHome = () => {
-  // const {allRms}=useRegularApi()
   const {regionId}=useRegularApi()
   const navigate=useNavigate()
   const [allAreas,setAllAreas]=useState<AreaData[]>([]);

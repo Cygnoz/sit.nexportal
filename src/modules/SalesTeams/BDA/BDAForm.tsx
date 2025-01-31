@@ -75,7 +75,7 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
-  const { dropDownAreas, dropdownRegions, dropDownWC, allCountries } = useRegularApi();
+  const { dropDownAreas, dropdownRegions, dropDownWC, allCountries,refreshContext } = useRegularApi();
   const { request: addBDA } = useApi("post", 3002);
   const { request: editBDA } = useApi("put", 3002);
   const { request: getBDA } = useApi("get", 3002);
@@ -397,6 +397,7 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
 
   useEffect(() => {
     getOneBDA();
+    refreshContext({dropdown:true})
   }, [editId]); // Trigger the effect when editId changes
 
   useEffect(() => {

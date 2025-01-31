@@ -17,7 +17,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 import AddRegionManager from "./RMForm";
 
 const RMHome = () => {
-  const { totalCounts } = useRegularApi();
+  const { totalCounts,refreshContext } = useRegularApi();
   const { request: getRM } = useApi("get", 3002);
   const [allRms, setAllRms] = useState<any[]>([]);
   const navigate = useNavigate();
@@ -30,6 +30,7 @@ const RMHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getRMs();
+    refreshContext({counts:true})
   };
 
   const handleEdit = (id: any) => {

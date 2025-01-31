@@ -21,8 +21,7 @@ import LeadForm from "./LeadForm";
 type Props = {};
 
 function LeadHome({}: Props) {
-  const {regionId ,areaId}=useRegularApi()
-  const { customersCounts } = useRegularApi();
+  const {regionId ,areaId,refreshContext,customersCounts}=useRegularApi()
   const { request: getAllLeads } = useApi("get", 3001);
   const { setCustomerData } = useResponse();
   const [allLead, setAllLead] = useState<LeadData[]>([]);
@@ -52,6 +51,7 @@ function LeadHome({}: Props) {
       leadForm: leadForm,
     }));
     getLeads();
+    refreshContext({customerCounts:true})
   };
 
   const handleView = (id: any) => {

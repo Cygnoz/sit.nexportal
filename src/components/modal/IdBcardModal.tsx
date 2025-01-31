@@ -4,12 +4,13 @@ import Button from "../ui/Button"
 // import bcardback from "../../assets/image/Business-card-back.png";
 // import idcard from "../../assets/image/ID-card 1.png";
 // import bcardfront from "../../assets/image/Business-card-front.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Modal from "./Modal";
 import { useRegularApi } from "../../context/ApiContext";
 import { IdCardLayout, Layout1Back, Layout1Front, Layout2Back, Layout2Front, Layout3Back, Layout3Front } from "../ui/BSLayout";
 import BCardInsideForm from "./IdCardView/BCardInsideForm";
 import IdCardInsideForm from "./IdCardView/IdCardInsideForm";
+import { useFetcher } from "react-router-dom";
 // import { Layout1Front, Layout1Back, IdCardLayout } from "../ui/BSLayout";
 
 type Props = {
@@ -35,7 +36,10 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData}: Props) => {
         }));
     };
 
-    const {businessCardData}=useRegularApi()
+    const {businessCardData,refreshContext}=useRegularApi()
+    useEffect(()=>{
+        refreshContext({businessCard:true})
+    },[])
     interface LayoutProps {
         toggleState?: Record<string, boolean>;
         role?:any;

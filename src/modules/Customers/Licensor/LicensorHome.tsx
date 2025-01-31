@@ -21,8 +21,7 @@ import { LicenserData } from "../../../Interfaces/Licenser";
 
 
 const LicensorHome = () => {
-  const {regionId ,areaId}=useRegularApi()
-  const {customersCounts}=useRegularApi()
+  const {regionId ,areaId,customersCounts,refreshContext}=useRegularApi()
   const {request:getAllLicenser}=useApi('get',3001)
    const [allLicenser, setAllLicenser] = useState<LicenserData[]>([]);
    
@@ -40,6 +39,7 @@ const LicensorHome = () => {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
     getLicensers();
+    refreshContext({customerCounts:true})
       };
        const handleView=(id:any)=>{
         navigate(`/licenser/${id}`)

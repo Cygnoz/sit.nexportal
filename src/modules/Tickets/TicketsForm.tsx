@@ -29,13 +29,12 @@ const validationSchema = Yup.object({
 
 function TicketsForm({ onClose, editId }: Props) {
   const { user } = useUser();
-  const {regionId}=useRegularApi()
+  const {regionId,dropDownSA,refreshContext}=useRegularApi()
   const { request: addTickets } = useApi("post", 3004);
   const { request: editTickets } = useApi("put", 3004);
   const { request: getAllRequestor } = useApi("get", 3004);
   const { request: getTicket } = useApi("get", 3004);
   const [allrequestor, setAllRequestor] = useState<any[]>([]);
-  const {dropDownSA}=useRegularApi()
   const [allSa,setAllSa]=useState<any[]>([])
   // const [data, setData] = useState('')
 
@@ -200,6 +199,7 @@ function TicketsForm({ onClose, editId }: Props) {
 
   useEffect(() => {
     getOneTickets();
+    refreshContext({dropdown:true})
   }, [editId]);
 
   return (

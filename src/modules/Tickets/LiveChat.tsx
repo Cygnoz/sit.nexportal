@@ -1,7 +1,7 @@
 import BuildingIcon from "../../assets/icons/BuildingIcon";
 import EmailIcon from "../../assets/icons/EmailIcon";
 import PhoneIcon from "../../assets/icons/PhoneIcon";
-import Input from "../../components/form/Input";
+// import Input from "../../components/form/Input";
 // import pic from "../../assets/image/IndiaLogo.png";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,6 +17,7 @@ import io, { Socket } from "socket.io-client";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import { useUser } from "../../context/UserContext";
 import NoRecords from "../../components/ui/NoRecords";
+import toast from "react-hot-toast";
 const AGENT_SOCKET_URL =import.meta.env.VITE_REACT_APP_TICKETS
 type Props = {};
 
@@ -70,6 +71,7 @@ const LiveChat = ({}: Props) => {
         console.log("tickets", Tickets);
         setTicketData(Tickets);
         setInitialCurrentRoom(Tickets)
+        getClientHistory(Tickets?.customerId?._id);
         return Tickets
       } else {
         // Handle the error case if needed (for example, log the error)
@@ -80,6 +82,8 @@ const LiveChat = ({}: Props) => {
     }
  
   };
+
+  
 
   
 
@@ -110,23 +114,63 @@ const LiveChat = ({}: Props) => {
     
   }, [id]);
 
-  useEffect(() => {
-    if (ticketData?.customerId?._id) {
-      getClientHistory(ticketData?.customerId?._id);
-    }
-  }, [ticketData]);
+  // useEffect(() => {
+  //   if (ticketData?.customerId?._id) {
+     
+  //   }
+  // }, [ticketData,id]);
 
+
+  // const getClientHistory = async (customerId?: any) => {
+  //   setLoading(true); // Set loading to true before making the API call
+  
+  //   try {
+  //     const { response, error } = await getClientChats(`${endPoints.CHATS_LEAD}/${customerId}`);
+  //     console.log("res",response);
+      
+  //     if (response && !error) {
+  //     setClientHistory(response?.data.data)
+  //     } else {
+  //       console.log("err", error.response.data);
+  //     }
+  //   } catch (err) {
+  //     console.error("Error fetching client history:", err);
+  //   } finally {
+  //     setLoading(false); // Set loading to false after the API call completes
+  //   }
+  // };
 
   const getClientHistory = async (customerId?: any) => {
     setLoading(true); // Set loading to true before making the API call
   
     try {
       const { response, error } = await getClientChats(`${endPoints.CHATS_LEAD}/${customerId}`);
+      console.log("Initial Response:", response?.data.data);
   
       if (response && !error) {
         const chatHistory = await Promise.all(
           response?.data.data.map(async (item: any) => {
-            const { response } = await getaTicket(`${endPoints.TICKETS}/${item?.ticketId}`);
+            // Check if ticketId is valid
+            if (!item?.ticketId) {
+              console.warn("Ticket ID is undefined or invalid for item:", item);
+              return {
+                ticketDetails: null,
+                messages: item.messages || [],
+              };
+            }
+  
+            // Fetch ticket details
+            console.log("Fetching ticket details for ticketId:", item?.ticketId);
+            const { response, error } = await getaTicket(`${endPoints.TICKETS}/${item?.ticketId}`);
+            if (error) {
+              console.error("Error fetching ticket details for ticketId:", item?.ticketId, error);
+              return {
+                ticketDetails: null,
+                messages: item.messages || [],
+              };
+            }
+  
+            console.log("Ticket details fetched successfully for ticketId:", item?.ticketId, response?.data);
             return {
               ticketDetails: response?.data,
               messages: item.messages || [],
@@ -134,21 +178,35 @@ const LiveChat = ({}: Props) => {
           })
         );
   
-        const currentRoom = chatHistory.find(history => history.ticketDetails._id === initialCurrentRoom._id);
- 
-  if (currentRoom) {
-  // Remove the current room from the history and reverse the rest
-  const remainingHistory = chatHistory.filter(history => history.ticketDetails._id !== initialCurrentRoom._id).reverse();
+        console.log("Chat History Before Filtering:", chatHistory);
   
-  // Prepend the current room chat to the top of the reversed history
-  const updatedHistory = [currentRoom, ...remainingHistory];
+        // Filter out items with null ticketDetails
+        const filteredChatHistory = chatHistory.filter(history => history.ticketDetails !== null);
   
-  // Update the state
-  setClientHistory(updatedHistory);
-  }
-
+        console.log("Filtered Chat History:", filteredChatHistory);
+       
+        // Find the current room
+        const currentRoom = filteredChatHistory.find(history => history?.ticketDetails?._id === id);
+        console.log("current",currentRoom);
+        
+  
+        if (currentRoom) {
+          // Remove the current room from the history and reverse the rest
+          const remainingHistory = filteredChatHistory.filter(history => history?.ticketDetails?._id !== id).reverse();
+  
+          // Prepend the current room chat to the top of the reversed history
+          const updatedHistory = [currentRoom, ...remainingHistory];
+          console.log("Updated Chat History:", updatedHistory);
+  
+          // Update the state
+          setClientHistory(updatedHistory);
+        }else{
+          setClientHistory(filteredChatHistory);
+        }
+        
+       
       } else {
-        console.log("err", error.response.data);
+        console.log("Error in initial API call:", error?.response?.data);
       }
     } catch (err) {
       console.error("Error fetching client history:", err);
@@ -169,6 +227,8 @@ const LiveChat = ({}: Props) => {
 
 
 
+
+
   const getChatHis=async()=>{
     try{
       const {response,error}=await getChatHistory(`${endPoints.CHAT_HISTORY}/${id}`)      
@@ -183,7 +243,6 @@ const LiveChat = ({}: Props) => {
   }
 
 
-  console.log("messages",messages);
 
   
   
@@ -195,9 +254,12 @@ const LiveChat = ({}: Props) => {
       socket.emit("sendMessage", {
         ticketId:id,
         senderId:ticketData?.supportAgentId?._id ,
-        receiverId:ticketData?.customerId?._id,
+        receiverId:ticketData?.customerId?.email,
         message,
       });
+      if(messages.length==1){
+        getClientHistory(ticketData?.customerId?._id);
+      }
       setMessage("");
       if (textareaRef.current) {
         textareaRef.current.style.height = "19px"; // Reset height to auto
@@ -244,22 +306,28 @@ const handleKeyDown = (e:any) => {
   }
 };
 const handleRoomClicked = (history?: any) => {
-  if (!history) return; // Handle undefined case
- setMessage("")
-  const { ticketDetails, messages = [] } = history; // Ensure messages is defined
-  console.log("Message Length:", messages.length);
-
-  setMessages([]); // Clear previous messages
-  setTimeout(() => {
-    setMessages([...messages].reverse()); // Set new messages
-  }, 0);
-
-  setTicketData(ticketDetails);
+  if(messages.length>0){
+    if (!history) return; // Handle undefined case
+    setMessage("")
+     const { ticketDetails, messages = [] } = history; // Ensure messages is defined   
+     setMessages([]); // Clear previous messages
+     setTimeout(() => {
+       setMessages([...messages].reverse()); // Set new messages
+     }, 0);
+   
+     setTicketData(ticketDetails);
+     if(messages.length==1){
+      getClientHistory(ticketData?.customerId?._id);
+    }
+  }else{
+    toast.error("Please start chat with this Client!")
+  }
+ 
 };
 
 
 
-console.log("initial",initialCurrentRoom);
+console.log("cleint",clientHistory);
 
 
   return (
@@ -340,7 +408,7 @@ console.log("initial",initialCurrentRoom);
          
           </div>
 
-          <div className="col-span-7 h-full  border">
+          <div className="col-span-7 h-full flex flex-col justify-between   border">
            
              
                 {/* Header */}
@@ -370,9 +438,9 @@ console.log("initial",initialCurrentRoom);
 
                 {/* Chat Box */}
                 <div ref={chatBoxRef} className={`p-2 space-y-4 h-[68vh] scroll-smooth overflow-auto hide-scrollbar`}>
-  {messages.map((msg) => (
+  {messages.map((msg,index:any) => (
     <div
-      key={msg.ticketId} // Using ticketId as key to avoid issues with duplicate chatId
+    key={index} // Using ticketId as key to avoid issues with duplicate chatId
       className={`flex ${
         msg.senderId ===ticketData?.supportAgentId?._id ? "justify-end" : "justify-start"
       }`}
@@ -493,7 +561,7 @@ console.log("initial",initialCurrentRoom);
     >
       Send
     </Button> */}
-     <form onSubmit={handleSubmit} className="border rounded-md  bg-white flex items-center gap-2 p-3">
+     <form onSubmit={handleSubmit} className="border rounded-md   bg-white flex items-center gap-2 p-3">
          
          <img src={CygnozLogo} className='w-[22px]' alt="" />
          
@@ -658,7 +726,7 @@ console.log("initial",initialCurrentRoom);
   
     <NoRecords
     text="No History Found"
-    parentHeight="380px"
+    parentHeight="360px"
     imgSize={70}
     textSize="sm"
   />

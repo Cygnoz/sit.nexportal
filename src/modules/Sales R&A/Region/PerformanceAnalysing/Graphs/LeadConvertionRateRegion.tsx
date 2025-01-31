@@ -10,7 +10,7 @@ type Props = {};
 function LeadConversionRate({}: Props) {
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
   const { request: getConvertionRate } = useApi("get", 3003);
-  const { allRegions } = useRegularApi();
+  const { allRegions,refreshContext } = useRegularApi();
   const {id}=useParams()
   
   
@@ -56,6 +56,7 @@ function LeadConversionRate({}: Props) {
   useEffect(() => {
     getConvertion();
     handleFetchRegions();
+    refreshContext({regions:true})
   }, [allRegions]);
 
   

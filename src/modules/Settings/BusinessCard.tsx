@@ -28,7 +28,10 @@ function BusinessCard({ }: Props) {
     const tabs = ["Layout", "Content"]
     const { request: addBusinessCard } = useApi('put', 3003)
     // const [bcardData, setBcardData] = useState<any>(null)
-    const { businessCardData } = useRegularApi()
+    const {businessCardData,refreshContext}=useRegularApi()
+    useEffect(()=>{
+        refreshContext({businessCard:true})
+    },[])
 
     const [toggleStates, setToggleStates] = useState<any>({});
 
@@ -98,6 +101,7 @@ function BusinessCard({ }: Props) {
             if (response && !error) {
                 console.log(response.data);
                 toast.success(response.data.message)
+                refreshContext({businessCard:true})
             }
             else {
                 console.log(error.response.data.message);

@@ -245,8 +245,6 @@ const Table = <T extends object>({
     }
    
   }, [filteredData,searchValue]);
- const {user}=useUser()
- user?.role
   return (
     <div className="w-full  bg-white rounded-lg p-4 mb-4">
       {renderHeader()}
