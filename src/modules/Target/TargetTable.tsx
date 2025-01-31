@@ -1,19 +1,28 @@
 import React, { useEffect, useMemo, useState } from "react";
-import ArrowRight from "../../assets/icons/ArrowRight";
-import Eye from "../../assets/icons/Eye";
-import NextIcon from "../../assets/icons/NextIcon";
-import PencilLine from "../../assets/icons/PencilLine";
-import PreviousIcon from "../../assets/icons/PreviousIcon";
-import Trash from "../../assets/icons/Trash";
-import UserIcon from "../../assets/icons/UserIcon";
+// import Eye from "../../assets/icons/Eye";
+// import NextIcon from "../../assets/icons/NextIcon";
+// import PencilLine from "../../assets/icons/PencilLine";
+// import PreviousIcon from "../../assets/icons/PreviousIcon";
+// import Trash from "../../assets/icons/Trash";
+// import SearchBar from "./SearchBar";
+// import SortBy from "./SortBy";
 import IndiaLogo from "../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
-import Button from "./Button";
-import { getStatusClass } from "./GetStatusClass";
-import NoRecords from "./NoRecords";
-import SearchBar from "./SearchBar";
-import SortBy from "./SortBy";
+// import UserIcon from "../../assets/icons/UserIcon";
+
+import ArrowRight from "../../assets/icons/ArrowRight";
+import SearchBar from "../../components/ui/SearchBar";
+import UserIcon from "../../assets/icons/UserIcon";
+import Button from "../../components/ui/Button";
+import PencilLine from "../../assets/icons/PencilLine";
+import Eye from "../../assets/icons/Eye";
+import Trash from "../../assets/icons/Trash";
+import PreviousIcon from "../../assets/icons/PreviousIcon";
+import NextIcon from "../../assets/icons/NextIcon";
+import NoRecords from "../../components/ui/NoRecords";
+import SelectDropdown from "../../components/ui/SelectDropdown";
+import { months, years } from "../../components/list/MonthYearList";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -44,7 +53,7 @@ interface TableProps<T> {
   from?:string
 }
 
-const Table = <T extends object>({
+const TargetTable = <T extends object>({
   data,
   columns,
   headerContents,
@@ -52,7 +61,7 @@ const Table = <T extends object>({
   noAction,
   noPagination,
   maxHeight,
-  skeltonCount=8,
+  skeltonCount=5,
   from
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
@@ -68,6 +77,15 @@ const Table = <T extends object>({
     );
   }, [data, searchValue]);
 
+
+
+  
+
+
+
+
+
+
   // Paginate the filtered data
   const paginatedData: any = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
@@ -81,12 +99,55 @@ const Table = <T extends object>({
     setCurrentPage(1);
   };
 
-
-
-  
-
   // Function to determine row styles based on `status`
-
+  const getStatusClass = (status: string | undefined) => {
+    switch (status) {
+      case "New":
+        return "bg-blue-500 text-center text-white py-1 px-2 w-fit rounded-lg";
+      case "Contacted":
+        return "bg-cyan-800 text-center text-white py-1 px-2 rounded-lg";
+      case "In progress":
+        return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
+      case "In Progress":
+        return "bg-yellow-100 text-center text-black py-1 px-2 rounded-lg";
+      case "Proposal":
+        return "bg-violet-300 text-center text-black py-1 px-2 rounded-lg";
+      case "Lost":
+        return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
+      case "Closed":
+        return "bg-gray-400 text-center text-white py-1 px-2 rounded-lg";
+      case "Active":
+        return "bg-green-500 text-center text-white py-1 px-2 w-fit rounded-lg";
+      case "Converted":
+        return "bg-purple-500 text-center text-white py-1 px-2 rounded-lg";
+      case "Expired":
+        return "bg-red-500 text-center text-white py-1 px-2 rounded-lg";
+      case "Not Started":
+        return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
+      case "Extended":
+        return "bg-violet-500 text-center text-white py-1 px-2 rounded-lg";
+      case "Pending Renewal":
+        return "bg-orange-400 text-center text-white py-1 px-2 rounded-lg";
+      case "Open":
+        return "bg-green-400 text-center text-white py-1 px-2 rounded-lg";
+      case "Pending":
+        return "bg-yellow-400 text-center text-black py-1 px-2 rounded-lg";
+      case "High":
+        return "bg-red-500 text-center text-white py-1 px-2 w-fit rounded-lg";
+      case "Medium":
+        return "bg-orange-300 text-center text-white py-1 px-2 rounded-lg";
+      case "Low":
+        return "bg-green-300 text-center text-white py-1 px-2 rounded-lg";
+      case "Won":
+        return "bg-green-500 text-center text-white  py-1 px-2 w-fit rounded-lg";
+      case "Resolved":
+        return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
+      case "Paid":
+        return "bg-purple-200 text-center text-black py-1 px-2 rounded-lg";
+      default:
+        return "";
+    }
+  };
 
   function getNestedValue(obj: any, path: string): any {
     if (!path.includes(".")) {
@@ -124,37 +185,52 @@ const Table = <T extends object>({
     }
   };
 
-  // Render table header
-  const renderHeader = () => (
-    <div
-      className={`flex  ${
-        headerContents.search && !headerContents.title && !headerContents.sort
-          ? "justify-start"
-          : "justify-between"
-      } items-center mb-4`}
-    >
-      {headerContents.title && (
-        <h2 className="text-lg font-bold">{headerContents.title}</h2>
-      )}
-      {headerContents.search && (
-        <div className={`w-[440px] ${headerContents.title && "ms-auto me-2"}`}>
-          <SearchBar
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-            placeholder={headerContents.search.placeholder}
-          />
-        </div>
-      )}
-      {headerContents.sort && (
-        <div className="flex gap-2">
-          {headerContents.sort.map((sort, index) => (
-            <SortBy key={index} sort={sort} />
-          ))}
-        </div>
-      )}
-    </div>
-  );
+ const renderHeader = () => (
+  <div
+    className={`flex ${
+      headerContents.search && !headerContents.title && !headerContents.sort
+        ? "justify-start"
+        : "justify-between"
+    } items-center mb-4`}
+  >
+    {headerContents.title && (
+      <h2 className="text-lg font-bold">{headerContents.title}</h2>
+    )}
+    {headerContents.search && (
+      <div className={`w-[440px] ${headerContents.title && "ms-auto me-2"}`}>
+        <SearchBar
+          searchValue={searchValue}
+          onSearchChange={setSearchValue}
+          placeholder={headerContents.search.placeholder}
+        />
+      </div>
+    )}
+    {headerContents.sort && (
+      <div className="flex gap-4">
+      <SelectDropdown
+             filteredData={years}
+            
+             placeholder="Select Year"
+             searchPlaceholder="Select Year"
+             width="w-60"
+           />
+ 
+           <SelectDropdown
+             filteredData={months}
+             placeholder="Select Month"
+           
+             searchPlaceholder="Select Month"
+             width="w-60"
+           />
+ 
+ 
+       </div>
+    )}
+  </div>
+);
 
+  
+  
   const renderImageAndLabel = (data: any) => {
     for (const { key, imageKey } of ImageAndLabel) {
       const keyValue = getNestedValue(data, key);
@@ -187,68 +263,66 @@ const Table = <T extends object>({
   };
 
   const renderSkeletonLoader = () => (
-    <tr>
-      <td colSpan={noAction?columns?.length+1:columns?.length + 2}>
-        <div className="flex flex-col   gap-2 mt-2">
-          {Array.from({ length: skeltonCount }).map((_, index) => (
-            <div key={index} className="flex gap-2 animate-pulse">
-              {columns.map((_, colIndex) => (
-                <div
-                  key={colIndex}
-                  className="h-6 w-full bg-gray-200 rounded-lg skeleton"
-                ></div>
-              ))}
-              {!noAction && (
-                <div className="h-6 w-full bg-gray-200 skeleton"></div>
-              )}
-            </div>
-          ))}
-        </div>
-      </td>
-    </tr>
-  );
-
-  
-  useEffect(() => {
-    if(from!=="ticket"){
-      const timeout = setTimeout(() => {
-        if (data?.length === 0 ) {
-          setNoDataFound(true);
-        } else {
-          setNoDataFound(false);
-        }
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }else{
-      if (data?.length === 0) {
-        setNoDataFound(true);
-      } else {
-        setNoDataFound(false);
-      }
-    }
-  }, [data,searchValue]);
-  useEffect(() => {
-    if(from!=="ticket"){
-    
-        if (filteredData?.length === 0  && searchValue) {
-          setNoDataFound(true);
-        } else {
-          setNoDataFound(false);
-        }
-    }else{
-      if (filteredData?.length === 0) {
-        setNoDataFound(true);
-      } else {
-        setNoDataFound(false);
-      }
-    }
+     <tr>
+       <td colSpan={noAction?columns?.length+1:columns?.length + 2}>
+         <div className="flex flex-col   gap-2 mt-2">
+           {Array.from({ length: skeltonCount }).map((_, index) => (
+             <div key={index} className="flex gap-2 animate-pulse">
+               {columns.map((_, colIndex) => (
+                 <div
+                   key={colIndex}
+                   className="h-6 w-full bg-gray-200 rounded-lg skeleton"
+                 ></div>
+               ))}
+               {!noAction && (
+                 <div className="h-6 w-full bg-gray-200 skeleton"></div>
+               )}
+             </div>
+           ))}
+         </div>
+       </td>
+     </tr>
+   );
+ 
    
-  }, [filteredData,searchValue]);
+   useEffect(() => {
+     if(from!=="ticket"){
+       const timeout = setTimeout(() => {
+         if (data?.length === 0) {
+           setNoDataFound(true);
+         } else {
+           setNoDataFound(false);
+         }
+       }, 3000);
+       return () => clearTimeout(timeout);
+     }else{
+       if (data?.length === 0) {
+         setNoDataFound(true);
+       } else {
+         setNoDataFound(false);
+       }
+     }
+   }, [data]);
+
   return (
-    <div className="w-full  bg-white rounded-lg p-4 mb-4">
+    <div className="w-full  bg-white rounded-lg p-4">
       {renderHeader()}
 
       <div
+      style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
+         className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
+      >
+       <div className="w-full p-4 h-14 bg-[#F5F9FC] my-4 rounded-2xl">
+  <div className="flex gap-4 justify-end">
+    <p className="text-xl border-r-2 border-black pr-6">Month: Jan</p>
+    <p className="text-xl pl-2">Year: 2015</p>
+  </div>
+</div>
+
+
+
+
+<div
       style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
          className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
@@ -296,7 +370,7 @@ const Table = <T extends object>({
                   <NoRecords imgSize={70} textSize="md"/>
                 </td>
               </tr>
-            ) : filteredData?.length === 0 ? (
+            ) : data?.length === 0 ? (
               renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
@@ -408,50 +482,52 @@ const Table = <T extends object>({
           </tbody>
         </table>
       </div>
-      
-      {data&&data.length > 10 && !noPagination && (
-  <div className="flex justify-between items-center mt-4">
-    <div className="text-xs text-[#71736B] font-medium flex gap-2">
-      Showing {currentPage} of {totalPages || 1}
-      <div className="flex gap-2">
-        <button
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          <PreviousIcon size={20} color="#71736B" />
-        </button>
-        <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
-          {currentPage}
-        </button>
-        <button
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages || totalPages === 0}
-        >
-          <NextIcon size={20} color="#71736B" />
-        </button>
       </div>
-    </div>
-    <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
-      Rows per page
-      <select
-        value={rowsPerPage}
-        onChange={handleRowsPerPageChange}
-        className="border border-gray-300 rounded-md p-1 text-sm"
-      >
-        {[5, 10, 20, 50].map((option) => (
-          <option key={option} value={option}>
-            {option}
-          </option>
-        ))}
-      </select>
-    </div>
-  </div>
-)}
+
+      {data&&data.length > 10 && !noPagination && (
+        <div className="flex justify-between items-center mt-4">
+          <div className="text-xs text-[#71736B] font-medium flex gap-2">
+            Showing {currentPage} of {totalPages || 1}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                disabled={currentPage === 1}
+              >
+                <PreviousIcon size={20} color="#71736B" />
+              </button>
+              <button className="border text-[#FFFFFF] bg-[#97998E] px-2 py-1">
+                {currentPage}
+              </button>
+              <button
+                onClick={() =>
+                  setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                }
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
+                <NextIcon size={20} color="#71736B" />
+              </button>
+            </div>
+          </div>
+          <div className="flex gap-2 items-center text-[#71736B] font-medium text-xs">
+            Rows per page
+            <select
+              value={rowsPerPage}
+              onChange={handleRowsPerPageChange}
+              className="border border-gray-300 rounded-md p-1 text-sm"
+            >
+              {[5, 10, 20, 50].map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
 
     </div>
   );
 };
 
-export default Table;
+export default TargetTable;

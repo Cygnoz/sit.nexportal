@@ -97,10 +97,12 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [empId,setEmpId]=useState('')
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
 
+  const [staffData, setStaffData] = useState<any>(null);
   const onSubmit: SubmitHandler<SAData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("data", data);
@@ -124,6 +126,14 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
         }
 
         if (response && !error) {
+          const { employeeId, region } = response.data
+          const staffDetails = {
+            ...watch(),
+            regionName: region?.regionName,
+            employeeId:editId?empId:employeeId
+          }
+          // staffData=response.data
+          setStaffData(staffDetails)
           toast.success(response.data.message); // Show success toast
           handleModalToggle()
         } else {
@@ -149,7 +159,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
     const currentIndex = tabs.indexOf(activeTab);
     let fieldsToValidate: any[] = [];
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo", "personalEmail","address.street1"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail", "address.street1"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
         !editId && "email",
@@ -276,7 +286,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
       if (response && !error) {
         const SA = response.data; // Return the fetched data
         console.log("Fetched SA data:", SA);
-
+        setEmpId(SA.user?.employeeId)
         const { user, _id, ...sa } = SA;
 
         const transformedSA = SA
@@ -314,8 +324,10 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   useEffect(() => {
     if (errors && Object.keys(errors).length > 0 && activeTab == "Bank Information") {
       // Get the first error field
-      const firstErrorField = Object.keys(errors)[0];
-
+      let firstErrorField = Object.keys(errors)[0];
+      if (errors.address?.street1) {
+        firstErrorField = "address.street1";
+      }
       // Find the tab containing this field
       const tabIndex: any = StaffTabsList.findIndex((tab) =>
         tab.validationField.includes(firstErrorField)
@@ -332,7 +344,11 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
       });
 
       // Show the first error message in a toast
-      toast.error(errorrs[firstErrorField]?.message);
+      if (errorrs["address"] && errorrs["address"].street1) {
+        toast.error(errorrs["address"].street1.message);
+      } else if (firstErrorField) {
+        toast.error(errorrs[firstErrorField]?.message);
+      }
     }
   }, [errors]);
 
@@ -347,8 +363,8 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
             </h1>
             <p className="text-ashGray text-sm">
               {`Use this form to ${editId
-                  ? "edit an existing Support Agent"
-                  : "add a new Support Agent"
+                ? "edit an existing Support Agent"
+                : "add a new Support Agent"
                 } details. Please fill in the required information`}
             </p>
           </div>
@@ -367,8 +383,8 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
-                  ? "text-deepStateBlue border-b-2 border-secondary2"
-                  : "text-gray-600"
+                ? "text-deepStateBlue border-b-2 border-secondary2"
+                : "text-gray-600"
                 }`}
             >
               <p>
@@ -829,7 +845,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
           parentOnClose={onClose}
           onClose={handleModalToggle}
           role="Support Agent"
-          staffData={watch()} />
+          staffData={staffData} />
       </Modal>
     </>
   );

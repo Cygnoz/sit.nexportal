@@ -17,8 +17,9 @@ import Table from "../../../components/ui/Table";
 import { useEffect, useState } from "react";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
-import { months } from "../../../components/list/MonthYearList";
+import { months, years } from "../../../components/list/MonthYearList";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
+import NoRecords from "../../../components/ui/NoRecords";
 // import { allYears } from "../../../components/list/YearList";
 interface BDAData {
   employeeId: string;
@@ -39,58 +40,55 @@ type Props = {
 
 
 const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
-
-  //const [topPerformance,setTopPerformance]=useState('')
-  const [selectedMonth, setSelectedMonth] = useState<any>(months[0]);
-  //const [selectedYear, setSelectedYear] = useState<any>(allYears[0]);
-
   const { request: TopPerformingAM } = useApi("get", 3002);
-  const [chartData, setChartData] = useState([]);
+ 
+   const [chartData, setChartData] = useState([]);
+   const [selectedMonth, setSelectedMonth] = useState<any>('');
+   const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
+  const [selectedData, setSelectedData] = useState<string>(`${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`);
 
-  
-
-   // const [chartData] = useState<any[]>([]);
-  
   const navigate=useNavigate()
-  //console.log("total bda",totalBdas);
-  //console.log(getData.regionManager);
+
+  useEffect(() => {
+    // Convert month name to number (1-12) and ensure it's two digits
+    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0');
+    setSelectedData(`${selectedYear.value}-${monthIndex}`);
+  }, [selectedMonth, selectedYear]);
+  
+
 
   
   const handleView = (id:any) => {
     if (id) {
       navigate(`/bda/${id}`)
-      
-    }
-
-  };
-  
-
-   const getPerformers=async()=>{
-     try{
-      const endPoint = `${endPoints.GET_ALL_AM}//${getData.regionManager._id}/areamanager?month=${selectedMonth.key}`;
-      const { response, error } = await TopPerformingAM(endPoint);
-
-      
-      if (response && !error) {
-       
-         console.log("ss",response.data);
-         setChartData(response.data);
-       // setChartData(transformedData);
-      } else {
-        console.error("Error:", error?.data || "Unknown error occurred");
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  useEffect(() => {
-    getPerformers();
-  }, [selectedMonth,getData]);
-
-
-  
-
+       }
+        };
+        const getPerformers = async () => {
+          try {
+            const endPoint = `${endPoints.GET_ALL_RM}/${getData?.regionManager?._id}/areamanager?date=${selectedData}`;
+            const { response, error } = await TopPerformingAM(endPoint);
+          //  console.log("API Endpoint:", endPoint);
+        
+            if (response && !error) {
+              const transformedData = response.data.topPerformingAreaManagers.map((item: any) => ({
+                name: item.user.userName, 
+                CR: parseFloat(item.conversionRate.replace("%", "")) // Convert "100.00%" to 100.00
+              }));
+        
+            //  console.log("Transformed Data:", transformedData);
+              setChartData(transformedData);
+            } else {
+              console.error("Error:", error?.data || "Unknown error occurred");
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        };
+        
+        useEffect(() => {
+          getPerformers();
+        }, [selectedData, getData]);
+        
 
 
   const CustomLegend = () => {
@@ -195,15 +193,6 @@ const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
 
 
   
- 
- 
-  // const chartData = graphData?.map((data: any) => ({
-  //   name: data?.userName,
-  //   CR: data?.conversionRate,
-  //   avatar: data?.userImage || profileImage, // Use a default avatar if not provided
-  // }));
-  
-  // console.log("chart",chartData);
   
   
   
@@ -318,14 +307,14 @@ const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
                   //   searchPlaceholder="Search Month"
                   width="w-44"
                 />
-                 {/* <SelectDropdown
+                 <SelectDropdown
                   setSelectedValue={setSelectedYear}
-                  selectedValue={selectedMonth}
-                  filteredData={allYears}
-                  //   searchPlaceholder="Search Month"
-                  width="w-44"
-                /> */}
-                
+                  selectedValue={selectedYear}
+                 filteredData={years}
+        
+                 searchPlaceholder="Search Month"
+                  width="w-28"
+                />
               </div>
         </div>
          
@@ -333,6 +322,7 @@ const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
            <div className="mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
              {/* Wrapper for dynamic width */}
              <div style={{ width: '100%' }} className="-ms-4 mt-3">
+             {chartData.length > 0 ? (
                <ResponsiveContainer minWidth="100%"  minHeight={320}>
                <BarChart
                  height={280}
@@ -349,6 +339,9 @@ const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
                  </Bar>
                </BarChart>
                </ResponsiveContainer>
+               ) : (
+                <NoRecords parentHeight="320px"/>
+              )}
              </div>
            </div>
          </div>

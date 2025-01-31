@@ -18,6 +18,8 @@ import LeadConversionRate from "./Graphs/LeadConversionRate";
 import TopBreakDownByRegion from "./Graphs/TopBreakDownByRegion";
 import TopRevenueByRegion from "./Graphs/TopRevenueByRegion";
 import NoRecords from "../../components/ui/NoRecords";
+import TargetComparison from "./Graphs/TargetComparission";
+import ProgressBar from "./Graphs/ProgressBar";
 
 const DashboardPage = () => {
   const { totalCounts,allRegions,refreshContext } = useRegularApi();
@@ -167,6 +169,13 @@ const DashboardPage = () => {
             title={card.title}
           />
         ))}
+      </div>
+      <div>
+        <ProgressBar/>
+      </div>
+
+      <div className="mt-3">
+        <TargetComparison/>
       </div>
       <div className="grid grid-cols-12 gap-4 mt-3">
         <div className="col-span-8">
