@@ -193,13 +193,22 @@ const getDefaultTab = (): TabType => {
     ],
   }}
   actionList={
-    activeTab === "Region"
+    (user?.role === "Super Admin" && activeTab === "Region") ||
+    (user?.role === "Region Manager" && activeTab === "Area") ||
+    (user?.role === "Area Manager" && activeTab === "BDA")
       ? [
           { label: "edit", function: handleEdit },
           { label: "delete", function: handleDelete },
-        ]:[]
-        }
-        noAction=  {activeTab === "Region" ? false:true}
+        ]
+      : []
+  }
+  noAction={
+    !(
+      (user?.role === "Super Admin" && activeTab === "Region") ||
+      (user?.role === "Region Manager" && activeTab === "Area") ||
+      (user?.role === "Area Manager" && activeTab === "BDA")
+    )
+  }
 />
 
 
