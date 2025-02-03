@@ -88,6 +88,7 @@ const TargetInfoModal = ({onClose}: Props) => {
             headerContents={{
               }}
             noAction
+            // loading={loading}
           />
         </div>
     </div>

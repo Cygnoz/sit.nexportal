@@ -15,11 +15,13 @@ import useApi from "../../../Hooks/useApi";
 import { RMData } from "../../../Interfaces/RM";
 import { endPoints } from "../../../services/apiEndpoints";
 import AddRegionManager from "./RMForm";
+import { useResponse } from "../../../context/ResponseContext";
 
 const RMHome = () => {
   const { totalCounts,refreshContext } = useRegularApi();
   const { request: getRM } = useApi("get", 3002);
   const [allRms, setAllRms] = useState<any[]>([]);
+  const {loading,setLoading}=useResponse()
   const navigate = useNavigate();
 
   // State to manage modal visibility
@@ -43,6 +45,7 @@ const RMHome = () => {
 
   const getRMs = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getRM(endPoints.GET_ALL_RM); 
       if (response && !error) {
         const transformedRMss =
@@ -63,6 +66,8 @@ const RMHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -200,6 +205,7 @@ const RMHome = () => {
               { label: "edit", function: handleEdit },
               { label: "view", function: handleView },
             ]}
+            loading={loading}
           />
         </div>
 

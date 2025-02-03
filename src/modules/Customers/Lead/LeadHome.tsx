@@ -23,7 +23,7 @@ type Props = {};
 function LeadHome({}: Props) {
   const {regionId ,areaId,refreshContext,customersCounts}=useRegularApi()
   const { request: getAllLeads } = useApi("get", 3001);
-  const { setCustomerData } = useResponse();
+  const { setCustomerData,loading, setLoading } = useResponse();
   const [allLead, setAllLead] = useState<LeadData[]>([]);
   const { request: getLead } = useApi("get", 3001);
   const [editId, setEditId] = useState("");
@@ -64,7 +64,9 @@ function LeadHome({}: Props) {
   };
 
   const getLeads = async () => {
+   
     try {
+      setLoading(true);
       const { response, error } = await getAllLeads(endPoints.LEADS);
       if (response && !error) {
         console.log(response.data.leads);
@@ -79,11 +81,14 @@ function LeadHome({}: Props) {
       }
     } catch (err) {
       console.log(err);
+    }finally{
+      setLoading(false)
     }
   };
 
   useEffect(() => {
     getLeads();
+    refreshContext({customerCounts:true})
   }, []);
 
   const homeCardData = [
@@ -201,6 +206,7 @@ function LeadHome({}: Props) {
               { label: "view", function: handleView },
               { label: "edit", function: handleEdit },
             ]}
+            loading={loading}
           />
         </div>
       </div>

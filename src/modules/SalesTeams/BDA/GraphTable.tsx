@@ -28,9 +28,10 @@ interface TrailTableData {
 
 type Props = {
   bdaData?: any;
+  loading?:boolean
 };
 
-const GraphTable = ({ bdaData }: Props) => {
+const GraphTable = ({ bdaData,loading }: Props) => {
   //console.log("hhh",bdaData);
   const { request: getConvertionBda } = useApi("get", 3002);
 
@@ -250,6 +251,7 @@ const GraphTable = ({ bdaData }: Props) => {
               }}
               actionList={[{ label: "view", function: handleView }]}
               maxHeight="325px"
+              loading={loading}
             />
           </div>
         </div>

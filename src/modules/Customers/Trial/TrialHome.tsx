@@ -18,6 +18,7 @@ import { LeadData } from "../../../Interfaces/Lead";
 import { useRegularApi } from "../../../context/ApiContext";
 import Modal from "../../../components/modal/Modal";
 import TrialForm from "./TrialForm";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
@@ -26,7 +27,7 @@ import TrialForm from "./TrialForm";
 const TrialHome = () => {
   const {regionId ,areaId,customersCounts,refreshContext}=useRegularApi()
   const [editId, setEditId] = useState("");
-
+  const {loading,setLoading}=useResponse()
   const {request:getAllTrial}=useApi('get',3001)
   const [allTrials,setAllTrials]=useState<LeadData[]>([])
    const navigate=useNavigate()
@@ -84,7 +85,7 @@ const TrialHome = () => {
       ];
             
   const getTrials=async()=>{
-    
+    setLoading(true)
     try{
       const {response,error}=await getAllTrial(endPoints.TRIAL)
       console.log("res",response);
@@ -110,11 +111,14 @@ const TrialHome = () => {
       }
     }catch(err){
       console.log(err);
+    }finally{
+      setLoading(false)
     }
   }
 
   useEffect(()=>{
     getTrials()
+    refreshContext({customerCounts:true})
   },[])
 
   
@@ -150,7 +154,9 @@ const TrialHome = () => {
         actionList={[
             { label: 'view', function: handleView },
             { label: 'edit', function: handleEdit },
-          ]} />
+          ]} 
+          loading={loading}
+          />
       </div>
     </div>
     <Modal open={isModalOpen.leadForm} onClose={() => handleModalToggle()}>

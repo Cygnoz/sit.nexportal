@@ -9,12 +9,14 @@ import { WCData } from "../../../Interfaces/WC";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
+import { useResponse } from "../../../context/ResponseContext";
  
 const WCommisionHome = () => {
   const { request: getALLWC } = useApi("get", 3003);
   const { request: deleteWC } = useApi("delete", 3003);
   const [allWC, setAllWC] = useState<WCData[]>([]);
-  const [editId, setEditId] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);4
+  const {loading,setLoading}=useResponse()
  
   // State to manage delete confirmation modal
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -70,6 +72,7 @@ const WCommisionHome = () => {
  
   const getWC = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getALLWC(endPoints.WC);
       if (response && !error) {
         console.log(response.data.commissions);
@@ -81,6 +84,8 @@ const WCommisionHome = () => {
       }
     } catch (err) {
       // console.log(err);
+    }finally{
+      setLoading(false)
     }
   };
  
@@ -139,6 +144,7 @@ const WCommisionHome = () => {
             { label: "delete", function: openDeleteModal },
             { label: "edit", function: handleEdit },
           ]}
+          loading={loading}
         />
       </div>
  

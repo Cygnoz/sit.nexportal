@@ -38,6 +38,7 @@ import CommissionModal from "../../../../components/modal/CommissionModal";
 import SalaryRoundIcon from "../../../../assets/icons/SalaryRoundIcon";
 import CommissionRoundIcon from "../../../../assets/icons/CommissionRoundIcon";
 import SelectDropdown from "../../../../components/ui/SelectDropdown";
+import { useResponse } from "../../../../context/ResponseContext";
 
 
 
@@ -65,6 +66,7 @@ type Props = {
 
 const BDAView = ({staffId}: Props) => {
   const {request:getBDAViewDetails}=useApi('get',3002)
+  const {loading,setLoading}=useResponse()
   const topRef = useRef<HTMLDivElement>(null);
     
       useEffect(() => {
@@ -201,6 +203,7 @@ const BDAView = ({staffId}: Props) => {
 
   const getOneBDA = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getBDA(`${endPoints.BDA}/${iId}`);
       if (response && !error) {
         console.log(response.data);
@@ -215,6 +218,8 @@ const BDAView = ({staffId}: Props) => {
       }
     } catch (err) {
       console.error('Error fetching BDA data:', err);
+    }finally{
+      setLoading(false)
     }
   };
   
@@ -530,11 +535,13 @@ const BDAView = ({staffId}: Props) => {
         }}
         actionList={[
           { label: 'view', function: handleView },
-        ]} />
+        ]} 
+        loading={loading}
+        />
       </div>
 
       {/* Graph & Table */}
-      <GraphTable bdaData={data.bdaViewDetails}/>
+      <GraphTable loading={loading}  bdaData={data.bdaViewDetails}/>
 
         {/* Licenser Card */}
         <div>

@@ -18,6 +18,7 @@ import { AMData } from "../../../Interfaces/AM";
 import { endPoints } from "../../../services/apiEndpoints";
 import AMForm from "./AMForm";
 import { useRegularApi } from "../../../context/ApiContext";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
@@ -26,6 +27,7 @@ const AMHome = () => {
    const {regionId }=useRegularApi()
   const { request: getAllAM } = useApi('get', 3002)
   const [allAM, setAllAM] = useState<any[]>([]);
+  const {loading,setLoading}=useResponse()
   const [editId, setEditId] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [totalCounts, setTotalCounts] = useState({
@@ -54,6 +56,7 @@ const AMHome = () => {
 
   const getAM = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllAM(endPoints.GET_ALL_AM);
 
       if (response && !error) {
@@ -85,6 +88,8 @@ const AMHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -214,7 +219,7 @@ const AMHome = () => {
               { label: 'edit', function: handleEdit },
               { label: 'view', function: handleView },
             ]}
-          // noButton
+          loading={loading}
           />
 
         </div>

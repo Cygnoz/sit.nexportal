@@ -13,6 +13,7 @@ import { endPoints } from "../../services/apiEndpoints";
 import CreateTickets from "./TicketsForm";
 import { useUser } from "../../context/UserContext";
 import { useRegularApi } from "../../context/ApiContext";
+import { useResponse } from "../../context/ResponseContext";
 
 type Props = {};
 
@@ -26,6 +27,7 @@ interface TicketsData extends BaseTicketsData {
 
 function TicketsHome({ }: Props) {
   const {user}=useUser()
+  const {loading,setLoading}=useResponse()
   const {allTicketsCount,refreshContext}=useRegularApi()
   const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
   const unresolveTickets=allTicketsCount?.allTickets??0
@@ -66,6 +68,7 @@ function TicketsHome({ }: Props) {
   
   const getTickets = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllTickets(endPoints.GET_TICKETS);
   
       if (response && !error) {
@@ -87,6 +90,8 @@ function TicketsHome({ }: Props) {
       }
     } catch (err) {
       console.log(err);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -326,6 +331,7 @@ useEffect(() => {
                   { label: 'edit', function: handleEdit },
                 ]}
                 from="ticket"
+                loading={loading}
               />
 
             </div>

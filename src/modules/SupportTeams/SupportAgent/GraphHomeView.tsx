@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { endPoints } from '../../../services/apiEndpoints';
 import No_Data_found from '../../../assets/image/NO_DATA.png'
 import { months, years } from '../../../components/list/MonthYearList';
+import NoRecords from '../../../components/ui/NoRecords';
 
 type Props = {
   id: any
@@ -193,10 +194,11 @@ const GraphHomeView = ({ id }: Props) => {
               )
                 :
                 (
-                  <div className="flex justify-center flex-col items-center">
-                    <img width={70} src={No_Data_found} alt="No Data Found" />
-                    <p className="font-bold text-red-700">No Records Found!</p>
-                  </div>
+                  // <div className="flex justify-center flex-col items-center">
+                  //   <img width={70} src={No_Data_found} alt="No Data Found" />
+                  //   <p className="font-bold text-red-700">No Records Found!</p>
+                  // </div>
+                  <NoRecords imgSize={70} textSize='md' parentHeight='380px'/>
                 )
               }
             </div>

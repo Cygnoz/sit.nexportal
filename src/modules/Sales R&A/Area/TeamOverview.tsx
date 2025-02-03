@@ -22,6 +22,7 @@ import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
+import { useResponse } from "../../../context/ResponseContext";
 
 type Props = {
   id: any;
@@ -39,6 +40,7 @@ interface AreaData {
 
 const TeamOverview = ({ id }: Props) => {
   const { request: getTeamData } = useApi("get", 3003);
+  const {loading,setLoading}=useResponse()
   const [teamData, setTeamData] = useState<any>();
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
@@ -206,6 +208,7 @@ const TeamOverview = ({ id }: Props) => {
 
   const getTeamDetails = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getTeamData(
         `${endPoints.GET_AREAS}/${id}/overview`
       );
@@ -226,6 +229,8 @@ const TeamOverview = ({ id }: Props) => {
       }
     } catch (err) {
       console.log(err);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -268,6 +273,7 @@ const TeamOverview = ({ id }: Props) => {
             search: { placeholder: "Search BDA By Name" },
           }}
           actionList={[{ label: "view", function: handleEditDeleteView }]}
+          loading={loading}
         />
       </div>
       {/* Graph Section*/}

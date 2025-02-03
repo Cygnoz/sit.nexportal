@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, {  useMemo, useState } from "react";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import Eye from "../../assets/icons/Eye";
 import NextIcon from "../../assets/icons/NextIcon";
@@ -42,6 +42,7 @@ interface TableProps<T> {
   maxHeight?: string;
   skeltonCount?:number
   from?:string
+  loading?:boolean
 }
 
 const Table = <T extends object>({
@@ -53,12 +54,12 @@ const Table = <T extends object>({
   noPagination,
   maxHeight,
   skeltonCount=8,
-  from
+  from,
+  loading
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [noDataFound, setNoDataFound] = useState(false);
   // Filter data based on the search value
   const filteredData: any = useMemo(() => {
     return data?.filter((row) =>
@@ -209,41 +210,25 @@ const Table = <T extends object>({
   );
 
   
-  useEffect(() => {
-    if(from!=="ticket"){
-      const timeout = setTimeout(() => {
-        if (data?.length === 0 ) {
-          setNoDataFound(true);
-        } else {
-          setNoDataFound(false);
-        }
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }else{
-      if (data?.length === 0) {
-        setNoDataFound(true);
-      } else {
-        setNoDataFound(false);
-      }
-    }
-  }, [data,searchValue]);
-  useEffect(() => {
-    if(from!=="ticket"){
-    
-        if (filteredData?.length === 0  && searchValue) {
-          setNoDataFound(true);
-        } else {
-          setNoDataFound(false);
-        }
-    }else{
-      if (filteredData?.length === 0) {
-        setNoDataFound(true);
-      } else {
-        setNoDataFound(false);
-      }
-    }
-   
-  }, [filteredData,searchValue]);
+  // useEffect(() => {
+  //   if(from!=="ticket"){
+  //     const timeout = setTimeout(() => {
+  //       if (data?.length === 0 ) {
+  //         setNoDataFound(true);
+  //       } else {
+  //         setNoDataFound(false);
+  //       }
+  //     }, 3000);
+  //     return () => clearTimeout(timeout);
+  //   }else{
+  //     if (data?.length === 0) {
+  //       setNoDataFound(true);
+  //     } else {
+  //       setNoDataFound(false);
+  //     }
+  //   }
+  // }, [data,searchValue]);
+  
   return (
     <div className="w-full  bg-white rounded-lg p-4 mb-4">
       {renderHeader()}
@@ -287,7 +272,9 @@ const Table = <T extends object>({
             </tr>
           </thead>
           <tbody>
-            {noDataFound ? (
+            { loading ? (
+              renderSkeletonLoader()
+            ) :filteredData?.length === 0?(
               <tr>
                 <td
                   colSpan={noAction?columns?.length+1:columns?.length + 2}
@@ -296,9 +283,7 @@ const Table = <T extends object>({
                   <NoRecords imgSize={70} textSize="md"/>
                 </td>
               </tr>
-            ) : filteredData?.length === 0 ? (
-              renderSkeletonLoader()
-            ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
+            ): Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr
                 onClick={() =>{

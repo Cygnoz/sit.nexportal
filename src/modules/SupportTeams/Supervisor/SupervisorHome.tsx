@@ -17,6 +17,7 @@ import Table from "../../../components/ui/Table";
 import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import AddSupervisor from "./SupervisorForm";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 const SupervisorHome = () => {
@@ -24,6 +25,7 @@ const SupervisorHome = () => {
   const {totalCounts,refreshContext}=useRegularApi()
   const { request: getAllSV } = useApi("get", 3003);
   const [allSV, setAllSV] = useState<any[]>([]);
+  const {loading,setLoading}=useResponse()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [editId, setEditId] = useState('');
@@ -93,6 +95,7 @@ const SupervisorHome = () => {
 
   const getSVs = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllSV(endPoints.SUPER_VISOR);
       console.log(response);
       console.log(error);
@@ -121,6 +124,8 @@ const SupervisorHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -215,6 +220,7 @@ const SupervisorHome = () => {
             { label: "edit", function: handleEdit },
             { label: "view", function: handleView },
           ]}
+          loading={loading}
         />
       </div>
 

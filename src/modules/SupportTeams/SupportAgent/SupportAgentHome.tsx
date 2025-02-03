@@ -17,13 +17,14 @@ import Table from "../../../components/ui/Table";
 import { endPoints } from "../../../services/apiEndpoints";
 import SupportAgentForm from "./SupportAgentForm";
 import { useRegularApi } from "../../../context/ApiContext";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
   
 const SupportAgentHome = () => {
   const {regionId  }=useRegularApi()
-  // const {totalCounts}=useRegularApi()
+  const {loading,setLoading}=useResponse()
   const { request: getAllSA } = useApi("get", 3003);
   const [allSA, setAllSA] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -53,6 +54,7 @@ const SupportAgentHome = () => {
   
   const getSAs = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllSA(endPoints.SUPPORT_AGENT);
       console.log("res", response);
       console.log("err", error);
@@ -88,6 +90,8 @@ const SupportAgentHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
   
@@ -219,7 +223,9 @@ const SupportAgentHome = () => {
         actionList={[
           { label: 'edit', function:handleEdit },
           { label: 'view', function:handleView },
-        ]}  />
+        ]}  
+        loading={loading}
+        />
       </div>
 
       {/* Modal Section */}

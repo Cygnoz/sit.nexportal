@@ -170,7 +170,7 @@ const DashboardPage = () => {
           />
         ))}
       </div>
-      <div>
+      <div className="mt-3">
         <ProgressBar/>
       </div>
 

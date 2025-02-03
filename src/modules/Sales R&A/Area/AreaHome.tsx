@@ -17,6 +17,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 import AreaForm from "./AreaForm";
 import toast from "react-hot-toast";
 import { useRegularApi } from "../../../context/ApiContext";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
@@ -28,7 +29,7 @@ const AreaHome = () => {
   const {request:getAllArea}=useApi('get',3003)
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId,setEditId]=useState('')
-  
+  const {loading,setLoading}=useResponse()
   
   
   // Function to toggle modal visibility
@@ -54,6 +55,7 @@ const AreaHome = () => {
   
   const getAreas = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllArea(endPoints.GET_AREAS);
   
       if (response && !error) {
@@ -80,6 +82,8 @@ const AreaHome = () => {
     } catch (err) {
       console.error("Error fetching areas:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
   
@@ -131,7 +135,7 @@ const AreaHome = () => {
   ];
   
   const name = "Name";
-  const region = "Region";
+  const region = "Status";
   const code = "Code";
 
   const handleFilter = ({ options }: { options: string }) => {
@@ -139,10 +143,19 @@ const AreaHome = () => {
       // Create a new sorted array to avoid mutating the original state
       const sortedAreas = [...allAreas].sort((a, b) =>b.areaName.localeCompare(a.areaName));
       setAllAreas(sortedAreas);
-    }else if(options==='Region'){
-      const sortedAreas = [...allAreas].sort((a, b) => b.region.localeCompare(a.region));
+    }else if (options === 'Status') {
+      const sortedAreas = [...allAreas].sort((a:any, b:any) => {
+          // Prioritize status
+          if (a.status === 'Active' && b.status !== 'Active') return 1;
+          if (a.status !== 'Active' && b.status === 'Active') return -1;
+  
+          // If status is the same, sort by region
+          return a.region.localeCompare(b.region);
+      });
+  
       setAllAreas(sortedAreas);
-    }else {
+  }
+  else {
       const sortedAreas = [...allAreas].sort((a:any, b:any) => {
         // Extract the numeric part of the regionCode
         const numA = parseInt(a.areaCode.split('-')[1], 10);
@@ -198,7 +211,7 @@ const AreaHome = () => {
                   action: () => handleFilter({ options: name }),
                 },
                 {
-                  label: "Sort by Region",
+                  label: "Sort by Status",
                   icon: <RegionIcon size={14} color="#4B5C79" />,
                   action: () => handleFilter({ options: region }),
                 },
@@ -215,6 +228,7 @@ const AreaHome = () => {
           { label: 'edit', function:handleEdit },
           { label: 'view', function: handleView },
         ]}
+        loading={loading}
          />
       </div>
       </div>
