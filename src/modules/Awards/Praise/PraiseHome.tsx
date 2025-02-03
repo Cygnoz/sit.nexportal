@@ -89,7 +89,12 @@ const PraiseHome = ({ }: Props) => {
       <div className="h-[950px] mb-5">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-[#303F58] text-xl font-bold">Praise</h1>
+        <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Praise</h1>
+          <p className="text-ashGray text-sm">
+          Recognition or appreciation for achievements and contributions. 
+            </p>
+         </div>
           <Button variant="primary" size="sm" onClick={handleModalToggle}>
             <span className="font-bold text-xl">+</span> Create Praise
           </Button>

@@ -150,7 +150,12 @@ const handleFilter = ({ options }: { options: string }) => {
       <div className="space-y-4">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-[#303F58] text-xl font-bold">Region</h1>
+         <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Region</h1>
+          <p className="text-ashGray text-sm">
+        Manages different geographical regions for business operations and organization.  
+            </p>
+         </div>
           <Button
             variant="primary"
             size="sm"
@@ -162,6 +167,7 @@ const handleFilter = ({ options }: { options: string }) => {
             <span className="font-bold text-xl">+</span> Create Region
           </Button>
         </div>
+       
 
         {/* HomeCards Section */}
         <div className="flex gap-3 py-2 justify-between">
