@@ -1,5 +1,4 @@
 import Boxes from "../../../../assets/icons/Boxes";
-import CalenderDays from "../../../../assets/icons/CalenderDays";
 import EmailIcon from "../../../../assets/icons/EmailIcon";
 import LocationIcon from "../../../../assets/icons/LocationIcon";
 import PhoneIcon from "../../../../assets/icons/PhoneIcon";
@@ -12,6 +11,8 @@ type Props = {
 }
 
 const LeadViewInfo = ({ onClose,leadData }: Props) => {
+    console.log(leadData);
+    
     return (
         <div>
             <div className="p-5 bg-white rounded-xl shadow-md">
@@ -46,15 +47,9 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
                             <hr />
 
 
-                            <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Age</h3>
+                          
 
-                            <div className="flex">
-                                <CalenderDays size={18} color="#4B5C79" />
-                                <p className="text-sm font-semibold ms-2 ">{leadData?.age? leadData?.age:'N/A'}</p>
-
-                            </div>
-
-                            <hr />
+                           
                             <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Lead ID</h3>
                             <div className="flex">
                                 <Boxes color="#4B5C79" size={18} />
@@ -68,12 +63,7 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
                     <div className="col-span-7 my-2">
                         <div className="p-4  mx-1 bg-[#F3EEE7] h-60 rounded-md">
                             <h1 className="text-sm font-semibold my-2">Contact Information</h1>
-                            <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Address</h3>
-                            <div className="flex">
-                                <LocationIcon size={16} />
-                                <p className="text-sm font-semibold ms-2">{leadData?.address ?leadData?.address :'N/A'}</p>
-
-                            </div>
+                          
 
                             <hr />
                             <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Phone</h3>
@@ -87,7 +77,7 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
                             <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Email Address</h3>
                             <div className="flex">
                                 <EmailIcon size={16} />
-                                <p className="text-sm font-semibold ms-2">{leadData.email}</p>
+                                <p className="text-sm font-semibold ms-2">{leadData.email ? leadData.email :'N/A'}</p>
 
                             </div>
                         </div>
@@ -103,14 +93,7 @@ const LeadViewInfo = ({ onClose,leadData }: Props) => {
                     <div className="col-span-7 my-2 ">
                         <div className="p-4  mx-1 bg-[#F3EEE7] h-fit rounded-md">
                             <h1 className="text-sm font-semibold my-2">Company Information</h1>
-                            <h3 className="text-xs font-semibold my-2 text-[rgb(143,153,169)]">Company ID</h3>
-                            <div className="flex">
-                                <UserIcon color="#4B5C79" size={16} />
-                                <p className="text-sm font-semibold ms-2">{leadData?.companyId?leadData.companyId:'N/A'}</p>
-
-                            </div>
-
-                            <hr />
+                           
                             <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Company Name</h3>
                             <div className="flex">
                                 <EmailIcon size={16} />

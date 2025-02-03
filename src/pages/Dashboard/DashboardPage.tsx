@@ -157,6 +157,9 @@ const DashboardPage = () => {
   return (
     <div className="text-[#303F58] mb-3">
       <h1 className="text-[#303F58] text-xl font-bold">Dashboard</h1>
+      <p className="text-ashGray text-sm">
+      A visual overview of essential business data and performance metrics. 
+            </p>
       {/* HomeCards Section */}
       <div className="flex gap-3 py-2 justify-between mt-2">
         {homeCardData.map((card, index) => (

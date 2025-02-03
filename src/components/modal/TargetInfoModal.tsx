@@ -1,5 +1,6 @@
 import { useState } from "react";
-import Table from "../../../components/ui/Table";
+import Table from "../ui/Table";
+import { useUser } from "../../context/UserContext";
 
 interface TargetData {
     task: string;
@@ -14,12 +15,41 @@ type Props = {
 
 
 const TargetInfoModal = ({onClose}: Props) => {
-    const [activeTab, setActiveTab] = useState<TabType>("Region");
-    
-    const tabs = ["Region", "Area", "BDA"] as const;
-    type TabType = (typeof tabs)[number];
+ 
+   const {user}=useUser()
+   user?.role
+   const tabs = ["Region", "Area", "BDA"] as const;
 
-   
+    const visibleTabs = (() => {
+      switch (user?.role) {
+        case "Super Admin":
+          return tabs;
+        case "Region Manager":
+          return tabs.filter(tab => tab !== "Region");
+        case "Area Manager":
+          return tabs.filter(tab => tab === "BDA");
+        default:
+          return [];
+      }
+    })();
+    
+ 
+const getDefaultTab = (): TabType => {
+  switch (user?.role) {
+    case "Super Admin":
+      return "Region";
+    case "Region Manager":
+      return "Area";
+    case "Area Manager":
+      return "BDA";
+    default:
+      return "Region"; // Fallback in case user role is undefined
+  }
+};
+ 
+  type TabType = (typeof tabs)[number];
+  const [activeTab, setActiveTab] = useState<TabType>(getDefaultTab());
+
     
       const datas: TargetData[] = [
         { task: "BDA12345", dueDate: "Anjela John",  target:"Pending Generation" ,salary:"100000"},
@@ -59,7 +89,7 @@ const TargetInfoModal = ({onClose}: Props) => {
           </button>
                 </div>
                 <div className="flex gap-24 bg-[#FEFBF8] rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
-          {tabs.map((tab) => (
+          {visibleTabs.map((tab) => (
             <div
               key={tab}
               onClick={() => setActiveTab(tab)}

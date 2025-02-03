@@ -151,7 +151,12 @@ const BDAHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">BDA</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">BDA</h1>
+          <p className="text-ashGray text-sm">
+          Identifies opportunities and builds relationships to drive business growth. 
+            </p>
+         </div>
         <Button variant="primary" size="sm" onClick={()=>{
           handleModalToggle()
           setEditId('')

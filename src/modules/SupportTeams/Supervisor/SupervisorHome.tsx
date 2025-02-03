@@ -157,7 +157,12 @@ const SupervisorHome = () => {
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">Supervisor</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Supervisor</h1>
+          <p className="text-ashGray text-sm">
+          Oversees team performance and ensures smooth operations.
+            </p>
+         </div>
         <Button variant="primary" size="sm" onClick={()=>{
           handleModalToggle()
           setEditId('')
