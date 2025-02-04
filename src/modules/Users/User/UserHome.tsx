@@ -107,7 +107,12 @@ const UserHome = () => {
   return (
     <div>
          <div className="flex justify-between items-center">
-      <h1 className="text-[#303F58] text-xl font-bold">User</h1>
+         <div>
+         <h1 className="text-[#303F58] text-xl font-bold">User</h1>
+          <p className="text-ashGray text-sm">
+          Manage system users and their access permissions.
+            </p>
+         </div>
      
       <Button variant="primary" size="sm" onClick={()=>{
         handleModalToggle()

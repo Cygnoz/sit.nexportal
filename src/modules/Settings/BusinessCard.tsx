@@ -142,6 +142,9 @@ function BusinessCard({ }: Props) {
 
             <div className="mb-4">
                 <p className="text-[#303F58] text-lg font-bold">Business Card</p>
+                <p className="text-ashGray text-sm">
+                Store and manage business contact details. 
+            </p>
             </div>
             <div className="flex gap-24 bg-[#FEFBF8] rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
                 {tabs.map((tab) => (

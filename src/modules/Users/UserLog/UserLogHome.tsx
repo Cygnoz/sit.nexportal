@@ -238,9 +238,12 @@ function UserLogHome({}: Props) {
 
   return (
     <div className="text-[#303F58] space-y-4">
-    <h1 className="text-[#303F58] text-xl font-bold">User Log</h1>
-    <p className='text-xs'>Efficiently manage and sort UseLog tables with seamless screen compatibility, ensuring a smooth and productive experience across all devices</p>
-    <div className="w-full bg-white rounded-lg p-4">
+    <div>
+         <h1 className="text-[#303F58] text-xl font-bold">User Log</h1>
+          <p className="text-ashGray text-sm">
+          Track and review user activity within the system. 
+            </p>
+         </div><div className="w-full bg-white rounded-lg p-4">
        <div  className='flex  items-center gap-2'>
        
 
