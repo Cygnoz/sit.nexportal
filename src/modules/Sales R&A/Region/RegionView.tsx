@@ -27,6 +27,7 @@ import type{ RegionView } from "../../../Interfaces/RegionView";
 import AMForm from "../../SalesTeams/AreaManager/AMForm";
 import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 type Props = {};
@@ -58,6 +59,7 @@ function RegionView({}: Props) {
   const { request: deleteRegion } = useApi("delete", 3003);
   const { request: deactivateRegion } = useApi("put", 3003);
   const {request:getAreaDetails}=useApi('get',3003)
+  const {loading,setLoading}=useResponse()
   const [dropDown, setDropDown] = useState([]);
   const navigate=useNavigate()
   const [teamData, setTeamData] = useState<any>({})
@@ -140,6 +142,7 @@ function RegionView({}: Props) {
   
   const getRegionAreaData=async()=>{
     try{
+      setLoading(true)
       const {response,error}=await getAreaDetails(`${endPoints.GET_REGIONS}/${id}/areas`)
       if(response && !error){
        setData((prev)=>({...prev,regionAreaData:response.data}))
@@ -151,6 +154,8 @@ function RegionView({}: Props) {
     }catch(err){
       console.log("err",err);
       
+    }finally{
+      setLoading(false)
     }
   }
  
@@ -455,7 +460,7 @@ function RegionView({}: Props) {
          
 
           <div style={{zIndex:2}}  className="absolute w-full ">
-            {activeTab === "Area" && <RegionAriaView regionAreaData={data.regionAreaData}  regionData={data.regionData} />}
+            {activeTab === "Area" && <RegionAriaView loading={loading} regionAreaData={data.regionAreaData}  regionData={data.regionData} />}
             {activeTab === "Team" && <RegionTeamView teamData={teamData} handleModalToggle={handleModalToggle} setData={setData}  />}
             {activeTab === "Performance Analytics" && <RegionPerformanceView />}
           </div>

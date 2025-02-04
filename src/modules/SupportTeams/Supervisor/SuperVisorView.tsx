@@ -30,6 +30,7 @@ import { endPoints } from "../../../services/apiEndpoints";
 import SVViewAward from "./SVViewAward";
 import SupervisorForm from "./SupervisorForm";
 import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
@@ -47,6 +48,7 @@ type Props = {
 };
 
 const SuperVisorView = ({staffId}: Props) => {
+  const {loading,setLoading}=useResponse()
   const topRef = useRef<HTMLDivElement>(null);
    useEffect(() => {
         // Scroll to the top of the referenced element
@@ -94,6 +96,7 @@ const SuperVisorView = ({staffId}: Props) => {
 
   const getASV = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getaSV(
         `${endPoints.SUPER_VISOR}/${iId}`
       );
@@ -107,6 +110,8 @@ const SuperVisorView = ({staffId}: Props) => {
       }
     } catch (err) {
       console.error("Error fetching Super Visor data:", err);
+    }finally{
+      setLoading(false)
     }
   };
   useEffect(() => {
@@ -291,6 +296,7 @@ const SuperVisorView = ({staffId}: Props) => {
                 noAction
                 maxHeight="500px"
                 skeltonCount={11}
+                loading={loading}
               />
             </div>
           </div>
@@ -483,6 +489,7 @@ const SuperVisorView = ({staffId}: Props) => {
 
         {/* <SuperVisorTicketsOverview ticketSummary={ticketSummary} /> */}
         <SuperVisorTicketsOverview 
+        loading={loading}
         ticketSummary={ticketSummary}
         supportAgentDetails= {supportAgentDetails}
         insideSvData={insideSvData}/>

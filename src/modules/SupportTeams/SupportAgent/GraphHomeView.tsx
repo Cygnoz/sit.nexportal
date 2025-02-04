@@ -1,12 +1,12 @@
+import { useEffect, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import profileImage from '../../../assets/image/AvatarImg.png';
-import RatingStar from '../../../components/ui/RatingStar';
-import useApi from '../../../Hooks/useApi';
-import SelectDropdown from '../../../components/ui/SelectDropdown';
-import { useEffect, useState } from 'react';
-import { endPoints } from '../../../services/apiEndpoints';
-import No_Data_found from '../../../assets/image/NO_DATA.png'
 import { months, years } from '../../../components/list/MonthYearList';
+import NoRecords from '../../../components/ui/NoRecords';
+import RatingStar from '../../../components/ui/RatingStar';
+import SelectDropdown from '../../../components/ui/SelectDropdown';
+import useApi from '../../../Hooks/useApi';
+import { endPoints } from '../../../services/apiEndpoints';
 
 type Props = {
   id: any
@@ -193,10 +193,11 @@ const GraphHomeView = ({ id }: Props) => {
               )
                 :
                 (
-                  <div className="flex justify-center flex-col items-center">
-                    <img width={70} src={No_Data_found} alt="No Data Found" />
-                    <p className="font-bold text-red-700">No Records Found!</p>
-                  </div>
+                  // <div className="flex justify-center flex-col items-center">
+                  //   <img width={70} src={No_Data_found} alt="No Data Found" />
+                  //   <p className="font-bold text-red-700">No Records Found!</p>
+                  // </div>
+                  <NoRecords imgSize={70} textSize='md' parentHeight='380px'/>
                 )
               }
             </div>

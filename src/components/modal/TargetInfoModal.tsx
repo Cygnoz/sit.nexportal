@@ -118,6 +118,7 @@ const getDefaultTab = (): TabType => {
             headerContents={{
               }}
             noAction
+            // loading={loading}
           />
         </div>
     </div>

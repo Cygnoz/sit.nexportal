@@ -18,9 +18,11 @@ import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import { LicenserData } from "../../../Interfaces/Licenser";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 const LicensorHome = () => {
+  const { loading, setLoading } = useResponse();
   const {regionId ,areaId,customersCounts,refreshContext}=useRegularApi()
   const {request:getAllLicenser}=useApi('get',3001)
    const [allLicenser, setAllLicenser] = useState<LicenserData[]>([]);
@@ -47,6 +49,7 @@ const LicensorHome = () => {
     
       const getLicensers=async()=>{
           try{
+            setLoading(true)
             const {response,error}=await getAllLicenser(endPoints.LICENSER)
             console.log("res",response);
             console.log("err",error);
@@ -67,11 +70,14 @@ const LicensorHome = () => {
             }
           }catch(err){
             console.log(err);
+          }finally{
+            setLoading(false)
           }
       }
         
         useEffect(()=>{
           getLicensers()
+          refreshContext({customerCounts:true})
         },[])
       
 
@@ -159,7 +165,9 @@ const LicensorHome = () => {
         actionList={[
             { label: 'edit', function: handleEdit},
             { label: 'view', function: handleView },
-          ]}  />
+          ]}  
+          loading={loading}
+          />
       </div>
 
    

@@ -99,6 +99,8 @@ function Otp({}: Props) {
         // OTP verified successfully
         const successMessage = result.response.data?.message || 'OTP verified successfully!';
         sessionStorage.setItem('authToken', result.response.data.token);
+        console.log("user",result.response.data.user);
+        
         setUser(result.response.data.user)
         setTimeout(() => {
           setIsLoading(false)
