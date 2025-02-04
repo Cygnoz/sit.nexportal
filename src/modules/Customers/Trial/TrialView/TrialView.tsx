@@ -150,6 +150,8 @@ const TrialView = ({ }: Props) => {
       console.error("Error fetching Lead data:", err);
     }
   };
+  console.log(customerData);
+  
 
   const getCustomer = async () => {
     try {
@@ -706,7 +708,7 @@ const TrialView = ({ }: Props) => {
           onClose={() => handleModalToggle()}
           className="w-[35%]"
         >
-          <TrialViewForm onClose={() => handleModalToggle()} />
+          <TrialViewForm trialData={customerData} onClose={() => handleModalToggle()} />
         </Modal>
 
 

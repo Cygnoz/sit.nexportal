@@ -1,6 +1,4 @@
-import { useState } from "react";
-
-
+import { useState, useEffect } from "react";
 import Image from "../../assets/image/Rectangle.png";
 import TargetTable from "./TargetTable";
 import TargetForm from "./TargetForm";
@@ -12,54 +10,49 @@ interface TargetData {
   task: string;
   dueDate: string;
   bda: string;
-  
 }
 
-type Props = {};
+type TabType = "Region" | "Area" | "BDA";
 
-const TargetHome = ({}: Props) => {
-
+const TargetHome = () => {
   const {user}=useUser()
   user?.role
- // const user = { role: "Super Admin" }; // Example user object
 
-const tabs = ["Region", "Area", "BDA"] as const;
+  const tabs: TabType[] = ["Region", "Area", "BDA"];
 
-const visibleTabs = (() => {
-  switch (user?.role) {
-    case "Super Admin":
-      return tabs;
-    case "Region Manager":
-      return tabs.filter(tab => tab !== "Region");
-    case "Area Manager":
-      return tabs.filter(tab => tab === "BDA");
-    default:
-      return [];
-  }
-})();
+  const getVisibleTabs = (): TabType[] => {
+    switch (user?.role) {
+      case "Super Admin":
+        return tabs;
+      case "Region Manager":
+        return tabs.filter((tab) => tab !== "Region");
+      case "Area Manager":
+        return tabs.filter((tab) => tab === "BDA");
+      default:
+        return [];
+    }
+  };
 
-//console.log(visibleTabs);
-
-const getDefaultTab = (): TabType => {
-  switch (user?.role) {
-    case "Super Admin":
-      return "Region";
-    case "Region Manager":
-      return "Area";
-    case "Area Manager":
-      return "BDA";
-    default:
-      return "Region"; // Fallback in case user role is undefined
-  }
-};
- 
-  type TabType = (typeof tabs)[number];
+  const getDefaultTab = (): TabType => {
+    switch (user?.role) {
+      case "Super Admin":
+        return "Region";
+      case "Region Manager":
+        return "Area";
+      case "Area Manager":
+        return "BDA";
+      default:
+        return "Region"; // Fallback in case user role is undefined
+    }
+  };
 
   const [activeTab, setActiveTab] = useState<TabType>(getDefaultTab());
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
- // const [isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [modalType, setModalType] = useState<TabType>("Region");
-  //const [editModalType, setEditModalType] = useState<TabType>("Region");
+
+  useEffect(() => {
+    setActiveTab(getDefaultTab());
+  }, [user?.role]);
 
   const handleCreateTarget = () => {
     setModalType(activeTab);
@@ -75,7 +68,6 @@ const getDefaultTab = (): TabType => {
     // Placeholder for delete logic
   };
 
-  // Separate data for each tab
   const regionData: TargetData[] = [
     { task: "Region001", dueDate: "John Doe", bda: "100" },
     { task: "Region002", dueDate: "Jane Smith", bda: "200" },
@@ -95,24 +87,23 @@ const getDefaultTab = (): TabType => {
     { key: "dueDate", label: "Region" },
     { key: "bda", label: "Target" },
   ];
-  
+
   const Areacolumns: { key: keyof TargetData; label: string }[] = [
     { key: "dueDate", label: "Area" },
     { key: "bda", label: "Target" },
   ];
-  
+
   const BDAcolumns: { key: keyof TargetData; label: string }[] = [
     { key: "dueDate", label: "BDA" },
     { key: "bda", label: "Target" },
   ];
-  
+
   const isButtonVisible = (() => {
     if (user?.role === "Super Admin" && activeTab === "Region") return true;
     if (user?.role === "Region Manager" && activeTab === "Area") return true;
     if (user?.role === "Area Manager" && activeTab === "BDA") return true;
     return false;
   })();
-
   return (
     <>
       <div>
@@ -120,7 +111,7 @@ const getDefaultTab = (): TabType => {
           <p className="text-[#303F58] text-lg font-bold">Target</p>
         </div>
         <div className="flex gap-24 bg-[#FEFBF8] rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
-          {visibleTabs.map((tab) => (
+        {getVisibleTabs().map((tab) => (
             <div
               key={tab}
               onClick={() => setActiveTab(tab)}

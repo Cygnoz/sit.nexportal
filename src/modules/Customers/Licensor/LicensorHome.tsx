@@ -100,7 +100,13 @@ const LicensorHome = () => {
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">Licenser</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Licenser</h1>
+          <p className="text-ashGray text-sm">
+          Grants legal permission to use a product, service, or brand. 
+            </p>
+         </div>
+
         <Button variant="primary" size="sm" onClick={()=>{
         handleModalToggle()
         setEditId('')

@@ -54,7 +54,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
   useEffect(() => {
     getARM();
   }, [id])
-  console.log(data);
+  //console.log(data);
 
 
 
@@ -73,9 +73,9 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 font-bold "
+            className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
           >
-            <p className="text-xl">&times;</p>
+            &times;
           </button>
 
         </div>
@@ -90,7 +90,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Name</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.user?.userName ? data.rmData?.user?.userName : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.user?.userName ? data.rmData?.regionManager?.user?.userName : 'N/A'}</p>
 
               </div>
 
@@ -101,7 +101,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
 
               <div className="flex">
                 <CalenderDays color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2 ">{data.rmData?.age ? data.rmData?.age : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2 ">{data.rmData?.regionManager?.age ? data.rmData?.regionManager?.age : 'N/A'}</p>
 
               </div>
 
@@ -109,7 +109,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Blood Group</h3>
               <div className="flex">
                 <BloodGroupIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.bloodGroup ? data.rmData?.bloodGroup : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.bloodGroup ?data.rmData?.regionManager?.bloodGroup : 'N/A'}</p>
 
               </div>
 
@@ -122,7 +122,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Address</h3>
               <div className="flex">
                 <LocationIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.address?.street1 ? data.rmData?.address?.street1 : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.address?.street1 ?data.rmData?.regionManager?.address?.street1 : 'N/A'}</p>
 
               </div>
 
@@ -130,7 +130,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Phone</h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.user?.phoneNo ? data.rmData?.user?.phoneNo : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.user?.phoneNo ? data.rmData?.regionManager?.user?.phoneNo : 'N/A'}</p>
 
               </div>
 
@@ -138,7 +138,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Email Address</h3>
               <div className="flex">
                 <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.personalEmail ? data.rmData?.personalEmail : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.personalEmail ? data.rmData?.regionManager?.personalEmail : 'N/A'}</p>
 
               </div>
             </div>
@@ -151,7 +151,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Adhar Number</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.adhaarNo ? data.rmData?.adhaarNo : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.adhaarNo ?data.rmData?.regionManager?.adhaarNo : 'N/A'}</p>
 
               </div>
 
@@ -159,7 +159,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Pan Number</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.panNo ? data?.rmData?.panNo : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.panNo ? data.rmData?.regionManager?.panNo : 'N/A'}</p>
 
               </div>
               <hr />
@@ -167,8 +167,8 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
 
               <div className="flex">
                 <CalenderDays color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2 ">{data.rmData?.dateOfJoining
-                  ? new Date(data.rmData.dateOfJoining).toLocaleDateString()
+                <p className="text-sm font-semibold ms-2 ">{data.rmData?.regionManager?.dateOfJoining
+                  ? new Date(data.rmData?.regionManager?.dateOfJoining).toLocaleDateString()
                   : 'N/A'}</p>
 
               </div>
@@ -187,7 +187,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Name</h3>
               <div className="flex">
                 <BankIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.bankDetails?.bankName ? data.rmData?.bankDetails?.bankName : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.bankDetails?.bankName ?data.rmData?.regionManager?.bankDetails?.bankName : 'N/A'}</p>
 
               </div>
 
@@ -195,14 +195,14 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Branch</h3>
               <div className="flex">
                 <BankIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.bankDetails?.bankBranch ? data.rmData?.bankDetails?.bankBranch : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.bankDetails?.bankBranch ? data.rmData?.regionManager?.bankDetails?.bankBranch : 'N/A'}</p>
 
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Account number</h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.bankDetails?.bankAccountNo ? data.rmData?.bankDetails?.bankAccountNo : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.bankDetails?.bankAccountNo ? data.rmData?.regionManager?.bankDetails?.bankAccountNo : 'N/A'}</p>
 
               </div>
 
@@ -210,7 +210,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">IFSC Code</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.bankDetails?.ifscCode ? data.rmData?.bankDetails?.ifscCode : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.bankDetails?.ifscCode ? data.rmData?.regionManager?.bankDetails?.ifscCode : 'N/A'}</p>
 
               </div>
 
@@ -231,14 +231,14 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Work Mail</h3>
               <div className="flex">
                 <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.workEmail ? data?.rmData?.workEmail : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.workEmail ?data.rmData?.regionManager?.workEmail : 'N/A'}</p>
 
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Work Phone</h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.workPhone ? data.rmData?.workPhone : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.workPhone ? data.rmData?.regionManager?.workPhone : 'N/A'}</p>
 
               </div>
               <hr />
@@ -253,7 +253,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
 
               <div className="flex">
                 <RegionIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.region?.regionCode ? data.rmData?.region?.regionCode : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.region?.regionCode ? data.rmData?.regionManager?.region?.regionCode : 'N/A'}</p>
 
               </div>
             </div>

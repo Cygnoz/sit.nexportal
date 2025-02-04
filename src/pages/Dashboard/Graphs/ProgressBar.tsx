@@ -1,12 +1,15 @@
 import { useState } from "react";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
 import { months } from "../../../components/list/MonthYearList";
-import TargetInfoModal from "./TargetInfoModal";
+import TargetInfoModal from "../../../components/modal/TargetInfoModal";
 import Modal from "../../../components/modal/Modal";
+import { useUser } from "../../../context/UserContext";
 
 type Props = {};
 
 const ProgressBar = ({}: Props) => {
+     const {user}=useUser()
+       user?.role
   const [isModalOpen, setIsModalOpen] = useState({ addInfo: false });
   const [achieved, setAchieved] = useState(28);
   const goal = 100;
@@ -25,9 +28,14 @@ const ProgressBar = ({}: Props) => {
       <div className="p-2 flex justify-between">
         <h1 className="text-lg font-bold">Target</h1>
         <div className="flex gap-4">
-          <h1 onClick={() => handleModalToggle(true)} className="mt-1 underline cursor-pointer text-red-600">
-            View Target Info
-          </h1>
+        {user?.role !== 'BDA' && (
+            <h1
+              onClick={() => handleModalToggle(true)}
+              className="mt-1 underline cursor-pointer text-red-600"
+            >
+              View Target Info
+            </h1>
+          )}
           <SelectDropdown placeholder="All Months" filteredData={months} searchPlaceholder="Search Months" width="w-44" />
         </div>
       </div>

@@ -139,7 +139,12 @@ const RMHome = () => {
     <>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-[#303F58] text-xl font-bold">Regional Manager</h1>
+        <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Region Manager</h1>
+          <p className="text-ashGray text-sm">
+          Oversees business operations and growth across multiple regions. 
+            </p>
+         </div>
 
           <Button
             variant="primary"

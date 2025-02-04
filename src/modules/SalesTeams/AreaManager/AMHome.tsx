@@ -170,7 +170,13 @@ const AMHome = () => {
       <div className="space-y-4">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-[#303F58] text-xl font-bold">Area Manager</h1>
+        <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Area Manager</h1>
+          <p className="text-ashGray text-sm">
+          Manages and optimizes business activities within a specific area. 
+            </p>
+         </div>
+
           <Button variant="primary" size="sm" onClick={() => {
             handleModalToggle()
             setEditId('')
