@@ -4,7 +4,7 @@ import Button from "../ui/Button";
 // import bcardback from "../../assets/image/Business-card-back.png";
 // import idcard from "../../assets/image/ID-card 1.png";
 // import bcardfront from "../../assets/image/Business-card-front.png";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRegularApi } from "../../context/ApiContext";
 import { IdCardLayout, Layout1Back, Layout1Front, Layout2Back, Layout2Front, Layout3Back, Layout3Front } from "../ui/BSLayout";
 import BCardInsideForm from "./IdCardView/BCardInsideForm";
@@ -13,6 +13,7 @@ import Modal from "./Modal";
 // import { Layout1Front, Layout1Back, IdCardLayout } from "../ui/BSLayout";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+// import domtoimage from "dom-to-image-more";
 
 type Props = {
     onClose: () => void;
@@ -105,13 +106,66 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
         }
     };
 
-    // const printRef = React.useRef(null)
+    // const businessCardDownload = async () => {
+    //     const content = document.getElementById('business-card')
+    //     if(!content) return;
+    //     try{
+    //         const bCardCanvas = await html2canvas(content, {scale:3});
+    //         const bCardData= bCardCanvas.toDataURL('image/png')
 
-    const businessCardDownload = async () => {
-        const content = document.getElementById('business-card')
-        if(!content) return;
-        try{
-            const bCardCanvas = await html2canvas(content, {scale:3});
+    //         const bCardPdf = new jsPDF({
+    //             orientation:'portrait',
+    //             unit:'px',
+    //             format:'a4'
+    //         });
+    //         const bcardProperties = bCardPdf.getImageProperties(bCardData)
+    //         const bcardWidth = bCardPdf.internal.pageSize.getWidth()
+    //         const bcardHeight = (bcardProperties.height* bcardWidth)/bcardProperties.width;
+    //         bCardPdf.addImage(bCardData,"PNG",0,0,bcardWidth,bcardHeight)
+    //         bCardPdf.save('BusinessCard.pdf')
+    //     }
+    //     catch(error){
+    //         console.error("Error generating PDF:", error);
+    //     }
+    //     }
+    
+    // const businessCardDownload = async () => {
+    //     const content = document.getElementById("business-card");
+    //     if (!content) return;
+    
+    //     try {
+    //         const bCardData = await domtoimage.toPng(content, { quality: 1 }); // Higher quality image
+    
+    //         const bCardPdf = new jsPDF({
+    //             orientation: "portrait",
+    //             unit: "px",
+    //             format: "a4",
+    //         });
+    
+    //         const img = new Image();
+    //         img.src = bCardData;
+    
+    //         img.onload = () => {
+    //             const bCardWidth = bCardPdf.internal.pageSize.getWidth();
+    //             const aspectRatio = img.height / img.width;
+    //             const bCardHeight = bCardWidth * aspectRatio; // Maintain aspect ratio
+    
+    //             bCardPdf.addImage(bCardData, "PNG", 0, 10, bCardWidth, bCardHeight);
+    //             bCardPdf.save("BusinessCard.pdf");
+    //         };
+    //     } catch (error) {
+    //         console.error("Error generating PDF:", error);
+    //     }
+    // };
+    
+    const printRef =React.useRef(null)
+
+    const businessCardDownload = async()=>{
+        const element = printRef.current
+        if(!element){
+            return
+        }        
+        const bCardCanvas = await html2canvas(element, {scale:3});
             const bCardData= bCardCanvas.toDataURL('image/png')
 
             const bCardPdf = new jsPDF({
@@ -124,13 +178,7 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
             const bcardHeight = (bcardProperties.height* bcardWidth)/bcardProperties.width;
             bCardPdf.addImage(bCardData,"PNG",0,0,bcardWidth,bcardHeight)
             bCardPdf.save('BusinessCard.pdf')
-        }
-        catch(error){
-            console.error("Error generating PDF:", error);
-        }
-        }
-    
-
+    }
 
     return (
         <div className="p-5 bg-white rounded shadow-md hide-scrollbar">
@@ -164,7 +212,7 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
                         do eiusmod tempor incididunt
                     </p> */}
-                    <div id="business-card" className="p-5">
+                    <div ref={printRef} className="p-5">
                         <ActiveFront toggleState={toggle} role={role} staffData={staffData} />
                         <ActiveBack toggleState={toggle} staffData={staffData} />
                     </div>

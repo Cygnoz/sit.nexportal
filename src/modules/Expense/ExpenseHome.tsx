@@ -13,21 +13,44 @@ import ExpenseForm from "./ExpenseForm";
 import HandCoinsIcon from "../../assets/icons/HandCoinsIcon";
 import CategoryForm from "./CategoryForm";
 import ExpenseTable from "./ExpenseTable";
+import { useNavigate } from "react-router-dom";
 
 interface LeadViewData {
-    task: string;
-    dueDate: string;
-    bda: string;
-    button: string;
-    source: string;
+  expenseName: string;
+    addedby: string;
+    category: string;
+    status: string;
+    amount:string;
+    date: string;
   }
 
 type Props = {}
 const ExpenseHome = ({}: Props) => {
 
-  const handleView = () => {
-   // navigate(`/area-manager/${id}`)
-  }
+  const navigate = useNavigate()
+
+  const handleView = (id: any, status: any) => {
+    let path = "/expense"; // Default path for "Paid"
+
+    switch (status) {
+      case "Approval Granted":
+        path = "/expense-granted";
+        break;
+      case "Pending Generation":
+        path = "/expense-pg";
+        break;
+      case "Reject":
+        path = "/expense-reject";
+        break;
+      case "Paid":
+        path = "/expense-paid";
+        break;
+      default:
+        path = "/expense";
+    }
+
+    navigate(`${path}/${id}`)
+  };
 
   const handleEdit = ( ) => {
    // setEditId(id)
@@ -95,20 +118,20 @@ const homeCardData = [
   ];
 
   const leadData: LeadViewData[] = [
-    { task: "BDA12345", dueDate: "Anjela John", bda: "(406) 555-0120", button: "mark as completed", source: "10/05/22", },
-    { task: "BDA12345", dueDate: "Kristin Watson", bda: "(480) 555-0103", button: "mark as completed", source: "10/05/22", },
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "10/05/22", },
-    { task: "BDA12345", dueDate: "Wade Warren", bda: "(702) 555-0122", button: "mark as completed", source: "10/05/22", },
-    { task: "BDA12345", dueDate: "Jacob Jones", bda: "(208) 555-0112", button: "mark as completed", source: "10/05/22", },
+    { expenseName: "Materials and Supplies", addedby: "Devan P", category: "Materials", status: "Pending Generation", amount:"₹ 2,547", date: "10/05/22", },
+    { expenseName: "Materials and Supplies", addedby: "Devan P", category: "Materials", status: "Reject", amount:"₹ 2,547", date: "10/05/22", },
+    { expenseName: "Materials and Supplies", addedby: "Devan P", category: "Materials", status: "Approval Granted", amount:"₹ 2,547", date: "10/05/22", },
+    { expenseName: "Materials and Supplies", addedby: "Devan P", category: "Materials", status: "Paid", amount:"₹ 2,547", date: "10/05/22", },
   ];
   
     // Define the columns with strict keys
   const columns: { key: keyof LeadViewData; label: string }[] = [
-    { key: "task", label: "Name" },
-    { key: "dueDate", label: "Category" },
-    { key: "bda", label: "Price" },
-    { key: "button", label: "Payment Method" },
-    { key: "source", label: "Date" },
+    { key: "expenseName", label: "Expense Name" },
+    { key: "addedby", label: "Added by" },
+    { key: "category", label: "Category" },
+    { key: "status", label: "Status" },
+    { key: "amount", label: "Amount" },
+    { key: "date", label: "Date" },
   ];
 
 
@@ -116,7 +139,10 @@ const homeCardData = [
     <>
     <div>
          <div className="flex justify-between items-center">
-                  <h1 className="text-[#303F58] text-xl font-bold">Expense</h1>
+          <div className="p-1">
+          <h1 className="text-[#303F58] text-xl font-bold my-1">Expense</h1>
+                  <p className="text-[#8F99A9] text-sm font-normal">A cost incurred for business operations or services. </p>
+          </div>
                   <div className="flex gap-2">
                     <Button
                       variant="tertiary"
