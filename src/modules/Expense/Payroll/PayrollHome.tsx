@@ -85,7 +85,12 @@ const PayrollHome = ({ }: Props) => {
     <>
       <div>
         <div className="mb-4 p-2">
-          <p className="text-[#303F58] text-lg font-bold">Payroll</p>
+        <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Payroll</h1>
+          <p className="text-ashGray text-sm">
+          Employee salary management and payment processing. 
+            </p>
+         </div>
         </div>
         <div className="flex gap-24 bg-[#FEFBF8] rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
           {tabs.map((tab) => (

@@ -24,6 +24,8 @@ import AMViewAward from './AMViewAward';
 import AMViewCardandTable from "./AMViewCardandTable";
 import AMViewForm from "./AMViewForm";
 import { useResponse } from "../../../context/ResponseContext";
+import ProgressBar from "../../../pages/Dashboard/Graphs/ProgressBar";
+import { useUser } from "../../../context/UserContext";
 
 
 // import AMViewAward from './AMViewAward';
@@ -45,6 +47,9 @@ type Props = {
 }
 
 const AMView = ({ staffId }: Props) => {
+
+       const {user}=useUser()
+       user?.role
   const [insideAmData, setInsideAmData] = useState<InsideAmData | null>(null);
   const {loading,setLoading}=useResponse()
   const topRef = useRef<HTMLDivElement>(null);
@@ -463,6 +468,11 @@ if (updatedRoles.length > 0) {
         </div>
 
       </div>
+
+      <div className="mt-4">
+{user?.role === 'Area Manager' && <ProgressBar />}
+</div>
+
       {/* Card & table */}
       <AMViewCardandTable loading={loading} bdaDetails={bdaDetails} insideAmData={insideAmData}/>
       {/* Charts */}

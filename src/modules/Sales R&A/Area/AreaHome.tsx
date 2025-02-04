@@ -173,7 +173,12 @@ const AreaHome = () => {
     <div className="space-y-4">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">Area</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Area</h1>
+          <p className="text-ashGray text-sm">
+          organizes specific areas within a region for better location-based management.  
+            </p>
+         </div>
         <Button variant="primary" size="sm" onClick={()=>{
           handleModalToggle()
           setEditId('')

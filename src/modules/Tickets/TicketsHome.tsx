@@ -286,7 +286,12 @@ useEffect(() => {
     <>
        <div className="text-[#303F58] space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-[#303F58] text-xl font-bold">Tickets</h1>
+        <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Tickets</h1>
+          <p className="text-ashGray text-sm">
+          A record of a request or issue for tracking and resolution. 
+            </p>
+         </div>
           <Button variant="primary" size="sm" onClick={() => {
             handleModalToggle()
             setEditId('')

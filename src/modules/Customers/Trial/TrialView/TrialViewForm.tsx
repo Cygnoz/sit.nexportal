@@ -8,10 +8,12 @@ import UserIcon from "../../../../assets/icons/UserIcon";
 
 type Props = {
   onClose: () => void;
-  data?: any;
+  trialData?: any;
 };
 
-const TrialViewForm = ({ onClose, data }: Props) => {
+const TrialViewForm = ({ onClose, trialData }: Props) => {
+  console.log(trialData);
+  
   return (
     <div>
       <div className="p-5 bg-white rounded shadow-md  ">
@@ -41,7 +43,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data?.trial?.primaryContactName}</p>
+                <p className="text-sm font-semibold ms-2">{trialData?.firstName ? trialData?.firstName :'N/A'}</p>
               </div>
 
               <hr />
@@ -50,7 +52,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
 
               <div className="flex">
               <BuildingIcon color="#4B5C79" size={14} />
-                <p className="text-sm font-semibold ms-2 ">{data?.trial?.organizationName}</p>
+                <p className="text-sm font-semibold ms-2 ">{trialData?.organizationName ? trialData?.organizationName :'N/A'}</p>
               </div>
 
 
@@ -61,7 +63,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <BloodGroupIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data?.customerData?.customerId}</p>
+                <p className="text-sm font-semibold ms-2">{trialData?.customerId ? trialData?.customerId :'N/A'}</p>
               </div>
             </div>
           </div>
@@ -78,7 +80,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data?.trial?.primaryContactNum}</p>
+                <p className="text-sm font-semibold ms-2">{ trialData?.phone ? trialData?.phone :'N/A'}</p>
               </div>
 
               <hr />
@@ -88,39 +90,12 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data?.trial?.primaryContactEmail}</p>
+                <p className="text-sm font-semibold ms-2">{trialData?.email ? trialData?.email : 'N/A'}</p>
               </div>
             </div>
           </div>
 
-          {/* <div className="col-span-5 my-2 ">
-            <div className="p-4  mx-1 bg-[#F3EEE7] h-60">
-              <h1 className="text-sm font-semibold my-2">Identification and Employment Details</h1>
-              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Adhar Number</h3>
-              <div className="flex">
-                <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">282798467436</p>
-
-              </div>
-             
-              <hr />
-              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Pan Number</h3>
-              <div className="flex">
-                <UserIcon color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2">282798463444336</p>
-
-              </div>
-              <hr />
-              <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Date Of Joining</h3>
-              
-              <div className="flex">
-                <CalenderDays color="#4B5C79"/>
-                <p className="text-sm font-semibold ms-2 ">Jan 21 , 2023</p>
-
-              </div>
-            </div>
-
-          </div> */}
+      
         </div>
 
         <div className="grid grid-cols-12 gap-2">
@@ -135,24 +110,24 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" size={20} />
-                <p className="text-sm font-semibold ms-2">{data?.customerData?.companyId}</p>
+                <p className="text-sm font-semibold ms-2">{ trialData?.organizationId ?trialData?.organizationId :'N/A'}</p>
               </div>
 
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">
-                Company Name
+              Company Name
               </h3>
               <div className="flex">
                 <BuildingIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data?.customerData?.companyName}</p>
+                <p className="text-sm font-semibold ms-2">{trialData?.companyName ? trialData?.companyName :'N/A'}</p>
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">
-                Company Phone
+              Company Phone
               </h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data?.customerData?.companyPhone}</p>
+                <p className="text-sm font-semibold ms-2">{trialData?.companyPhone ? trialData?.companyPhone :'N/A'}</p>
               </div>
 
               <hr />
@@ -161,7 +136,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <LocationIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data?.customerData?.companyAddress}</p>
+                <p className="text-sm font-semibold ms-2">{trialData?.companyAddress ? trialData?.companyAddress :'N/A'}</p>
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">
@@ -169,7 +144,7 @@ const TrialViewForm = ({ onClose, data }: Props) => {
               </h3>
               <div className="flex">
                 <Boxes color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data?.customerData?.regionDetails?.regionName}</p>
+                <p className="text-sm font-semibold ms-2">{ trialData?.regionDetails?.regionName ? trialData?.regionDetails?.regionName :'N/A'}</p>
               </div>
             </div>
           </div>

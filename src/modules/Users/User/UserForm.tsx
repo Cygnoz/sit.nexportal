@@ -48,6 +48,8 @@ const addValidationSchema = Yup.object({
 // Schema for "edit" form with only shared fields
 const editValidationSchema = Yup.object({
   ...baseSchema,
+  confirmPassword: Yup.string()
+    .oneOf([Yup.ref("password")], "Passwords must match")
 });
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -94,14 +96,16 @@ const editValidationSchema = Yup.object({
       if (editId) {
         ({ response, error } = await fun(`${endPoints.USER}/${editId}`, data));
        if(user?.id===data._id){
-        const user:any={
+        const userEditedData:any={
           userName:data.userName,
           userImage:data.userImage,
           id:data._id,
           employeeId:data.employeeId,
-          role:data?.role
+          role:data?.role,
+          email:data?.email,
+          userId:user?.userId
         }
-        setUser(user)
+        setUser(userEditedData);
        }
       } else {
         ({ response, error } = await fun(endPoints.USER, data));

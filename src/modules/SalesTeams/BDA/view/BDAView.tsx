@@ -39,6 +39,8 @@ import SalaryRoundIcon from "../../../../assets/icons/SalaryRoundIcon";
 import CommissionRoundIcon from "../../../../assets/icons/CommissionRoundIcon";
 import SelectDropdown from "../../../../components/ui/SelectDropdown";
 import { useResponse } from "../../../../context/ResponseContext";
+import ProgressBar from "../../../../pages/Dashboard/Graphs/ProgressBar";
+import { useUser } from "../../../../context/UserContext";
 
 
 
@@ -65,6 +67,9 @@ type Props = {
 }
 
 const BDAView = ({staffId}: Props) => {
+
+       const {user}=useUser()
+       user?.role
   const {request:getBDAViewDetails}=useApi('get',3002)
   const {loading,setLoading}=useResponse()
   const topRef = useRef<HTMLDivElement>(null);
@@ -526,6 +531,10 @@ const BDAView = ({staffId}: Props) => {
           </div>
         </div>
       </div>
+      <div className="mt-4">
+{user?.role === 'BDA' && <ProgressBar />}
+</div>
+
         
      {/* Table Section */}
       <div className=" mt-4">

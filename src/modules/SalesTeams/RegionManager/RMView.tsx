@@ -24,6 +24,8 @@ import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 import { useResponse } from "../../../context/ResponseContext";
+import ProgressBar from "../../../pages/Dashboard/Graphs/ProgressBar";
+import { useUser } from "../../../context/UserContext";
 type Props = {
   staffId?:string
 };
@@ -35,6 +37,8 @@ interface AreaData {
 }
 
 const RMView = ({staffId}: Props) => {
+     const {user}=useUser()
+     user?.role
   
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -342,10 +346,10 @@ const RMView = ({staffId}: Props) => {
                     </div>
 
                     <div className="text-center w-24">
-                      <p className="text-xs text-[#D4D4D4] py-2">Employee iId</p>
+                      <p className="text-xs text-[#D4D4D4] py-2">Employee Id</p>
                       <p className="text-xs">
-                        {getData?.rmData?.regionManager?.user?.employeeiId
-                          ? getData?.rmData?.regionManager?.user?.employeeiId
+                        {getData?.rmData?.regionManager?.user?.employeeId
+                          ? getData?.rmData?.regionManager?.user?.employeeId
                           : "N/A"}
                       </p>
                     </div>
@@ -462,6 +466,10 @@ const RMView = ({staffId}: Props) => {
             </div>
           </div>
         </div>
+<div className="mt-4">
+{user?.role === 'Region Manager' && <ProgressBar />}
+</div>
+     
 
         <div className="grid grid-cols-12 gap-3">
           {/* Table Section */}

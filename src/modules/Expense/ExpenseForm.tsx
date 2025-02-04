@@ -1,237 +1,118 @@
-import { useState } from "react";
 import BillIcon from "../../assets/icons/BillIcon";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
 import Button from "../../components/ui/Button";
-import RupeesIcon from "../../assets/icons/RupeesIcon";
-import MileageIcon from "../../assets/icons/MileageIcon";
 import UploadIcon from "../../assets/icons/UploadIcon";
 
 type Props = {
   onClose: () => void;
 }
 
-const ExpenseForm = ({onClose}: Props) => {
-  const tabs = ["Record Expense","Record Mileage"] as const;
-  
-    type TabType = (typeof tabs)[number];
-  
-    const [activeTab, setActiveTab] = useState<TabType>("Record Expense");
-  
+const ExpenseForm = ({ onClose }: Props) => {
+
   return (
     <div className="p-3">
-      <div className="flex justify-between items-center mb-4">
-                <div className="m">
-                    <h1 className="text-base font-bold text-deepStateBlue ">
-                        Add Expense
-                    </h1>
+      <div className="flex justify-between items-center">
+        <div className="">
+          <h1 className="text-base font-bold text-deepStateBlue px-3">
+            Add Expense
+          </h1>
 
-                </div>
-                <button
-                    type="button"
-                    onClick={onClose}
-                    className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
-                >
-                    &times;
-                </button>
-            </div>
-<div className="px-3">
-  <h1 className="text-xs text-[#303F58] font-normal">Upload Attachments</h1>
-  
-
-            <div className="border-2 border-dashed border-gray-300 bg-[#FEFDFA] rounded-md p-4 text-center mb-4 w-96 mt-2">
-             <div className="items-center ms-40">
-             <BillIcon size={33}/>
-             </div>
-        <p className="text-gray-600 text-xs font-semibold">Upload Your Receipt</p>
-        <p className="text-sm text-gray-500 text-[10px] font-normal">Maximum file size allowed is 5MB</p>
-        <button className="mt-2 px-4 py-2 bg-[#820000] text-white rounded-md flex ml-20">
-         <UploadIcon color="#FFFEFB" size={20}/><h1 className="ms-1">
-         Upload Your Files
-         </h1>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
+        >
+          &times;
         </button>
       </div>
+      <div className="px-3">
+        <h1 className="text-xs text-[#303F58] font-normal my-2">Upload Attachments</h1>
+
+
+        <div className="border-2 border-dashed border-gray-300 bg-[#FEFDFA] rounded-md p-3 text-center mb-4 w-full h-40">
+          <div className="flex justify-center my-3">
+            <BillIcon size={40} />
+          </div>
+          <p className="text-gray-600 text-xs font-semibold my-2">Upload Your Receipt</p>
+        <div className="flex justify-center">
+        <Button>
+            <UploadIcon color="#FFFEFB" size={14} />
+            <p className="text-[#FEFDF9] text-xs font-medium">Upload Your Files</p>
+            </Button>
+        </div>
+        </div>
       </div>
-      <div className="flex gap-24 rounded-xl px-4 py-2 text-base font-bold border-gray-200">
-        {tabs.map((tab) => (
-          <div
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`cursor-pointer py-2 px-[16px] flex items-center gap-2 ${
-              activeTab === tab
-                ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
-                : "text-gray-400"
-            }`}
+    
+      <form>
+        <div className="grid grid-cols-2 gap-4 p-3">
+          <Input
+          type="text"
+          label="Expense Name"
+          placeholder="Enter Name"
+          />
+          <Input
+          type="date"
+          label="Date"
+          placeholder="Enter Name"
+          />
+          <Select
+          label="Expense Amount"
+          placeholder="Select Amount"
+           options={[
+            { label: "Cash", value: "cash" },
+            { label: "Credit Card", value: "credit_card" },
+            { label: "Bank Transfer", value: "bank_transfer" },
+          ]}
+          />
+           <Input
+          type="text"
+          label="Amount"
+          placeholder="Enter amount"
+          />
+        </div>
+        <div className="grid grid-cols-1 p-3">
+        <Select
+          label="Category"
+          placeholder="Select category"
+           options={[
+            { label: "Cash", value: "cash" },
+            { label: "Credit Card", value: "credit_card" },
+            { label: "Bank Transfer", value: "bank_transfer" },
+          ]}
+          />
+          {/* <textarea className="w-full min-h-28 rounded-lg outline-none p-3 text-[#2C3E50A3] text-xs font-normal"></textarea> */}
+          <div className="">
+          <p className="gap-2 my-3 text-sm font-normal text-[#303F58]">Add Notes </p>
+          <div className="border border-[#CECECE] rounded-md">
+          
+            <textarea className="w-full min-h-16 rounded-md outline-none p-3 text-[#818894] text-xs font-normal" placeholder="Enter Notes" name="" id=""></textarea>
+        </div>
+
+      </div>
+        </div>
+        <div className=" flex justify-end gap-2 mt-6 pb-2 ">
+          <Button
+            variant="tertiary"
+            className="h-8 text-sm border rounded-lg"
+            size="lg"
+            onClick={onClose}
           >
-            {tab === "Record Expense" && <RupeesIcon color="#768294" size={22}/>}
-            {tab === "Record Mileage" && <MileageIcon  color="#768294"  size={22}/>}
-            {tab}
-          </div>
-        ))}
-      </div>
-        <form>
-        {activeTab === "Record Expense" && (
-          <div className="grid grid-cols-3  gap-4 mt-4">
-            
-            <Input
-                  required
-                  placeholder="DD/MM/YYYY"
-                  
-                  label="Date"
-                  
-                />
-                 <Select
-                  required
-                  placeholder="Select Account"
-                 
-                  label="Expense Account"
-                
-                  options={[
-                    { label: "Cash", value: "cash" },
-                    { label: "Credit Card", value: "credit_card" },
-                    { label: "Bank Transfer", value: "bank_transfer" },
-                
-                  ]}
-                />
-                   <Select
-                  required
-                  placeholder="Select"
-                 
-                  label="Category"
-                
-                  options={[
-                    { label: "Cash", value: "cash" },
-                    { label: "Credit Card", value: "credit_card" },
-                    { label: "Bank Transfer", value: "bank_transfer" },
-                
-                  ]}
-                />
-                 <Input
-                  required
-                  placeholder="Enter Amount"
-                  
-                  label="Enter Amount"
-                  
-                />  
-           
-            <Select
-                  required
-                  placeholder="Select Payment Mode"
-                 
-                  label="Paid Through"
-                  options={[
-                    { label: "Cash", value: "cash" },
-                    { label: "Credit Card", value: "credit_card" },
-                    { label: "Bank Transfer", value: "bank_transfer" },
-                
-                  ]}
-                />
-                 <Input
-                  required
-                  placeholder="Enter Notes"
-                  
-                  label="Enter Notes"
-                  
-                />
+            Cancel
+          </Button>
+          <Button
+            variant="primary"
+            className="h-8 text-sm border rounded-lg"
+            size="lg"
+            type="submit"
+          >
+            Save
+          </Button>
+        </div>
 
-            
-
-          </div>
-           )}
-
-{activeTab === "Record Mileage" && (
-          <div className="grid grid-cols-3  gap-4 mt-4">
-            
-            <Input
-                  required
-                  placeholder="DD/MM/YYYY"
-                  
-                  label="Date"
-                  
-                />
-                 <Select
-                  required
-                  placeholder="Select Account"
-                 
-                  label="Expense Account"
-                  options={[
-                    { label: "Cash", value: "cash" },
-                    { label: "Credit Card", value: "credit_card" },
-                    { label: "Bank Transfer", value: "bank_transfer" },
-                
-                  ]}
-                />
-                 <Select
-                  required
-                  placeholder="Select Payment Mode"
-                 
-                  label="Paid Through"
-                
-                  options={[
-                    { label: "Cash", value: "cash" },
-                    { label: "Credit Card", value: "credit_card" },
-                    { label: "Bank Transfer", value: "bank_transfer" },
-                    { label: "Other", value: "other" },
-                  ]}
-                />
-                    <Input
-                  required
-                  placeholder="Enter Distance"
-                  
-                  label="Distance"
-                  
-                />
-                 <Input
-                  required
-                  placeholder="Enter rate"
-                  
-                  label="Rate Per KM"
-                  
-                />  
-           
-           
-                 <Input
-                  required
-                  placeholder="Enter Amount"
-                  
-                  label="Amount"
-                  
-                />
-               
-                 <Input
-                
-                  required
-                  placeholder="Enter Notes"
-                  
-                  label="Enter Notes"
-                  
-                />
-
-            
-
-          </div>
-           )}
-              <div className=" flex justify-end gap-2 mt-6 pb-2 ">
-                                 <Button
-                                   variant="tertiary"
-                                   className="h-8 text-sm border rounded-lg"
-                                   size="lg"
-                                   onClick={onClose}
-                                 >
-                                   Cancel
-                                 </Button>
-                                 <Button
-                                   variant="primary"
-                                   className="h-8 text-sm border rounded-lg"
-                                   size="lg"
-                                   type="submit"
-                                 >
-                                   Save
-                                 </Button>
-                               </div>
-
-        </form>
-      </div>
+      </form>
+    </div>
   )
 }
 

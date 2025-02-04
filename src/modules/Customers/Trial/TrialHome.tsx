@@ -127,7 +127,12 @@ const TrialHome = () => {
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">Trial</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Trial</h1>
+          <p className="text-ashGray text-sm">
+          A temporary access period to evaluate a product or service. 
+            </p>
+         </div>
 
       </div>
 
