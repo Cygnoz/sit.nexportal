@@ -63,6 +63,7 @@ const SettingsHome: FC<SettingsHomeProps> = ({
       </Button>
     </div>
     <p className="text-lg font-bold mb-3">Settings</p>
+
     <div className="mb-2">
       <SearchBar
         bg="#1C1C140A"

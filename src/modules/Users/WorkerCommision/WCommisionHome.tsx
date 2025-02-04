@@ -107,9 +107,12 @@ const WCommisionHome = () => {
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">
-          Worker Commission Profile
-        </h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Worker Commission</h1>
+          <p className="text-ashGray text-sm">
+          Set and track commission rates for workers. 
+            </p>
+         </div>
  
         <Button
           variant="primary"
