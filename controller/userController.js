@@ -395,6 +395,8 @@ const roles = [
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
       { action: "Convert Licenser", note: "Convert Licenser" },
+      { action: "Hold Trial", note: "Hold Trial" },
+      { action: "Resume Trial", note: "Resume Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -503,6 +505,8 @@ const roles = [
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
       { action: "Convert Licenser", note: "Convert Licenser" },
+      { action: "Hold Trial", note: "Hold Trial" },
+      { action: "Resume Trial", note: "Resume Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -611,6 +615,8 @@ const roles = [
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
       { action: "Convert Licenser", note: "Convert Licenser" },
+      { action: "Hold Trial", note: "Hold Trial" },
+      { action: "Resume Trial", note: "Resume Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -719,6 +725,8 @@ const roles = [
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
       { action: "Convert Licenser", note: "Convert Licenser" },
+      { action: "Hold Trial", note: "Hold Trial" },
+      { action: "Resume Trial", note: "Resume Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -827,6 +835,8 @@ const roles = [
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
       { action: "Convert Licenser", note: "Convert Licenser" },
+      { action: "Hold Trial", note: "Hold Trial" },
+      { action: "Resume Trial", note: "Resume Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -935,6 +945,8 @@ const roles = [
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
       { action: "Convert Licenser", note: "Convert Licenser" },
+      { action: "Hold Trial", note: "Hold Trial" },
+      { action: "Resume Trial", note: "Resume Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -1043,6 +1055,8 @@ const roles = [
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
       { action: "Convert Licenser", note: "Convert Licenser" },
+      { action: "Hold Trial", note: "Hold Trial" },
+      { action: "Resume Trial", note: "Resume Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
@@ -1151,6 +1165,8 @@ const roles = [
       { action: "Extend Trial", note: "Extend Trial" },
       { action: "Delete Trial", note: "Delete Trial" },
       { action: "Convert Licenser", note: "Convert Licenser" },
+      { action: "Hold Trial", note: "Hold Trial" },
+      { action: "Resume Trial", note: "Resume Trial" },
 
       // licenser
       { action: "Add Licenser", note: "Add Licenser" },
