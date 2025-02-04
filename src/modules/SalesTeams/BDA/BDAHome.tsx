@@ -18,6 +18,7 @@ import Table from "../../../components/ui/Table";
 import { endPoints } from "../../../services/apiEndpoints";
 import BDAForm from "./BDAForm";
 import { useRegularApi } from "../../../context/ApiContext";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
@@ -25,6 +26,7 @@ const BDAHome = () => {
   const {regionId ,areaId }=useRegularApi()
   const { request: getAllBDA } = useApi("get", 3002);
   const [allBDA, setAllBDA] = useState<any>([]);
+  const {loading,setLoading}=useResponse()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId, setEditId] = useState('');
   const handleModalToggle = () => {
@@ -86,6 +88,7 @@ const BDAHome = () => {
 
   const getBDAs = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllBDA(endPoints.BDA);
       if (response && !error) {
         console.log("res",response.data);
@@ -111,6 +114,8 @@ const BDAHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -207,6 +212,7 @@ const BDAHome = () => {
             { label: "view", function: handleView },
             { label: "edit", function: handleEdit },
           ]}
+          loading={loading}
         />
       </div>
      </div>

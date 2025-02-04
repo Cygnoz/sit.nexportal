@@ -7,6 +7,7 @@ import useApi from '../../../Hooks/useApi'
 import { UserLog } from '../../../Interfaces/UserLog'
 import { endPoints } from '../../../services/apiEndpoints'
 import No_Data_found from "../../../assets/image/NO_DATA.png";
+import { useResponse } from '../../../context/ResponseContext'
 type Props = {}
 
 function UserLogHome({}: Props) {
@@ -18,10 +19,12 @@ function UserLogHome({}: Props) {
     action:''
   })
   const {request:getActivityLog}=useApi('get',3002)
+  const {loading,setLoading}=useResponse()
   const [allUserLog,setAllUserLog]=useState<UserLog[]>([])
-  const [noDataFound, setNoDataFound] = useState(false);
+
   const getAllActivityLog = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getActivityLog(endPoints.GET_ACTIVITY_LOGS);
       console.log("res", response);
       console.log("err", error);
@@ -45,6 +48,8 @@ function UserLogHome({}: Props) {
       }
     } catch (err) {
       console.error('Error fetching activity logs:', err);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -218,20 +223,7 @@ function UserLogHome({}: Props) {
     </tr>
   );
  
-   useEffect(() => {
-    if(filteredLogs.length>0){
-      setNoDataFound(false)
-    }
-       const timeout = setTimeout(() => {
-         if (filteredLogs?.length === 0) {
-           setNoDataFound(true);
-         } else {
-           setNoDataFound(false);
-         }
-       }, 1000);
-       return () => clearTimeout(timeout);
-      
-     }, [filteredLogs]);
+   
   
     
     
@@ -324,7 +316,9 @@ function UserLogHome({}: Props) {
           </tr>
         </thead>
         <tbody>
-  {noDataFound ? (
+  { loading ? (
+              renderSkeletonLoader()
+            ):filteredLogs?.length === 0 ?(
               <tr>
                 <td
                   colSpan={columns.length + 2}
@@ -336,8 +330,6 @@ function UserLogHome({}: Props) {
                   </div>
                 </td>
               </tr>
-            ) : filteredLogs?.length === 0 ? (
-              renderSkeletonLoader()
             )
   :paginatedData.length > 0 ? (
     paginatedData.map((row, rowIndex) => (

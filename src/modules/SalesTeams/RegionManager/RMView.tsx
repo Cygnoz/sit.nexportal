@@ -23,6 +23,7 @@ import Trash from "../../../assets/icons/Trash";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+import { useResponse } from "../../../context/ResponseContext";
 import ProgressBar from "../../../pages/Dashboard/Graphs/ProgressBar";
 import { useUser } from "../../../context/UserContext";
 type Props = {
@@ -74,6 +75,7 @@ const RMView = ({staffId}: Props) => {
 
   const { request: getaRM } = useApi("get", 3002);
   const { request: deleteaRM } = useApi("delete", 3002)
+  const {loading,setLoading}=useResponse()
   const { id } = useParams();
   const iId=staffId?staffId:id
   const [getData, setGetData] = useState<{
@@ -82,6 +84,7 @@ const RMView = ({staffId}: Props) => {
 
   const getARM = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${iId}`);
       if (response && !error) {
        
@@ -99,6 +102,8 @@ const RMView = ({staffId}: Props) => {
       }
     } catch (err) {
       console.error("Error fetching AM data:", err);
+    }finally{
+      setLoading(false)
     }
   };
   useEffect(() => {
@@ -479,6 +484,7 @@ const RMView = ({staffId}: Props) => {
                 noAction
                 noPagination
                 maxHeight="345px"
+                loading={loading}
               />
             </div>
           </div>
@@ -488,7 +494,7 @@ const RMView = ({staffId}: Props) => {
         </div>
 
         <div>
-          <RMViewBDAandGraph getData={getData.rmData}  totalBdas={totalBdas} />
+          <RMViewBDAandGraph getData={getData.rmData} loading={loading}  totalBdas={totalBdas} />
         </div>
       </div>
       {/* Modal controlled by state */}

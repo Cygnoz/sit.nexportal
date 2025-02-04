@@ -23,6 +23,7 @@ import PaymentTable from "./PaymentTable";
 import RecentActivityView from "./RecenetActivity";
 import SupportTicketTable from "./SupportTicketTable";
 import { getStatusClass } from "../../../../components/ui/GetStatusClass";
+import { useResponse } from "../../../../context/ResponseContext";
 
 type Props = {
 };
@@ -110,9 +111,10 @@ function LicenserView({ }: Props) {
 const [insideLicenserData, setInsideLicenserData] =  useState<any>();
 const [recentActivities, setRecentActivities] = useState([]);
 const [supportTickets, setSupportTickets] = useState([]);
-
+const {loading,setLoading}=useResponse()
 const getInsideViewLICENSER = async () => {
   try {
+    setLoading(true)
     const { response, error } = await getInsideLicenser(`${endPoints.LICENSER}/${id}/details`);
     
     if (response && !error) {
@@ -130,6 +132,8 @@ const getInsideViewLICENSER = async () => {
     }
   } catch (err) {
     console.error("Error fetching LICENSER data:", err);
+  }finally{
+    setLoading(false)
   }
 };
 
@@ -358,7 +362,7 @@ console.log("Support Tickets:", supportTickets);
 
           </div>
           <SupportTicketTable 
-          supportTickets={supportTickets}/>
+          supportTickets={supportTickets} loading={loading}/>
           <PaymentTable />
         </div>
       </div>

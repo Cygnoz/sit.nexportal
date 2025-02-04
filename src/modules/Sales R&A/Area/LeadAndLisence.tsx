@@ -8,6 +8,7 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import LicenserTable from "./LicenserTable";
 import { useNavigate } from "react-router-dom";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
@@ -29,6 +30,7 @@ type Props = {
 
 const LeadAndLisence = ({id}: Props) => {
     const [leadLicensorData,setLeadLicensorData]=useState<any>()
+    const {loading,setLoading}=useResponse()
     const navigate=useNavigate()
     const handleView=(id:any)=>{
         navigate(`/lead/${id}`)
@@ -79,6 +81,7 @@ const LeadAndLisence = ({id}: Props) => {
 
     const getLeadAndLicenser = async () => {
         try {
+          setLoading(true)
           const { response, error } = await getLeadLicensor(
             `${endPoints.GET_AREAS}/${id}/lead`
           );
@@ -100,6 +103,8 @@ const LeadAndLisence = ({id}: Props) => {
           }
         } catch (err) {
           console.log(err);
+        }finally{
+          setLoading(false)
         }
       };
     
@@ -145,6 +150,7 @@ const LeadAndLisence = ({id}: Props) => {
           
           { label: 'view', function: handleView },
         ]}
+        loading={loading}
          />
       </div>
 

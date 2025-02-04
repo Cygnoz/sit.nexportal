@@ -16,6 +16,7 @@ import useApi from "../../../../Hooks/useApi";
 import { endPoints } from "../../../../services/apiEndpoints";
 import TopPerformingAM from "./Graphs/TopPerformingAM";
 import TopPerformingBDA from "./Graphs/TopPerformingBDA";
+import { useResponse } from "../../../../context/ResponseContext";
 
 interface TeamData {
   employeeID: string;
@@ -35,6 +36,7 @@ type Props = {
 const RegionTeamView = ({teamData,handleModalToggle,setData}: Props) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const {request:getPerformance}=useApi("get",3003)
+  const {loading,setLoading}=useResponse()
   const {id}=useParams()
   const navigate=useNavigate()
   const [topPerformance,setTopPerformance]=useState({
@@ -88,6 +90,7 @@ const RegionTeamView = ({teamData,handleModalToggle,setData}: Props) => {
   
   const getPerformers=async()=>{
    try{
+    setLoading(true)
     const {response,error}=await getPerformance(`${endPoints.TOP_PERFORMANCE}/${id}`)  
     if(response && !error){
       setTopPerformance((prev)=>({
@@ -99,6 +102,8 @@ const RegionTeamView = ({teamData,handleModalToggle,setData}: Props) => {
    }catch(err){
     console.log(err);
     
+   }finally{
+    setLoading(false)
    }
   }
 
@@ -249,6 +254,7 @@ const RegionTeamView = ({teamData,handleModalToggle,setData}: Props) => {
           noPagination
           maxHeight="350px"
           skeltonCount={9}
+          loading={loading}
         />
       </div>
       <div className="grid-cols-2 grid my-3 w-full  gap-2">

@@ -3,6 +3,7 @@ import Table from '../../../../components/ui/Table';
 
 type Props = {
   supportTickets:any
+  loading:boolean
 }
 // Define the type for Ticket Data
 interface TicketData {
@@ -14,7 +15,7 @@ interface TicketData {
   }
   
 
-function SupportTicketTable({supportTickets}: Props) {
+function SupportTicketTable({supportTickets,loading}: Props) {
     const navigate=useNavigate()
    
   
@@ -61,6 +62,7 @@ const ticketColumns: { key: any; label: string }[] = [
      noPagination
      maxHeight='450px'
      skeltonCount={10}
+     loading={loading}
     />
   </div>
    </>

@@ -10,19 +10,20 @@ import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import EditIcon from "../../../assets/icons/EditIcon";
 import Trash from "../../../assets/icons/Trash";
 import UserIcon from '../../../assets/icons/UserIcon';
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 import ViewRoundIcon from "../../../assets/icons/ViewRoundIcon";
 import BackgroundView from '../../../assets/image/AMView.png';
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import Modal from "../../../components/modal/Modal";
 import LicensersTable from '../../../components/ui/LicensersTable';
+import NoRecords from "../../../components/ui/NoRecords";
 import useApi from '../../../Hooks/useApi';
 import { endPoints } from '../../../services/apiEndpoints';
 import AMForm from './AMForm';
 import AMViewAward from './AMViewAward';
 import AMViewCardandTable from "./AMViewCardandTable";
 import AMViewForm from "./AMViewForm";
-import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
-import No_Data_found from "../../../assets/image/NO_DATA.png";
+import { useResponse } from "../../../context/ResponseContext";
 import ProgressBar from "../../../pages/Dashboard/Graphs/ProgressBar";
 import { useUser } from "../../../context/UserContext";
 
@@ -50,7 +51,7 @@ const AMView = ({ staffId }: Props) => {
        const {user}=useUser()
        user?.role
   const [insideAmData, setInsideAmData] = useState<InsideAmData | null>(null);
- 
+  const {loading,setLoading}=useResponse()
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -78,6 +79,7 @@ const AMView = ({ staffId }: Props) => {
 
   const getAAM = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${iId}`);
       if (response && !error) {
         console.log("res", response.data);
@@ -93,6 +95,8 @@ const AMView = ({ staffId }: Props) => {
     }
     catch (err) {
       console.error("Error fetching AM data:", err);
+    }finally{
+      setLoading(false)
     }
   }
   useEffect(() => {
@@ -156,6 +160,7 @@ const AMView = ({ staffId }: Props) => {
 
   const getInsideViewAM = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getInsideAM(`${endPoints.AM}/${iId}/details`);
       if (response && !error) {
         setInsideAmData(response.data);
@@ -221,6 +226,8 @@ if (updatedRoles.length > 0) {
       }
     } catch (err) {
       console.error("Error fetching AM data:", err);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -467,13 +474,14 @@ if (updatedRoles.length > 0) {
 </div>
 
       {/* Card & table */}
-      <AMViewCardandTable bdaDetails={bdaDetails} insideAmData={insideAmData}/>
+      <AMViewCardandTable loading={loading} bdaDetails={bdaDetails} insideAmData={insideAmData}/>
       {/* Charts */}
     
       <div className="grid grid-cols-12 mb-5 gap-4">
         <div className="col-span-4 h-full">
           <div className="bg-white rounded-lg w-full h-full  p-3">
             <h1 className="text-[#303F58] text-lg font-bold p-3">Lead status distribution</h1>
+            {roles.filter(role => role.count > 0).length > 0 ? (
             <div className="-mt-3 relative">
               
               <div className='absolute top-[35%] left-[38%] z-20 text-center -mt-7'>
@@ -500,8 +508,8 @@ if (updatedRoles.length > 0) {
               />
               <div className='flex justify-center'>
                 <div className="space-y-3">
-                {roles.filter(role => role.count > 0).length > 0 ? (
-                  roles.map((role) => (
+                
+                 {roles?.map((role) => (
                     <div key={role.name} className="flex items-center gap-20 w-64 justify-between">
                       <div className="flex items-center gap-2">
                         <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
@@ -509,16 +517,20 @@ if (updatedRoles.length > 0) {
                       </div>
                       <span className=" text-gray-600 text-xs">{role.Count}</span>
                     </div>
-                  ))
-                ) : (
-                  <div className="flex justify-center flex-col items-center">
-                    <img width={70} src={No_Data_found} alt="No Data Found" />
-                    <p className="font-bold text-red-700">No Records Found!</p>
-                  </div>
-                )}
+                  ))}
+                
                 </div>
               </div>
             </div>
+            ) : (
+              // <div className="flex justify-center flex-col items-center">
+              //   <img width={70} src={No_Data_found} alt="No Data Found" />
+              //   <p className="font-bold text-red-700">No Records Found!</p>
+              // </div>
+             
+               <NoRecords imgSize={70} textSize="md" parentHeight="380px"/>
+            
+            )}
           </div>
         </div>
         <div className="col-span-8">

@@ -44,6 +44,10 @@ import { roles } from './components/ui/Roles';
 import ExpenseHome from './modules/Expense/ExpenseHome';
 import TargetHome from './modules/Target/TargetHome';
 import PayrollView3 from './modules/Expense/Payroll/PayrollView3';
+import ExpenseView from './modules/Expense/ExpenseView';
+import ExpenseViewReject from './modules/Expense/ExpenseViewReject';
+import ExpenseViewPaid from './modules/Expense/Expenses/ExpenseViewPaid';
+import ExpenseViewGranted from './modules/Expense/Expenses/ExpenseViewGranted';
 // import ExpenseHome from './modules/Expense/ExpenseHome';
 
 
@@ -113,6 +117,10 @@ const parentRoutes = [
   { path: "payroll-view2/:id", element: <PayrollView2 /> },
   { path: "payroll-view3/:id", element: <PayrollView3 /> },
   { path: "expense", element: <ExpenseHome /> },
+  { path:'expense-pg/:id', element: <ExpenseView/> },
+  { path:'expense-reject/:id', element:<ExpenseViewReject/> },
+  { path:'expense-paid/:id', element: <ExpenseViewPaid/> },
+  { path:'expense-granted/:id',element: <ExpenseViewGranted/> },
   { path: "target", element: <TargetHome /> },
 
 ];

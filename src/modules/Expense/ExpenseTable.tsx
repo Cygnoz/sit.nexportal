@@ -43,7 +43,7 @@ interface TableProps<T> {
   };
   actionList?: {
     label: "view" | "edit" | "delete";
-    function: (id: any) => void;
+    function: (id: any, status:any) => void;
   }[];
   noAction?: boolean;
   noPagination?: boolean;
@@ -145,6 +145,8 @@ const ExpenseTable = <T extends object>({
         return "bg-green-500 text-center text-white  py-1 px-2 w-fit rounded-lg";
       case "Resolved":
         return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
+      case "Reject":
+        return "bg-red-500 text-center text-white py-1 px-2 w-fit rounded-lg";
      
       default:
         return "";
@@ -193,7 +195,7 @@ const ExpenseTable = <T extends object>({
       headerContents.search && !headerContents.title && !headerContents.sort
         ? "justify-start"
         : "justify-between"
-    } items-center mb-4`}
+    } items-center mb-3`}
   >
    
     {headerContents.search && (
@@ -295,6 +297,9 @@ const ExpenseTable = <T extends object>({
     return () => clearTimeout(timeout);
   }, [data]);
 
+  const tabs =["RM", "AM", "BDA"]
+  const [activeTab, setActiveTab] = useState<string>("RM");
+
   return (
     <div className="w-full  bg-white rounded-lg p-4">
       {renderHeader()}
@@ -304,7 +309,20 @@ const ExpenseTable = <T extends object>({
          className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
        
-
+       <div className="flex gap-16 rounded-xl px-4 py-3 text-base font-bold border-b border-gray-200">
+                {tabs.map((tab) => (
+                    <div
+                        key={tab}
+                        onClick={() => setActiveTab(tab)}
+                        className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
+                            ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
+                            : "text-gray-400"
+                            }`}
+                    >
+                        {tab}
+                    </div>
+                ))}
+            </div>
 
 
 
@@ -359,7 +377,7 @@ const ExpenseTable = <T extends object>({
               renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
-                <tr onClick={() => actionList?.find((data) => data.label === "view")?.function(row?._id)}  key={rowIndex} className="hover:bg-gray-50 z-10 cursor-pointer">
+                <tr onClick={() => actionList?.find((data) => data.label === "view")?.function(row?._id, row?.status)}  key={rowIndex} className="hover:bg-gray-50 z-10 cursor-pointer">
                   <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
                     {(currentPage - 1) * rowsPerPage + rowIndex + 1}
                   </td>
@@ -420,7 +438,7 @@ const ExpenseTable = <T extends object>({
                               <p
                                 key={index}
                                 className="cursor-pointer"
-                                onClick={() => action.function(row?._id)}
+                                onClick={() => action.function(row?._id, row?.status)}
                               >
                                 {action.label === "edit" ? (
                                   <PencilLine color="#4B5C79" size={16} />

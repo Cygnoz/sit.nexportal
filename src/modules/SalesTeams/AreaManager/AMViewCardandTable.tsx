@@ -16,9 +16,10 @@ interface AMViewData {
 type Props = {
   bdaDetails:Array<any>;
   insideAmData: any;
+  loading?:boolean
 }
 
-const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
+const AMViewCardandTable = ({bdaDetails ,  insideAmData,loading}: Props) => {
 
   //console.log(bdaDetails);
   
@@ -133,7 +134,9 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
                 { label: 'view', function: handleView },
               ]}
               noPagination
-              maxHeight="300px" />
+              maxHeight="300px" 
+              loading={loading}
+              />
           </div>
 
         </div>

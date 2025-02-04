@@ -35,11 +35,12 @@ type Props = {
 
   totalBdas:Array<any>;
   getData:any
+  loading?:boolean
 };
 
 
 
-const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
+const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
   const { request: TopPerformingAM } = useApi("get", 3002);
  
    const [chartData, setChartData] = useState([]);
@@ -216,6 +217,7 @@ const RMViewBDAandGraph = ({getData,totalBdas}: Props) => {
             },
           }}
           actionList={[{ label:"view", function: handleView }]}
+          loading={loading}
         />
       </div>
 
