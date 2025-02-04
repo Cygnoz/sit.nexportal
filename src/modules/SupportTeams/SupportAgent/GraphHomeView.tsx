@@ -1,13 +1,12 @@
+import { useEffect, useState } from 'react';
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, } from 'recharts';
 import profileImage from '../../../assets/image/AvatarImg.png';
-import RatingStar from '../../../components/ui/RatingStar';
-import useApi from '../../../Hooks/useApi';
-import SelectDropdown from '../../../components/ui/SelectDropdown';
-import { useEffect, useState } from 'react';
-import { endPoints } from '../../../services/apiEndpoints';
-import No_Data_found from '../../../assets/image/NO_DATA.png'
 import { months, years } from '../../../components/list/MonthYearList';
 import NoRecords from '../../../components/ui/NoRecords';
+import RatingStar from '../../../components/ui/RatingStar';
+import SelectDropdown from '../../../components/ui/SelectDropdown';
+import useApi from '../../../Hooks/useApi';
+import { endPoints } from '../../../services/apiEndpoints';
 
 type Props = {
   id: any
