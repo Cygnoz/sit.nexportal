@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 // import Eye from "../../assets/icons/Eye";
 // import NextIcon from "../../assets/icons/NextIcon";
 // import PencilLine from "../../assets/icons/PencilLine";
@@ -50,7 +50,8 @@ interface TableProps<T> {
   noPagination?: boolean;
   maxHeight?: string;
   skeltonCount?:number
-  from?:string
+  from?:string;
+  loading?:boolean;
 }
 
 const TargetTable = <T extends object>({
@@ -62,12 +63,13 @@ const TargetTable = <T extends object>({
   noPagination,
   maxHeight,
   skeltonCount=5,
-  from
+  from,
+  loading
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [noDataFound, setNoDataFound] = useState(false);
+  // const [noDataFound, setNoDataFound] = useState(false);
   // Filter data based on the search value
   const filteredData: any = useMemo(() => {
     return data?.filter((row) =>
@@ -285,24 +287,24 @@ const TargetTable = <T extends object>({
    );
  
    
-   useEffect(() => {
-     if(from!=="ticket"){
-       const timeout = setTimeout(() => {
-         if (data?.length === 0) {
-           setNoDataFound(true);
-         } else {
-           setNoDataFound(false);
-         }
-       }, 3000);
-       return () => clearTimeout(timeout);
-     }else{
-       if (data?.length === 0) {
-         setNoDataFound(true);
-       } else {
-         setNoDataFound(false);
-       }
-     }
-   }, [data]);
+  //  useEffect(() => {
+  //    if(from!=="ticket"){
+  //      const timeout = setTimeout(() => {
+  //        if (data?.length === 0) {
+  //          setNoDataFound(true);
+  //        } else {
+  //          setNoDataFound(false);
+  //        }
+  //      }, 3000);
+  //      return () => clearTimeout(timeout);
+  //    }else{
+  //      if (data?.length === 0) {
+  //        setNoDataFound(true);
+  //      } else {
+  //        setNoDataFound(false);
+  //      }
+  //    }
+  //  }, [data]);
 
   return (
     <div className="w-full  bg-white rounded-lg p-4">
@@ -361,7 +363,7 @@ const TargetTable = <T extends object>({
             </tr>
           </thead>
           <tbody>
-            {noDataFound ? (
+            {loading ? (
               <tr>
                 <td
                   colSpan={noAction?columns?.length+1:columns?.length + 2}
