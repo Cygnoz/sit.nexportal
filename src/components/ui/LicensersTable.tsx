@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import NextIcon from "../../assets/icons/NextIcon";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
 import UserIcon from "../../assets/icons/UserIcon";
@@ -22,7 +22,8 @@ interface TableProps<T> {
   };
   maxHeight?: string;
   handleView:(id:any)=>void 
-  skeltonCount?:number
+  skeltonCount?:number;
+  loading?:boolean;
 }
 const LicensersTable = <T extends object>({
   data,
@@ -30,12 +31,13 @@ const LicensersTable = <T extends object>({
   headerContents,
   maxHeight,
   skeltonCount=5,
+  loading,
   handleView
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [noDataFound, setNoDataFound] = useState(false);
+  // const [noDataFound, setNoDataFound] = useState(false);
   // Filter data based on the search value
   const filteredData = useMemo(() => {
     return data?.filter((row) =>
@@ -199,16 +201,16 @@ const LicensersTable = <T extends object>({
     );
   
     
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        if (data?.length === 0) {
-          setNoDataFound(true);
-        } else {
-          setNoDataFound(false);
-        }
-      }, 3000);
-      return () => clearTimeout(timeout);
-    }, [data]);
+    // useEffect(() => {
+    //   const timeout = setTimeout(() => {
+    //     if (data?.length === 0) {
+    //       setNoDataFound(true);
+    //     } else {
+    //       setNoDataFound(false);
+    //     }
+    //   }, 3000);
+    //   return () => clearTimeout(timeout);
+    // }, [data]);
 
   return (
     <div className="w-full  bg-white rounded-lg p-4 mb-4">
@@ -223,7 +225,10 @@ const LicensersTable = <T extends object>({
             }`}
         >
           <tbody>
-          {noDataFound ? (
+          {loading ? (
+              renderSkeletonLoader()
+            ) : data?.length === 0 ? (
+              // renderSkeletonLoader()
               <tr>
                 <td
                   colSpan={columns?.length+1}
@@ -232,8 +237,6 @@ const LicensersTable = <T extends object>({
                   <NoRecords imgSize={70} textSize="md"/>
                 </td>
               </tr>
-            ) : data?.length === 0 ? (
-              renderSkeletonLoader()
             ) : 
             paginatedData?.length > 0 && (
               paginatedData?.map((row: any, rowIndex: number) => (

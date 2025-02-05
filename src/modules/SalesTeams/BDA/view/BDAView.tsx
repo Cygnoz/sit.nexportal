@@ -516,7 +516,7 @@ const BDAView = ({staffId}: Props) => {
               </div>
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Salary Info</p>
             </div>
-            <div onClick={()=>handleModalToggle(false,false,false,true,false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,false,false,false,false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">

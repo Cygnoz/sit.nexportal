@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 // import ArrowRight from "../../assets/icons/ArrowRight";
 // import Eye from "../../assets/icons/Eye";
 // import NextIcon from "../../assets/icons/NextIcon";
@@ -51,6 +51,7 @@ interface TableProps<T> {
     tabs?: any;
     activeTab?: any;
     setActiveTab?: any;
+    loading?:boolean;
 }
 
 const SAViewTable = <T extends object>({
@@ -65,11 +66,11 @@ const SAViewTable = <T extends object>({
     tabs,
     activeTab,
     setActiveTab,
+    loading
 }: TableProps<T>) => {
     const [searchValue, setSearchValue] = useState<string>("");
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-    const [noDataFound, setNoDataFound] = useState(false);
     // Filter data based on the search value
     const filteredData: any = useMemo(() => {
         return data?.filter((row) =>
@@ -217,16 +218,16 @@ const SAViewTable = <T extends object>({
     );
 
 
-    useEffect(() => {
-        const timeout = setTimeout(() => {
-            if (data?.length === 0) {
-                setNoDataFound(true);
-            } else {
-                setNoDataFound(false);
-            }
-        }, 3000);
-        return () => clearTimeout(timeout);
-    }, [data]);
+    // useEffect(() => {
+    //     const timeout = setTimeout(() => {
+    //         if (data?.length === 0) {
+    //             setNoDataFound(true);
+    //         } else {
+    //             setNoDataFound(false);
+    //         }
+    //     }, 3000);
+    //     return () => clearTimeout(timeout);
+    // }, [data]);
 
     return (
         <div className="w-full  bg-white rounded-lg p-4 mb-4">
@@ -301,7 +302,10 @@ const SAViewTable = <T extends object>({
                         </tr>
                     </thead>
                     <tbody>
-                        {noDataFound ? (
+                        {loading ? (
+                             renderSkeletonLoader()
+                        ) : data?.length === 0 ? (
+                            // renderSkeletonLoader()
                             <tr>
                                 <td
                                     colSpan={noAction ? columns?.length + 1 : columns?.length + 2}
@@ -310,8 +314,6 @@ const SAViewTable = <T extends object>({
                                     <NoRecords imgSize={70} textSize="md" />
                                 </td>
                             </tr>
-                        ) : data?.length === 0 ? (
-                            renderSkeletonLoader()
                         ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
                             paginatedData.map((row: any, rowIndex: number) => (
                                 <tr

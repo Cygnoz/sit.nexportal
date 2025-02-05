@@ -19,13 +19,13 @@ const RegionPerformanceView = ({}: Props) => {
     return (
       <div
         className=""
-        style={{ display: "flex", gap: "10px" }}
+        style={{ display: "flex", justifyContent:'space-between', paddingLeft:'60px' }}
       >
-        <span style={{ color: "#e2b0ff" }}>Area1</span>
-        <span style={{ color: "#8884d8" }}>Area2</span>
-        <span style={{ color: "#82ca9d" }}>Area3</span>
-        <span style={{ color: "#d86a57" }}>Area4</span>
-        <span style={{ color: "#6ab6ff" }}>Area5</span>
+        <p className='flex items-center gap-1 text-[#e2b0ff]'>Area1 <div className='w-2 h-2 bg-[#e2b0ff] rounded-full'></div></p>
+        <p className='flex items-center gap-1 text-[#8884d8]' >Area2 <div className='w-2 h-2 bg-[#8884d8] rounded-full'></div></p>
+        <p className='flex items-center gap-1 text-[#82ca9d]' >Area3 <div className='w-2 h-2 bg-[#82ca9d] rounded-full'></div></p>
+        <p className='flex items-center gap-1 text-[#d86a57]' >Area4 <div className='w-2 h-2 bg-[#d86a57] rounded-full'></div></p>
+        <p className='flex items-center gap-1 text-[#6ab6ff]'>Area5 <div className='w-2 h-2 bg-[#6ab6ff] rounded-full'></div></p>
       </div>
     );
   };
@@ -111,8 +111,8 @@ const RegionPerformanceView = ({}: Props) => {
                      bottom: 5,
                    }}
                  >
-                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                   <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                   <CartesianGrid strokeDasharray="3 3" vertical={false}  />
+                   <XAxis dataKey="name" axisLine={false} tickLine={false} padding={{ left: 25, right: 20  }} />
                    <YAxis axisLine={false} tickLine={false} />
                    <Tooltip />
                    <Legend content={<CustomLegend />} />

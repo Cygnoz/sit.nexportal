@@ -26,6 +26,10 @@ import AMViewForm from "./AMViewForm";
 import { useResponse } from "../../../context/ResponseContext";
 import ProgressBar from "../../../pages/Dashboard/Graphs/ProgressBar";
 import { useUser } from "../../../context/UserContext";
+import SalaryRoundIcon from "../../../assets/icons/SalaryRoundIcon";
+import CommissionRoundIcon from "../../../assets/icons/CommissionRoundIcon";
+import SalaryInfoModal from "../../../components/modal/SalaryInfoModal";
+import CommissionModal from "../../../components/modal/CommissionModal";
 
 
 // import AMViewAward from './AMViewAward';
@@ -66,7 +70,24 @@ const AMView = ({ staffId }: Props) => {
     awardAM: false,
     confirm: false,
     deactiveAM: false,
+    salaryInfoAM:false,
+    commissionAM:false,
   });
+
+  const handleModalToggle = (editAM = false, viewAM = false, awardAM = false, confirm = false, deactiveAM = false, salaryInfoAM=false, commissionAM=false) => {
+    setIsModalOpen((prevState: any) => ({
+      ...prevState,
+      editAM: editAM,
+      viewAM: viewAM,
+      awardAM: awardAM,
+      confirm: confirm,
+      deactiveAM: deactiveAM,
+      salaryInfoAM:salaryInfoAM,
+      commissionAM:commissionAM
+    }));
+    getAAM()
+  }
+
   const { request: getaAM } = useApi('get', 3002)
   const { id } = useParams()
   const iId = staffId ? staffId : id
@@ -123,18 +144,6 @@ const AMView = ({ staffId }: Props) => {
 
 
   const navigate = useNavigate()
-
-  const handleModalToggle = (editAM = false, viewAM = false, awardAM = false, confirm = false, deactiveAM = false,) => {
-    setIsModalOpen((prevState: any) => ({
-      ...prevState,
-      editAM: editAM,
-      viewAM: viewAM,
-      awardAM: awardAM,
-      confirm: confirm,
-      deactiveAM: deactiveAM,
-    }));
-    getAAM()
-  }
 
   const handleView = (id: any) => {
     if (id) {
@@ -365,24 +374,24 @@ if (updatedRoles.length > 0) {
           <div className="flex mt-1">
             <div className='flex'>
               <div className="border-r ms-3">
-                <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
-                <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.phoneNo ? getData.amData?.user?.phoneNo : 'N/A'}</p>
+                <p className="my-1 mx-2 text-[#D4D4D4] text-xs font-medium">Contact Number</p>
+                <p className="my-1 mx-2 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.phoneNo ? getData.amData?.user?.phoneNo : 'N/A'}</p>
               </div>
               <div className="border-r">
-                <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Email</p>
-                <p className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.email ? getData.amData?.user?.email : 'N/A'}</p>
+                <p className="my-1 mx-2 text-[#D4D4D4] text-xs font-medium">Email</p>
+                <p className="my-1 mx-2 text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.email ? getData.amData?.user?.email : 'N/A'}</p>
               </div>
               <div className="">
-                <p className="my-1 mx-3 text-[#D4D4D4] text-xs font-medium">Area</p>
-                <p onClick={() => navigate(`/areas/${getData.amData?.area?._id}`)} className="my-1 mx-3 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
+                <p className="my-1 mx-2 text-[#D4D4D4] text-xs font-medium">Area</p>
+                <p onClick={() => navigate(`/areas/${getData.amData?.area?._id}`)} className="my-1 mx-2 text-[#FFFFFF] text-sm font-medium underline cursor-pointer">{getData.amData?.area?.areaCode ? getData.amData?.area?.areaCode : 'N/A'}</p>
               </div>
             </div>
-            <div className='flex justify-between'>
-              <div className="-mt-5 ms-32 me-6">
+            <div className='flex justify-between gap-3 ms-auto'>
+              <div className="-mt-5">
                 <p className="text-[#D4D4D4] text-xs font-medium">Role</p>
                 <p className="text-[#FFFFFF] text-sm font-medium">Area Manager</p>
               </div>
-              <div className="me-6 -mt-5">
+              <div className="-mt-5">
                 <p className="text-[#D4D4D4] text-xs font-medium">Employee ID</p>
                 <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.user?.employeeId ? getData.amData?.user?.employeeId : 'N/A'}</p>
               </div>
@@ -391,7 +400,7 @@ if (updatedRoles.length > 0) {
                 <p className="text-[#FFFFFF] text-sm font-medium">{getData.amData?.dateOfJoining ? new Date(getData.amData?.dateOfJoining).toLocaleDateString() : 'N/A'}</p>
               </div>
             </div>
-            <div className="flex ms-auto -mt-6 ">
+            <div className="flex ms-auto -mt-6">
               <div className="flex flex-col items-center space-y-1 ">
                 <div onClick={() => handleModalToggle(true, false, false, false, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -458,6 +467,28 @@ if (updatedRoles.length > 0) {
                   </div>
                 </div>
                 <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Delete</p>
+              </div>
+
+              <div className="flex flex-col  items-center space-y-1">
+                <div onClick={() => handleModalToggle(false, false, false, false, false, true, false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <SalaryRoundIcon size={18} color="#B6D6FF" />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">SalaryInfo</p>
+              </div>
+
+              <div className="flex flex-col  items-center space-y-1">
+                <div onClick={() => handleModalToggle(false, false, false, false, false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                  <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                    <div className="ms-2 mt-2">
+                      <CommissionRoundIcon size={18} color="#B6FFFF" />
+                    </div>
+                  </div>
+                </div>
+                <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Commission</p>
               </div>
 
 
@@ -681,6 +712,14 @@ if (updatedRoles.length > 0) {
           onClose={() => handleModalToggle()}
         />
       </Modal>
+      <Modal open={isModalOpen.salaryInfoAM} onClose={()=>handleModalToggle()} className="w-[45%]">
+    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
+  </Modal>
+
+  <Modal open={isModalOpen.commissionAM} onClose={()=>handleModalToggle()} className="w-[45%]">
+    <CommissionModal  onClose={()=>handleModalToggle()} />
+  </Modal>
+
 
 
 
