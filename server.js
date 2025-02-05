@@ -44,12 +44,21 @@ server.use(Router);
 const httpServer = http.createServer(server);
  
 // Set up Socket.IO
+// const io = new Server(httpServer, {
+//     cors: {
+//         origin: "*", // Update with your frontend's URL for production
+//         methods: ["GET", "POST"],
+//         allowedHeaders: ["Content-Type", "Authorization"],
+//     },
+// });
+
 const io = new Server(httpServer, {
     cors: {
-        origin: "*", // Update with your frontend's URL for production
+        origin: "*", // Change this to your frontend's URL in production
         methods: ["GET", "POST"],
         allowedHeaders: ["Content-Type", "Authorization"],
     },
+    transports: ["websocket", "polling"], // Force WebSocket first
 });
  
 // Pass io and socket to the Socket service to handle events

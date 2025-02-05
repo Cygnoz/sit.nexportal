@@ -28,7 +28,7 @@ router.get('/unassigned-ticket',verifyToken,checkPermission('View Ticket'),Ticke
 router.get('/ticket/:ticketId',verifyToken,checkPermission('View Ticket'),TicketController.getTicket)
 
 //chat
-router.post('/chat', chatController.sendMessage);
+// router.post('/chat', chatController.sendMessage);
 
 router.get('/chats/lead/:leadId',verifyToken,checkPermission('View Chat'), chatController.getChatByCustomer);
  
