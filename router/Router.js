@@ -8,6 +8,8 @@ const PraiseController = require('../controller/praiseController')
 
 const chatController = require('../controller/ticketChat')
 
+const targetController = require('../controller/targetController')
+
 const checkPermission = require('../controller/authController/permission');
 
 const { verifyToken } = require('../controller/authController/middleware');
@@ -43,5 +45,15 @@ router.get('/Praises',verifyToken,checkPermission('View Praise'),PraiseControlle
 
 router.get("/praises/:userId",verifyToken,checkPermission('View Praise'),PraiseController.getAllPraisesForUser);
 
+
+// target
+//Target
+router.post("/targets",verifyToken,checkPermission('Add Target'), targetController.addTarget,ActivityLogGeneration('Add Target'));
+
+router.get('/targets/:targetType',verifyToken,checkPermission('View Target'), targetController.getAllTargets);
+
+router.put("/targets/:id",verifyToken,checkPermission('Edit Target'),targetController.updateTarget,ActivityLogGeneration('Edit Target'));
+
+router.delete("/targets/:id",verifyToken,checkPermission('Delete Target'),targetController.deleteTarget,ActivityLogGeneration('Delete Target'));
 
 module.exports = router
