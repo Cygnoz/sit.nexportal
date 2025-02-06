@@ -78,48 +78,82 @@ exports.addTarget = async (req, res , next) => {
   };
   
 
-
   exports.getAllTargets = async (req, res) => {
     try {
-      const { targetType } = req.params; // Get targetType from URL parameters
-  
-      // Validate the targetType parameter
+      const { targetType } = req.params;
+ 
       if (!targetType) {
         return res.status(400).json({ error: "targetType parameter is required." });
       }
+ 
       if (!["Region", "Area", "Bda"].includes(targetType)) {
         return res.status(400).json({
           error: "Invalid targetType. Allowed values: Region, Area, Bda.",
         });
       }
-  
-      // Retrieve all targets with the specified targetType  
-      const targets = await Target.find({ targetType })
-      .populate("region", "_id regionName") // Fetch only _id and regionName
-      .populate("area", "_id areaName") // Fetch only _id and areaName
-      .populate({
-        path: "bda",
-        select: "user", // Select only the user field from Bda
-        populate: {
-          path: "user", // Populate user details from User collection
-          select: "userName userImage", // Fetch only userName and userImage
-        },
+ 
+      // Define filters based on targetType
+      let filters = {};
+      if (targetType === "Region") {
+        filters = { targetType: { $in: ["Region", "Area", "Bda"] } };
+      } else if (targetType === "Area") {
+        filters = { targetType: { $in: ["Area", "Bda"] } };
+      } else if (targetType === "Bda") {
+        filters = { targetType: "Bda" };
+      }
+ 
+      // Fetch data based on filters
+      const targets = await Target.find(filters)
+        .populate("region", "_id regionName")
+        .populate("area", "_id areaName")
+        .populate({
+          path: "bda",
+          select: "user",
+          populate: {
+            path: "user",
+            select: "userName userImage",
+          },
+        });
+ 
+      // Separate targets into categories
+      const regionTargets = [];
+      const areaTargets = [];
+      const bdaTargets = [];
+ 
+      let totalRegionTarget = 0;
+      let totalAreaTarget = 0;
+      let totalBdaTarget = 0;
+ 
+      targets.forEach((item) => {
+        if (item.targetType === "Region") {
+          regionTargets.push(item);
+          totalRegionTarget += item.target; // Sum targets for regions
+        } else if (item.targetType === "Area") {
+          areaTargets.push(item);
+          totalAreaTarget += item.target; // Sum targets for areas
+        } else if (item.targetType === "Bda") {
+          bdaTargets.push(item);
+          totalBdaTarget += item.target; // Sum targets for BDAs
+        }
       });
-    
-      // Calculate the total target sum
-      const totalTarget = targets.reduce((sum, item) => sum + item.target, 0);
-  
-      res.status(200).json({
-        message: "Target retrieved successfully",
-        totalTarget,
-        targets,
-      });
+ 
+      // Prepare response structure
+      const response = {
+        message: "Targets retrieved successfully",
+        totalRegionTarget,
+        totalAreaTarget,
+        totalBdaTarget,
+        region: regionTargets.length ? regionTargets : null,
+        area: areaTargets.length ? areaTargets : null,
+        bda: bdaTargets.length ? bdaTargets : null,
+      };
+ 
+      res.status(200).json(response);
     } catch (error) {
-        console.error("Error adding Target:", error);
+      console.error("Error fetching targets:", error);
       res.status(500).json({ message: "Internal server error" });
     }
   };
-  
 
 
 
