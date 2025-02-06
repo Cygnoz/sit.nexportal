@@ -114,7 +114,4 @@ export const endPoints = {
   CHATS_LEAD:'/chats/lead',
  TARGET:'/targets',
  GET_ONE_TARGET:'/target',
-
- 
-
 };

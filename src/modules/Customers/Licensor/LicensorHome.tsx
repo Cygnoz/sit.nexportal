@@ -48,6 +48,7 @@ const LicensorHome = () => {
       }
     
       const getLicensers=async()=>{
+       
           try{
             setLoading(true)
             const {response,error}=await getAllLicenser(endPoints.LICENSER)
