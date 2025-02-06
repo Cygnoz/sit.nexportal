@@ -1,9 +1,8 @@
-import { SubmitHandler, useForm } from "react-hook-form";
-import Input from "../../../../components/form/Input";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { SubmitHandler, useForm } from "react-hook-form";
 import * as Yup from "yup";
+import Input from "../../../../components/form/Input";
 import Button from "../../../../components/ui/Button";
-import { useEffect } from "react";
 type Props = {
   onClose: () => void;
 };
