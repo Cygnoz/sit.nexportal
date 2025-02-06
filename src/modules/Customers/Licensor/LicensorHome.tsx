@@ -177,6 +177,7 @@ const LicensorHome = () => {
        <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[70%]">
         <AddLicenser regionId={regionId}  editId={editId} areaId={areaId} onClose={handleModalToggle} />
       </Modal>
+      
     </>
   )
 }

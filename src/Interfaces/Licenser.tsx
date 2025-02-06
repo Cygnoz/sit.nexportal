@@ -2,8 +2,8 @@ export interface LicenserData {
     salutation?: string;
     image?: string;
     firstName: string;
-    password:string;
-    confirmPassword:string
+    password?:string;
+    confirmPassword?:string
     lastName?: string;
     email: string;
     phone: string;

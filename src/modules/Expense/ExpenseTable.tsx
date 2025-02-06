@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 // import Eye from "../../assets/icons/Eye";
 // import NextIcon from "../../assets/icons/NextIcon";
 // import PencilLine from "../../assets/icons/PencilLine";
@@ -10,7 +10,7 @@ import IndiaLogo from "../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../assets/image/SaudiLogo.png";
 import UAELogo from "../../assets/image/UAELogo.webp";
 // import UserIcon from "../../assets/icons/UserIcon";
-import No_Data_found from "../../assets/image/NO_DATA.png";
+// import No_Data_found from "../../assets/image/NO_DATA.png";
 
 import ArrowRight from "../../assets/icons/ArrowRight";
 import SearchBar from "../../components/ui/SearchBar";
@@ -22,6 +22,7 @@ import Trash from "../../assets/icons/Trash";
 import PreviousIcon from "../../assets/icons/PreviousIcon";
 import NextIcon from "../../assets/icons/NextIcon";
 import SelectDropdown from "../../components/ui/SelectDropdown";
+import NoRecords from "../../components/ui/NoRecords";
 
 const ImageAndLabel = [
   { key: "userName", imageKey: "userImage" },
@@ -43,12 +44,14 @@ interface TableProps<T> {
   };
   actionList?: {
     label: "view" | "edit" | "delete";
-    function: (id: any, status:any) => void;
+    function: (id: any, status: any) => void;
   }[];
   noAction?: boolean;
   noPagination?: boolean;
   maxHeight?: string;
-  skeltonCount?:number
+  skeltonCount?: number;
+  loading?: boolean;
+
 }
 
 const ExpenseTable = <T extends object>({
@@ -59,12 +62,13 @@ const ExpenseTable = <T extends object>({
   noAction,
   noPagination,
   maxHeight,
-  skeltonCount=5
+  skeltonCount = 5,
+  loading,
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [noDataFound, setNoDataFound] = useState(false);
+  // const [noDataFound, setNoDataFound] = useState(false);
   // Filter data based on the search value
   const filteredData: any = useMemo(() => {
     return data?.filter((row) =>
@@ -73,7 +77,7 @@ const ExpenseTable = <T extends object>({
       )
     );
   }, [data, searchValue]);
- 
+
   const activityOptions = [
     { label: 'Meeting', value: 'meeting' },
     { label: 'Mail', value: 'email' },
@@ -147,7 +151,7 @@ const ExpenseTable = <T extends object>({
         return "bg-green-200 text-center text-black py-1 px-2 rounded-lg";
       case "Reject":
         return "bg-red-500 text-center text-white py-1 px-2 w-fit rounded-lg";
-     
+
       default:
         return "";
     }
@@ -164,14 +168,14 @@ const ExpenseTable = <T extends object>({
     if (key == "India") {
       return (
         <>
-          <img src={IndiaLogo} alt="India" className="w-5 h-5 rounded-full"/>
+          <img src={IndiaLogo} alt="India" className="w-5 h-5 rounded-full" />
           <p>India</p>
         </>
       );
     } else if (key == "United Arab Emirates") {
       return (
         <>
-          <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full"/>
+          <img src={UAELogo} alt="UAE" className="w-5 h-5 rounded-full" />
           <p>UAE</p>
         </>
       );
@@ -189,29 +193,28 @@ const ExpenseTable = <T extends object>({
     }
   };
 
- const renderHeader = () => (
-  <div
-    className={`flex ${
-      headerContents.search && !headerContents.title && !headerContents.sort
-        ? "justify-start"
-        : "justify-between"
-    } items-center mb-3`}
-  >
-   
-    {headerContents.search && (
-      <div className={`w-[440px] ${headerContents.title && " me-2"}`}>
-        <SearchBar
-          searchValue={searchValue}
-          onSearchChange={setSearchValue}
-          placeholder={headerContents.search.placeholder}
-        />
-      </div>
-    )}
-    {headerContents.sort && (
-      <div className="flex gap-4">
-     <SelectDropdown
+  const renderHeader = () => (
+    <div
+      className={`flex ${headerContents.search && !headerContents.title && !headerContents.sort
+          ? "justify-start"
+          : "justify-between"
+        } items-center mb-3`}
+    >
+
+      {headerContents.search && (
+        <div className={`w-[440px] ${headerContents.title && " me-2"}`}>
+          <SearchBar
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            placeholder={headerContents.search.placeholder}
+          />
+        </div>
+      )}
+      {headerContents.sort && (
+        <div className="flex gap-4">
+          <SelectDropdown
             filteredData={activityOptions}
-           
+
             placeholder="Select from & to date"
             searchPlaceholder="Select from & to date"
             width="w-60"
@@ -220,19 +223,19 @@ const ExpenseTable = <T extends object>({
           <SelectDropdown
             filteredData={periodOptions}
             placeholder="Select by category"
-          
+
             searchPlaceholder="Select by category"
             width="w-60"
           />
 
 
-      </div>
-    )}
-  </div>
-);
+        </div>
+      )}
+    </div>
+  );
 
-  
-  
+
+
   const renderImageAndLabel = (data: any) => {
     for (const { key, imageKey } of ImageAndLabel) {
       const keyValue = getNestedValue(data, key);
@@ -286,18 +289,18 @@ const ExpenseTable = <T extends object>({
     </tr>
   );
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (data?.length === 0) {
-        setNoDataFound(true);
-      } else {
-        setNoDataFound(false);
-      }
-    }, 3000);
-    return () => clearTimeout(timeout);
-  }, [data]);
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     if (data?.length === 0) {
+  //       setNoDataFound(true);
+  //     } else {
+  //       setNoDataFound(false);
+  //     }
+  //   }, 3000);
+  //   return () => clearTimeout(timeout);
+  // }, [data]);
 
-  const tabs =["RM", "AM", "BDA"]
+  const tabs = ["RM", "AM", "BDA"]
   const [activeTab, setActiveTab] = useState<string>("RM");
 
   return (
@@ -305,33 +308,32 @@ const ExpenseTable = <T extends object>({
       {renderHeader()}
 
       <div
-      style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
-         className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
+        style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
+        className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
-       
-       <div className="flex gap-16 rounded-xl px-4 py-3 text-base font-bold border-b border-gray-200">
-                {tabs.map((tab) => (
-                    <div
-                        key={tab}
-                        onClick={() => setActiveTab(tab)}
-                        className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
-                            ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
-                            : "text-gray-400"
-                            }`}
-                    >
-                        {tab}
-                    </div>
-                ))}
+
+        <div className="flex gap-16 rounded-xl px-4 py-3 text-base font-bold border-b border-gray-200">
+          {tabs.map((tab) => (
+            <div
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
+                ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
+                : "text-gray-400"
+                }`}
+            >
+              {tab}
             </div>
+          ))}
+        </div>
 
 
 
         <table
           style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
-       
-          className={`w-full border-collapse border-[#e7e6e6] border text-left  ${
-            maxHeight && "table-fixed"
-          }`}
+
+          className={`w-full border-collapse border-[#e7e6e6] border text-left  ${maxHeight && "table-fixed"
+            }`}
         >
           <thead
             className={` bg-[#F6F9FC]  ${maxHeight && "z-40 sticky top-0"}`}
@@ -343,12 +345,11 @@ const ExpenseTable = <T extends object>({
               {columns.map((col: any) => (
                 <th
                   key={String(col.key)}
-                  className={`border border-[#e7e6e6]  p-4 text-sm  text-[#303F58] font-medium ${
-                    col.key == "convert"
+                  className={`border border-[#e7e6e6]  p-4 text-sm  text-[#303F58] font-medium ${col.key == "convert"
                       ? "w-48 text-center"
                       : col.key?.toLowerCase().includes("status") &&
-                        "text-center min-w-[120px]"
-                  }`}
+                      "text-center min-w-[120px]"
+                    }`}
                 >
                   {col.key == "convert" ? "Convert" : col.label}
                 </th>
@@ -361,23 +362,28 @@ const ExpenseTable = <T extends object>({
             </tr>
           </thead>
           <tbody>
-            {noDataFound ? (
+            {loading ? (
+              // <tr>
+              //   <td
+              //     colSpan={columns?.length + 2}
+              //     className="text-center py-4 text-gray-500"
+              //   >
+              //     <NoRecords imgSize={70} textSize="md" />
+              //   </td>
+              // </tr>
+              renderSkeletonLoader()
+            ) : data?.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns?.length + 2}
                   className="text-center py-4 text-gray-500"
                 >
-                  <div className="flex justify-center flex-col items-center">
-                    <img width={70} src={No_Data_found} alt="No Data Found" />
-                    <p className="font-bold text-red-700">No Records Found!</p>
-                  </div>
+                  <NoRecords imgSize={70} textSize="md" />
                 </td>
               </tr>
-            ) : data?.length === 0 ? (
-              renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
-                <tr onClick={() => actionList?.find((data) => data.label === "view")?.function(row?._id, row?.status)}  key={rowIndex} className="hover:bg-gray-50 z-10 cursor-pointer">
+                <tr onClick={() => actionList?.find((data) => data.label === "view")?.function(row?._id, row?.status)} key={rowIndex} className="hover:bg-gray-50 z-10 cursor-pointer">
                   <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]">
                     {(currentPage - 1) * rowsPerPage + rowIndex + 1}
                   </td>
@@ -387,21 +393,20 @@ const ExpenseTable = <T extends object>({
                       className="border border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
                     >
                       <div
-                        className={`flex ${
-                          col.key.toLowerCase().includes("status") ||
-                          col?.key == "convert"
+                        className={`flex ${col.key.toLowerCase().includes("status") ||
+                            col?.key == "convert"
                             ? "justify-center"
                             : "justify-start"
-                        } items-center gap-2`}
+                          } items-center gap-2`}
                       >
                         {col.key === "country" ? (
                           countryLogo(getNestedValue(row, col.key))
                         ) : [
-                            "userName",
-                            "user.userName",
-                            "leadName",
-                            "firstName",
-                          ].includes(col.key) ? (
+                          "userName",
+                          "user.userName",
+                          "leadName",
+                          "firstName",
+                        ].includes(col.key) ? (
                           renderImageAndLabel(row)
                         ) : col.key.toLowerCase().includes("status") ? (
                           <p className={getStatusClass(row[col.key])}>
@@ -413,7 +418,7 @@ const ExpenseTable = <T extends object>({
                               onClick={() => col.label(row._id)}
                               variant="tertiary"
                               className="h-8 text-sm  text-[#565148]  border border-[#565148] rounded-xl"
-                              // size="lg"
+                            // size="lg"
                             >
                               Convert to Trial
                               <ArrowRight />
@@ -462,7 +467,7 @@ const ExpenseTable = <T extends object>({
         </table>
       </div>
 
-      {data&&data.length > 10 && !noPagination && (
+      {data && data.length > 10 && !noPagination && (
         <div className="flex justify-between items-center mt-4">
           <div className="text-xs text-[#71736B] font-medium flex gap-2">
             Showing {currentPage} of {totalPages || 1}

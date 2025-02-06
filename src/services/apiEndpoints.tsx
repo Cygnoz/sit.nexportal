@@ -13,6 +13,7 @@ export const endPoints = {
   // Region
   REGION: "/region",
   GET_REGIONS: "/regions",
+  AREA_PERFORMANCE:"/areaPerformance",
 
   // Area
   AREA: "/area",
@@ -113,7 +114,9 @@ export const endPoints = {
   CHAT_HISTORY:'/history',
   CHATS_LEAD:'/chats/lead',
 
-  RENEW:'/renew'
+  RENEW:'/renew',
 
 
+ TARGET:'/targets',
+ GET_ONE_TARGET:'/target',
 };

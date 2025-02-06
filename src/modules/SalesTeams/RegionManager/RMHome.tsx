@@ -73,6 +73,7 @@ const RMHome = () => {
 
   useEffect(() => {
     getRMs();
+    refreshContext({counts:true})
   }, []);
 
   // Define the columns with strict keys

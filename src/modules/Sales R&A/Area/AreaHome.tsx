@@ -89,6 +89,7 @@ const AreaHome = () => {
   
   useEffect(() => {
     getAreas();
+    // refreshContext({counts:true})
   }, []);
   
   // Data for HomeCards
