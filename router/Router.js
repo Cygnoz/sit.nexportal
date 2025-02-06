@@ -50,6 +50,10 @@ router.put("/deactivateRegion/:regionId",verifyToken,checkPermission('Deactivate
 router.get("/regions/:id/areas",verifyToken,checkPermission('View Region'), regionController.getAreasByRegion);
 router.get("/regions/:id/details",verifyToken,checkPermission('View Region'), regionController.getRegionDetails);
 
+router.get("/areaPerformance/:regionId",verifyToken,checkPermission('View Region'),regionDashboardController.getPerformanceByArea);
+ 
+ 
+
 // region dashboard
 router.get("/regions/:regionId/areas",verifyToken,checkPermission('View Region'), regionDashboardController.getAreasByRegion);
 

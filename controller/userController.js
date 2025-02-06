@@ -424,6 +424,12 @@ const roles = [
 
       //  chat
        { action: "View Chat", note: "View Chat" },
+
+      //  target
+       { action: "Add Target", note: "Add Target" },
+       { action: "View Target", note: "View Target" },
+      { action: "Edit Target", note: "Edit Target" },
+      { action: "Delete Target", note: "Delete Target" },
     ],
   },
   {
@@ -534,6 +540,11 @@ const roles = [
 
        //  chat
        { action: "View Chat", note: "View Chat" },
+      // target
+       { action: "Add Target", note: "Add Target" },
+       { action: "View Target", note: "View Target" },
+      { action: "Edit Target", note: "Edit Target" },
+      { action: "Delete Target", note: "Delete Target" },
     ],
   },
   {
@@ -644,6 +655,12 @@ const roles = [
 
        //  chat
        { action: "View Chat", note: "View Chat" },
+
+       // target
+       { action: "Add Target", note: "Add Target" },
+       { action: "View Target", note: "View Target" },
+      { action: "Edit Target", note: "Edit Target" },
+      { action: "Delete Target", note: "Delete Target" },
     ],
   },
   {
@@ -754,6 +771,12 @@ const roles = [
 
        //  chat
        { action: "View Chat", note: "View Chat" },
+
+       // target
+       { action: "Add Target", note: "Add Target" },
+       { action: "View Target", note: "View Target" },
+      { action: "Edit Target", note: "Edit Target" },
+      { action: "Delete Target", note: "Delete Target" },
     ],
   },
   {
@@ -864,6 +887,11 @@ const roles = [
 
        //  chat
        { action: "View Chat", note: "View Chat" },
+       // target
+       { action: "Add Target", note: "Add Target" },
+       { action: "View Target", note: "View Target" },
+      { action: "Edit Target", note: "Edit Target" },
+      { action: "Delete Target", note: "Delete Target" },
     ],
   },
   {
@@ -974,6 +1002,9 @@ const roles = [
 
        //  chat
        { action: "View Chat", note: "View Chat" },
+
+       // target
+       { action: "View Target", note: "View Target" },
     ],
   },
   {

@@ -177,3 +177,52 @@ exports.getTopPerformersByRegion = async (req, res) => {
 };
 
   
+exports.getPerformanceByArea = async (req, res) => {
+  try {
+    const { regionId } = req.params;
+ 
+    // Find all areas under the given region
+    const areas = await Area.find({ region: regionId }).select("_id areaName");
+    if (!areas.length) {
+      return res.status(404).json({ message: "No areas found for this region." });
+    }
+ 
+    const areaIds = areas.map(area => area._id);
+ 
+    // Aggregate Leads to count Licensers per area
+    const leadData = await Leads.aggregate([
+      { $match: { areaId: { $in: areaIds }, customerStatus: "Licenser" } },
+      {
+        $group: {
+          _id: "$areaId",
+          licenserCount: { $sum: 1 }
+        }
+      }
+    ]);
+ 
+    // Fetch Area Managers and populate the user fields (like userName)
+    const areaManagers = await AreaManager.find({ area: { $in: areaIds } })
+      .populate('user', 'userName')  // Populating userName and userImage from User collection
+      .lean();
+ 
+    const areaManagerMap = Object.fromEntries(
+      areaManagers.map(manager => [String(manager.area), manager.user])  // Storing populated user data
+    );
+ 
+    const response = areas.map(area => {
+      const leadInfo = leadData.find(ld => String(ld._id) === String(area._id)) || {};
+      return {
+        areaId: area._id,
+        areaName: area.areaName,
+        areaManager: areaManagerMap[String(area._id)] || null,  // Area Manager now includes user details
+        licenserCount: leadInfo.licenserCount || 0
+      };
+    });
+ 
+    res.status(200).json(response);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+ 
