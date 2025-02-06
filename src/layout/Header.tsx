@@ -100,6 +100,16 @@ const Header: React.FC<HeaderProps> = ({
   }, [focusedIndex]);
 
   useEffect(() => {
+    const newSocket  = io(AGENT_SOCKET_URL, {
+      path: "/socket.io/", // Ensure this matches your backend
+      transports: ["websocket", "polling"], // Force WebSocket first
+      withCredentials: true, // Include credentials if needed
+    });
+// io(AGENT_SOCKET_URL);
+newSocket.on('ticketCount', (count: any) => {
+console.log(count);
+refreshContext({ tickets: true });
+});
     const handleClickOutside = (event: MouseEvent) => {
       if (
         searchBarRef.current &&
@@ -118,16 +128,7 @@ const Header: React.FC<HeaderProps> = ({
    
   }, []);
    
-  const newSocket  = io(AGENT_SOCKET_URL, {
-        path: "/socket.io/", // Ensure this matches your backend
-        transports: ["websocket", "polling"], // Force WebSocket first
-        withCredentials: true, // Include credentials if needed
-      });
-  // io(AGENT_SOCKET_URL);
-newSocket.on('ticketCount', (count: any) => {
-console.log(count);
-refreshContext({ tickets: true });
-});
+ 
   return (
     <div
       className="p-4 flex items-center gap-2 w-full border-b border-b-[#DADEE5] header-container"
