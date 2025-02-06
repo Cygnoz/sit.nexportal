@@ -127,6 +127,25 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
         pdf.save("ID_Card.pdf");
     }
 
+    // const handleDownload = () => {
+    //     setTimeout(async () => {
+    //         const content = document.getElementById("idCard");
+    //         if (!content) {
+    //             return
+    //         }
+    //         const canvas = await html2canvas(content, { scale: 2 });
+    //         const imgData = canvas.toDataURL("image/png");
+
+    //         const pdf = new jsPDF("p", "mm", "a4");
+    //         const imgWidth = 210;
+    //         const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    //         pdf.addImage(imgData, "PNG", 0, 10, imgWidth, imgHeight);
+    //         pdf.save("id_card.pdf");
+    //     }, 100); // Delay ensures Tailwind styles are applied
+    // };
+
+
     // const businessCardDownload = async () => {
     //     const content = document.getElementById('business-card')
     //     if(!content) return;

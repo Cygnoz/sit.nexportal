@@ -41,12 +41,14 @@ const ActivityTimeline = () => {
           setActivityData(response.data.activities || []);
         } else {
           console.error('API Error:', error.response?.data?.message || error.message);
+          window.location.reload(); // Refresh page to fetch data again
         }
       } catch (err) {
         console.error('Fetch Error:', err);
+        window.location.reload(); // Refresh page to fetch data again
       }
     };
-
+  
     fetchTimelineData();
   }, [id, getAllActivityTimeline]);
 
@@ -102,37 +104,42 @@ const ActivityTimeline = () => {
   const handleTimelineSelection = (selectedOption: any) => {
     setSelectedPeriod(selectedOption);
     updateDate(selectedOption?.value);
-    
+
   };
 
   // Filter activities based on selected filters
   const filteredActivities = activityData.filter((activity) => {
     if (!activity?.activityType) return false;
-
+  
     // Filter by activity type
     const matchesActivity =
       selectedActivity.value === '' ||
       selectedActivity.value.toLowerCase() === activity.activityType.toLowerCase();
-
+  
+    // Show all activities if "All Timelines" is selected
+    if (selectedPeriod.value === '') {
+      return matchesActivity;
+    }
+  
     // Filter by timeline
     const createdAt = activity.createdAt ? new Date(activity.createdAt) : '';
     const today = new Date();
-
-    let matchesPeriod = selectedPeriod.value === null; 
-
+  
+    let matchesPeriod = false;
+  
     if (createdAt) {
       const yesterday = new Date(today);
       yesterday.setDate(today.getDate() - 1);
-
+  
       const tomorrow = new Date(today);
       tomorrow.setDate(today.getDate() + 1);
-
+  
       const after7Days = new Date(today);
       after7Days.setDate(today.getDate() + 7);
-
+  
       const after30Days = new Date(today);
       after30Days.setDate(today.getDate() + 30);
-
+  
       matchesPeriod =
         (selectedPeriod.value === 'today' && createdAt.toDateString() === today.toDateString()) ||
         (selectedPeriod.value === 'yesterday' && createdAt.toDateString() === yesterday.toDateString()) ||
@@ -140,7 +147,7 @@ const ActivityTimeline = () => {
         (selectedPeriod.value === 'after_7_days' && createdAt >= after7Days) ||
         (selectedPeriod.value === 'after_30_days' && createdAt >= after30Days);
     }
-
+  
     return matchesActivity && matchesPeriod;
   });
 
@@ -198,11 +205,11 @@ const ActivityTimeline = () => {
                   dangerouslySetInnerHTML={{
                     __html: DOMPurify.sanitize(
                       timeline?.note ||
-                        timeline?.taskTitle ||
-                        timeline?.meetingTitle ||
-                        timeline?.subject ||
-                        timeline?.emailMessage ||
-                        'N/A'
+                      timeline?.taskTitle ||
+                      timeline?.meetingTitle ||
+                      timeline?.subject ||
+                      timeline?.emailMessage ||
+                      'N/A'
                     ),
                   }}
                 />
