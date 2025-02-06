@@ -112,6 +112,4 @@ export const endPoints = {
   // Chat History
   CHAT_HISTORY:'/history',
   CHATS_LEAD:'/chats/lead'
- 
-
 };

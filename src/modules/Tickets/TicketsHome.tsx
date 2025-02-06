@@ -28,9 +28,7 @@ interface TicketsData extends BaseTicketsData {
 function TicketsHome({ }: Props) {
   const {user}=useUser()
   const {loading,setLoading}=useResponse()
-  const {allTicketsCount,refreshContext}=useRegularApi()
-  const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
-  const unresolveTickets=allTicketsCount?.allTickets??0
+  const {refreshContext}=useRegularApi()
   const { request: getAllTickets } = useApi("get", 3004);
  const [allTickets, setAllTickets] = useState<any[]>([]);
  const [filteredTickets, setFilteredTickets] = useState<any[]>([]);
@@ -70,7 +68,8 @@ function TicketsHome({ }: Props) {
     try {
       setLoading(true)
       const { response, error } = await getAllTickets(endPoints.GET_TICKETS);
-  
+      console.log("res",response);
+      console.log("err",error);
       if (response && !error) {
         const currentTime = new Date();
         const transformTicket = response.data?.tickets?.map((ticket: any) => ({
@@ -148,15 +147,14 @@ function TicketsHome({ }: Props) {
 
 useEffect(() => {
   getTickets();
-  refreshContext({tickets:true})
 }, []);
 
-useEffect(()=>{
-  if(unassignedTickets==0){
-    getTickets()
-    refreshContext({tickets:true})
-  }
-},[unassignedTickets])
+// useEffect(()=>{
+//   refreshContext({tickets:true})
+//   if(unassignedTickets==0){
+//     getTickets()
+//     }
+// },[unassignedTickets])
 
 
 const handleSort = useCallback(
@@ -192,16 +190,16 @@ const handleSort = useCallback(
 useEffect(() => {
 
  if(!filterWorking){
-  if (user?.role !== "Support Agent" && unassignedTickets > 0) {
+  if (user?.role !== "Support Agent" && allTicketss?.unAssignedTickets > 0) {
     handleSort("Un Assigned Tickets");
-  } else if(user?.role==="Support Agent" && unresolveTickets>0) {
+  } else if(user?.role==="Support Agent" && allTicketss?.unResolvedTickets>0) {
     handleSort("Un Resolved Tickets");
   }else{
     handleSort('Total Tickets')
   }
  }
  
-}, [user?.role, unassignedTickets,unresolveTickets, handleSort]); // Add necessary dependencies
+}, [user?.role,allTicketss, handleSort]); // Add necessary dependencies
 
 
 
@@ -324,7 +322,7 @@ useEffect(() => {
                 <SortBy sort={sort} />
               </div>
               <Table<TicketsData>
-                data={filteredTickets&&filteredTickets}
+                data={filteredTickets}
                 columns={columns}
                 headerContents={{
                   title: "Ticket Details",

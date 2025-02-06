@@ -23,6 +23,8 @@ type Props = {};
 
 
 const LiveChat = ({}: Props) => {
+  console.log("agent",AGENT_SOCKET_URL);
+  
   const {user}=useUser()
   const [initialCurrentRoom,setInitialCurrentRoom]=useState<any>(null)
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -93,26 +95,33 @@ const LiveChat = ({}: Props) => {
 
 
   useEffect(() => {
-    const newSocket = io(AGENT_SOCKET_URL);
+    const newSocket = io(AGENT_SOCKET_URL, {
+      path: "/socket.io/", // Ensure this matches your backend
+      transports: ["websocket", "polling"], // Force WebSocket first
+      withCredentials: true, // Include credentials if needed
+    });
+  
     setSocket(newSocket);
-
-    newSocket.emit("joinRoom",id);
-
+  
+    newSocket.emit("joinRoom", id);
+  
     newSocket.on("chatHistory", (chatHistory: any) => {
       setMessages(chatHistory);
     });
-
+  
     newSocket.on("newMessage", (newMessage: any) => {
-
-      
       setMessages((prev) => [...prev, newMessage]);
     });
-   
+  
     return () => {
       newSocket.disconnect();
     };
-    
-  }, [id]);
+  
+  }, [id, AGENT_SOCKET_URL]);
+  
+
+  console.log("socket",socket);
+  
 
   // useEffect(() => {
   //   if (ticketData?.customerId?._id) {

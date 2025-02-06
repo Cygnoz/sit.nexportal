@@ -228,6 +228,11 @@ const Table = <T extends object>({
   //     }
   //   }
   // }, [data,searchValue]);
+
+ 
+  
+  
+  
   
   return (
     <div className="w-full  bg-white rounded-lg p-4 mb-4">
@@ -274,7 +279,7 @@ const Table = <T extends object>({
           <tbody>
             { loading ? (
               renderSkeletonLoader()
-            ) :filteredData?.length === 0?(
+            ) :filteredData?.length === 0 ?(
               <tr>
                 <td
                   colSpan={noAction?columns?.length+1:columns?.length + 2}
