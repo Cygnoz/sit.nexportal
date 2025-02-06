@@ -4,19 +4,19 @@ import { months } from "../../../components/list/MonthYearList";
 import TargetInfoModal from "../../../components/modal/TargetInfoModal";
 import Modal from "../../../components/modal/Modal";
 import { useUser } from "../../../context/UserContext";
+import CheckIcon from "../../../assets/icons/CheckIcon";
+
 
 type Props = {};
 
 const ProgressBar = ({}: Props) => {
-     const {user}=useUser()
-       user?.role
+  const { user } = useUser();
   const [isModalOpen, setIsModalOpen] = useState({ addInfo: false });
-  const [achieved, setAchieved] = useState(28);
+  const [achieved] = useState(50);
   const goal = 100;
   const balance = goal - achieved;
   const percentage = (achieved / goal) * 100;
-  const [barHover, setBarHover] = useState(false);
-  
+
   const tickMarks = [0, 10, 30, 60, 100];
 
   const handleModalToggle = (addInfo = false) => {
@@ -28,7 +28,7 @@ const ProgressBar = ({}: Props) => {
       <div className="p-2 flex justify-between">
         <h1 className="text-lg font-bold">Target</h1>
         <div className="flex gap-4">
-        {user?.role !== 'BDA' && (
+          {user?.role !== 'BDA' && (
             <h1
               onClick={() => handleModalToggle(true)}
               className="mt-1 underline cursor-pointer text-red-600"
@@ -43,67 +43,50 @@ const ProgressBar = ({}: Props) => {
       <div className='flex -mt-6 ms-2'>
         <h1>Sep 12, 2024</h1>
       </div>
+      <div className="text-end">
+  <h1 className="text-[#B7B7B7] text-xl font-medium">Goal</h1>
+</div>
+
 
       <div className="mb-4 flex justify-between items-center mt-5">
-        <span className="text-gray-600">Achieved Target</span>
-        <span 
-          className="text-green-600 font-bold relative cursor-pointer"
-      
-        >
-          {achieved} License
-         
-           
-     
+        <span className="text-gray-600 text-base font-medium">Achieved</span>
+        <span className="text-green-600 font-bold">
+          100 License
         </span>
       </div>
 
       <h1 className="text-3xl font-medium text-[#22593F]">{percentage.toFixed(0)}%</h1>
 
-      <div 
-        className="relative w-full bg-gray-200 rounded-full h-4"
-      >
-        <div 
-          className="absolute top-0 left-0 bg-green-500 h-4 rounded-full" 
+      <div className="relative w-full bg-gray-200 rounded-full h-4">
+        <div
+          className="absolute top-0 left-0 bg-[#22593F] h-4 rounded-full"
           style={{ width: `${percentage}%` }}
-          onMouseEnter={() => setBarHover(true)}
-          onMouseLeave={() => setBarHover(false)}
+        ></div>
+
+        {/* Floating Info Box */}
+        <div
+          className="absolute top-[-135px] bg-[#FAFAFA] border shadow-md rounded text-center p-3 -ms-40 transform translate-x-1/2"
+          style={{ left: `calc(${percentage}% - 20px)` }}
         >
-          {barHover && (
-            <div className="absolute top-[-30px] right-0 transform translate-x-1/2">
-              <div className="p-4 bg-[#FAFAFA] border shadow-md rounded text-center">
-                <p className="text-xs font-normal">Achieved</p>
-                <p className="text-base font-extrabold text-[#54B86D]"> {achieved} License</p>
-                <div className="bg-white flex gap-3">
-                <p className="text-xs font-normal">Balance</p>
-                <p className="text-xs font-semibold text-[#9B3230]"> {balance} License</p>
-                </div>
-              </div>
-            </div>
-          )}
+          <p className="text-xs font-normal">Achieved Target</p>
+          <p className="text-base font-extrabold text-[#54B86D]">{achieved} License</p>
+          <div className="flex bg-white p-3">
+            <p className="text-xs font-normal">Balance</p>
+            <p className="text-xs font-semibold text-[#9B3230]">{balance} License</p>
+          </div>
         </div>
       </div>
 
-      <div className="flex justify-between mt-2 text-sm text-gray-500 w-full">
-  {tickMarks.map((value) => (
-    <div key={value} className="relative flex flex-col items-center">
-      <span className="text-green-700 font-semibold mb-1">
-        {value <= achieved ? "✔" : ""}
-      </span>
-      <span>{value}</span>
-    </div>
-  ))}
-</div>
-
-
-      <input
-        type="range"
-        min="0"
-        max={goal}
-        step="1"
-        value={achieved}
-        onChange={(e) => setAchieved(Number(e.target.value))}
-        className="mt-6 w-full h-1 bg-transparent appearance-none cursor-pointer"
-      />
+      <div className="flex justify-between mt-2 text-sm text-gray-500 w-full relative">
+        {tickMarks.map((value) => (
+          <div key={value} className="relative flex flex-col items-center -mt-12">
+            {value !== 0 && <CheckIcon/>}
+            <div className="mt-10">
+              <span>{value}</span>
+            </div>
+          </div>
+        ))}
+      </div>
 
       <p className="mt-4 text-end text-gray-700 font-medium">
         Great progress! You’re {balance}% toward your goal.

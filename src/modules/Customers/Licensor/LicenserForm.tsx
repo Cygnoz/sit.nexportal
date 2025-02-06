@@ -20,8 +20,8 @@ import InputPasswordEye from "../../../components/form/InputPasswordEye";
 type Props = {
   onClose: () => void;
   editId?: string;
-  regionId?:any
-  areaId?:any
+  regionId?: any
+  areaId?: any
 };
 
 interface RegionData {
@@ -29,35 +29,44 @@ interface RegionData {
   value: string;
 }
 
-const validationSchema = Yup.object({
+const baseSchema ={
   firstName: Yup.string().required("First name is required"),
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string().required("Phone is required"),
-   password: Yup.string()
-      .required("Password is required"),
-   confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password")], "Passwords must match")
-      .required("Confirm Password is required"),
+ 
+ 
   companyName: Yup.string().required("Company Name  is required"),
   regionId: Yup.string().required("Region is required"),
   areaId: Yup.string().required("Area is required"),
   bdaId: Yup.string().required("Bda is required"),
   startDate: Yup.string().required("StartDate is required"),
   endDate: Yup.string().required("EndDate is required"),
+};
+
+const addValidationSchema = Yup.object().shape({
+  ...baseSchema,
+  password: Yup.string()
+  .required("Password is required"),
+  confirmPassword: Yup.string()
+  .oneOf([Yup.ref("password")], "Passwords must match")
+  .required("Confirm Password is required"),
 });
 
-function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
+const editValidationSchema = Yup.object().shape({
+  ...baseSchema,
+});
+function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
 
   const { user } = useUser();
   const { request: addLicenser } = useApi("post", 3001);
   const { request: editLicenser } = useApi("put", 3001);
   const { request: getLicenser } = useApi("get", 3001);
-      const [regionData, setRegionData] = useState<RegionData[]>([]);
-      const [areaData, setAreaData] = useState<any[]>([]);
+  const [regionData, setRegionData] = useState<RegionData[]>([]);
+  const [areaData, setAreaData] = useState<any[]>([]);
 
-  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries,refreshContext } =
+  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries, refreshContext } =
     useRegularApi();
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -79,7 +88,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
     watch,
     setValue,
   } = useForm<LicenserData>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
     defaultValues: {
       salutation: "Mr.", // Default value for salutation
     },
@@ -152,39 +161,39 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
 
   useEffect(() => {
     // Map the regions into the required format for regions data
-    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
+    const filteredRegions: any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
 
 
-  setRegionData(filteredRegions)
- if(regionId){
-    setValue("regionId",regionId)
-    setValue("areaId",areaId)
-    
-  }
-},[dropdownRegions,regionId])
+    setRegionData(filteredRegions)
+    if (regionId) {
+      setValue("regionId", regionId)
+      setValue("areaId", areaId)
+
+    }
+  }, [dropdownRegions, regionId])
 
 
-   // UseEffect for updating areas based on selected region
-   useEffect(() => {
+  // UseEffect for updating areas based on selected region
+  useEffect(() => {
     const filteredAreas = dropDownAreas?.filter(
-      (area: any) => area?.region=== watch("regionId")
+      (area: any) => area?.region === watch("regionId")
     );
-    const transformedAreas:any = filteredAreas?.map((area: any) => ({
+    const transformedAreas: any = filteredAreas?.map((area: any) => ({
       label: area.areaName,
       value: String(area._id),
     }));
     setAreaData(transformedAreas)
-    if(regionId && areaId){
-      setValue("regionId",regionId)
-      setValue("areaId",areaId)
-      }
+    if (regionId && areaId) {
+      setValue("regionId", regionId)
+      setValue("areaId", areaId)
+    }
 
-  
-  }, [watch("regionId"), dropDownAreas,areaId,regionId]);
-  
+
+  }, [watch("regionId"), dropDownAreas, areaId, regionId]);
+
 
 
   // UseEffect for updating regions
@@ -204,17 +213,17 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
     }));
   }, [dropDownBdas, watch("areaId")]);
 
-  useEffect(()=>{
-    if(user?.role=="BDA"){
-      const filteredBDA:any = dropDownBdas?.find(
+  useEffect(() => {
+    if (user?.role == "BDA") {
+      const filteredBDA: any = dropDownBdas?.find(
         (bda: any) => bda?._id === user?.userId
       );
       setValue("areaId", filteredBDA?.area || "");
-        setValue("regionId", filteredBDA?.region || "");
-        setValue("bdaId", filteredBDA?._id || "");
-        
+      setValue("regionId", filteredBDA?.region || "");
+      setValue("bdaId", filteredBDA?._id || "");
+
     }
-  },[user,dropDownBdas])
+  }, [user, dropDownBdas])
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
@@ -259,7 +268,9 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
         const Licenser = response.data; // Return the fetched data
         console.log("Fetched Licenser data:", Licenser);
         const { licensers, ...filteredLicencers } = Licenser;
+      //  console.log("sss",filteredLicencers);
         setFormValues(filteredLicencers);
+        
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching Lead data:", error);
@@ -269,9 +280,12 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
     }
   };
 
+
+  
   useEffect(() => {
     getOneLicenser();
-    refreshContext({dropdown:true,countries:true})
+    refreshContext({ dropdown: true, countries: true })
+    
   }, [editId]);
 
   const handleInputChange = (field: keyof LicenserData) => {
@@ -326,7 +340,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
           </div>
           <div className="col-span-10">
             <div className="grid grid-cols-3 gap-2">
-            <PrefixInput
+              <PrefixInput
                 required
                 label="First Name"
                 selectName="salutation"
@@ -348,7 +362,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 placeholder="Enter Last Name"
                 error={errors.lastName?.message}
                 {...register("lastName")}
-                // onChange={() => handleInputChange("lastName")}
+              // onChange={() => handleInputChange("lastName")}
               />
               <CustomPhoneInput
                 required
@@ -362,6 +376,8 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                   setValue("phone", value); // Update the value of the phone field in React Hook Form
                 }}
               />
+              </div>
+               <div className={`grid ${editId?'grid-cols-2':'grid-cols-3'}  gap-2 mt-4`}>
               <Input
                 required
                 label="Email"
@@ -369,28 +385,43 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 placeholder="Enter Email"
                 error={errors.email?.message}
                 {...register("email")}
-                // onChange={() => handleInputChange("email")}
+              // onChange={() => handleInputChange("email")}
               />
+              {editId ? (
 
-             <InputPasswordEye
-             label="Password"
-             required
-             placeholder="Enter Password"
-             error={errors?.password?.message}
-                {...register("password")}
-             />
-             <InputPasswordEye
-             label="Confirm Password"
-             required
-             placeholder="Enter Password"
-             error={errors?.confirmPassword?.message}
-                {...register("confirmPassword")}
-             />
+                <InputPasswordEye
+                  label="Change Password"
+                 
+                  placeholder="Enter Password"
+                  error={errors?.password?.message}
+                  {...register("password")}
+
+                />
+              ) : (
+
+                <>
+                  <InputPasswordEye
+                    label="Password"
+                    required
+                    placeholder="Enter Password"
+                    error={errors?.password?.message}
+                    {...register("password")}
+                  />
+                  <InputPasswordEye
+                    label="Confirm Password"
+                    required
+                    placeholder="Enter Password"
+                    error={errors?.confirmPassword?.message}
+                    {...register("confirmPassword")}
+                  />
+                </>
+              )}
+              
             </div>
             <div className="grid grid-cols-2 gap-4 mt-4">
-              
 
-              
+
+
 
               <Input
                 label="Address"
@@ -433,20 +464,12 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 options={data.state}
               />
               <Input
-                label="Company ID"
-                placeholder="Enter Company ID"
-                {...register("companyId")}
-                error={errors.companyId?.message}
-              />
-              <Input
                 label="Company Name"
                 required
                 placeholder="Enter Company Name"
                 error={errors.companyName?.message}
                 {...register("companyName")}
               />
-            </div>
-            <div className="grid grid-cols-2 gap-4 my-4">
               <Input
                 required
                 label="Start Date"
@@ -455,16 +478,11 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 error={errors.startDate?.message}
                 {...register("startDate")}
               />
-              <Input
-                required
-                label="End Date"
-                type="date"
-                placeholder="Select End Date"
-                error={errors.endDate?.message}
-                {...register("endDate")}
-              />
-              <div className="col-span-2 gap-3 grid grid-cols-3">
-                <Select
+              
+              
+            </div>
+            <div className="grid grid-cols-2 gap-4 my-4">
+            <Select
                   readOnly={regionId || user?.role === "BDA"}
 
                   required
@@ -480,8 +498,18 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                   error={errors.regionId?.message}
                   options={regionData}
                 />
+              <Input
+                required
+                label="End Date"
+                type="date"
+                placeholder="Select End Date"
+                error={errors.endDate?.message}
+                {...register("endDate")}
+              />
+              <div className="col-span-2 gap-3 grid grid-cols-2">
+               
                 <Select
-                readOnly={areaId || user?.role === "BDA"}
+                  readOnly={areaId || user?.role === "BDA"}
                   required
                   label="Select Area"
                   placeholder={
@@ -532,7 +560,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
           </div>
         </form>
       </div>
-      
+
     </>
   );
 }
