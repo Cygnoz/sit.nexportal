@@ -403,6 +403,7 @@ const roles = [
       { action: "View Licenser", note: "View Licenser" },
       { action: "Edit Licenser", note: "Edit Licenser" },
       { action: "Delete Licenser", note: "Delete Licenser" },
+      { action: "Renew Licenser", note: "Renew Licenser" },
       
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
