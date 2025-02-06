@@ -52,6 +52,8 @@ router.post("/targets",verifyToken,checkPermission('Add Target'), targetControll
 
 router.get('/targets/:targetType',verifyToken,checkPermission('View Target'), targetController.getAllTargets);
 
+router.get('/targets/:id',verifyToken,checkPermission('View Target'), targetController.getTargetById);
+
 router.put("/targets/:id",verifyToken,checkPermission('Edit Target'),targetController.updateTarget,ActivityLogGeneration('Edit Target'));
 
 router.delete("/targets/:id",verifyToken,checkPermission('Delete Target'),targetController.deleteTarget,ActivityLogGeneration('Delete Target'));

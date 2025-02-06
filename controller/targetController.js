@@ -155,6 +155,38 @@ exports.addTarget = async (req, res , next) => {
     }
   };
 
+  exports.getTargetById = async (req, res) => {
+    try {
+      const { id } = req.params;
+ 
+      // Fetch the target by ID and populate necessary fields
+      const target = await Target.findById(id)
+        .populate("region", "_id regionName")  // Populate region details
+        .populate("area", "_id areaName")    // Populate area details
+        .populate({
+          path: "bda",
+          select: "user",  // Only populate the user field
+          populate: {
+            path: "user",  // Populate user details
+            select: "userName userImage",
+          },
+        });
+ 
+      // Check if the target exists
+      if (!target) {
+        return res.status(404).json({ error: "Target not found" });
+      }
+ 
+      // Return the target with populated details
+      res.status(200).json({
+        message: "Target retrieved successfully",
+        target,
+      });
+    } catch (error) {
+      console.error("Error fetching target:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
 
 
   exports.updateTarget = async (req, res, next) => {
