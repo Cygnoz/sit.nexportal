@@ -3,7 +3,8 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  LabelList,
+  Cell,
+ 
   Legend,
   Line,
   LineChart,
@@ -12,8 +13,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import profileImage from '../../../assets/image/AvatarImg.png';
 import Table from "../../../components/ui/Table";
+import { useEffect, useState } from "react";
+import { endPoints } from "../../../services/apiEndpoints";
+import useApi from "../../../Hooks/useApi";
+import { months, years } from "../../../components/list/MonthYearList";
+import SelectDropdown from "../../../components/ui/SelectDropdown";
+import NoRecords from "../../../components/ui/NoRecords";
+// import { allYears } from "../../../components/list/YearList";
 interface BDAData {
   employeeId: string;
   bdaName: string;
@@ -25,25 +32,64 @@ interface BDAData {
   leadsClosed: string;
 }
 type Props = {
+
   totalBdas:Array<any>;
+  getData:any
+  loading?:boolean
 };
 
 
 
-const RMViewBDAandGraph = ({totalBdas}: Props) => {
+const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
+  const { request: TopPerformingAM } = useApi("get", 3002);
+ 
+   const [chartData, setChartData] = useState([]);
+   const [selectedMonth, setSelectedMonth] = useState<any>('');
+   const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
+  const [selectedData, setSelectedData] = useState<string>(`${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`);
+
   const navigate=useNavigate()
-  console.log("total bda",totalBdas);
+
+  useEffect(() => {
+    // Convert month name to number (1-12) and ensure it's two digits
+    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0');
+    setSelectedData(`${selectedYear.value}-${monthIndex}`);
+  }, [selectedMonth, selectedYear]);
+  
+
+
   
   const handleView = (id:any) => {
     if (id) {
       navigate(`/bda/${id}`)
-      
-    }
-
-  };
-
-  
-
+       }
+        };
+        const getPerformers = async () => {
+          try {
+            const endPoint = `${endPoints.GET_ALL_RM}/${getData?.regionManager?._id}/areamanager?date=${selectedData}`;
+            const { response, error } = await TopPerformingAM(endPoint);
+          //  console.log("API Endpoint:", endPoint);
+        
+            if (response && !error) {
+              const transformedData = response.data.topPerformingAreaManagers.map((item: any) => ({
+                name: item.user.userName, 
+                CR: parseFloat(item.conversionRate.replace("%", "")) // Convert "100.00%" to 100.00
+              }));
+        
+            //  console.log("Transformed Data:", transformedData);
+              setChartData(transformedData);
+            } else {
+              console.error("Error:", error?.data || "Unknown error occurred");
+            }
+          } catch (err) {
+            console.error(err);
+          }
+        };
+        
+        useEffect(() => {
+          getPerformers();
+        }, [selectedData, getData]);
+        
 
 
   const CustomLegend = () => {
@@ -148,77 +194,13 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
 
 
   
-  // Chart Data
-  const ChartData = [
-    { name: "Page A", uv: 3900, avatar: profileImage },
-    { name: "Page B", uv: 3000, avatar: profileImage },
-    { name: "Page C", uv: 2000, avatar: profileImage },
-    { name: "Page D", uv: 2780, avatar: profileImage },
-    { name: "Page E", uv: 1890, avatar: profileImage },
-    { name: "Page F", uv: 2390, avatar: profileImage },
-    { name: "Page G", uv: 3490, avatar: profileImage },
-    { name: "Page H", uv: 4000, avatar: profileImage },
-    { name: "Page G", uv: 3490, avatar: profileImage },
-    { name: "Page H", uv: 4000, avatar: profileImage },
-  ];
   
-  // Normalize the data
-  const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
-  const normalizedData = ChartData.map((entry) => ({
-    ...entry,
-    uv: (entry?.uv / maxValue) * 100,
-  }));
   
-  // Custom Bubble Component
-  const CustomBubble = (props:any) => {
-    const { x, y } = props;
   
-    if (x == null || y == null) return null;
-    return (
-      <div
-        style={{
-          position: "absolute",
-          left: `${x - 4}px`,
-          top: `${y - 8}px`,
-          width: "8px",
-          height: "8px",
-          backgroundColor: "#30B777",
-          borderRadius: "50%",
-        }}
-      />
-    );
-  };
   
-  // Custom Bar Shape with Curved Top
-  const CustomBarWithCurve = (props:any) => {
-    const { x, y, width, height, fill } = props;
-  
-    if (!x || !y || !width || !height) return null;
-  
-    const radius = width / 2;
-    const gap = 2;
-  
-    return (
-      <>
-        <rect
-          x={x}
-          y={y + gap}
-          width={width}
-          height={height - radius - gap}
-          fill={fill}
-          rx={radius}
-          ry={radius}
-        />
-        <circle
-          cx={x + radius}
-          cy={y - radius + gap}
-          r={radius}
-          fill="#30B777"
-        />
-      </>
-    );
-  };
-  console.log("BDA",bdaData);
+  //console.log("BDA",bdaData);
+  const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
+
   
   return (
     <div>
@@ -235,6 +217,7 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
             },
           }}
           actionList={[{ label:"view", function: handleView }]}
+          loading={loading}
         />
       </div>
 
@@ -245,7 +228,7 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
           <div className="py-3 bg-white p-2">
             <div className="py-1 ms-2 flex justify-between">
               <h2 className="font-bold">Lead Conversion Rate per Region</h2>
-             
+              
             </div>
             <div className="mt-5">
                 <ResponsiveContainer width="100%" minHeight={345}>
@@ -306,56 +289,64 @@ const RMViewBDAandGraph = ({totalBdas}: Props) => {
           </div>
         </div>
         <div className="col-span-5">
-        <div className='w-full h-fit p-4 bg-white rounded-lg'>
-      <p className="text-[#303F58] text-lg font-bold p-2">Top performing Area Managers</p>
-      <p className='text-[#4B5C79] text-xs font-normal p-2'>Based on lead Conversion Performance Metric</p>
+       <div className="p-3 bg-white w-full space-y-2 rounded-lg ">
+        <div className="flex justify-between">
+        <div>
+           <p className="text-[#303F58] text-lg font-bold">
+            Top performing Area Managers
+          </p>
+          <p className="text-[#4B5C79] text-xs font-normal">
+            Based on lead Conversion Performance Metric
+          </p>
+          </div>
+          <div className="flex gap-1">
+                <label htmlFor="month-select"></label>
 
-      <div className="relative">
-      <ResponsiveContainer width="100%" minHeight={300}>
-      <BarChart
-  className="h-fit"
-  barGap={44}
-  barCategoryGap="40%"
-  width={500}
-  height={350}
-  data={normalizedData}
->
-  {/* Cartesian Grid */}
-  <CartesianGrid horizontal={true} vertical={false} strokeDasharray="3 3" stroke="#e0e0e0" />
-
-  {/* Y-Axis */}
-  <YAxis
-    tickFormatter={(tick) => `${tick}%`}
-    domain={[0, 100]}
-    ticks={[0, 20, 40, 60, 80, 100]}
-    axisLine={false}
-    tickLine={false}
-  />
-
-  {/* Bar with custom curved shape */}
-  <Bar
-  dataKey="uv"
-  fill="#B9E3CF"
-  barSize={8}
-  shape={<CustomBarWithCurve />}
->
-  {/* Add bubbles at the top */}
-  <LabelList dataKey="uv" content={(props) => <CustomBubble {...props} />} />
-
-</Bar>
-
-</BarChart>
-</ResponsiveContainer>
-<div className='flex ms-20 gap-[23px] -mt-2'>
-{ChartData.map((chart)=>(
-  <img className='w-5 h-5 rounded-full' src={chart.avatar} alt="" />
-)) 
-}
- </div>
- 
-
-      </div>
-    </div>
+                <SelectDropdown
+                  setSelectedValue={setSelectedMonth}
+                  selectedValue={selectedMonth}
+                  filteredData={months}
+                  //   searchPlaceholder="Search Month"
+                  width="w-44"
+                />
+                 <SelectDropdown
+                  setSelectedValue={setSelectedYear}
+                  selectedValue={selectedYear}
+                 filteredData={years}
+        
+                 searchPlaceholder="Search Month"
+                  width="w-28"
+                />
+              </div>
+        </div>
+         
+           
+           <div className="mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
+             {/* Wrapper for dynamic width */}
+             <div style={{ width: '100%' }} className="-ms-4 mt-3">
+             {chartData.length > 0 ? (
+               <ResponsiveContainer minWidth="100%"  minHeight={320}>
+               <BarChart
+                 height={280}
+                 data={chartData}
+               >
+                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                 <YAxis tickFormatter={(value) => `${value}%`}  axisLine={false} tickLine={false} domain={[0, 100]} />
+                 <Tooltip />
+                 <Bar barSize={30} dataKey="CR" radius={10}>
+                   {chartData?.map((entry: any, index: any) => (
+                     <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
+                   ))}
+                 </Bar>
+               </BarChart>
+               </ResponsiveContainer>
+               ) : (
+                <NoRecords parentHeight="320px"/>
+              )}
+             </div>
+           </div>
+         </div>
 
         </div>
       </div>

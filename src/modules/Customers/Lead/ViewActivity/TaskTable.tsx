@@ -14,7 +14,6 @@ import Trash from "../../../../assets/icons/Trash";
 import PreviousIcon from "../../../../assets/icons/PreviousIcon";
 import NextIcon from "../../../../assets/icons/NextIcon";
 import TickIcon from "../../../../assets/icons/TickIcon";
-import EllipsisVerticalIcon from "../../../../assets/icons/EllipsisVerticalIcon";
 import Modal from "../../../../components/modal/Modal";
 import TasksForm from "../ViewModals/TasksForm";
 // import EllipsisVerticalIcon from "../../../../assets/icons/ellipsisVerticalIcon";
@@ -322,7 +321,6 @@ const TaskTable = <T extends object>({
               ))}
               {data&&data?.length>0&&<>
                 <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
-                <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
               </>}
               {!noAction && (
                 <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium">
@@ -338,7 +336,7 @@ const TaskTable = <T extends object>({
                   colSpan={noAction ? columns?.length + 2 : columns?.length + 0}
                   className="text-center py-4 text-gray-500"
                 >
-                  <div className="flex justify-center flex-col items-center">
+                  <div className="flex justify-center flex-col items-center ml-56">
                     <img width={70} src={No_Data_found} alt="No Data Found" />
                     <p className="font-bold text-red-700">No Records Found!</p>
                   </div>
@@ -410,12 +408,7 @@ const TaskTable = <T extends object>({
                     </div>
 
                   </td>
-                  <td className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex justify-center">
-                      <EllipsisVerticalIcon color="#768294" />
-                    </div>
-
-                  </td>
+                
                   {!noAction && (
                     <td
                       className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
@@ -456,7 +449,7 @@ const TaskTable = <T extends object>({
         </table>
       </div>
 
-      {!noPagination && (
+      {data&&data.length > 10 &&!noPagination && (
         <div className="flex justify-between items-center mt-4">
           <div className="text-xs text-[#71736B] font-medium flex gap-2">
             Showing {currentPage} of {totalPages || 1}

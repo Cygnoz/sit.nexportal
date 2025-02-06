@@ -5,6 +5,10 @@ import Settings from "../assets/icons/Settings";
 import { NavList } from "../components/list/NavLists";
 import SearchBar from "../components/ui/SearchBar";
 import UserModal from "./Logout/UserModal";
+import { useRegularApi } from "../context/ApiContext";
+import { useUser } from "../context/UserContext";
+import { io } from 'socket.io-client';
+const AGENT_SOCKET_URL =import.meta.env.VITE_REACT_APP_TICKETS
 
 interface HeaderProps {
   searchValue: string;
@@ -12,21 +16,31 @@ interface HeaderProps {
   scrollToActiveTab: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToActiveTab }) => {
+const Header: React.FC<HeaderProps> = ({
+  searchValue,
+  setSearchValue,
+  scrollToActiveTab,
+}) => {
+  const { allTicketsCount, refreshContext } = useRegularApi();
+  const { user } = useUser();
+  const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
+  const allTickets = allTicketsCount?.allTickets ?? 0;
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(-1); // Manage focused item index
+  const [filteredNavList, setFilteredNavList] = useState<any>(null);
   const navigate = useNavigate();
 
   const searchBarRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLUListElement>(null);
 
-  const filteredNavList = NavList.filter(
-    (route: any) =>
-      route.key.trim().toLowerCase().includes(searchValue.toLowerCase()) ||
-      route.label.trim().toLowerCase().includes(searchValue.toLowerCase())
-  );
-  // State to manage modal visibility
-
+  useEffect(() => {
+    const filtered = NavList.filter(
+      (route: any) =>
+        route.key.trim().toLowerCase().includes(searchValue.toLowerCase()) ||
+        route.label.trim().toLowerCase().includes(searchValue.toLowerCase())
+    );
+    setFilteredNavList(filtered);
+  }, [searchValue]);
 
   const handleSelect = (route: any) => {
     setDropdownVisible(false);
@@ -37,7 +51,7 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (!dropdownVisible) return;
-
+  
     switch (event.key) {
       case "ArrowDown":
         event.preventDefault();
@@ -45,27 +59,50 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
           prevIndex < filteredNavList.length - 1 ? prevIndex + 1 : 0
         );
         break;
+  
+      case "Enter":
+        if (focusedIndex >= 0) {
+          handleSelect(filteredNavList[focusedIndex].key);
+        }
+        break;
+  
+      case "Escape":
+        setDropdownVisible(false);
+        break;
+    }
+  };
+  
+  const handleKeyUp = (event: React.KeyboardEvent) => {
+    if (!dropdownVisible) return;
+  
+    switch (event.key) {
       case "ArrowUp":
         event.preventDefault();
         setFocusedIndex((prevIndex) =>
           prevIndex > 0 ? prevIndex - 1 : filteredNavList.length - 1
         );
         break;
-      case "Enter":
-        if (focusedIndex >= 0) {
-          handleSelect(filteredNavList[focusedIndex].key);
-        }
-        break;
-      case "Escape":
-        setDropdownVisible(false);
-        break;
     }
   };
+  
+
+  // Auto-scroll to the focused item
+  useEffect(() => {
+    if (focusedIndex >= 0 && dropdownRef.current) {
+      const focusedItem = dropdownRef.current.children[focusedIndex] as HTMLElement;
+      if (focusedItem) {
+        focusedItem.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        });
+      }
+    }
+  }, [focusedIndex]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
-        searchBarRef.current && 
+        searchBarRef.current &&
         !searchBarRef.current.contains(event.target as Node) &&
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
@@ -78,22 +115,31 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
+   
   }, []);
- 
-
+   
+  const newSocket  = io(AGENT_SOCKET_URL, {
+        path: "/socket.io/", // Ensure this matches your backend
+        transports: ["websocket", "polling"], // Force WebSocket first
+        withCredentials: true, // Include credentials if needed
+      });
+  // io(AGENT_SOCKET_URL);
+newSocket.on('ticketCount', (count: any) => {
+console.log(count);
+refreshContext({ tickets: true });
+});
   return (
     <div
-      className="p-4 flex items-center gap-2 w-full border-b border-b-[#DADEE5]  header-container"
+      className="p-4 flex items-center gap-2 w-full border-b border-b-[#DADEE5] header-container"
       onKeyDown={handleKeyDown}
+      onKeyUp={handleKeyUp}
     >
       <div className="relative w-[68%]" ref={searchBarRef}>
         <SearchBar
-          placeholder="Search modules "
+          placeholder="Search modules"
           searchValue={searchValue}
           onSearchChange={setSearchValue}
-          onClick={() => {
-            setDropdownVisible((prev) => !prev);
-          }}
+          setDropdownVisible={setDropdownVisible}
         />
         {dropdownVisible && (
           <ul
@@ -101,7 +147,9 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
             className="absolute z-10 w-full mt-1 bg-white border max-h-96 overflow-y-scroll custom-scrollbar border-gray-300 rounded shadow"
           >
             {filteredNavList.length === 0 ? (
-              <li className="px-4 py-2 text-red-500 text-center font-bold">No module found!</li>
+              <li className="px-4 py-2 text-red-500 text-center font-bold">
+                No module found!
+              </li>
             ) : (
               filteredNavList.map((route: any, index: number) => (
                 <li
@@ -120,21 +168,38 @@ const Header: React.FC<HeaderProps> = ({ searchValue, setSearchValue, scrollToAc
       </div>
 
       <div className="flex ms-14 justify-center items-center gap-2 cursor-pointer" />
-      <div className="flex items-center gap-4 ml-auto">
-        <div className="tooltip" data-tooltip="Settings">
+      <div className="flex items-center gap-4 ml-auto cursor-pointer">
+        <div
+          onClick={() => navigate("/settings/users")}
+          className="tooltip"
+          data-tooltip="Settings"
+        >
           <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
             <Settings color="#768294" />
           </p>
         </div>
-        <div className="tooltip" data-tooltip="Notification">
+        <div
+          onClick={() => navigate("/ticket")}
+          className="tooltip relative cursor-pointer"
+          data-tooltip="Notification"
+        >
+          {(user?.role === "Support Admin" || user?.role === "Supervisor" || user?.role === "Super Admin") && unassignedTickets > 0 ? (
+            <div className="h-5 w-5 absolute rounded-full -top-2 bg-red-600 text-white flex items-center justify-center">
+              <p className="text-xs font-semibold">{unassignedTickets}</p>
+            </div>
+          ) : (
+            user?.role === "Support Agent" && allTickets > 0 && (
+              <div className="h-5 w-5 absolute rounded-full -top-2 bg-red-600 text-white flex items-center justify-center">
+                <p className="text-xs font-semibold">{allTickets}</p>
+              </div>
+            )
+          )}
           <p className="w-[34px] h-[34px] border border-[#E7E8EB] bg-[#FFFFFF] rounded-full flex justify-center items-center">
             <Bell />
           </p>
         </div>
-       <UserModal/>
-
+        <UserModal />
       </div>
-      
     </div>
   );
 };

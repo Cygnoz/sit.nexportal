@@ -1,6 +1,5 @@
 pipeline {
     agent any
- 
     environment {
         // Define environment variables for AWS ECR and ECS
         AWS_REGION = 'ap-south-1'
@@ -14,7 +13,6 @@ pipeline {
         ECS_SERVICE_NAME = 'sit-nexsell-frontend1' // Replace with your ECS service name
         ECS_TASK_DEFINITION_NAME = 'sit-nexsell-frontend1' // Replace with your ECS task definition name
     }
- 
     stages {
         stage('SonarQube Analysis') {
             steps {
@@ -52,7 +50,6 @@ pipeline {
                 }
             }
         }
- 
         stage('Login to ECR') {
             steps {
                 script {
@@ -65,7 +62,6 @@ pipeline {
                 }
             }
         }
- 
         stage('Push Docker Image') {
             steps {
                 script {
@@ -75,7 +71,6 @@ pipeline {
                 }
             }
         }
- 
         stage('Update ECS Service') {
             steps {
                 script {
@@ -87,13 +82,11 @@ pipeline {
                                 --task-definition ${ECS_TASK_DEFINITION_NAME} \
                                 --query 'taskDefinition.taskDefinitionArn' \
                                 --output text)
- 
                             # Check if the task definition was fetched successfully
                             if [ -z "$LATEST_TASK_DEFINITION" ]; then
                                 echo "Error: Could not fetch the task definition ARN."
                                 exit 1
                             fi
- 
                             # Update ECS Service to use the latest task definition
                             aws ecs update-service \
                                 --region ${AWS_REGION} \
@@ -107,7 +100,6 @@ pipeline {
             }
         }
     }
- 
     post {
         success {
             echo 'Pipeline completed successfully!'

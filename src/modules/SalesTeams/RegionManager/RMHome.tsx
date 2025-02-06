@@ -15,11 +15,13 @@ import useApi from "../../../Hooks/useApi";
 import { RMData } from "../../../Interfaces/RM";
 import { endPoints } from "../../../services/apiEndpoints";
 import AddRegionManager from "./RMForm";
+import { useResponse } from "../../../context/ResponseContext";
 
 const RMHome = () => {
-  const { totalCounts } = useRegularApi();
+  const { totalCounts,refreshContext } = useRegularApi();
   const { request: getRM } = useApi("get", 3002);
   const [allRms, setAllRms] = useState<any[]>([]);
+  const {loading,setLoading}=useResponse()
   const navigate = useNavigate();
 
   // State to manage modal visibility
@@ -30,6 +32,7 @@ const RMHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getRMs();
+    refreshContext({counts:true})
   };
 
   const handleEdit = (id: any) => {
@@ -42,6 +45,7 @@ const RMHome = () => {
 
   const getRMs = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getRM(endPoints.GET_ALL_RM); 
       if (response && !error) {
         const transformedRMss =
@@ -62,6 +66,8 @@ const RMHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -75,7 +81,7 @@ const RMHome = () => {
     { key: "loginEmail", label: "Email Address" },
     { key: "user.phoneNo", label: "Phone No" },
     { key: "regionName", label: "Region" },
-    { key: "dateOfJoining", label: "Date Of Joining" },
+    { key: "status", label: "Status" },
   ];
 
   // Data for HomeCards
@@ -138,7 +144,12 @@ const RMHome = () => {
     <>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-[#303F58] text-xl font-bold">Regional Manager</h1>
+        <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Region Manager</h1>
+          <p className="text-ashGray text-sm">
+          Oversees business operations and growth across multiple regions. 
+            </p>
+         </div>
 
           <Button
             variant="primary"
@@ -199,6 +210,7 @@ const RMHome = () => {
               { label: "edit", function: handleEdit },
               { label: "view", function: handleView },
             ]}
+            loading={loading}
           />
         </div>
 

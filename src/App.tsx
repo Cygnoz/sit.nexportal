@@ -33,56 +33,98 @@ import TrialView from './modules/Customers/Trial/TrialView/TrialView';
 import LicenserView from './modules/Customers/Licensor/view/LicenserView';
 import AMView from './modules/SalesTeams/AreaManager/AMView';
 import PraiseHome from './modules/Awards/Praise/PraiseHome';
-import TicketsView from './modules/Tickets/TicketsView';
+import TicketsView from './modules/Tickets/LiveChat';
 import SettingsHome from './modules/Settings/SettingsHome';
 import PayrollHome from './modules/Expense/Payroll/PayrollHome';
 import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';
 import PayrollView from './modules/Expense/Payroll/PayrollView';
 import PayrollView2 from './modules/Expense/Payroll/PayrollView2';
 import BusinessCard from './modules/Settings/BusinessCard';
-import Target from './modules/Settings/Target/Target';
-//import AreaView from './modules/SaleArea&Region/Area/AreaView';
+import { roles } from './components/ui/Roles';
+import ExpenseHome from './modules/Expense/ExpenseHome';
+import TargetHome from './modules/Target/TargetHome';
+import PayrollView3 from './modules/Expense/Payroll/PayrollView3';
+import ExpenseView from './modules/Expense/ExpenseView';
+import ExpenseViewReject from './modules/Expense/ExpenseViewReject';
+import ExpenseViewPaid from './modules/Expense/Expenses/ExpenseViewPaid';
+import ExpenseViewGranted from './modules/Expense/Expenses/ExpenseViewGranted';
+// import ExpenseHome from './modules/Expense/ExpenseHome';
+
+
 
 const App: React.FC = () => {
-  const parentRoutes = [
-    { path: "dashboard", element: <DashboardPage /> },
-    { path: "regions", element: <RegionHome /> },
-    { path: "regions/:id", element: <RegionView /> },
-    { path: "lead/:id", element: <LeadView /> },
-    { path: "areas/:id", element: <AreaView /> },
-    { path: "lead", element: <LeadHome /> },
-    { path: "areas", element: <AreaHome /> },
-    { path: "support-agent", element: <SupportagentHome /> },
-    { path: "support-agent/:id", element: <SupportAgentView /> },
-    { path: "area-manager", element: <AMHome /> },
-    { path: "area-manager/:id", element: <AMView /> },
-    { path: "bda", element: <BDAHome /> },
-    { path: "bda/:id", element: <BDAView /> },
-    { path: "supervisor", element: <SupervisorHome /> },
-    { path: "supervisor/:id", element: <SuperVisorView /> },
-    { path: "trial", element: <TrialHome /> },
-    { path: "trial/:id", element: <TrialView /> },
-    { path: "licenser", element: <LicensorHome /> },
-    { path: "licenser/:id", element: <LicenserView /> },
-    { path: "region-manager", element: <RMHome /> },
-    { path: "region-manager/:id", element: <RMView /> },
-    { path: "settings/users", element: <UserHome /> },
-    { path: "settings/worker-commission", element: <WCommisionHome /> },
-    { path: "ticket", element: <TicketsHome /> },
-    { path: "ticket/:id", element: <TicketsView /> },
-    { path: "settings/user-log", element: <UserLogHome /> },
-    { path: "settings/business-card", element: <BusinessCard /> },
-    { path: "settings/target", element: <Target /> },
-    { path: "prises", element: <PraiseHome /> },
-    { path: "settings/target", element: <SettingsHome /> },
-    { path: "payroll", element: <PayrollHome /> },
-    { path: "payroll-slip", element: <PayrollSlip /> },
-    { path: "payroll-view", element: <PayrollView /> },
-    { path: "payroll-view2", element: <PayrollView2 /> },
+  const { user } = useUser();
+  const Wrapper: React.FC = () => {
   
-  ];
   
-  const {user}=useUser()
+    // Ensure `user?.role` is always a string
+    const userRole = user?.role ?? ""; // Provide a default empty string if role is undefined
+    const staff = roles.find((role) => role.role === userRole);
+  
+    // Check if the role is one of the admin roles
+    const isAdmin = ["Super Admin", "Sales Admin", "Support Admin"].includes(userRole);
+  
+    // Component to render
+    const Component = isAdmin ? DashboardPage : staff?.component;
+  
+    // Ensure `Component` is a valid React component
+    if (!Component) {
+      return <div>Role not found</div>; // Handle case where role or component is missing
+    }
+  
+    if (typeof Component === "function") {
+      return <Component staffId={user?.userId || ""} />; // Pass `userId` with a fallback for safety
+    }
+  
+    return React.cloneElement(Component, { staffId: user?.userId || "" });
+  };
+  
+  
+
+const parentRoutes = [
+  { path: "dashboard", element: <Wrapper /> },
+  { path: "regions", element: <RegionHome /> },
+  { path: "regions/:id", element: <RegionView /> },
+  { path: "lead/:id", element: <LeadView /> },
+  { path: "areas/:id", element: <AreaView /> },
+  { path: "lead", element: <LeadHome /> },
+  { path: "areas", element: <AreaHome /> },
+  { path: "support-agent", element: <SupportagentHome /> },
+  { path: "support-agent/:id", element: <SupportAgentView /> },
+  { path: "area-manager", element: <AMHome /> },
+  { path: "area-manager/:id", element: <AMView /> },
+  { path: "bda", element: <BDAHome /> },
+  { path: "bda/:id", element: <BDAView /> },
+  { path: "supervisor", element: <SupervisorHome /> },
+  { path: "supervisor/:id", element: <SuperVisorView /> },
+  { path: "trial", element: <TrialHome /> },
+  { path: "trial/:id", element: <TrialView /> },
+  { path: "licenser", element: <LicensorHome /> },
+  { path: "licenser/:id", element: <LicenserView /> },
+  { path: "region-manager", element: <RMHome /> },
+  { path: "region-manager/:id", element: <RMView /> },
+  { path: "settings/users", element: <UserHome /> },
+  { path: "settings/worker-commission", element: <WCommisionHome /> },
+  { path: "ticket", element: <TicketsHome /> },
+  { path: "ticket/:id", element: <TicketsView /> },
+  { path: "settings/user-log", element: <UserLogHome /> },
+  { path: "settings/business-card", element: <BusinessCard /> },
+  { path: "prises", element: <PraiseHome /> },
+  { path: "settings/users", element: <SettingsHome /> },
+  { path: "payroll", element: <PayrollHome /> },
+  { path: "payroll-slip/:id", element: <PayrollSlip /> },
+  { path: "payroll-view/:id", element: <PayrollView /> },
+  { path: "payroll-view2/:id", element: <PayrollView2 /> },
+  { path: "payroll-view3/:id", element: <PayrollView3 /> },
+  { path: "expense", element: <ExpenseHome /> },
+  { path:'expense-pg/:id', element: <ExpenseView/> },
+  { path:'expense-reject/:id', element:<ExpenseViewReject/> },
+  { path:'expense-paid/:id', element: <ExpenseViewPaid/> },
+  { path:'expense-granted/:id',element: <ExpenseViewGranted/> },
+  { path: "target", element: <TargetHome /> },
+
+];
+  
 
   return (
 <>

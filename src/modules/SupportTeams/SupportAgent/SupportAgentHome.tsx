@@ -16,12 +16,15 @@ import Table from "../../../components/ui/Table";
 // import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import SupportAgentForm from "./SupportAgentForm";
+import { useRegularApi } from "../../../context/ApiContext";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
   
 const SupportAgentHome = () => {
-  // const {totalCounts}=useRegularApi()
+  const {regionId  }=useRegularApi()
+  const {loading,setLoading}=useResponse()
   const { request: getAllSA } = useApi("get", 3003);
   const [allSA, setAllSA] = useState<any[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,6 +54,7 @@ const SupportAgentHome = () => {
   
   const getSAs = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllSA(endPoints.SUPPORT_AGENT);
       console.log("res", response);
       console.log("err", error);
@@ -86,6 +90,8 @@ const SupportAgentHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
   
@@ -131,7 +137,7 @@ const SupportAgentHome = () => {
     { key: "loginEmail", label: "Email Address" },
     { key: "user.phoneNo", label: "Phone No" },
     { key: "region.regionName", label: "Region" },
-    { key: "dateOfJoining", label: "Date Of Joining" },
+    { key: "status", label: "Status" },
   ];
 
   const name = "Name";
@@ -163,7 +169,12 @@ const SupportAgentHome = () => {
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">Support Agent</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Support Agent</h1>
+          <p className="text-ashGray text-sm">
+          Assists customers by resolving inquiries and providing solutions.
+            </p>
+         </div>
         <Button variant="primary" size="sm" onClick={()=>{
           handleModalToggle()
           setEditId('')
@@ -217,14 +228,16 @@ const SupportAgentHome = () => {
         actionList={[
           { label: 'edit', function:handleEdit },
           { label: 'view', function:handleView },
-        ]}  />
+        ]}  
+        loading={loading}
+        />
       </div>
 
       {/* Modal Section */}
      
     </div>
      <Modal open={isModalOpen} onClose={handleModalToggle}>
-     <SupportAgentForm  editId={editId} onClose={handleModalToggle} />
+     <SupportAgentForm  editId={editId}  regionId={regionId} onClose={handleModalToggle} />
    </Modal>
     </>
   )

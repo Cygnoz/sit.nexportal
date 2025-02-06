@@ -19,8 +19,14 @@ import { useUser } from "../../../context/UserContext";
 type Props = {
   onClose: () => void;
   editId?:string
+  regionId?:any
+  areaId?:any
+  
 };
-
+interface RegionData {
+  label: string;
+  value: string;
+}
 
 
 const validationSchema = Yup.object({
@@ -33,12 +39,15 @@ const validationSchema = Yup.object({
   bdaId:Yup.string().required('Bda is required'),
 });
 
-function LeadForm({ onClose ,editId}: Props) {
+function LeadForm({ onClose ,editId,regionId,areaId}: Props) {
   const {user}=useUser()
   const {request:addLead}=useApi('post',3001)
   const {request:ediLead}=useApi('put',3001)
   const {request:getLead}=useApi('get',3001)
-  const {dropdownRegions,dropDownAreas,dropDownBdas}=useRegularApi()
+      const [regionData, setRegionData] = useState<RegionData[]>([]);
+      const [areaData, setAreaData] = useState<any[]>([]);
+
+  const {dropdownRegions,dropDownAreas,dropDownBdas,refreshContext}=useRegularApi()
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
     areas: { label: string; value: string }[];
@@ -130,35 +139,43 @@ const salutation = [
     clearErrors(field); // Clear the error for the specific field when the user starts typing
   };
 
-  // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = dropdownRegions?.map((region: any) => ({
-      value: String(region._id),
+    // Map the regions into the required format for regions data
+    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
+      value: String(region._id), // Ensure `value` is a string
     }));
-    // Update the state without using previous `data` state
-    setData((prevData:any) => ({
-      ...prevData,
-      regions: filteredRegions,
-    }));
-  }, [dropdownRegions]);
 
-  // UseEffect for updating areas based on selected region
-  useEffect(() => {
+
+  setRegionData(filteredRegions)
+ if(regionId){
+    setValue("regionId",regionId)
+    setValue("areaId",areaId)
+    
+  }
+},[dropdownRegions,regionId])
+
+
+   // UseEffect for updating areas based on selected region
+   useEffect(() => {
     const filteredAreas = dropDownAreas?.filter(
-      (area: any) => area?.region === watch("regionId")
+      (area: any) => area?.region=== watch("regionId")
     );
-    const transformedAreas = filteredAreas?.map((area: any) => ({
+    const transformedAreas:any = filteredAreas?.map((area: any) => ({
       label: area.areaName,
       value: String(area._id),
     }));
+    setAreaData(transformedAreas)
+    if(regionId && areaId){
+      setValue("regionId",regionId)
+      setValue("areaId",areaId)
+      }
 
-    // Update areas
-    setData((prevData:any) => ({
-      ...prevData,
-      areas: transformedAreas,
-    }));
-  }, [watch("regionId"), dropDownAreas]);
+  
+  }, [watch("regionId"), dropDownAreas,areaId,regionId]);
+  
+//console.log(watch("regionId"));
+
 
   // UseEffect for updating regions
   useEffect(() => {
@@ -170,7 +187,7 @@ const salutation = [
       label: bda?.userName,
     }));
 
-    console.log(transformedBda);
+    //console.log(transformedBda);
     
     
     // Update the state without using previous `data` state
@@ -215,16 +232,12 @@ const salutation = [
 
 
   useEffect(()=>{
-    console.log("allBDA",dropDownBdas);
-    
     if(user?.role=="BDA"){
       const filteredBDA:any = dropDownBdas?.find(
-        (bda: any) => bda?.user?.employeeId === user?.employeeId
+        (bda: any) => bda?._id === user?.userId
       );
-
-      console.log("Filtered BDA:", filteredBDA?._id);
-      setValue("areaId", filteredBDA?.area?._id || "");
-        setValue("regionId", filteredBDA?.region?._id || "");
+      setValue("areaId", filteredBDA?.area || "");
+        setValue("regionId", filteredBDA?.region || "");
         setValue("bdaId", filteredBDA?._id || "");
         
     }
@@ -233,6 +246,7 @@ const salutation = [
 
   useEffect(() => {
     getOneLead()
+    refreshContext({dropdown:true})
   }, [editId,user]);
 
 
@@ -346,7 +360,8 @@ const salutation = [
           </div>
           <div className="grid grid-cols-3 gap-4 mt-4">
             <Select
-            readOnly={user?.role=="BDA"?true:false}
+          readOnly={regionId || user?.role === "BDA"}
+
             required
             placeholder="Select Region"
             label="Select Region"
@@ -358,10 +373,11 @@ const salutation = [
               setValue("bdaId", "");
             }}
             error={errors.regionId?.message}
-            options={data.regions}
+            options={regionData}
             />
             <Select
-              readOnly={user?.role=="BDA"?true:false}
+                 readOnly={areaId || user?.role === "BDA"}
+
               required
                   label="Select Area"
                   placeholder={watch("regionId")?"Select Area":"Select Region"}
@@ -372,7 +388,7 @@ const salutation = [
                     handleInputChange("areaId");
                   }}
                   error={errors.areaId?.message}
-                  options={data.areas}
+                  options={areaData}
             />
             <Select
               readOnly={user?.role=="BDA"?true:false}

@@ -1,23 +1,12 @@
 export const StaffTabsList = [
     {
       tab: 'Personal Information',
-      validationField: ['userName', 'phoneNo']
+      validationField: ['userName', 'phoneNo', 'address.street1']
     },
     {
       tab: 'Company Information',
-      validationField: ['email', 'password', 'confirmPassword', 'region', 'area']
+      validationField: ['email', 'password', 'confirmPassword', 'region', 'area','salaryAmount']
     },
-    // {
-    //   tab: 'Upload Files',
-    //   validationField: [] // Assuming no specific validation fields are required for this tab
-    // },
-    // {
-    //   tab: 'Bank Information',
-    //   validationField: ['bankDetails.bankName', 'bankDetails.bankBranch', 'bankDetails.bankAccountNo', 'bankDetails.ifscCode']
-    // },
-    // {
-    //   tab: 'ID & Business Card',
-    //   validationField: [] // Assuming no specific validation fields are required for this tab
-    // }
+
   ];
   

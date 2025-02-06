@@ -18,10 +18,12 @@ import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import { LicenserData } from "../../../Interfaces/Licenser";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 const LicensorHome = () => {
-  const {customersCounts}=useRegularApi()
+  const { loading, setLoading } = useResponse();
+  const {regionId ,areaId,customersCounts,refreshContext}=useRegularApi()
   const {request:getAllLicenser}=useApi('get',3001)
    const [allLicenser, setAllLicenser] = useState<LicenserData[]>([]);
    
@@ -39,13 +41,16 @@ const LicensorHome = () => {
     const handleModalToggle = () => {
         setIsModalOpen((prev) => !prev);
     getLicensers();
+    refreshContext({customerCounts:true})
       };
        const handleView=(id:any)=>{
         navigate(`/licenser/${id}`)
       }
     
       const getLicensers=async()=>{
+       
           try{
+            setLoading(true)
             const {response,error}=await getAllLicenser(endPoints.LICENSER)
             console.log("res",response);
             console.log("err",error);
@@ -66,11 +71,14 @@ const LicensorHome = () => {
             }
           }catch(err){
             console.log(err);
+          }finally{
+            setLoading(false)
           }
       }
         
         useEffect(()=>{
           getLicensers()
+          refreshContext({customerCounts:true})
         },[])
       
 
@@ -99,7 +107,13 @@ const LicensorHome = () => {
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">Licenser</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Licenser</h1>
+          <p className="text-ashGray text-sm">
+          Grants legal permission to use a product, service, or brand. 
+            </p>
+         </div>
+
         <Button variant="primary" size="sm" onClick={()=>{
         handleModalToggle()
         setEditId('')
@@ -152,14 +166,16 @@ const LicensorHome = () => {
         actionList={[
             { label: 'edit', function: handleEdit},
             { label: 'view', function: handleView },
-          ]}  />
+          ]}  
+          loading={loading}
+          />
       </div>
 
    
     </div>
        {/* Modal Section */}
        <Modal open={isModalOpen} onClose={handleModalToggle} className="w-[70%]">
-        <AddLicenser editId={editId} onClose={handleModalToggle} />
+        <AddLicenser regionId={regionId}  editId={editId} areaId={areaId} onClose={handleModalToggle} />
       </Modal>
     </>
   )

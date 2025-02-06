@@ -9,12 +9,14 @@ import Button from "../../../components/ui/Button";
 import Table from "../../../components/ui/Table";
 import { endPoints } from "../../../services/apiEndpoints";
 import UserForm from "./UserForm";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
 const UserHome = () => {
   const {request:getUsers}=useApi('get',3002)
   const [allUsers, setAllUsers] = useState<UserData[]>([]);
+  const {loading,setLoading}=useResponse()
   const [editId,setEditId]=useState('')
   // State to manage modal visibility
  const [isModalOpen, setIsModalOpen] = useState(false);
@@ -36,6 +38,7 @@ const UserHome = () => {
   const getAllUsers=async()=>{
     const url=endPoints.GET_USERS
     try{
+      setLoading(true)
       const {response,error}=await getUsers(url)
       console.log(response)
       console.log(error)
@@ -51,6 +54,8 @@ const UserHome = () => {
 
     }catch(err){
       console.log(err)
+    }finally{
+      setLoading(false)
     }
   }
 
@@ -107,7 +112,12 @@ const UserHome = () => {
   return (
     <div>
          <div className="flex justify-between items-center">
-      <h1 className="text-[#303F58] text-xl font-bold">User</h1>
+         <div>
+         <h1 className="text-[#303F58] text-xl font-bold">User</h1>
+          <p className="text-ashGray text-sm">
+          Manage system users and their access permissions.
+            </p>
+         </div>
      
       <Button variant="primary" size="sm" onClick={()=>{
         handleModalToggle()
@@ -153,7 +163,9 @@ const UserHome = () => {
         }}
         actionList={[
             { label: 'edit', function:handleEdit },
-          ]}  />
+          ]}  
+          loading={loading}
+          />
 
 
       </div>

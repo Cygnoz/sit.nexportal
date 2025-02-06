@@ -9,17 +9,19 @@ import useApi from "../../../../Hooks/useApi";
 import { endPoints } from "../../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
+import { useEffect } from "react";
 // import { useState } from "react";
 
 
 type Props = {
     onClose: () => void;
+    editId?: any;
 }
 
 const validationSchema = Yup.object().shape({
     leadId: Yup.string(),
     activityType: Yup.string(), // Ensure it's validated as "Meeting".
-    meetingTitle: Yup.string(),
+    meetingTitle: Yup.string().required("Meeting title is required"),
     addNotes: Yup.string(),
     meetingType: Yup.string(),
     dueDate: Yup.string(),
@@ -30,7 +32,10 @@ const validationSchema = Yup.object().shape({
     landMark: Yup.string(),
   });
   
-const MeetingForm = ({ onClose }: Props) => {
+const MeetingForm = ({ onClose,editId }: Props) => {
+    const { request: getLeadMeeting } = useApi("get", 3001);
+    const { request: editLeadMeeting } = useApi("put", 3001);
+    const { request: addLeadMeeting } = useApi('post', 3001)
 
     const {id} = useParams()
     console.log(id);
@@ -51,34 +56,62 @@ const MeetingForm = ({ onClose }: Props) => {
           }
         });
 
+        // Function to set form values
+            const setFormValues = (data: LeadMeetingData) => {
+                Object.keys(data).forEach((key) => {
+                  setValue(key as keyof LeadMeetingData, data[key as keyof LeadMeetingData]);
+                });
+              };
+
+               // Fetch task details when editing
+                  useEffect(() => {
+                    if (editId) {
+                      console.log("editId:", editId);
+                      (async () => {
+                        try {
+                          const { response, error } = await getLeadMeeting(`${endPoints.LEAD_ACTIVITY}/${editId}`);
+                          if (response && !error) {
+                            console.log("Meeting Data:", response.data.activity);
+                            setFormValues(response.data.activity); // Set form values
+                          } else {
+                            console.error("API Error:", error.response.data.message);
+                          }
+                        } catch (err) {
+                          console.error("Error fetching meeting data:", err);
+                        }
+                      })();
+                    }
+                  }, [editId]); // Depend on editId
+
           const handleInputChange = (field: keyof LeadMeetingData) => {
             clearErrors(field); // Clear the error for the specific field when the user starts typing
           };
         
-    const {request:addLeadMeeting}=useApi('post',3001)
+   
     // const [submit, setSubmit]= useState(false)
 
     console.log(errors);
     
 
-    const onSubmit: SubmitHandler<LeadMeetingData> = async (data: any, event) => {
-
-        
+    const onSubmit: SubmitHandler<LeadMeetingData> = async (data: LeadMeetingData, event) => { 
         event?.preventDefault(); // Prevent default form submission behavior
         console.log("Data", data);
-    // if (submit) {
+    
         try {
-         const {response , error} = await addLeadMeeting(endPoints.LEAD_ACTIVITY, data)
-          console.log(response);
-          console.log(error);
+            const apiCall = editId ? editLeadMeeting : addLeadMeeting;
+
+            const { response, error } = await apiCall(editId ? `${endPoints.LEAD_ACTIVITY}/${editId}` : endPoints.LEAD_ACTIVITY, data);
+           // console.log(response);
+        //  console.log(error);
     
           if (response && !error) {
-            console.log(response.data)     
-            toast.success(response.data.message); // Show success toast
-            onClose(); // Close the form/modal
+            console.log(response.data);
+            toast.success(response.data.message)
+            onClose();
           } else {
-            console.log(error.response.data.message);           
-            toast.error(error.response.data.message); // Show error toast
+            console.error("API Error:", error?.data?.message);
+          toast.error(error?.data?.message || "Failed to update meeting");
+    
           }
         } catch (err) {
           console.error("Error submitting lead meeting data:", err);
@@ -95,7 +128,7 @@ const MeetingForm = ({ onClose }: Props) => {
             <div className="h-fit w-full rounded-lg">
                 <div className="flex justify-between">
                     <div className="space-y-2 p-4">
-                        <h3 className="text-[#303F58] font-bold text-lg">Create Meeting</h3>
+                        <h3 className="text-[#303F58] font-bold text-lg">  {editId ? "Edit" : "Create"} Meeting</h3>
                     </div>
                     <p onClick={onClose} className="text-3xl p-4 cursor-pointer">&times;</p>
                 </div>
@@ -114,9 +147,11 @@ const MeetingForm = ({ onClose }: Props) => {
                                 label="Add Notes"
                                 placeholder=""
                             /> */}
-                            <p className="text-[#303F58] text-sm font-normal">Add Notes</p>
+                            <p className="text-[#303F58] text-sm font-normal">Meeting Notes</p>
                             <textarea
                                 className="w-full border border-[#CECECE] p-1"
+                                {...register("meetingNotes")}
+                                value={watch("meetingNotes")}
                             >
 
                             </textarea>

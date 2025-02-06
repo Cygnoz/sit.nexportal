@@ -12,11 +12,14 @@ import { endPoints } from "../../../services/apiEndpoints";
 import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
 
-type Props = {};
+type Props = {
+  staffId?:string
+};
 
-const SupportAgentView = ({}: Props) => {
+const SupportAgentView = ({staffId}: Props) => {
   const topRef = useRef<HTMLDivElement>(null);
-    
+    const {id}=useParams()
+    const iId=staffId?staffId:id
       useEffect(() => {
         // Scroll to the top of the referenced element
         topRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -24,23 +27,21 @@ const SupportAgentView = ({}: Props) => {
 
       const { request: getInsideSADetails } = useApi('get', 3003);
 
-const [rewards, setRewards] = useState([]);
 const [tickets, setTickets] = useState({ openTickets: [], closedTickets: [] });
 const [ticketsResolved, setTicketsResolved] = useState(0);
 const [totalTickets, setTotalTickets] = useState(0);
 
 const getInsideSA = async () => {
   try {
-    const { response, error } = await getInsideSADetails(`${endPoints.SUPPORT_AGENT}/${id}/details`);
+    const { response, error } = await getInsideSADetails(`${endPoints.SUPPORT_AGENT}/${iId}/details`);
 
     if (response && !error) {
       console.log(response.data);
 
       // Extract rewards and tickets
-      const { rewards, tickets, ticketsResolved, totalTickets } = response.data;
+      const {  tickets, ticketsResolved, totalTickets } = response.data;
 
       // Set state for rewards and tickets
-      setRewards(rewards || []);
       setTickets(tickets || { openTickets: [], closedTickets: [] });
       setTicketsResolved(ticketsResolved || 0);
       setTotalTickets(totalTickets || 0);
@@ -56,8 +57,7 @@ useEffect(() => {
   getInsideSA();
 }, []);
 
-console.log("rewards",rewards);
-console.log("tickets",tickets);
+
 
 
 
@@ -94,7 +94,6 @@ console.log("tickets",tickets);
   ];
   
   const { request: getaSA } = useApi("get", 3003);
-  const { id } = useParams();
   const [getData, setGetData] = useState<{
     saData: any;
   }>({ saData: [] });
@@ -102,7 +101,7 @@ console.log("tickets",tickets);
   const getASA = async () => {
     try {
       const { response, error } = await getaSA(
-        `${endPoints.SUPPORT_AGENT}/${id}`
+        `${endPoints.SUPPORT_AGENT}/${iId}`
       );
       if (response && !error) {
         setGetData((prevData) => ({
@@ -118,7 +117,7 @@ console.log("tickets",tickets);
   };
   useEffect(() => {
     getASA();
-  }, [id]);
+  }, [iId]);
 
   const navigate=useNavigate()
   
@@ -134,7 +133,7 @@ console.log("tickets",tickets);
         </p>
       </div>
       <div>
-        <ViewHeader />
+        <ViewHeader id={iId}/>
       </div>
 
       {/* HomeCards Section */}
@@ -151,12 +150,12 @@ console.log("tickets",tickets);
         ))}
       </div>
       <div>
-        <ViewHomwTable getData={getData} tickets={tickets}  />
+        <ViewHomwTable id={iId} getData={getData} tickets={tickets}  />
       </div>
 
       {/* Graph & feedback */}
       <div>
-        <GraphHomeView />
+        <GraphHomeView id={iId} />
       </div>
     </div>
   );

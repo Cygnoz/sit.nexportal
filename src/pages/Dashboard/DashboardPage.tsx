@@ -18,9 +18,11 @@ import LeadConversionRate from "./Graphs/LeadConversionRate";
 import TopBreakDownByRegion from "./Graphs/TopBreakDownByRegion";
 import TopRevenueByRegion from "./Graphs/TopRevenueByRegion";
 import NoRecords from "../../components/ui/NoRecords";
+import TargetComparison from "./Graphs/TargetComparission";
+import ProgressBar from "./Graphs/ProgressBar";
 
 const DashboardPage = () => {
-  const { totalCounts } = useRegularApi();
+  const { totalCounts,allRegions,refreshContext } = useRegularApi();
   const { request: getSolveTickets } = useApi("get", 3003);
   const [solvedTickets, setSolvedTickets] = useState([]);
   const homeCardData = [
@@ -149,11 +151,15 @@ const DashboardPage = () => {
 
   useEffect(() => {
     getSolvedTickets();
+    refreshContext({counts:true,regions:true})
   }, []);
 
   return (
     <div className="text-[#303F58] mb-3">
       <h1 className="text-[#303F58] text-xl font-bold">Dashboard</h1>
+      <p className="text-ashGray text-sm">
+      A visual overview of essential business data and performance metrics. 
+            </p>
       {/* HomeCards Section */}
       <div className="flex gap-3 py-2 justify-between mt-2">
         {homeCardData.map((card, index) => (
@@ -167,12 +173,19 @@ const DashboardPage = () => {
           />
         ))}
       </div>
+      <div className="mt-3">
+        <ProgressBar/>
+      </div>
+
+      <div className="mt-3">
+        <TargetComparison/>
+      </div>
       <div className="grid grid-cols-12 gap-4 mt-3">
         <div className="col-span-8">
           <TopRevenueByRegion />
         </div>
         <div className="col-span-4">
-          <TopBreakDownByRegion />
+          <TopBreakDownByRegion allRegions={allRegions}/>
         </div>
         <div className="col-span-2">
           <div className="p-4 bg-white w-full space-y-3 rounded-lg h-full">
@@ -247,7 +260,7 @@ const DashboardPage = () => {
         </div>
 
         <div className="col-span-8">
-          <LeadConversionRate />
+          <LeadConversionRate allRegions={allRegions}/>
         </div>
       </div>
     </div>

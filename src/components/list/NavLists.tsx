@@ -15,7 +15,7 @@ export const NavList = [
   { key: 'settings/users', label: ' Users' },
   { key: 'settings/users', label: 'Settings' },
   { key: 'settings/user-log', label: ' User Log' },
-  { key: 'settings/target', label: ' Target' },
+  { key: 'target', label: ' Target' },
   { key: 'settings/business-card', label: 'Business Card' },
   { key: 'settings/worker-commission', label: ' Worker Commission' }
 ];

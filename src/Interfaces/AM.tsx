@@ -1,7 +1,7 @@
 
 interface Address {
     street1: string;
-    street2: string;
+    street2?: string;
   }
   
   interface BankDetails {
@@ -18,7 +18,7 @@ interface Address {
     phoneNo: string;
     age?: number |null;
     bloodGroup?: string;
-    address?: Address;
+    address: Address;
     city?: string;
     country?:string;
     state?: string;
@@ -33,6 +33,7 @@ interface Address {
     region: string;
     area: string;
     commission?: string;
+    salaryAmount:string
     bankDetails?: BankDetails;
   }
   

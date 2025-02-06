@@ -12,7 +12,6 @@ interface SettingsHomeProps {
 
 const SettingsHome: FC<SettingsHomeProps> = ({
   initialSidebarList = [
-    { name: "Target", path: "/settings/target" },
     { name: "User", path: "/settings/users" },
     { name: "UserLog", path: "/settings/user-log" },
     { name: "Business Card", path: "/settings/business-card" },
@@ -39,7 +38,7 @@ const SettingsHome: FC<SettingsHomeProps> = ({
         item.name.toLowerCase().includes(searchValue.toLowerCase())
       )
     );
-  }, [searchValue, initialSidebarList]);
+  }, [searchValue]);
 
   // Update route and highlight tab
   const handleSideBarTab = (path: string) => {
@@ -50,8 +49,8 @@ const SettingsHome: FC<SettingsHomeProps> = ({
 
   // Effect to update currentPage when location changes
   useEffect(() => {
-    setCurrentPage(location.pathname); // This will update the current page whenever the location changes
-  }, [location]);
+    setCurrentPage(location.pathname); // Update current page whenever location changes
+  }, [location.pathname]);
 
   return (
     <div className="pb-12 flex h-full text-[#303F58]">
@@ -64,6 +63,7 @@ const SettingsHome: FC<SettingsHomeProps> = ({
       </Button>
     </div>
     <p className="text-lg font-bold mb-3">Settings</p>
+
     <div className="mb-2">
       <SearchBar
         bg="#1C1C140A"

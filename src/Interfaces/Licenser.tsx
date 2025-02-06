@@ -2,6 +2,8 @@ export interface LicenserData {
     salutation?: string;
     image?: string;
     firstName: string;
+    password:string;
+    confirmPassword:string
     lastName?: string;
     email: string;
     phone: string;
@@ -15,6 +17,6 @@ export interface LicenserData {
     areaId: string;
     bdaId: string;
     companyId?: string;
-    companyName?: string;
+    companyName: string;
     licensorStatus?: string;
 }

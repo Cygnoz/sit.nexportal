@@ -32,7 +32,7 @@ const validationSchema = Yup.object({
 const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId,regionId }) => {
   const {request:addArea}=useApi('post',3003)
   const {request:editArea}=useApi('put',3003)
-  const {allRegions}=useRegularApi()
+  const {dropdownRegions,refreshContext}=useRegularApi()
   const {request:getArea}=useApi('get',3003)
   const [regionData, setRegionData] = useState<RegionData[]>([]);
   const {
@@ -73,7 +73,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId,regionId }) => {
   
 
   useEffect(()=>{
-    const filteredRegions:any = allRegions?.map((region: any) => ({
+    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
@@ -81,7 +81,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId,regionId }) => {
     if(regionId){
       setValue("region",regionId)
     }
-  },[allRegions,regionId])
+  },[dropdownRegions,regionId])
 
   const setFormValues = (data: AreaData) => {
     Object.keys(data).forEach((key) => {
@@ -113,6 +113,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId,regionId }) => {
         }
       })();
     }
+    refreshContext({dropdown:true})
   }, [editId]);
   
 

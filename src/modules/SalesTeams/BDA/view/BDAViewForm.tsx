@@ -14,7 +14,9 @@ type Props = {
 
 
 
+
 const BDAViewForm: React.FC<Props> = ({ onClose,bdaData }) => {
+ // console.log(bdaData);
   return (
     <div>
       <div className="p-5 bg-white rounded shadow-md  ">
@@ -84,7 +86,7 @@ const BDAViewForm: React.FC<Props> = ({ onClose,bdaData }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Phone</h3>
               <div className="flex">
                 <PhoneIcon size={20}/>
-                <p className="text-sm font-semibold ms-2">{bdaData.user.phone?bdaData.user.phone:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{bdaData.user.phoneNo?bdaData.user.phoneNo:'N/A'}</p>
 
               </div>
               

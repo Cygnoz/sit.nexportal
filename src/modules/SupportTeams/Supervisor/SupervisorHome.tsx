@@ -17,12 +17,15 @@ import Table from "../../../components/ui/Table";
 import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import AddSupervisor from "./SupervisorForm";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 const SupervisorHome = () => {
-  const {totalCounts}=useRegularApi()
+ 
+  const {totalCounts,refreshContext}=useRegularApi()
   const { request: getAllSV } = useApi("get", 3003);
   const [allSV, setAllSV] = useState<any[]>([]);
+  const {loading,setLoading}=useResponse()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
   const [editId, setEditId] = useState('');
@@ -30,6 +33,7 @@ const SupervisorHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getSVs();
+    refreshContext({dropdown:true})
   };
 
   const handleView = (id: any) => {
@@ -86,11 +90,12 @@ const SupervisorHome = () => {
     { key: "loginEmail", label: "Email Address" },
     { key: "user.phoneNo", label: "Phone No" },
     { key: "regionName", label: "Region" },
-    { key: "dateOfJoining", label: "Date Of Joining" },
+    { key: "status", label: "Status" },
   ];
 
   const getSVs = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllSV(endPoints.SUPER_VISOR);
       console.log(response);
       console.log(error);
@@ -119,6 +124,8 @@ const SupervisorHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -155,7 +162,12 @@ const SupervisorHome = () => {
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">Supervisor</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Supervisor</h1>
+          <p className="text-ashGray text-sm">
+          Oversees team performance and ensures smooth operations.
+            </p>
+         </div>
         <Button variant="primary" size="sm" onClick={()=>{
           handleModalToggle()
           setEditId('')
@@ -213,6 +225,7 @@ const SupervisorHome = () => {
             { label: "edit", function: handleEdit },
             { label: "view", function: handleView },
           ]}
+          loading={loading}
         />
       </div>
 

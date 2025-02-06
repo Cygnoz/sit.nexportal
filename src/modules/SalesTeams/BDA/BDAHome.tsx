@@ -17,12 +17,16 @@ import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
 import { endPoints } from "../../../services/apiEndpoints";
 import BDAForm from "./BDAForm";
+import { useRegularApi } from "../../../context/ApiContext";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
 const BDAHome = () => {
+  const {regionId ,areaId }=useRegularApi()
   const { request: getAllBDA } = useApi("get", 3002);
   const [allBDA, setAllBDA] = useState<any>([]);
+  const {loading,setLoading}=useResponse()
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editId, setEditId] = useState('');
   const handleModalToggle = () => {
@@ -79,11 +83,12 @@ const BDAHome = () => {
     { key: "user.phoneNo", label: "Phone No" },
     { key: "regionName", label: "Region" },
     { key: "areaName", label: "Area" },
-    { key: "dateOfJoining", label: "Date Of Joining" },
+    { key: "status", label: "Status" },
   ];
 
   const getBDAs = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getAllBDA(endPoints.BDA);
       if (response && !error) {
         console.log("res",response.data);
@@ -109,6 +114,8 @@ const BDAHome = () => {
     } catch (err) {
       console.error("Error:", err);
       toast.error("An unexpected error occurred.");
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -149,7 +156,12 @@ const BDAHome = () => {
     <div>
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">BDA</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">BDA</h1>
+          <p className="text-ashGray text-sm">
+          Identifies opportunities and builds relationships to drive business growth. 
+            </p>
+         </div>
         <Button variant="primary" size="sm" onClick={()=>{
           handleModalToggle()
           setEditId('')
@@ -200,6 +212,7 @@ const BDAHome = () => {
             { label: "view", function: handleView },
             { label: "edit", function: handleEdit },
           ]}
+          loading={loading}
         />
       </div>
      </div>
@@ -208,7 +221,7 @@ const BDAHome = () => {
       
     </div>
     <Modal open={isModalOpen} onClose={handleModalToggle}>
-    <BDAForm editId={editId} onClose={handleModalToggle} />
+    <BDAForm editId={editId} regionId={regionId} areaId={areaId} onClose={handleModalToggle} />
   </Modal>
   </>
   );

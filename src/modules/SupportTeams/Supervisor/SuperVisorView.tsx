@@ -14,21 +14,23 @@ import Table from "../../../components/ui/Table";
 import SuperVisorTicketsOverview from "./SuperVisorTicketsOverview";
 import SuperVisorViewForm from "./SuperVisorViewForm";
 // import SuperVisorCard from "../../../components/ui/SuperVisorCards"
-import Background from "../../../assets/image/1.png";
-import PhoneIcon from "../../../assets/icons/PhoneIcon";
-import CalenderMultiple from "../../../assets/icons/CalenderMultiple";
-import ChevronRight from "../../../assets/icons/ChevronRight";
+import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import useApi from "../../../Hooks/useApi";
-import { endPoints } from "../../../services/apiEndpoints";
 import AwardIcon from "../../../assets/icons/AwardIcon";
-import SVViewAward from "./SVViewAward";
-import SupervisorForm from "./SupervisorForm";
+import CalenderMultiple from "../../../assets/icons/CalenderMultiple";
+import ChevronRight from "../../../assets/icons/ChevronRight";
+import PhoneIcon from "../../../assets/icons/PhoneIcon";
+import Trash from "../../../assets/icons/Trash";
+import Background from "../../../assets/image/1.png";
 import person1 from "../../../assets/image/Ellipse 14.png";
 import person2 from "../../../assets/image/Ellipse 43.png";
-import Trash from "../../../assets/icons/Trash";
-import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
+import { endPoints } from "../../../services/apiEndpoints";
+import SVViewAward from "./SVViewAward";
+import SupervisorForm from "./SupervisorForm";
+import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
@@ -41,12 +43,14 @@ interface SupervisorData {
   rating: string;
 }
 
-type Props = {};
+type Props = {
+  staffId?:string
+};
 
-const SuperVisorView = ({}: Props) => {
+const SuperVisorView = ({staffId}: Props) => {
+  const {loading,setLoading}=useResponse()
   const topRef = useRef<HTMLDivElement>(null);
-    
-      useEffect(() => {
+   useEffect(() => {
         // Scroll to the top of the referenced element
         topRef.current?.scrollIntoView({ behavior: "smooth" });
       }, []);
@@ -56,12 +60,14 @@ const SuperVisorView = ({}: Props) => {
     viewSV: false,
     awardSV: false,
     confirm: false,
+    deactiveSv:false,
   });
   const handleModalToggle = (
     editSV = false,
     viewSV = false,
     awardSV = false,
     confirm=false,
+    deactiveSv=false,
   ) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
@@ -69,27 +75,30 @@ const SuperVisorView = ({}: Props) => {
       viewSV: viewSV,
       awardSV: awardSV,
       confirm: confirm,
+      deactiveSv:deactiveSv,
     }));
     getASV();
   };
   
   const { request: getInsideSv } = useApi('get', 3003);
   const [insideSvData, setInsideSvData] = useState<any>();
-  const [supervisorDetails, setSupervisorDetails] = useState([]);
   const [supportAgentDetails, setSupportAgentDetails] = useState([]);
   const [ticketSummary, setTicketSummary] = useState<any>({});
   
   const {request:deleteaSV}=useApi('delete',3003)
+  const {request :deactivateSV}=useApi('put',3003);
   const { request: getaSV } = useApi("get", 3003);
   const { id } = useParams();
+  const iId=staffId?staffId:id
   const [getData, setGetData] = useState<{
     svData: any;
   }>({ svData: [] });
 
   const getASV = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getaSV(
-        `${endPoints.SUPER_VISOR}/${id}`
+        `${endPoints.SUPER_VISOR}/${iId}`
       );
       if (response && !error) {
         setGetData((prevData) => ({
@@ -101,15 +110,18 @@ const SuperVisorView = ({}: Props) => {
       }
     } catch (err) {
       console.error("Error fetching Super Visor data:", err);
+    }finally{
+      setLoading(false)
     }
   };
   useEffect(() => {
     getASV();
-  }, [id]);
+    getInsideViewSV();
+  }, [iId]);
 
   const handleDelete = async () => {
     try {
-      const { response, error } = await deleteaSV(`${endPoints.SUPER_VISOR}/${id}`);
+      const { response, error } = await deleteaSV(`${endPoints.SUPER_VISOR}/${iId}`);
       if (response) {
         toast.success(response.data.message);
         navigate("/supervisor");
@@ -125,17 +137,39 @@ const SuperVisorView = ({}: Props) => {
 
   const navigate=useNavigate()
 
+  const handleDeactivate = async () => {
+    const body = {
+      status: getData.svData?.status === "Active" ? 'Deactive' : 'Active'
+    }
+    try {
+      const { response, error } = await deactivateSV(`${endPoints.DEACTIVATE_SV}/${iId}`, body);
+      console.log(response);
+      console.log(error, "error message");
+
+
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/supervisor");
+      } else {
+        console.log(error?.response?.data?.message);
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the supervisor.");
+    }
+  };
+
   
   const getInsideViewSV = async () => {
     try {
-      const { response, error } = await getInsideSv(`${endPoints.SUPER_VISOR}/${id}/details`);
+      const { response, error } = await getInsideSv(`${endPoints.SUPER_VISOR}/${iId}/details`);
   
       if (response && !error) {
         console.log(response.data);
         setInsideSvData(response.data);
   
         if (response.data) {
-          setSupervisorDetails(response.data.supervisorDetails || []);
           setSupportAgentDetails(response.data.supportAgentDetails || []);
           setTicketSummary(response.data.ticketSummary || {});
         }
@@ -147,15 +181,6 @@ const SuperVisorView = ({}: Props) => {
     }
   };
   
-  useEffect(() => {
-    getInsideViewSV();
-  }, [id]);
-
-  console.log("SV Data:", insideSvData);
-  console.log("Supervisor Details:", supervisorDetails);
-  console.log("SupportAgent Details:", supportAgentDetails);
-  console.log("Ticket Summary:", ticketSummary);
-
 
 
   // Data for HomeCards
@@ -197,8 +222,6 @@ const SuperVisorView = ({}: Props) => {
     employeeId: support.employeeId || "N/A",
     supportAgentName: support.supportAgentName, // or any unique identifier
     resolvedTicketsCount: support.resolvedTicketsCount || 0, // Adjust according to your data structure
-  
-    
   }));
  
 
@@ -206,7 +229,7 @@ const SuperVisorView = ({}: Props) => {
     <>
       <div ref={topRef}>
         <div className="flex items-center text-[16px] my-2 space-x-2">
-          <p onClick={()=>navigate('/supervisor')}  className="font-bold cursor-pointer  text-[#820000] ">SuperVisor</p>
+          <p onClick={()=>navigate('/supervisor')}  className="font-bold cursor-pointer  text-[#820000] ">Supervisor</p>
           <ChevronRight color="#4B5C79" size={18} />
           <p className="font-bold text-[#303F58] ">
             {" "}
@@ -273,6 +296,7 @@ const SuperVisorView = ({}: Props) => {
                 noAction
                 maxHeight="500px"
                 skeltonCount={11}
+                loading={loading}
               />
             </div>
           </div>
@@ -285,7 +309,7 @@ const SuperVisorView = ({}: Props) => {
           >
             <div className="rounded-full flex my-2 justify-between">
               <div className="flex">
-              {getData.svData?.user?.userImage && getData.svData?.user?.userImage>50 ? (
+              {getData.svData?.user?.userImage && getData.svData?.user?.userImage.length > 500 ? (
                 <img
                   className="w-16 h-16 rounded-full"
                   src={getData.svData?.user?.userImage}
@@ -304,7 +328,7 @@ const SuperVisorView = ({}: Props) => {
 
               </div>
               <p className="font-medium text-xs bg-[#D5DCB3] h-8 w-20 p-2 mt-4 rounded-2xl ml-40">
-                SuperVisor
+                Supervisor
               </p>
             </div>
             <hr />
@@ -371,7 +395,7 @@ const SuperVisorView = ({}: Props) => {
               </div>
               <p className="text-sm font-normal  text-white  py-2">
                 {getData.svData?.dateOfJoining
-                  ? new Date(getData.svData.dateOfJoining).toLocaleDateString()
+                  ? new Date(getData.svData.dateOfJoining).toLocaleDateString("en-GB")
                   : "N/A"}
               </p>
               <hr />
@@ -379,7 +403,7 @@ const SuperVisorView = ({}: Props) => {
               <div className="flex py-2 mt-24 space-x-6">
                 <div className="flex flex-col items-center ">
                   <div
-                    onClick={() => handleModalToggle(true, false, false)}
+                    onClick={() => handleModalToggle(true, false, false, false,false)}
                     className="w-8 h-8 mb-2 rounded-full border-white cursor-pointer"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -395,7 +419,7 @@ const SuperVisorView = ({}: Props) => {
 
                 <div className="flex flex-col  items-center ">
                   <div
-                    onClick={() => handleModalToggle(false, true, false)}
+                    onClick={() => handleModalToggle(false, true, false, false, false)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -411,7 +435,7 @@ const SuperVisorView = ({}: Props) => {
 
                 <div className="flex flex-col   items-center ">
                   <div
-                    onClick={() => handleModalToggle(false, false, true)}
+                    onClick={() => handleModalToggle(false, false, true,false,false)}
                     className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                   >
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -425,21 +449,31 @@ const SuperVisorView = ({}: Props) => {
                   </p>
                 </div>
 
-                <div className="flex flex-col  items-center ">
-                  <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-                    <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                      <div className="ms-2 mt-2">
-                        <DeActivateIcon size={18} color="#D52B1E4D" />
-                      </div>
-                    </div>
+                <div onClick={() => handleModalToggle(false, false, false, false, true)} className="flex flex-col  items-center ">
+                <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+              {getData.svData?.status === "Active" ?
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
                   </div>
-                  <p className="text-center font-medium  text-white text-xs ms-3">
-                    DeActivate
-                  </p>
+                </div>
+                :
+                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                </div>
+              </div>
+
+                  }
+
+              </div>
+              <p className="text-center font-medium text-[#D4D4D4] text-xs ms-2">
+                {getData.svData?.status === "Active" ? "Deactivate" : "Activate"}
+              </p>
                 </div>
 
                 <div className="flex flex-col  items-center">
-                <div onClick={() => handleModalToggle(false, false, false, true)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                <div onClick={() => handleModalToggle(false, false, false, true,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                     <div className="ms-2 mt-2">
                       <Trash size={18} color="#BC3126" />
@@ -455,6 +489,7 @@ const SuperVisorView = ({}: Props) => {
 
         {/* <SuperVisorTicketsOverview ticketSummary={ticketSummary} /> */}
         <SuperVisorTicketsOverview 
+        loading={loading}
         ticketSummary={ticketSummary}
         supportAgentDetails= {supportAgentDetails}
         insideSvData={insideSvData}/>
@@ -462,10 +497,10 @@ const SuperVisorView = ({}: Props) => {
 
       {/* Modal controlled by state */}
       <Modal open={isModalOpen.viewSV} onClose={() => handleModalToggle()}>
-        <SuperVisorViewForm onClose={() => handleModalToggle()} />
+        <SuperVisorViewForm id={iId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.editSV} onClose={() => handleModalToggle()}>
-        <SupervisorForm editId={id} onClose={() => handleModalToggle()} />
+        <SupervisorForm editId={iId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal
         open={isModalOpen.awardSV}
@@ -473,7 +508,7 @@ const SuperVisorView = ({}: Props) => {
         align="right"
         className="w-[25%] me-16"
       >
-        <SVViewAward getData={getData} onClose={() => handleModalToggle()} />
+        <SVViewAward id={iId} getData={getData} onClose={() => handleModalToggle()} />
       </Modal >
       <Modal
         open={isModalOpen.confirm}
@@ -486,7 +521,24 @@ const SuperVisorView = ({}: Props) => {
           prompt="Are you sure want to delete this Supervisor?"
           onClose={() => handleModalToggle()}
         />
-      </Modal>      
+      </Modal>    
+      <Modal
+        open={isModalOpen.deactiveSv}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDeactivate}
+          prompt={
+            getData.svData?.status === "Active"
+              ? "Are you sure you want to deactivate this Supervisor?"
+              : "Are you sure you want to activate this Supervisor?"
+          }
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>
+  
     </>
   );
 };

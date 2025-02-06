@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 
 type Props = {
   onClose: () => void;
-  type?: "lead" | "trial" | "licenser";
+  type?: "lead" | "trial" ;
   orgData?: any;
 };
 
@@ -56,16 +56,16 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
   const onSubmit: SubmitHandler<Conversion> = async (data) => {
     try {
       const fun =
-        type === "lead" || type === "licenser" ? leadToTrial : trialToLicenser;
+        type === "lead" ? leadToTrial : trialToLicenser;
 
-      const customerId = customerData?._id || customerData?.licenserId;
+      const customerId = customerData?._id ;
       if (!customerId) {
         throw new Error("Customer ID is required");
       }
 
       const { response, error } = await fun(
         `${
-          type === "lead" || type === "licenser"
+          type === "lead"
             ? endPoints.TRIAL
             : endPoints.TRIALS
         }/${customerId}`,
@@ -77,12 +77,12 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
       
       if (response && !error) {
         toast.success(
-          customerData?.licenserId
-            ? "Organization created Successfully"
-            : response.data.message
+      
+         
+           response.data.message
         );
 
-        navigate(customerData?.licenserId || type==="trial" ? "/licenser" : "/trial");
+        navigate( type==="trial" ? "/licenser" : "/trial");
 
         onClose?.();
       } else {
@@ -109,9 +109,8 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
     setValue("contactName", customerData?.firstName);
     setValue(
       "organizationName",
-      orgData?.organizationName
-        ? orgData?.organizationName
-        : customerData?.companyName
+      customerData?.organizationName
+       
     );
     setValue(
       "contactNum",
@@ -133,10 +132,13 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
       "endDate",
       orgData?.endDate ? orgData?.endDate : customerData?.endDate
     );
-    if (type == "licenser" || type == "lead") {
-      setValue("customerStatus", type == "licenser" ? "Licenser" : "Trial");
+    if ( type == "lead") {
+      setValue("customerStatus",  "Trial");
     }
   }, [orgData, customerData]);
+
+  console.log("ors",orgData);
+  console.log("cus",customerData);
 
   useEffect(() => {
     if (type === "lead" && watch("startDate")) {
@@ -165,8 +167,7 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
               Organization Creation
             </h3>
             <p className="text-[11px] text-[#8F99A9] mt-1">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt.
+            To implement an organizational structure that aligns with your business goals
             </p>
           </div>
           <p onClick={onClose} className="text-3xl cursor-pointer">
@@ -242,7 +243,7 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
           </div>
 
           <div className=" flex justify-end gap-2 mt-3 me-3">
-            {type !== "licenser" && (
+           
               <Button
                 variant="tertiary"
                 className="h-8 text-sm border rounded-lg"
@@ -251,7 +252,7 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
               >
                 Cancel
               </Button>
-            )}
+      
             <Button
               variant="primary"
               className="h-8 text-sm border rounded-lg"

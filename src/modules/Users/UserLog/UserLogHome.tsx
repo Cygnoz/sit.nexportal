@@ -7,6 +7,7 @@ import useApi from '../../../Hooks/useApi'
 import { UserLog } from '../../../Interfaces/UserLog'
 import { endPoints } from '../../../services/apiEndpoints'
 import No_Data_found from "../../../assets/image/NO_DATA.png";
+import { useResponse } from '../../../context/ResponseContext'
 type Props = {}
 
 function UserLogHome({}: Props) {
@@ -18,10 +19,12 @@ function UserLogHome({}: Props) {
     action:''
   })
   const {request:getActivityLog}=useApi('get',3002)
+  const {loading,setLoading}=useResponse()
   const [allUserLog,setAllUserLog]=useState<UserLog[]>([])
-  const [noDataFound, setNoDataFound] = useState(false);
+
   const getAllActivityLog = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getActivityLog(endPoints.GET_ACTIVITY_LOGS);
       console.log("res", response);
       console.log("err", error);
@@ -45,6 +48,8 @@ function UserLogHome({}: Props) {
       }
     } catch (err) {
       console.error('Error fetching activity logs:', err);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -122,15 +127,17 @@ function UserLogHome({}: Props) {
       ];
 
       const actionColorMap: { [key: string]: string } = {
-        Add: "text-green-600",       // A slightly softer green for "Add"
-        Edit: "text-yellow-500",     // A balanced yellow for "Edit"
-        Delete: "text-red-600",      // A strong but not overwhelming red for "Delete"
-        Login: "text-blue-500",      // A professional shade of blue for "Login"
-        View: "text-teal-600",       // A calm teal for "View"
-        Logout: "text-gray-500",     // A subtle gray for "Logout"
-        Convert: "text-emerald-500", // A fresh emerald green for "Convert"
-        Deactivate:"text-orange-400"
+        Add: "text-green-500",         // A friendly and energetic green for "Add"
+        Edit: "text-yellow-400",       // A softer yellow for "Edit" to avoid harshness
+        Delete: "text-red-500",        // A clear red that conveys action but isn't too intense
+        Login: "text-blue-600",        // A deeper blue for a professional feel for "Login"
+        View: "text-teal-500",         // A soothing teal that aligns with a calm viewing action
+        Logout: "text-red-800",       // A neutral gray for "Logout" to signify disconnection
+        Convert: "text-emerald-600",   // A vibrant yet fresh emerald green for "Convert"
+        Deactivate: "text-orange-500", // A bold but balanced orange for "Deactivate"
+        Activate: "text-green-700",    // A darker green to indicate a confident "Activate" action
       };
+      
       
 
       const [currentPage, setCurrentPage] = useState<number>(1);
@@ -161,6 +168,7 @@ function UserLogHome({}: Props) {
     { label: "Convert", value: "Convert" },
     { label: "Deactivate", value: "Deactivate" },
     { label: "Delete", value: "Delete" },
+    { label: "Activate", value: "Activate" },
   ];
 
   const screenList = [
@@ -180,6 +188,8 @@ function UserLogHome({}: Props) {
     { label: 'Support Agent', value: 'Support Agent' },
     { label: 'Region Manager', value: 'Region Manager' },
     { label: 'BDA', value: 'BDA' },
+    { label: 'Sales Admin', value: 'Sales Admin' },
+    { label: 'Support Admin', value: 'Support Admin' },
   ];
   
 
@@ -213,29 +223,19 @@ function UserLogHome({}: Props) {
     </tr>
   );
  
-   useEffect(() => {
-    if(filteredLogs.length>0){
-      setNoDataFound(false)
-    }
-       const timeout = setTimeout(() => {
-         if (filteredLogs?.length === 0) {
-           setNoDataFound(true);
-         } else {
-           setNoDataFound(false);
-         }
-       }, 1000);
-       return () => clearTimeout(timeout);
-      
-     }, [filteredLogs]);
+   
   
     
     
 
   return (
     <div className="text-[#303F58] space-y-4">
-    <h1 className="text-[#303F58] text-xl font-bold">User Log</h1>
-    <p className='text-xs'>Efficiently manage and sort UseLog tables with seamless screen compatibility, ensuring a smooth and productive experience across all devices</p>
-    <div className="w-full bg-white rounded-lg p-4">
+    <div>
+         <h1 className="text-[#303F58] text-xl font-bold">User Log</h1>
+          <p className="text-ashGray text-sm">
+          Track and review user activity within the system. 
+            </p>
+         </div><div className="w-full bg-white rounded-lg p-4">
        <div  className='flex  items-center gap-2'>
        
 
@@ -316,7 +316,9 @@ function UserLogHome({}: Props) {
           </tr>
         </thead>
         <tbody>
-  {noDataFound ? (
+  { loading ? (
+              renderSkeletonLoader()
+            ):filteredLogs?.length === 0 ?(
               <tr>
                 <td
                   colSpan={columns.length + 2}
@@ -328,8 +330,6 @@ function UserLogHome({}: Props) {
                   </div>
                 </td>
               </tr>
-            ) : filteredLogs?.length === 0 ? (
-              renderSkeletonLoader()
             )
   :paginatedData.length > 0 ? (
     paginatedData.map((row, rowIndex) => (

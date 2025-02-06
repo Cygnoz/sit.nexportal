@@ -99,6 +99,8 @@ function Otp({}: Props) {
         // OTP verified successfully
         const successMessage = result.response.data?.message || 'OTP verified successfully!';
         sessionStorage.setItem('authToken', result.response.data.token);
+        console.log("user",result.response.data.user);
+        
         setUser(result.response.data.user)
         setTimeout(() => {
           setIsLoading(false)
@@ -113,6 +115,10 @@ function Otp({}: Props) {
         const errorMessage = result.error?.response?.data?.message || 'OTP verification failed.';
         setError(errorMessage);
         toast.error(errorMessage);
+        setIsLoading(false)
+        // setTimeout(() => {
+        //   navigate('/')
+        // }, 1000);
       }
     } catch (error) {
       // Handle exceptions (e.g., network errors)

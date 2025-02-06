@@ -12,10 +12,10 @@ import CheckIcon from "../../../assets/icons/CheckIcon";
 import DownloadIcon from "../../../assets/icons/DownloadIcon";
 import Trash from "../../../assets/icons/Trash";
 import ImagePlaceHolder from "../../../components/form/ImagePlaceHolder";
-import bcardback from "../../../assets/image/Business-card-back.png";
-import idcard from "../../../assets/image/ID-card 1.png";
-import ViewIcon from "../../../assets/icons/ViewIcon";
-import bcardfront from "../../../assets/image/Business-card-front.png";
+// import bcardback from "../../../assets/image/Business-card-back.png";
+// import idcard from "../../../assets/image/ID-card 1.png";
+// import ViewIcon from "../../../assets/icons/ViewIcon";
+// import bcardfront from "../../../assets/image/Business-card-front.png";
 import useApi from "../../../Hooks/useApi";
 import { RMData } from "../../../Interfaces/RM";
 import CustomPhoneInput from "../../../components/form/CustomPhone";
@@ -25,12 +25,16 @@ import { useRegularApi } from "../../../context/ApiContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
-import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
-import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
+import IdBcardModal from "../../../components/modal/IdBcardModal";
+// import { get } from "lodash";
+// import Modal from "../../../components/modal/Modal";
+// import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
+// import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
 interface RMProps {
   onClose: () => void;
   editId?: string;
+  
 }
 const baseSchema = {
   userName: Yup.string().required("Full name is required"),
@@ -43,6 +47,11 @@ const baseSchema = {
     .nullable()
     .transform((value, originalValue) => (originalValue === "" ? null : value)),
   region: Yup.string().required("Region is required"),
+  salaryAmount:Yup.string().required("Salary Amount is required"),
+  address: Yup.object().shape({
+    street1: Yup.string().required("Street 1 is required"),
+    street2: Yup.string(), // Optional field
+  }),
 };
 
 const addValidationSchema = Yup.object().shape({
@@ -60,7 +69,7 @@ const editValidationSchema = Yup.object().shape({
 
 const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   const { request: addRM } = useApi("post", 3002);
-  const { dropdownRegions, allWc, allCountries } = useRegularApi();
+  const { dropdownRegions, dropDownWC, allCountries,refreshContext } = useRegularApi();
   const { request: editRM } = useApi("put", 3002);
   const { request: getRM } = useApi("get", 3002);
   const { request: checkRm } = useApi("get", 3002);
@@ -77,7 +86,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     "Company Information",
     "Upload Files",
     "Bank Information",
-    "ID & Business Card",
+    // "ID & Business Card",
   ];
   const [activeTab, setActiveTab] = useState<string>(tabs[0]);
 
@@ -93,19 +102,16 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
-  const [isModalOpen, setIsModalOpen] = useState({
-    viewBusinesscard: false,
-    viewIdcard: false,
-  });
+  // console.log("watch",watch());
+  
 
-  const handleModalToggle = (viewBusinesscard = false, viewIdcard = false) => {
-    setIsModalOpen((prevState: any) => ({
-      ...prevState,
-      viewBusinesscard: viewBusinesscard,
-      viewIdcard: viewIdcard,
-    }));
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [empId,setEmpId]=useState('')
+  const handleModalToggle = () => {
+    setIsModalOpen((prev) => !prev);
   };
 
+  const [staffData, setStaffData] = useState<any>(null);
   const onSubmit: SubmitHandler<RMData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
     console.log("data", data);
@@ -114,7 +120,6 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       console.warn("Submit flag is not set. Skipping submission.");
       return;
     }
-
     try {
       const endpoint = editId
         ? `${endPoints.GET_ALL_RM}/${editId}`
@@ -123,9 +128,18 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
       const { response, error } = await fun(endpoint, data);
       if (response && !error) {
-        console.log("Response:", response);
+        console.log("Response:", response.data);
+        const {employeeId,region}=response.data
+       const  staffDetails={
+          ...watch(),
+          regionName:region?.regionName,
+          employeeId:editId?empId:employeeId
+        }
+        // staffData=response.data
+        setStaffData(staffDetails)
+        //  console.log("staff",staffData);       
         toast.success(response.data.message); // Show success toast
-        onClose(); // Close the form/modal
+        handleModalToggle()
       } else if (error) {
         console.error("Error:", error.response || error.message);
         const errorMessage =
@@ -143,8 +157,8 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       const { response, error } = await checkRm(
         `${endPoints.CHECK_RM}/${watch("region")}`
       );
-      console.log("res", response);
-      console.log("err", error);
+      // console.log("res", response);
+      // console.log("err", error);
 
       if (response && !error) {
         return true;
@@ -164,33 +178,37 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   };
 
   useEffect(() => {
-    if (
-      errors &&
-      Object.keys(errors).length > 0 &&
-      activeTab == "ID & Business Card"
-    ) {
-      // Get the first error field
-      const firstErrorField = Object.keys(errors)[0];
+    if (errors && Object.keys(errors).length > 0 && activeTab === "Bank Information") {
+      let firstErrorField = Object.keys(errors)[0];
 
-      // Find the tab containing this field
+    // Handle nested errors like address.street1
+    if (errors.address?.street1) {
+      firstErrorField = "address.street1";
+    }
       const tabIndex: any = StaffTabsList.findIndex((tab) =>
         tab.validationField.includes(firstErrorField)
       );
-
-      // If a matching tab is found, switch to it
+   
       if (tabIndex >= 0) {
         setActiveTab(tabs[tabIndex]);
       }
+   
       const errorrs: any = errors;
-      // Log all errors
       Object.keys(errorrs).forEach((field) => {
         console.log(`${field}: ${errorrs[field]?.message}`);
       });
-
-      // Show the first error message in a toast
-      toast.error(errorrs[firstErrorField]?.message);
+   
+      // If the error is related to the 'address.street1' field
+      if (errorrs["address"] && errorrs["address"].street1) {
+        toast.error(errorrs["address"].street1.message);
+      } else if (firstErrorField) {
+        toast.error(errorrs[firstErrorField]?.message);
+      }
     }
   }, [errors]);
+
+  console.log("err",errors);
+  
 
   const handleNext = async (tab: string) => {
     const currentIndex = tabs.indexOf(activeTab);
@@ -198,7 +216,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     let canProceed = true; // Default to true, modify if checkRM fails
 
     if (tab === "Personal Information") {
-      fieldsToValidate = ["userName", "phoneNo", "personalEmail"];
+      fieldsToValidate = ["userName", "phoneNo", "personalEmail", "address.street1"];
     } else if (tab === "Company Information") {
       fieldsToValidate = [
         !editId && "email",
@@ -206,6 +224,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         !editId && "confirmPassword",
         "region",
         "workEmail",
+        "salaryAmount"
       ];
       if (!editId) {
         const rmCheck = await checkRM(); // Call checkRM function
@@ -260,7 +279,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
 
   // UseEffect for updating wc
   useEffect(() => {
-    const filteredCommission = allWc?.map((commission: any) => ({
+    const filteredCommission = dropDownWC?.map((commission: any) => ({
       label: commission.profileName,
       value: String(commission._id),
     }));
@@ -270,7 +289,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       ...prevData,
       wc: filteredCommission,
     }));
-  }, [allWc]);
+  }, [dropDownWC]);
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
@@ -331,6 +350,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       if (response && !error) {
         const RM: any = response.data.regionManager; // Return the fetched data
         console.log("Fetched RM data:", RM);
+        setEmpId(RM.user?.employeeId)
         const { user, _id, ...rm } = RM;
         const transformedRM = RM
           ? {
@@ -350,6 +370,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         console.log("Transformed RM data:", transformedRM);
 
         setFormValues(transformedRM);
+        // setStaffData(transformedRM)
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching RM data:", error);
@@ -363,11 +384,12 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
     if(editId){
       getOneRM();
     }
+    refreshContext({dropdown:true})
   }, [editId]); // Trigger the effect when editId changes
-
+  
   return (
     <>
-      <div className="p-5 bg-white rounded shadow-md   hide-scrollbar">
+      <div className="p-5 bg-white rounded shadow-md hide-scrollbar">
         <div className="flex justify-between items-center mb-4">
           <div>
             <h3 className="text-[#303F58] font-bold text-lg">
@@ -495,6 +517,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     />
                   </div>
                   <Input
+                    required
                     label="Address"
                     placeholder="Street 1"
                     error={errors.address?.street1?.message}
@@ -644,7 +667,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     // Watch phone field for changes
                   />
                 </div>
-                <div className="grid grid-cols-2 gap-4 my-4">
+                <div className="grid grid-cols-3 gap-4 my-4">
                   <Select
                     required
                     placeholder="Select Region"
@@ -669,6 +692,14 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     error={errors.commission?.message}
                     options={data.wc}
                   />
+                  <Input
+                      placeholder="Enter Amount"
+                      label="Salary Amount"
+                      type="number"
+                      error={errors.salaryAmount?.message}
+                      {...register("salaryAmount")}
+                      required
+                    />
                 </div>
               </>
             )}
@@ -762,7 +793,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
               </div>
             )}
 
-            {activeTab === "ID & Business Card" && (
+            {/* {activeTab === "ID & Business Card" && (
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">
                   <p className="text-[#303F58] text-base font-bold">
@@ -784,8 +815,8 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                       <ViewIcon size="13" color="#565148" />
                       View
                     </Button>
-                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
+                    <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
                   </div>
                 </div>
                 <div className="bg-[#F5F9FC] p-3 rounded-2xl">
@@ -805,12 +836,12 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                       <ViewIcon size="13" color="#565148" />
                       View
                     </Button>
-                    {/* <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
-                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button> */}
+                    <Button className="text-xs text-[#FEFDF9] font-medium" variant="primary" size="sm">
+                <DownloadIcon size={13} color="#FFFFFF"/>Download</Button>
                   </div>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
 
           <div className="bottom-0 left-0 w-full bg-white flex justify-end gap-2 mt-3">
@@ -835,14 +866,16 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
             )}
             {tabs.indexOf(activeTab) === tabs.length - 1 ? (
               <Button
-                variant="primary"
-                className="h-8 text-sm border rounded-lg"
-                size="lg"
-                type="submit"
-                onClick={() => setSubmit(true)}
-              >
-                Done
-              </Button>
+              variant="primary"
+              className="h-8 text-sm border rounded-lg"
+              size="lg"
+              type="submit"
+              onClick={() => {
+                setSubmit(true);
+              }}
+            >
+              Done
+            </Button>
             ) : (
               <Button
                 variant="primary"
@@ -856,7 +889,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
           </div>
         </form>
       </div>
-      <Modal
+      {/* <Modal
         open={isModalOpen.viewBusinesscard}
         onClose={() => handleModalToggle()}
         className="w-[35%]"
@@ -869,6 +902,14 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         className="w-[35%]"
       >
         <AMIdCardView onClose={() => handleModalToggle()} />
+      </Modal> */}
+      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <IdBcardModal
+        parentOnClose={onClose}
+        onClose={handleModalToggle}
+        role="Region Manager"
+        staffData={staffData}
+        />
       </Modal>
     </>
   );

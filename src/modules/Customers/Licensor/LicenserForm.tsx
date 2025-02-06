@@ -15,14 +15,19 @@ import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { useUser } from "../../../context/UserContext";
-import OrganisationForm from "../../../components/modal/ConvertionModal/OrganisationForm";
-import Modal from "../../../components/modal/Modal";
-import { useResponse } from "../../../context/ResponseContext";
+import InputPasswordEye from "../../../components/form/InputPasswordEye";
 
 type Props = {
   onClose: () => void;
   editId?: string;
+  regionId?:any
+  areaId?:any
 };
+
+interface RegionData {
+  label: string;
+  value: string;
+}
 
 const validationSchema = Yup.object({
   firstName: Yup.string().required("First name is required"),
@@ -30,6 +35,12 @@ const validationSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string().required("Phone is required"),
+   password: Yup.string()
+      .required("Password is required"),
+   confirmPassword: Yup.string()
+      .oneOf([Yup.ref("password")], "Passwords must match")
+      .required("Confirm Password is required"),
+  companyName: Yup.string().required("Company Name  is required"),
   regionId: Yup.string().required("Region is required"),
   areaId: Yup.string().required("Area is required"),
   bdaId: Yup.string().required("Bda is required"),
@@ -37,19 +48,16 @@ const validationSchema = Yup.object({
   endDate: Yup.string().required("EndDate is required"),
 });
 
-function LicenserForm({ onClose, editId }: Props) {
-  const [isOrgModal, setIsOrgModal] = useState(false);
-  const handleModalToggle = (close = false) => {
-    setIsOrgModal((prev) => !prev);
-    close && onClose();
-  };
+function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
 
-  const { setCustomerData } = useResponse();
   const { user } = useUser();
   const { request: addLicenser } = useApi("post", 3001);
   const { request: editLicenser } = useApi("put", 3001);
   const { request: getLicenser } = useApi("get", 3001);
-  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries } =
+      const [regionData, setRegionData] = useState<RegionData[]>([]);
+      const [areaData, setAreaData] = useState<any[]>([]);
+
+  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries,refreshContext } =
     useRegularApi();
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -99,13 +107,7 @@ function LicenserForm({ onClose, editId }: Props) {
 
       if (response && !error) {
         toast.success(response.data.message);
-        const customerData = {
-          ...data,
-          licenserId: response.data.licenserId,
-        };
-        setCustomerData(customerData);
-        // Show success message
-        editId ? onClose() : handleModalToggle();
+        onClose()
       } else {
         toast.error(error.response?.data?.message || "An error occurred.");
       }
@@ -148,35 +150,42 @@ function LicenserForm({ onClose, editId }: Props) {
     }
   };
 
-  // UseEffect for updating regions
   useEffect(() => {
-    const filteredRegions = dropdownRegions?.map((region: any) => ({
-      value: String(region._id),
+    // Map the regions into the required format for regions data
+    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
+      value: String(region._id), // Ensure `value` is a string
     }));
-    // Update the state without using previous `data` state
-    setData((prevData: any) => ({
-      ...prevData,
-      regions: filteredRegions,
-    }));
-  }, [dropdownRegions]);
 
-  // UseEffect for updating areas based on selected region
-  useEffect(() => {
+
+  setRegionData(filteredRegions)
+ if(regionId){
+    setValue("regionId",regionId)
+    setValue("areaId",areaId)
+    
+  }
+},[dropdownRegions,regionId])
+
+
+   // UseEffect for updating areas based on selected region
+   useEffect(() => {
     const filteredAreas = dropDownAreas?.filter(
-      (area: any) => area?.region === watch("regionId")
+      (area: any) => area?.region=== watch("regionId")
     );
-    const transformedAreas = filteredAreas?.map((area: any) => ({
+    const transformedAreas:any = filteredAreas?.map((area: any) => ({
       label: area.areaName,
       value: String(area._id),
     }));
+    setAreaData(transformedAreas)
+    if(regionId && areaId){
+      setValue("regionId",regionId)
+      setValue("areaId",areaId)
+      }
 
-    // Update areas
-    setData((prevData: any) => ({
-      ...prevData,
-      areas: transformedAreas,
-    }));
-  }, [watch("regionId"), dropDownAreas]);
+  
+  }, [watch("regionId"), dropDownAreas,areaId,regionId]);
+  
+
 
   // UseEffect for updating regions
   useEffect(() => {
@@ -195,18 +204,17 @@ function LicenserForm({ onClose, editId }: Props) {
     }));
   }, [dropDownBdas, watch("areaId")]);
 
-  useEffect(() => {
-    if (user?.role == "BDA") {
-      const filteredBDA: any = dropDownBdas?.find(
-        (bda: any) => bda?.user?.employeeId === user?.employeeId
+  useEffect(()=>{
+    if(user?.role=="BDA"){
+      const filteredBDA:any = dropDownBdas?.find(
+        (bda: any) => bda?._id === user?.userId
       );
-
-      console.log("Filtered BDA:", filteredBDA?._id);
-      setValue("areaId", filteredBDA?.area?._id || "");
-      setValue("regionId", filteredBDA?.region?._id || "");
-      setValue("bdaId", filteredBDA?._id || "");
+      setValue("areaId", filteredBDA?.area || "");
+        setValue("regionId", filteredBDA?.region || "");
+        setValue("bdaId", filteredBDA?._id || "");
+        
     }
-  }, [user, dropDownBdas]);
+  },[user,dropDownBdas])
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
@@ -263,6 +271,7 @@ function LicenserForm({ onClose, editId }: Props) {
 
   useEffect(() => {
     getOneLicenser();
+    refreshContext({dropdown:true,countries:true})
   }, [editId]);
 
   const handleInputChange = (field: keyof LicenserData) => {
@@ -316,8 +325,8 @@ function LicenserForm({ onClose, editId }: Props) {
             )}
           </div>
           <div className="col-span-10">
-            <div className="grid grid-cols-2 gap-4">
-              <PrefixInput
+            <div className="grid grid-cols-3 gap-2">
+            <PrefixInput
                 required
                 label="First Name"
                 selectName="salutation"
@@ -341,17 +350,6 @@ function LicenserForm({ onClose, editId }: Props) {
                 {...register("lastName")}
                 // onChange={() => handleInputChange("lastName")}
               />
-
-              <Input
-                required
-                label="Email"
-                type="email"
-                placeholder="Enter Email"
-                error={errors.email?.message}
-                {...register("email")}
-                // onChange={() => handleInputChange("email")}
-              />
-
               <CustomPhoneInput
                 required
                 label="Phone"
@@ -364,6 +362,35 @@ function LicenserForm({ onClose, editId }: Props) {
                   setValue("phone", value); // Update the value of the phone field in React Hook Form
                 }}
               />
+              <Input
+                required
+                label="Email"
+                type="email"
+                placeholder="Enter Email"
+                error={errors.email?.message}
+                {...register("email")}
+                // onChange={() => handleInputChange("email")}
+              />
+
+             <InputPasswordEye
+             label="Password"
+             required
+             placeholder="Enter Password"
+             error={errors?.password?.message}
+                {...register("password")}
+             />
+             <InputPasswordEye
+             label="Confirm Password"
+             required
+             placeholder="Enter Password"
+             error={errors?.confirmPassword?.message}
+                {...register("confirmPassword")}
+             />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              
+
+              
 
               <Input
                 label="Address"
@@ -373,7 +400,7 @@ function LicenserForm({ onClose, editId }: Props) {
               />
               <Input
                 label="City"
-                placeholder="Enter Company Name"
+                placeholder="Enter City Name"
                 error={errors.city?.message}
                 {...register("city")}
               />
@@ -413,6 +440,7 @@ function LicenserForm({ onClose, editId }: Props) {
               />
               <Input
                 label="Company Name"
+                required
                 placeholder="Enter Company Name"
                 error={errors.companyName?.message}
                 {...register("companyName")}
@@ -437,7 +465,8 @@ function LicenserForm({ onClose, editId }: Props) {
               />
               <div className="col-span-2 gap-3 grid grid-cols-3">
                 <Select
-                  readOnly={user?.role == "BDA" ? true : false}
+                  readOnly={regionId || user?.role === "BDA"}
+
                   required
                   placeholder="Select Region"
                   label="Select Region"
@@ -449,10 +478,10 @@ function LicenserForm({ onClose, editId }: Props) {
                     setValue("bdaId", "");
                   }}
                   error={errors.regionId?.message}
-                  options={data.regions}
+                  options={regionData}
                 />
                 <Select
-                  readOnly={user?.role == "BDA" ? true : false}
+                readOnly={areaId || user?.role === "BDA"}
                   required
                   label="Select Area"
                   placeholder={
@@ -465,7 +494,7 @@ function LicenserForm({ onClose, editId }: Props) {
                     handleInputChange("areaId");
                   }}
                   error={errors.areaId?.message}
-                  options={data.areas}
+                  options={areaData}
                 />
                 <Select
                   readOnly={user?.role == "BDA" ? true : false}
@@ -503,17 +532,7 @@ function LicenserForm({ onClose, editId }: Props) {
           </div>
         </form>
       </div>
-      <Modal
-        open={isOrgModal}
-        align="center"
-        onClose={() => handleModalToggle(true)}
-        className="w-[35%]"
-      >
-        <OrganisationForm
-          type="licenser"
-          onClose={() => handleModalToggle(true)}
-        />
-      </Modal>
+      
     </>
   );
 }

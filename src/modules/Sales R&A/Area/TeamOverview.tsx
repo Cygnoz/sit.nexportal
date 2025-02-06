@@ -10,18 +10,19 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
-  LabelList,
+
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
 import Boxes from "../../../assets/icons/Boxes";
-import profileImage from "../../../assets/image/AvatarImg.png";
+// import profileImage from "../../../assets/image/AvatarImg.png";
 import HomeCard from "../../../components/ui/HomeCards";
 import Table from "../../../components/ui/Table";
 import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
+import { useResponse } from "../../../context/ResponseContext";
 
 type Props = {
   id: any;
@@ -39,6 +40,7 @@ interface AreaData {
 
 const TeamOverview = ({ id }: Props) => {
   const { request: getTeamData } = useApi("get", 3003);
+  const {loading,setLoading}=useResponse()
   const [teamData, setTeamData] = useState<any>();
   const handleEditDeleteView = (editId?: any, viewId?: any, deleteId?: any) => {
     if (viewId) {
@@ -133,81 +135,86 @@ const TeamOverview = ({ id }: Props) => {
     </text>
   );
 
-  // Chart Data
-  const ChartData = [
-    { name: "Page A", uv: 3900, avatar: profileImage },
-    { name: "Page B", uv: 3000, avatar: profileImage },
-    { name: "Page C", uv: 2000, avatar: profileImage },
-    { name: "Page D", uv: 2780, avatar: profileImage },
-    { name: "Page E", uv: 1890, avatar: profileImage },
-    { name: "Page F", uv: 2390, avatar: profileImage },
-    { name: "Page G", uv: 3490, avatar: profileImage },
-    { name: "Page H", uv: 4000, avatar: profileImage },
-  ];
+  // // Chart Data
+  // const ChartData = [
+  //   { name: "Page A", uv: 3900, avatar: profileImage },
+  //   { name: "Page B", uv: 3000, avatar: profileImage },
+  //   { name: "Page C", uv: 2000, avatar: profileImage },
+  //   { name: "Page D", uv: 2780, avatar: profileImage },
+  //   { name: "Page E", uv: 1890, avatar: profileImage },
+  //   { name: "Page F", uv: 2390, avatar: profileImage },
+  //   { name: "Page G", uv: 3490, avatar: profileImage },
+  //   { name: "Page H", uv: 4000, avatar: profileImage },
+  // ];
 
-  // Normalize the data
-  const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
-  const normalizedData = ChartData.map((entry) => ({
-    ...entry,
-    uv: (entry?.uv / maxValue) * 100,
-  }));
+  // // Normalize the data
+  // const maxValue = Math.max(...ChartData.map((entry) => entry?.uv));
+  // const normalizedData = ChartData.map((entry) => ({
+  //   ...entry,
+  //   uv: (entry?.uv / maxValue) * 100,
+  // }));
 
-  // Custom Bubble Component
-  const CustomBubble = (props: any) => {
-    const { x, y } = props;
+  // // Custom Bubble Component
+  // const CustomBubble = (props: any) => {
+  //   const { x, y } = props;
 
-    if (x == null || y == null) return null;
-    return (
-      <div
-        style={{
-          position: "absolute",
-          left: `${x - 4}px`,
-          top: `${y - 8}px`,
-          width: "8px",
-          height: "8px",
-          backgroundColor: "#30B777",
-          borderRadius: "50%",
-        }}
-      />
-    );
-  };
+  //   if (x == null || y == null) return null;
+  //   return (
+  //     <div
+  //       style={{
+  //         position: "absolute",
+  //         left: `${x - 4}px`,
+  //         top: `${y - 8}px`,
+  //         width: "8px",
+  //         height: "8px",
+  //         backgroundColor: "#30B777",
+  //         borderRadius: "50%",
+  //       }}
+  //     />
+  //   );
+  // };
 
-  // Custom Bar Shape with Curved Top
-  const CustomBarWithCurve = (props: any) => {
-    const { x, y, width, height, fill } = props;
+  // // Custom Bar Shape with Curved Top
+  // const CustomBarWithCurve = (props: any) => {
+  //   const { x, y, width, height, fill } = props;
 
-    if (!x || !y || !width || !height) return null;
+  //   if (!x || !y || !width || !height) return null;
 
-    const radius = width / 2;
-    const gap = 2;
+  //   const radius = width / 2;
+  //   const gap = 2;
 
-    return (
-      <>
-        <rect
-          x={x}
-          y={y + gap}
-          width={width}
-          height={height - radius - gap}
-          fill={fill}
-          rx={radius}
-          ry={radius}
-        />
-        <circle
-          cx={x + radius}
-          cy={y - radius + gap}
-          r={radius}
-          fill="#30B777"
-        />
-      </>
-    );
-  };
+  //   return (
+  //     <>
+  //       <rect
+  //         x={x}
+  //         y={y + gap}
+  //         width={width}
+  //         height={height - radius - gap}
+  //         fill={fill}
+  //         rx={radius}
+  //         ry={radius}
+  //       />
+  //       <circle
+  //         cx={x + radius}
+  //         cy={y - radius + gap}
+  //         r={radius}
+  //         fill="#30B777"
+  //       />
+  //     </>
+  //   );
+  // };
+
+
 
   const getTeamDetails = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getTeamData(
         `${endPoints.GET_AREAS}/${id}/overview`
       );
       if (response && !error) {
+        console.log("resss",response.data);
+        
         const {bdas,statistics}=response.data
         const filteredBdas=bdas.map((bda:any)=>({
           ...bda,
@@ -222,6 +229,8 @@ const TeamOverview = ({ id }: Props) => {
       }
     } catch (err) {
       console.log(err);
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -230,6 +239,13 @@ const TeamOverview = ({ id }: Props) => {
   }, [id]);
 
   
+  const topPerformingBDA = teamData?.filteredBdas.map((bda: any) => ({
+    CR: parseFloat(bda?.bdaConversionRate),
+    name: bda?.userName,
+  }));
+  
+  const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
+
 
   return (
     <div>
@@ -257,6 +273,7 @@ const TeamOverview = ({ id }: Props) => {
             search: { placeholder: "Search BDA By Name" },
           }}
           actionList={[{ label: "view", function: handleEditDeleteView }]}
+          loading={loading}
         />
       </div>
       {/* Graph Section*/}
@@ -309,67 +326,35 @@ const TeamOverview = ({ id }: Props) => {
           </div>
         </div>
         <div className="col-span-5 ">
-          <div className="w-full h-fit p-4 bg-white rounded-lg">
-            <p className="text-[#303F58] text-lg font-bold p-3">
-              Top performing BDA's
-            </p>
-            <p className="text-[#4B5C79] text-xs font-normal p-3">
-              Based on lead Conversion Performance Metric
-            </p>
-
-            <div className="relative">
-              <ResponsiveContainer minWidth={500} minHeight={295}>
-              <BarChart
-                className="h-fit"
-                barGap={54}
-                barCategoryGap="40%"
-                width={500}
-                height={295}
-                data={normalizedData}
-              >
-                {/* Cartesian Grid */}
-                <CartesianGrid
-                  horizontal={true}
-                  vertical={false}
-                  strokeDasharray="3 3"
-                  stroke="#e0e0e0"
-                />
-
-                {/* Y-Axis */}
-                <YAxis
-                  tickFormatter={(tick) => `${tick}%`}
-                  domain={[0, 100]}
-                  ticks={[0, 20, 40, 60, 80, 100]}
-                  axisLine={false}
-                  tickLine={false}
-                />
-
-                {/* Bar with custom curved shape */}
-                <Bar
-                  dataKey="uv"
-                  fill="#B9E3CF"
-                  barSize={8}
-                  shape={<CustomBarWithCurve />}
-                >
-                  {/* Add bubbles at the top */}
-                  <LabelList
-                    dataKey="uv"
-                    content={(props) => <CustomBubble {...props} />}
-                  />
-                </Bar>
-              </BarChart>
-              </ResponsiveContainer>
-              <div className="flex ms-[100px]  gap-[34px] -mt-2">
-                {ChartData.map((chart) => (
-                  <img
-                    className="w-5 h-5 rounded-full"
-                    src={chart.avatar}
-                    alt=""
-                  />
-                ))}
-              </div>
-            </div>
-          </div>
+        <div className="p-3 bg-white w-full space-y-2 rounded-lg">
+                <p className="text-[#303F58] text-lg font-bold">
+                   Top performing BDA's
+                 </p>
+                 <p className="text-[#4B5C79] text-xs font-normal">
+                   Based on lead Conversion Performance Metric
+                 </p>
+                  
+                  <div className="mt-2 custom-scrollbar " style={{ overflowX: 'auto' }}>
+                    {/* Wrapper for dynamic width */}
+                    <div style={{ width: '100%' , height: '340px' }} className="-ms-4 mt-3">
+                      <ResponsiveContainer width="100%" minHeight={340}>
+                      <BarChart
+                        data={topPerformingBDA}
+                      >
+                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                        <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                        <YAxis axisLine={false}   tickFormatter={(value) => `${value}%`} tickLine={false} domain={[0, 100]} />
+                        <Tooltip />
+                        <Bar barSize={30} dataKey="CR" radius={10}>
+                         {topPerformingBDA?.map((entry: any, index: any) => (
+                            <Cell key={`cell-${entry.name}`} fill={colors[index % colors?.length]} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                  </div>
+                </div>
         </div>
       </div>
     </div>

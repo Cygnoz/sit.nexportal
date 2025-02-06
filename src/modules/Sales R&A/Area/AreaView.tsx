@@ -16,6 +16,9 @@ import ResendActivity from "./RecentActivity";
 import TeamOverview from "./TeamOverview";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
+import Button from "../../../components/ui/Button";
+import TargetAddForm from "./TargetAddForm";
+import { useUser } from "../../../context/UserContext";
 
 type Props = {};
 
@@ -23,6 +26,9 @@ const AreaView = ({ }: // status,
   // salesManagers
   //areaCode,region
   Props) => {
+    const {user}=useUser()
+  user?.role
+
   const { request: deleteArea } = useApi('delete', 3003)
   const topRef = useRef<HTMLDivElement>(null);
   const { request: getActivities } = useApi("get", 3003);
@@ -48,15 +54,17 @@ const AreaView = ({ }: // status,
     editArea: false,
     deleteArea: false,
     deactivateArea: false,
+    AddTarget:false
   });
 
   // Function to toggle modal visibility
-  const handleModalToggle = (editArea = false, deleteArea = false, deactivateArea = false) => {
+  const handleModalToggle = (editArea = false, deleteArea = false, deactivateArea = false,AddTarget= false) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editArea,
       deleteArea,
       deactivateArea,
+      AddTarget
     }));
     getAreas();
   getRecentActivities()
@@ -202,6 +210,22 @@ const AreaView = ({ }: // status,
                 <p className="text-xs text-[#8F99A9]">Region</p>
                 <p onClick={() => navigate(`/regions/${area?.area?.region?._id}`)} className="text-xs underline cursor-pointer">{area?.area?.region?.regionCode}</p>
               </div>
+              <div className="border-r border-[#DADADA] h-10 me-4 "></div>
+              {user?.role === 'Super Admin' && (
+              <div className="text-center">
+                <p className="text-xs text-[#8F99A9]">Total Target</p>
+                <p  className="text-xs  cursor-pointer">10</p>
+              </div>
+               )}
+              {user?.role === 'Super Admin' && (
+           
+         
+             <div className="ms-2"  onClick={() => handleModalToggle(false, false, false,true)}>
+             <Button variant="tertiary" size="sm" className="text-[#565148] text-xs font-medium">
+                        <span className="font-bold text-xl"><UserIcon  color="#565148"/></span> Assign Target
+                      </Button>
+             </div>
+              )}
             </div>
           </div>
 
@@ -229,7 +253,7 @@ const AreaView = ({ }: // status,
 
              
             </div>
-            <div onClick={() => handleModalToggle(true, false, false)} className="flex flex-col items-center  space-y-1 cursor-pointer">
+            <div onClick={() => handleModalToggle(true, false, false,false)} className="flex flex-col items-center  space-y-1 cursor-pointer">
               <div className="w-8 h-8 mb-2 rounded-full">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                   <div className="ms-2 mt-2">
@@ -240,7 +264,7 @@ const AreaView = ({ }: // status,
               <p className="text-center ms-2">Edit</p>
             </div>
             <div
-              onClick={() => handleModalToggle(false, false, true)}
+              onClick={() => handleModalToggle(false, false, true,false)}
               className="flex flex-col items-center space-y-1 cursor-pointer"
             >
               <div className="w-8 h-8 mb-2 rounded-full">
@@ -264,7 +288,7 @@ const AreaView = ({ }: // status,
                 {area?.area?.status === "Active" ? "Deactivate" : "Activate"}
               </p>
             </div>
-            <div onClick={() => handleModalToggle(false, true, false)} className="cursor-pointer">
+            <div onClick={() => handleModalToggle(false, true, false,false)} className="cursor-pointer">
               <div className="rounded-full bg-[#D52B1E4D] h-9 w-9 border border-white mb-2">
                 <div className="ms-2 mt-2 ">
                   <Trash size={18} color="#BC3126" />
@@ -322,12 +346,15 @@ const AreaView = ({ }: // status,
         <ConfirmModal
           action={handleDeactivate}
           prompt={
-            area?.status === "Active"
+            area?.area?.status === "Active"
               ? "Are you sure you want to deactivate this area?"
               : "Are you sure you want to activate this area?"
           }
           onClose={() => handleModalToggle()}
         />
+      </Modal>
+      <Modal open={isModalOpen.AddTarget} onClose={() => handleModalToggle()} className="w-[35%]">
+        <TargetAddForm  onClose={() => handleModalToggle()} />
       </Modal>
 
     </>

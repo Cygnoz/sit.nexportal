@@ -13,20 +13,23 @@ import useApi from "../../../Hooks/useApi";
 import { LeadData } from "../../../Interfaces/Lead";
 import { endPoints } from "../../../services/apiEndpoints";
 import ImportLeadModal from "./ImportLeadModal";
-import LeadForm from "./LeadForm";
+//import LeadForm from "./LeadForm";
 import { useRegularApi } from "../../../context/ApiContext";
 import { useResponse } from "../../../context/ResponseContext";
+import LeadForm from "./LeadForm";
 
 type Props = {};
 
 function LeadHome({}: Props) {
-  const { customersCounts } = useRegularApi();
+  const {regionId ,areaId,refreshContext,customersCounts}=useRegularApi()
   const { request: getAllLeads } = useApi("get", 3001);
-  const { setCustomerData } = useResponse();
+  const { setCustomerData,loading, setLoading } = useResponse();
   const [allLead, setAllLead] = useState<LeadData[]>([]);
   const { request: getLead } = useApi("get", 3001);
   const [editId, setEditId] = useState("");
   const navigate = useNavigate();
+
+  
 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState({
@@ -48,6 +51,7 @@ function LeadHome({}: Props) {
       leadForm: leadForm,
     }));
     getLeads();
+    refreshContext({customerCounts:true})
   };
 
   const handleView = (id: any) => {
@@ -60,7 +64,9 @@ function LeadHome({}: Props) {
   };
 
   const getLeads = async () => {
+   
     try {
+      setLoading(true);
       const { response, error } = await getAllLeads(endPoints.LEADS);
       if (response && !error) {
         console.log(response.data.leads);
@@ -75,11 +81,14 @@ function LeadHome({}: Props) {
       }
     } catch (err) {
       console.log(err);
+    }finally{
+      setLoading(false)
     }
   };
 
   useEffect(() => {
     getLeads();
+    refreshContext({customerCounts:true})
   }, []);
 
   const homeCardData = [
@@ -145,7 +154,12 @@ function LeadHome({}: Props) {
     <>
       <div className="text-[#303F58] space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
+        <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Lead</h1>
+          <p className="text-ashGray text-sm">
+          A potential client or customer showing interest in your business. 
+            </p>
+         </div>
           <div className="flex gap-2">
             <Button
               variant="tertiary"
@@ -197,12 +211,13 @@ function LeadHome({}: Props) {
               { label: "view", function: handleView },
               { label: "edit", function: handleEdit },
             ]}
+            loading={loading}
           />
         </div>
       </div>
       {/* Modal controlled by state */}
       <Modal open={isModalOpen.leadForm} onClose={() => handleModalToggle()}>
-        <LeadForm editId={editId} onClose={() => handleModalToggle()} />
+        <LeadForm editId={editId}  regionId={regionId} areaId={areaId} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal
         open={isModalOpen.import}

@@ -1,16 +1,17 @@
 import { VictoryLabel, VictoryPie, VictoryTheme } from "victory";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
 import { useEffect, useState } from "react";
-import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import useApi from "../../../Hooks/useApi";
 import No_Data_found from "../../../assets/image/NO_DATA.png";
 import NoRecords from "../../../components/ui/NoRecords";
 
-type Props = {}
+type Props = {
+  allRegions?:any
+}
 
-function TopBreakDownByRegion({}: Props) {
-  const { allRegions } = useRegularApi();
+function TopBreakDownByRegion({allRegions}: Props) {
+  
   const { request: getConvertionRate } = useApi("get", 3003);
   const [roles, setRoles] = useState([
     { name: 'Regional Managers', count: 0, color: '#1B6C75' },
@@ -23,11 +24,11 @@ function TopBreakDownByRegion({}: Props) {
   const [getRegion, setGetRegion] = useState<any>();
   const [selectedRegion, setSelectedRegion] = useState<any>(null);
 
+  
   const getConvertion = async () => {
     try {
-      const endPoint = selectedRegion ? `${endPoints.TEAM_BREAK_DOWN}/${selectedRegion.value}` : endPoints.TEAM_BREAK_DOWN;
+      const endPoint = selectedRegion.value.length>0 ? `${endPoints.TEAM_BREAK_DOWN}/${selectedRegion.value}` : endPoints.TEAM_BREAK_DOWN;
       const { response, error } = await getConvertionRate(endPoint);
-
       if (response && !error) {
         const { areaManager, bda, regionManager, supervisor, supportAgent } = response.data;
 
@@ -86,7 +87,7 @@ function TopBreakDownByRegion({}: Props) {
           <SelectDropdown
             setSelectedValue={setSelectedRegion}
             selectedValue={selectedRegion}
-            placeholder="All Regions"
+            placeholder="All Regions"      
             filteredData={getRegion}
             searchPlaceholder="Search Region"
             width="w-44"
@@ -114,8 +115,8 @@ function TopBreakDownByRegion({}: Props) {
  />
  
  {/* Custom label in the center of the pie chart */}
- <div className="absolute top-[32%] left-1/2 transform -translate-x-1/2 -translate-y-[20%] z-50 text-center">
-   <p className="text-2xl font-bold">{totalStaffCount}</p>
+ <div className="absolute top-[28%] left-1/2 transform -translate-x-1/2 -translate-y-[20%] z-20 text-center">
+   <p className="text-xl font-semibold">{totalStaffCount}</p>
    <p className="text-md">Total Team</p>
  </div>
 

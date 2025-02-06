@@ -42,9 +42,10 @@ type Props = {
   supportAgentDetails:any
   ticketSummary:any
   insideSvData:any
+  loading?:boolean
 }
   
-const SuperVisorTicketsOverview = ({supportAgentDetails,ticketSummary,insideSvData}: Props) => {
+const SuperVisorTicketsOverview = ({supportAgentDetails,ticketSummary,insideSvData,loading}: Props) => {
   const navigate=useNavigate()
   console.log(insideSvData);
   
@@ -141,6 +142,7 @@ const SuperVisorTicketsOverview = ({supportAgentDetails,ticketSummary,insideSvDa
           { label: 'view', function: handleView },
         ]} 
         maxHeight="300px"
+        loading={loading}
          />
       </div>
             </div>

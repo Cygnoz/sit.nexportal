@@ -9,12 +9,14 @@ import { WCData } from "../../../Interfaces/WC";
 import { endPoints } from "../../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
+import { useResponse } from "../../../context/ResponseContext";
  
 const WCommisionHome = () => {
   const { request: getALLWC } = useApi("get", 3003);
   const { request: deleteWC } = useApi("delete", 3003);
   const [allWC, setAllWC] = useState<WCData[]>([]);
-  const [editId, setEditId] = useState<string | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);4
+  const {loading,setLoading}=useResponse()
  
   // State to manage delete confirmation modal
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -45,9 +47,12 @@ const WCommisionHome = () => {
     try {
       const { response, error } = await deleteWC(`${endPoints.WC}/${deleteId}`);
       if (response && !error) {
-        setAllWC((prev) => prev.filter((wc: any) => wc._id !== deleteId));
-        toast.success(response.data.message || "Commission deleted successfully");
         getWC(); // Refresh the list
+        setAllWC((prev) => prev.filter((wc: any) => wc._id !== deleteId));
+        
+        
+        toast.success(response.data.message || "Commission deleted successfully");
+      
       } else {
         console.error(error);
         toast.error("Failed to delete commission");
@@ -67,21 +72,20 @@ const WCommisionHome = () => {
  
   const getWC = async () => {
     try {
+      setLoading(true)
       const { response, error } = await getALLWC(endPoints.WC);
       if (response && !error) {
-        const transformedRegions = response.data.commissions?.map(
-          (commission: any) => ({
-            ...commission,
-            createdAt: new Date(commission.createdAt)
-            .toLocaleDateString("en-GB") // Extracts the date part
-          })
-        );
-        setAllWC(transformedRegions);
+        console.log(response.data.commissions);
+       
+        setAllWC(response.data.commissions);
+       
       } else {
         // console.log(error);
       }
     } catch (err) {
       // console.log(err);
+    }finally{
+      setLoading(false)
     }
   };
  
@@ -94,17 +98,21 @@ const WCommisionHome = () => {
   // Define the columns with strict keys
   const columns: { key: keyof WCData; label: string }[] = [
     { key: "profileName", label: "ProfileName" },
-    { key: "commissionPercentage", label: "Percentage" },
-    { key: "thresholdAmount", label: "Threshold Amt" },
-    { key: "createdAt", label: "Created Date" },
+    { key: "thresholdLicense", label: "Threshold License" },
+    { key: "commissionPoint", label: "Commission Point" },
+    { key: "recurringPoint", label: "Recurring Pointt" },
+    { key: "perPointValue", label: "Per Point Value" },
   ];
  
   return (
     <div>
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">
-          Worker Commission Profile
-        </h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Worker Commission</h1>
+          <p className="text-ashGray text-sm">
+          Set and track commission rates for workers. 
+            </p>
+         </div>
  
         <Button
           variant="primary"
@@ -139,6 +147,7 @@ const WCommisionHome = () => {
             { label: "delete", function: openDeleteModal },
             { label: "edit", function: handleEdit },
           ]}
+          loading={loading}
         />
       </div>
  

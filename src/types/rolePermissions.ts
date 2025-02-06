@@ -10,6 +10,7 @@ import TrialIcon from '../assets/icons/TrialIcon';
 import Licensor from '../assets/icons/Licensor';
 import Trophy from '../assets/icons/Trophy';
 import Settings from '../assets/icons/Settings';
+import TargetFlag from '../assets/icons/TargetFlag';
 
 // Define the available roles
 export type Role =
@@ -46,7 +47,8 @@ const sidebarIcons: { [key: string]: React.ComponentType } = {
     "User Log": UserIcon,
     "Worker Commission":UserIcon,
     "Praise":Trophy,
-    "Settings":Settings
+    "Settings":Settings,
+    "Target":TargetFlag
 
   };
 
@@ -63,13 +65,14 @@ const sidebarRoutes: { [key: string]: string } = {
     "Trial": "/trial",
     "Licenser": "/licenser",
     "Tickets": "/ticket",
+    "Target": "/target",
     "Expense": "/expense",
     "Payroll":"/payroll",
     "User": "/settings/users",
     "User Log": "/settings/user-log",
     "Worker Commission":'/settings/worker-commission',
     "Praise":'/prises',
-    "Settings":'/settings/target'
+    "Settings":'/settings/users'
     
   };
 
@@ -87,6 +90,7 @@ const rolePermissions: RolePermissions = {
     "Trial",
     "Licenser",
     "Tickets",
+    "Target",
     "Expense",
     "Payroll",
     "User",
@@ -103,17 +107,18 @@ const rolePermissions: RolePermissions = {
     "BDA",
     "Lead",
     "Trial",
+    "Target",
     "Licenser",
     "Worker Commission",
     "Praise",
   ],
   'Support Admin': ["Supervisor", "Support Agent", "Trial", "Licenser", "Tickets","Praise"],
-  'Region Manager': ["Area", "Area Manager", "BDA", "Lead", "Trial", "Licenser"],
-  'Area Manager': ["BDA", "Lead", "Trial", "Licenser"],
+  'Region Manager': ["Area", "Area Manager", "BDA","Target", "Lead", "Trial", "Licenser"],
+  'Area Manager': ["BDA","Target", "Lead", "Trial", "Licenser"],
   'BDA': ["Lead", "Trial", "Licenser"],
   'Supervisor': ["Support Agent", "Trial", "Licenser", "Tickets"],
   'Support Agent': ["Trial", "Licenser", "Tickets"],
 };
 
 // Export rolePermissions, sidebarRoutes, and sidebarIcons
-export { rolePermissions, sidebarRoutes, sidebarIcons };
+export { rolePermissions, sidebarRoutes, sidebarIcons, };

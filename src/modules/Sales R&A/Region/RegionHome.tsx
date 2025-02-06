@@ -14,11 +14,13 @@ import Table from "../../../components/ui/Table";
 import { useRegularApi } from "../../../context/ApiContext";
 import { endPoints } from "../../../services/apiEndpoints";
 import RegionForm from "./RegionForm";
+import { useResponse } from "../../../context/ResponseContext";
 
 // Define the type for data items
 
 const RegionHome = () => {
-  const { totalCounts } = useRegularApi();
+  const {loading, setLoading} = useResponse()
+  const { totalCounts,refreshContext } = useRegularApi();
   const [allRegion, setAllRegion] = useState<RegionData[]>([]);
   const { request: getAllRegion } = useApi("get", 3003);
   const navigate = useNavigate();
@@ -30,6 +32,7 @@ const RegionHome = () => {
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
     getAllRegions();
+    refreshContext({counts:true})
   };
 
   const handleView = (id: any) => {
@@ -45,21 +48,21 @@ const RegionHome = () => {
 
   const getAllRegions = async () => {
     try {
+      setLoading(true); // Set loading to true before fetching data
       const { response, error } = await getAllRegion(endPoints.GET_REGIONS);
       if (response && !error) {
-        const transformedRegions = response.data.regions?.map(
-          (region: any) => ({
-            ...region,
-            createdAt: new Date(region.createdAt).toLocaleDateString("en-GB"), // This formats the date to "dd/mm/yyyy"
-          })
-        );
-        // Then set the transformed regions into state
+        const transformedRegions = response.data.regions?.map((region: any) => ({
+          ...region,
+          createdAt: new Date(region.createdAt).toLocaleDateString("en-GB"),
+        }));
         setAllRegion(transformedRegions);
       } else {
         console.log(error.response.data.message);
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setLoading(false); // Set loading to false after fetching data
     }
   };
 
@@ -118,7 +121,7 @@ const RegionHome = () => {
   ];
 
   const name = "Name";
-const country = "Country";
+const country = "Status";
 const code = "Code";
 
 const handleFilter = ({ options }: { options: string }) => {
@@ -126,9 +129,18 @@ const handleFilter = ({ options }: { options: string }) => {
     // Create a new sorted array to avoid mutating the original state
     const sortedRegions = [...allRegion].sort((a, b) => b.regionName.localeCompare(a.regionName));
     setAllRegion(sortedRegions);
-  }else if(options==='Country'){
-    const sortedRegions = [...allRegion].sort((a, b) => b.country.localeCompare(a.country));
+  }else if (options === 'Status') {
+    const sortedRegions = [...allRegion].sort((a:any, b:any) => {
+        // Prioritize status
+        if (a.status === 'Active' && b.status !== 'Active') return 1;
+        if (a.status !== 'Active' && b.status === 'Active') return -1;
+        
+        // If status is the same, sort by country
+        return a.country.localeCompare(b.country);
+    });
+
     setAllRegion(sortedRegions);
+
   }else {
     const sortedRegions = [...allRegion].sort((a:any, b:any) => {
       // Extract the numeric part of the regionCode
@@ -149,7 +161,12 @@ const handleFilter = ({ options }: { options: string }) => {
       <div className="space-y-4">
         {/* Header */}
         <div className="flex justify-between items-center">
-          <h1 className="text-[#303F58] text-xl font-bold">Region</h1>
+         <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Region</h1>
+          <p className="text-ashGray text-sm">
+        Manages different geographical regions for business operations and organization.  
+            </p>
+         </div>
           <Button
             variant="primary"
             size="sm"
@@ -161,6 +178,7 @@ const handleFilter = ({ options }: { options: string }) => {
             <span className="font-bold text-xl">+</span> Create Region
           </Button>
         </div>
+       
 
         {/* HomeCards Section */}
         <div className="flex gap-3 py-2 justify-between">
@@ -178,40 +196,41 @@ const handleFilter = ({ options }: { options: string }) => {
 
         {/* Table Section */}
         <div>
-          <Table<RegionData>
-            data={allRegion}
-            columns={columns}
-            headerContents={{
-              title: "Region",
-              search: { placeholder: "Search Region..." },
-              sort: [
-                {
-                  sortHead: "Filter",
-                  sortList: [
-                    {
-                      label: "Sort by Name",
-                      icon: <UserIcon size={14} color="#4B5C79" />,
-                      action: () => handleFilter({ options: name }),
-                    },
-                    {
-                      label: "Sort by Country",
-                      icon: <RegionIcon size={14} color="#4B5C79" />,
-                      action: () => handleFilter({ options: country }),
-                    },
-                    {
-                      label: "Sort by Code",
-                      icon: <Notebook size={14} color="#4B5C79" />,
-                      action: () => handleFilter({ options: code }),
-                    },
-                  ],
-                },
-              ],
-            }}
-            actionList={[
-              { label: "edit", function: handleEdit },
-              { label: "view", function: handleView },
-            ]}
-          />
+        <Table<RegionData>
+  data={allRegion}
+  columns={columns}
+  headerContents={{
+    title: "Region",
+    search: { placeholder: "Search Region..." },
+    sort: [
+      {
+        sortHead: "Filter",
+        sortList: [
+          {
+            label: "Sort by Name",
+            icon: <UserIcon size={14} color="#4B5C79" />,
+            action: () => handleFilter({ options: name }),
+          },
+          {
+            label: "Sort by Status",
+            icon: <RegionIcon size={14} color="#4B5C79" />,
+            action: () => handleFilter({ options: country }),
+          },
+          {
+            label: "Sort by Code",
+            icon: <Notebook size={14} color="#4B5C79" />,
+            action: () => handleFilter({ options: code }),
+          },
+        ],
+      },
+    ],
+  }}
+  actionList={[
+    { label: "edit", function: handleEdit },
+    { label: "view", function: handleView },
+  ]}
+  loading={loading} // Pass the loading state
+/>
         </div>
       </div>
       {/* Modal Section */}

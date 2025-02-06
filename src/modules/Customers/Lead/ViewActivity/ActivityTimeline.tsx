@@ -1,179 +1,220 @@
-import { useEffect, useState } from 'react'
-import EditIcon from '../../../../assets/icons/EditIcon'
-import profileImage from '../../../../assets/image/AvatarImg.png'
-import rightArrow from '../../../../assets/image/right-arrow.png'
-import { endPoints } from '../../../../services/apiEndpoints'
-import { useParams } from 'react-router-dom'
-import useApi from '../../../../Hooks/useApi'
-import NoRecords from '../../../../components/ui/NoRecords'
-import SelectDropdown from '../../../../components/ui/SelectDropdown'
+import { useEffect, useState } from 'react';
+import EditIcon from '../../../../assets/icons/EditIcon';
+import rightArrow from '../../../../assets/image/right-arrow.png';
+import { endPoints } from '../../../../services/apiEndpoints';
+import { useParams } from 'react-router-dom';
+import useApi from '../../../../Hooks/useApi';
+import NoRecords from '../../../../components/ui/NoRecords';
+import SelectDropdown from '../../../../components/ui/SelectDropdown';
+import DOMPurify from 'dompurify';
 
-type Props = {}
+const ActivityTimeline = () => {
+  const { request: getAllActivityTimeline } = useApi('get', 3001);
+  const [activityData, setActivityData] = useState<any[]>([]);
+  const { id } = useParams();
 
-const ActivityTimeline = ({ }: Props) => {
+  const [selectedPeriod, setSelectedPeriod] = useState({ label: 'All Timelines', value: '' });
+  const [selectedActivity, setSelectedActivity] = useState({ label: 'All Activities', value: '' });
+  const [displayDate, setDisplayDate] = useState('');
 
-    const { request: getAllActivityTimeline } = useApi('get', 3001)
-    const [activityData, setActivityData] = useState<any[]>([])
-    const { id } = useParams()
+  const activityOptions = [
+    { label: 'Meeting', value: 'meeting' },
+    { label: 'Mail', value: 'email' },
+    { label: 'Note', value: 'note' },
+    { label: 'Task', value: 'task' },
+  ];
 
-    const getActivityTimeline = async () => {
-        try {
-            const { response, error } = await getAllActivityTimeline(`${endPoints.ACTIVITY_TIMELINE}/${id}`)
-            console.log(response, 'res');
-            console.log(error, 'err');
-            if (response && !error) {
-                console.log(response.data);
-                setActivityData(response.data.activities)
-            }
-            else {
-                console.log(error.response.data.message);
+  const periodOptions = [
+    { label: 'Today', value: 'today' },
+    { label: 'Tomorrow', value: 'tomorrow' },
+    { label: 'Yesterday', value: 'yesterday' },
+    { label: 'After 7 Days', value: 'after_7_days' },
+    { label: 'After 30 Days', value: 'after_30_days' },
+  ];
 
-            }
-
+  // Fetch timeline data on component mount
+  useEffect(() => {
+    const fetchTimelineData = async () => {
+      try {
+        const { response, error } = await getAllActivityTimeline(`${endPoints.ACTIVITY_TIMELINE}/${id}`);
+        if (response && !error) {
+          setActivityData(response.data.activities || []);
+        } else {
+          console.error('API Error:', error.response?.data?.message || error.message);
         }
-        catch (err) {
-            console.log(err, 'error');
+      } catch (err) {
+        console.error('Fetch Error:', err);
+      }
+    };
 
-        }
+    fetchTimelineData();
+  }, [id, getAllActivityTimeline]);
+
+  // Format date for display
+  const formatDate = (date: Date, label: string) => {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' } as const;
+    const dateString = date.toLocaleDateString('en-US', options);
+    return `${label}, ${dateString}`;
+  };
+
+  // Update display date based on selected period
+  const updateDate = (selectedValue: string) => {
+    const today = new Date();
+    let formattedDate = '';
+
+    switch (selectedValue) {
+      case 'today':
+        formattedDate = formatDate(today, 'Today');
+        break;
+      case 'yesterday':
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        formattedDate = formatDate(yesterday, 'Yesterday');
+        break;
+      case 'tomorrow':
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+        formattedDate = formatDate(tomorrow, 'Tomorrow');
+        break;
+      case 'after_7_days':
+        const after7Days = new Date(today);
+        after7Days.setDate(today.getDate() + 7);
+        formattedDate = formatDate(after7Days, 'After 7 Days');
+        break;
+      case 'after_30_days':
+        const after30Days = new Date(today);
+        after30Days.setDate(today.getDate() + 30);
+        formattedDate = formatDate(after30Days, 'After 30 Days');
+        break;
+      default:
+        formattedDate = '';
     }
-    useEffect(() => {
-        getActivityTimeline()
-    }, [])
 
-    const [selectedPeriod, setSelectedPeriod] = useState<any>(null);
-    const [selectedActivity, setSelectedActivity] = useState<any>(null);
-    const [displayDate, setDisplayDate] = useState("");
+    setDisplayDate(formattedDate);
+  };
 
-    const activityOptions = [
-        { "label": "Meeting", "value": "meeting" },
-        { "label": "Mail", "value": "mail" },
-        { "label": "Note", "value": "note" },
-        { "label": "Task", "value": "task" }
-    ];
-    const periodOptions = [
-        { "label": "Today", "value": "today" },
-        { "label": "Before 7 Days", "value": "before 7 days" },
-        { "label": "Before 30 Days", "value": "before 30 days" },
-        { "label": "Yesterday", "value": "yesterday" }
-    ];
+  // Handle activity filter selection
+  const handleActivitySelection = (selectedOption: any) => {
+    setSelectedActivity(selectedOption);
+  };
 
-    // Function to update the display date based on the selected period
-    const updateDate = (selectedValue: string) => {
-        const today = new Date();
-        let formattedDate = "";
+  // Handle timeline filter selection
+  const handleTimelineSelection = (selectedOption: any) => {
+    setSelectedPeriod(selectedOption);
+    updateDate(selectedOption?.value);
+    
+  };
 
-        switch (selectedValue) {
-            case "today":
-                formattedDate = formatDate(today, "Today");
-                break;
-            case "yesterday":
-                const yesterday = new Date(today);
-                yesterday.setDate(today.getDate() - 1);
-                formattedDate = formatDate(yesterday, "Yesterday");
-                break;
-            case "before 7 days":
-                const before7Days = new Date(today);
-                before7Days.setDate(today.getDate() - 7);
-                formattedDate = formatDate(before7Days, "Before 7 Days");
-                break;
-            case "before 30 Days":
-                const before30Days = new Date(today);
-                before30Days.setDate(today.getDate() - 30);
-                formattedDate = formatDate(before30Days, "Before 30 Days");
-                break;
-            default:
-                formattedDate = "";
-        }
+  // Filter activities based on selected filters
+  const filteredActivities = activityData.filter((activity) => {
+    if (!activity?.activityType) return false;
 
-        setDisplayDate(formattedDate);
-    };
+    // Filter by activity type
+    const matchesActivity =
+      selectedActivity.value === '' ||
+      selectedActivity.value.toLowerCase() === activity.activityType.toLowerCase();
 
-    // Helper function to format the date
-    const formatDate = (date: Date, label: string) => {
-        const options = { year: "numeric", month: "long", day: "numeric" } as const;
-        const dateString = date.toLocaleDateString("en-US", options);
-        return `${label}, ${dateString}`;
-    };
+    // Filter by timeline
+    const createdAt = activity.createdAt ? new Date(activity.createdAt) : '';
+    const today = new Date();
 
-    // Handle dropdown selection
-    const handleSelection = (selectedOption: any) => {
-        setSelectedPeriod(selectedOption);
-        updateDate(selectedOption?.value);
-    };
+    let matchesPeriod = selectedPeriod.value === null; 
 
+    if (createdAt) {
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
 
-    return (
-        <div>
-            <div className="w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
 
+      const after7Days = new Date(today);
+      after7Days.setDate(today.getDate() + 7);
 
+      const after30Days = new Date(today);
+      after30Days.setDate(today.getDate() + 30);
 
-                <div className="flex gap-4">
-                    <SelectDropdown
-                        filteredData={activityOptions}
-                        selectedValue={selectedActivity}
-                        setSelectedValue={setSelectedActivity}
-                        placeholder="All Activities"
-                        searchPlaceholder="Search Activities"
-                        width="w-44"
-                    />
+      matchesPeriod =
+        (selectedPeriod.value === 'today' && createdAt.toDateString() === today.toDateString()) ||
+        (selectedPeriod.value === 'yesterday' && createdAt.toDateString() === yesterday.toDateString()) ||
+        (selectedPeriod.value === 'tomorrow' && createdAt.toDateString() === tomorrow.toDateString()) ||
+        (selectedPeriod.value === 'after_7_days' && createdAt >= after7Days) ||
+        (selectedPeriod.value === 'after_30_days' && createdAt >= after30Days);
+    }
 
-                    <SelectDropdown
-                        filteredData={periodOptions}
-                        placeholder="All Timelines"
-                        selectedValue={selectedPeriod}
-                        setSelectedValue={handleSelection} // Pass the custom handler
-                        searchPlaceholder="Search Timelines"
-                        width="w-44"
-                    />
+    return matchesActivity && matchesPeriod;
+  });
 
-                </div>
-                {displayDate && (
-                    <p className="text-[#303F58] text-sm font-bold mt-3">{displayDate}</p>
-                )}
-                {activityData.length > 0 ? (
-                    activityData.map((timeline: any) => (
-                        <div className="bg-[#F5F9FC] p-5 rounded-lg my-4">
-                            <div className="flex gap-6">
-                                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
-                                    <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
-                                </div>
-                                <div className="ms-2"><p className="text-[#4B5C79] text-sm font-bold mt-1">{timeline?.description ? timeline?.description : 'N/A'}</p></div>
-                                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
-                                <div className="flex gap-2 mt-1">
-                                    <EditIcon size={20} />
-                                    <div className="flex gap-2 bg-[#FFFFFF] w-32 h-8 p-1 rounded-3xl -mt-1">
-                                        <div className="rounded-full w-5 h-5 overflow-hidden ms-1 mt-[1%]">
-                                            <img src={profileImage} alt="" />
-                                        </div>
-                                        <p className="text-[#4B5C79] text-xs font-medium mt-1">{timeline?.userName ? timeline?.userName : "N/A"}</p>
-                                    </div>
-                                </div>
-                                <div className="rounded-full bg-[#C8C8C8] w-2 h-2 mt-3 "></div>
-                                <div><p className="text-[#4B5C79] text-xs font-medium mt-2">
-                                    {new Date(timeline?.createdAt).toLocaleString("en-US", {
-                                        month: "long",
-                                        day: "numeric",
-                                        year: "numeric",
-                                        hour: "numeric",
-                                        minute: "2-digit",
-                                        hour12: true,
-                                    })}
-                                </p></div>
-                            </div>
-                            <div className="ms-20 -mt-4">
-                                <p className="text-[#4B5C79] text-xs font-medium">{timeline?.taskTitle ? timeline?.taskTitle : 'N/A'}
-                                    {/* <span className="text-[#4B5C79] text-sm font-bold ms-1">Lead: Trail</span> */}
-                                </p>
-                            </div>
-                        </div>
-                    ))) : (
-                    <NoRecords text="No Activities Found" imgSize={90} textSize="md" />
-                )}
+  return (
+    <div>
+      <div className="w-full h-fit rounded-lg p-5 gap-5 bg-[#FFFFFF]">
+        <div className="flex gap-4">
+          <SelectDropdown
+            filteredData={activityOptions}
+            selectedValue={selectedActivity}
+            setSelectedValue={handleActivitySelection}
+            placeholder="All Activities"
+            searchPlaceholder="Search Activities"
+            width="w-44"
+          />
 
-            </div>
+          <SelectDropdown
+            filteredData={periodOptions}
+            placeholder="All Timelines"
+            selectedValue={selectedPeriod}
+            setSelectedValue={handleTimelineSelection}
+            searchPlaceholder="Search Timelines"
+            width="w-44"
+          />
         </div>
-    )
-}
 
-export default ActivityTimeline
+        {displayDate && <p className="text-[#303F58] text-sm font-bold mt-3">{displayDate}</p>}
+
+        {filteredActivities.length > 0 ? (
+          filteredActivities.map((timeline: any) => (
+            <div className="bg-[#F5F9FC] p-5 rounded-lg my-4" key={timeline.id}>
+              <div className="flex gap-6">
+                <div className="mt-2 w-11 h-11 bg-[#EBEFF4] rounded-full">
+                  <img className="w-6 h-6 ms-3 mt-[25%]" src={rightArrow} alt="" />
+                </div>
+                <div className="ms-2">
+                  <p className="text-[#4B5C79] text-sm font-bold mt-1">{timeline?.description || 'N/A'}</p>
+                </div>
+                <div className="flex gap-2 mt-1">
+                  <EditIcon size={20} />
+                </div>
+                <p className="text-[#4B5C79] text-xs font-medium mt-2">
+                  {new Date(timeline?.createdAt).toLocaleString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                  })}
+                </p>
+              </div>
+              <div className="ms-20 -mt-4">
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: DOMPurify.sanitize(
+                      timeline?.note ||
+                        timeline?.taskTitle ||
+                        timeline?.meetingTitle ||
+                        timeline?.subject ||
+                        timeline?.emailMessage ||
+                        'N/A'
+                    ),
+                  }}
+                />
+              </div>
+            </div>
+          ))
+        ) : (
+          <NoRecords text="No Activities Found" imgSize={90} textSize="md" />
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default ActivityTimeline;

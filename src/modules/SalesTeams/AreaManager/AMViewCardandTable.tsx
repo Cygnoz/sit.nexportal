@@ -16,11 +16,12 @@ interface AMViewData {
 type Props = {
   bdaDetails:Array<any>;
   insideAmData: any;
+  loading?:boolean
 }
 
-const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
+const AMViewCardandTable = ({bdaDetails ,  insideAmData,loading}: Props) => {
 
-  console.log(bdaDetails);
+  //console.log(bdaDetails);
   
 
   const navigate= useNavigate()
@@ -64,7 +65,7 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
     { key: "status", label: "Status" },
     { key: "areaName", label: "Area" },
   ];
-  console.log(bdaDetails);
+  //console.log(bdaDetails);
   
 
   const bdaData =bdaDetails.map((bda:any)=>({
@@ -133,7 +134,9 @@ const AMViewCardandTable = ({bdaDetails ,  insideAmData}: Props) => {
                 { label: 'view', function: handleView },
               ]}
               noPagination
-              maxHeight="300px" />
+              maxHeight="300px" 
+              loading={loading}
+              />
           </div>
 
         </div>

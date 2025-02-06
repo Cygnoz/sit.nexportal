@@ -8,6 +8,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+  ResponsiveContainer,
   Tooltip,
   XAxis, YAxis
 } from 'recharts';
@@ -31,6 +32,15 @@ import BDAForm from "../BDAForm";
 import GraphTable from "../GraphTable";
 import BDAViewAward from "./BDAViewAward";
 import BDAViewForm from "./BDAViewForm";
+import UserRoundCheckIcon from "../../../../assets/icons/UserRoundCheckIcon";
+import SalaryInfoModal from "../../../../components/modal/SalaryInfoModal";
+import CommissionModal from "../../../../components/modal/CommissionModal";
+import SalaryRoundIcon from "../../../../assets/icons/SalaryRoundIcon";
+import CommissionRoundIcon from "../../../../assets/icons/CommissionRoundIcon";
+import SelectDropdown from "../../../../components/ui/SelectDropdown";
+import { useResponse } from "../../../../context/ResponseContext";
+import ProgressBar from "../../../../pages/Dashboard/Graphs/ProgressBar";
+import { useUser } from "../../../../context/UserContext";
 
 
 
@@ -52,10 +62,16 @@ interface BDAViewDetails {
 }
 
 
-type Props = {}
+type Props = {
+  staffId?:string
+}
 
-const BDAView = ({}: Props) => {
+const BDAView = ({staffId}: Props) => {
+
+       const {user}=useUser()
+       user?.role
   const {request:getBDAViewDetails}=useApi('get',3002)
+  const {loading,setLoading}=useResponse()
   const topRef = useRef<HTMLDivElement>(null);
     
       useEffect(() => {
@@ -64,8 +80,11 @@ const BDAView = ({}: Props) => {
       }, []);
   const navigate=useNavigate()
   const {id}=useParams()
+  const iId=staffId?staffId:id
   const {request:getBDA}=useApi('get',3002);
   const {request: deleteABda}=useApi('delete',3002);
+  const {request: deactivateBDA}=useApi('put',3002);
+
   const [data, setData] = useState<{
     bdaData: any;
     bdaViewDetails: BDAViewDetails;
@@ -86,7 +105,6 @@ const BDAView = ({}: Props) => {
     { icon: <LeadsCardIcon />, number: "₹89,567", title: "Total Revenue Generated", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
     { icon: <LeadsCardIcon />, number:data.bdaViewDetails.bdaDetails?.totalLicensesSold?data.bdaViewDetails.bdaDetails?.totalLicensesSold:0, title: "Pending Tasks", iconFrameColor: '#9C75D3', iconFrameBorderColor: '#DAC9F1' },
 
-    // { icon: <AreaManagerIcon />, number: "498", title: "Total BDA's", iconFrameColor: '#D786DD', iconFrameBorderColor: '#FADDFCCC' },
   ];
 
   const [isModalOpen, setIsModalOpen] = useState({
@@ -94,16 +112,22 @@ const BDAView = ({}: Props) => {
     viewBda: false,
     awards:false,
     confirm:false,
+    deactiveBda:false,
+    salary:false,
+    commission:false
   });
 
   // Function to toggle modal visibility
-  const handleModalToggle = (editBda = false, viewBda = false,awards=false, confirm=false,) => {
+  const handleModalToggle = (editBda = false, viewBda = false,awards=false, confirm=false,deactiveBda=false,salary=false,commission=false) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editBda: editBda,
       viewBda: viewBda,
       awards:awards,
       confirm:confirm,
+      deactiveBda:deactiveBda,
+      salary:salary,
+      commission:commission
     }));
     getOneBDA();
   };
@@ -140,7 +164,7 @@ const BDAView = ({}: Props) => {
 
   const handleDelete = async () => {
     try {
-      const { response, error } = await deleteABda(`${endPoints.BDA}/${id}`);
+      const { response, error } = await deleteABda(`${endPoints.BDA}/${iId}`);
       console.log(response);
       console.log(error);
             
@@ -157,10 +181,35 @@ const BDAView = ({}: Props) => {
     }
   };
 
+  const handleDeactivate = async () => {
+    const body = {
+      status: data.bdaData?.status === "Active" ? 'Deactive' : 'Active'
+    }
+    try {
+      const { response, error } = await deactivateBDA(`${endPoints.DEACTIVATE_BDA}/${iId}`, body);
+      console.log(response);
+      console.log(error, "error message");
+
+
+      if (response) {
+        toast.success(response.data.message);
+        navigate("/bda");
+
+      } else {
+        console.log(error?.response?.data?.message);
+        toast.error(error?.response?.data?.message || "An error occurred");
+      }
+    } catch (err) {
+      console.error("Deactivate error:", err);
+      toast.error("Failed to Deactivate the lead.");
+    }
+  };
+
 
   const getOneBDA = async () => {
     try {
-      const { response, error } = await getBDA(`${endPoints.BDA}/${id}`);
+      setLoading(true)
+      const { response, error } = await getBDA(`${endPoints.BDA}/${iId}`);
       if (response && !error) {
         console.log(response.data);
         
@@ -174,16 +223,16 @@ const BDAView = ({}: Props) => {
       }
     } catch (err) {
       console.error('Error fetching BDA data:', err);
+    }finally{
+      setLoading(false)
     }
   };
   
   const getBDAViewData = async () => {
     try {
-      const { response, error } = await getBDAViewDetails(`${endPoints.BDA_DETAILS}/${id}/customers`);
+      const { response, error } = await getBDAViewDetails(`${endPoints.BDA_DETAILS}/${iId}/customers`);
       if (response && !error) {
-        console.log("res", response.data);
         const { LeadDetails, LicenserDetails, TrialDetails, bdaDetails } = response.data;
-  
         const TransformedLead = LeadDetails?.map((lead: any) => ({
           ...lead,
           createdAt: new Date(lead.createdAt).toLocaleDateString("en-GB"), // Format date
@@ -231,17 +280,41 @@ const BDAView = ({}: Props) => {
   useEffect(() => {
     getOneBDA()
     getBDAViewData()
-  }, [id]);
-
-  console.log("Bda Deatils",data.bdaViewDetails);
-  
-
-
-
-
-
+  }, [iId]);
 
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
+  const retentionData = [
+    { name: 'Jan', uv: 4000, pv: 2400, amt: 2400 },
+    { name: 'Feb', uv: 3000, pv: 1398, amt: 2210 },
+    { name: 'Mar', uv: 2000, pv: 9800, amt: 2290 },
+    { name: 'Apr', uv: 2780, pv: 3908, amt: 2000 },
+    { name: 'May', uv: 1890, pv: 4800, amt: 2181 },
+    { name: 'Jun', uv: 4000, pv: 2400, amt: 2400 },
+    { name: 'Jul', uv: 3000, pv: 1398, amt: 2210 },
+    { name: 'Aug', uv: 2000, pv: 9800, amt: 2290 },
+    { name: 'Sep', uv: 2780, pv: 3908, amt: 2000 },
+    { name: 'Oct', uv: 1890, pv: 4800, amt: 2181 },
+    { name: 'Nov', uv: 2780, pv: 3908, amt: 2000 },
+    { name: 'Dec', uv: 1890, pv: 4800, amt: 2181 },
+  ]
+ 
+  const normalizedData = retentionData.map(item => ({
+    ...item,
+    uv: item.uv / 160,
+  }))
+  const [selectedActivity, setSelectedActivity] = useState({ label: 'Current Month', value: '' });
+  const handleActivitySelection = (selectedOption: any) => {
+    setSelectedActivity(selectedOption);
+  };
+ 
+  const activityOptions = [
+    { label: 'Previous Month', value: 'previousMonth' },
+    { label: 'Q1', value: 'q1' },
+    { label: 'Q2', value: 'q2' },
+    { label: 'Q3', value: 'q3' },
+  ];
+ 
+ 
 
   return (
     <>
@@ -305,15 +378,16 @@ const BDAView = ({}: Props) => {
           <div className="w-full h-96 p-4 rounded-xl">
             <div className="flex">
             <div className="w-14 h-14 rounded-full overflow-hidden">
-          {data.bdaData?.user?.userImage && data.bdaData?.user?.userImage>50 ?          
+          {data.bdaData?.user?.userImage && data.bdaData?.user?.userImage.length > 500  ?    (      
           <img
             src={data.bdaData?.user?.userImage} // Replace with the actual image URL
             alt="Profile"
             className="w-full h-full object-cover"
-          />:
+          />
+        ) : (
           <p className="w-14 h-14 bg-black rounded-full flex justify-center items-center">
                 <UserIcon color="white" size={40} />
-          </p>}
+          </p>)}
         </div>
           <p className="text-[#FFFEFB] text-2xl font-normal p-4">{data.bdaData?.user?.userName}</p>
             </div>
@@ -343,7 +417,7 @@ const BDAView = ({}: Props) => {
             </div>
 
 
-            <div className="flex gap-8 ms-6 my-12 space-x-8">
+            <div className="flex gap-8 ms-6 my-8 space-x-8">
               <div>
                 <p className="mb-1 text-[#D4D4D4] text-xs font-medium">Role</p>
                 {/* <p>Employee ID</p> */}
@@ -359,8 +433,8 @@ const BDAView = ({}: Props) => {
               </div>
             </div>
             
-            <div className="flex space-x-6 bottom-0  mt-10 ">
-            <div onClick={()=>handleModalToggle(true,false,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
+            <div className="flex space-x-10 bottom-0 ">
+            <div onClick={()=>handleModalToggle(true,false,false,false,false,false,false)} className="flex flex-col items-center cursor-pointer  space-y-1">
               <div className="w-8 h-8 mb-2  rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -371,7 +445,7 @@ const BDAView = ({}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
              </div>
 
-            <div onClick={()=>handleModalToggle(false,true,false,false)} className="flex flex-col  items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,true,false,false,false,false,false)} className="flex flex-col cursor-pointer  items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -382,7 +456,7 @@ const BDAView = ({}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
             </div>
 
-            <div onClick={()=>handleModalToggle(false,false,true,false)} className="flex flex-col cursor-pointer items-center space-y-1">
+            <div onClick={()=>handleModalToggle(false,false,true,false,false,false,false)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -393,18 +467,35 @@ const BDAView = ({}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
             </div>
 
-            <div className="flex flex-col  items-center space-y-1">
-              <div className="w-8 h-8 mb-2 rounded-full">
-              <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                   <div className="ms-2 mt-2">
-                   <DeActivateIcon size={18} color="#D52B1E4D" />
-                   </div>
-                    </div>
+            <div onClick={()=>handleModalToggle(false,false,false,false,true,false,false)} className="flex flex-col  items-center space-y-1">
+            <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+              {data.bdaData?.status === "Active" ?
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                  <div className="ms-2 mt-2">
+                      <DeActivateIcon size={18} color="#D52B1E4D" />
+                  </div>
+                </div>
+                :
+                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                </div>
               </div>
-              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">DeActivate</p>
-            </div>
 
-            <div onClick={()=>handleModalToggle(false,false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
+                  }
+
+              </div>
+              <p className="text-center text-[#D4D4D4] text-xs font-medium ms-2">
+                {data.bdaData?.status === "Active" ? "Deactivate" : "Activate"}
+              </p>
+                          </div>
+
+           
+
+        </div>
+
+        <div className="flex space-x-14 bottom-0  mt-4 ms-16">
+        <div onClick={()=>handleModalToggle(false,false,false,true,false,false,false)} className="flex flex-col cursor-pointer items-center space-y-1">
               <div className="w-8 h-8 mb-2 rounded-full">
               <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
@@ -415,25 +506,51 @@ const BDAView = ({}: Props) => {
               <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Delete</p>
             </div>
 
+            <div onClick={()=>handleModalToggle(false,false,false,false,false,true,false)} className="flex flex-col cursor-pointer  items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+              <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <SalaryRoundIcon size={18} color="#B6D6FF" />
+                   </div>
+                    </div> 
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Salary Info</p>
+            </div>
+            <div onClick={()=>handleModalToggle(false,false,false,true,false,false,true)} className="flex flex-col cursor-pointer items-center space-y-1">
+              <div className="w-8 h-8 mb-2 rounded-full">
+              <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <CommissionRoundIcon size={18} color="#B6FFFF" />
+                   </div>
+                    </div>
+              </div>
+              <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Commission</p>
+            </div>
         </div>
            </div>
           </div>
         </div>
       </div>
+      <div className="mt-4">
+{user?.role === 'BDA' && <ProgressBar />}
+</div>
+
         
      {/* Table Section */}
       <div className=" mt-4">
         <Table<LeadData> data={data.bdaViewDetails.TransformedLead} columns={columns} headerContents={{
           title: "Leads Details",
-          search: { placeholder: 'Search BDA by Name' },
+          search: { placeholder: 'Search Lead Details' },
         }}
         actionList={[
           { label: 'view', function: handleView },
-        ]} />
+        ]} 
+        loading={loading}
+        />
       </div>
 
       {/* Graph & Table */}
-      <GraphTable bdaData={data.bdaViewDetails}/>
+      <GraphTable loading={loading}  bdaData={data.bdaViewDetails}/>
 
         {/* Licenser Card */}
         <div>
@@ -449,10 +566,49 @@ const BDAView = ({}: Props) => {
         
       </div>
 
+      <div className="p-3 bg-white w-full space-y-2 rounded-lg mt-4">
+          <div className="flex justify-between">
+            <h2 className="font-bold p-2">License Retention Rate</h2>
+            <SelectDropdown
+              filteredData={activityOptions}
+              selectedValue={selectedActivity}
+              setSelectedValue={handleActivitySelection}
+              placeholder="Current Month"
+              searchPlaceholder="Search Month"
+              width="w-44" />
+          </div>
+          <div className="px-3 py-5">
+            <p className="text-[#4B5C79] text-sm font-normal">Average Retention</p>
+            <p className="text-[#272B3F] text-2xl font-normal">50%</p>
+          </div>
+          <div className="-ms-6 px-5">
+            <ResponsiveContainer width="100%" minHeight={300}>
+              <BarChart data={normalizedData}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                <YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  ticks={[0, 5, 10, 15, 20, 25]}
+                  domain={[0, 25]}
+                  tickFormatter={(value) => `${value * 4}%`} // Convert to percentage
+                />
+                <Bar dataKey="uv" radius={[10, 10, 0, 0]}>
+                  {normalizedData.map((_, index) => (
+                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+ 
+ 
+
 
     </div>
     <Modal open={isModalOpen.editBda} onClose={()=>handleModalToggle()}>
-    <BDAForm editId={id} onClose={()=>handleModalToggle()} />
+    <BDAForm editId={iId} onClose={()=>handleModalToggle()} />
   </Modal>
 
   <Modal align="right" className="w-[25%] me-16" open={isModalOpen.awards} onClose={()=>handleModalToggle()}>
@@ -473,7 +629,31 @@ const BDAView = ({}: Props) => {
           prompt="Are you sure want to delete this BDA?"
           onClose={() => handleModalToggle()}
         />
-      </Modal>       
+      </Modal>    
+
+            <Modal
+        open={isModalOpen.deactiveBda}
+        align="center"
+        onClose={() => handleModalToggle()}
+        className="w-[30%]"
+      >
+        <ConfirmModal
+          action={handleDeactivate}
+          prompt={
+            data.bdaData?.status === "Active"
+              ? "Are you sure you want to deactivate this BDA?"
+              : "Are you sure you want to activate this BDA?"
+          }
+          onClose={() => handleModalToggle()}
+        />
+      </Modal>   
+      <Modal open={isModalOpen.salary} onClose={()=>handleModalToggle()} className="w-[45%]">
+    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
+  </Modal>
+
+  <Modal open={isModalOpen.commission} onClose={()=>handleModalToggle()} className="w-[45%]">
+    <CommissionModal  onClose={()=>handleModalToggle()} />
+  </Modal>
 
 
   </>

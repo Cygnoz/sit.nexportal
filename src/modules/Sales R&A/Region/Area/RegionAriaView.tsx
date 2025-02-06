@@ -15,9 +15,10 @@ import { useNavigate } from "react-router-dom";
 type Props = {
   regionData?: any;
   regionAreaData?: RegionView;
+  loading?:boolean
 };
 
-const RegionAriaView = ({  regionAreaData }: Props) => {
+const RegionAriaView = ({  regionAreaData,loading }: Props) => {
 
   const navigate = useNavigate();
 
@@ -167,6 +168,7 @@ const RegionAriaView = ({  regionAreaData }: Props) => {
               noPagination
               maxHeight="380px"
               skeltonCount={9}
+              loading={loading}
             />
           </div>
         </div>
@@ -297,6 +299,7 @@ const RegionAriaView = ({  regionAreaData }: Props) => {
           maxHeight="370px"
           actionList={[{ label: "view", function: licenserHandleView }]}
           skeltonCount={9}
+          loading={loading}
         />
       </div>
     </div>

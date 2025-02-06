@@ -123,6 +123,7 @@ function LeadView({ }: Props) {
     }
   };
 
+console.log(leadData);
 
 
 

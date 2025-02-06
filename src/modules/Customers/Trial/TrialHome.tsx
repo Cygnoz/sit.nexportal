@@ -16,22 +16,52 @@ import { endPoints } from "../../../services/apiEndpoints";
 import { useEffect, useState } from "react";
 import { LeadData } from "../../../Interfaces/Lead";
 import { useRegularApi } from "../../../context/ApiContext";
+import Modal from "../../../components/modal/Modal";
+import TrialForm from "./TrialForm";
+import { useResponse } from "../../../context/ResponseContext";
 
 
 
 
   
 const TrialHome = () => {
-  const {customersCounts}=useRegularApi()
-
+  const {regionId ,areaId,customersCounts,refreshContext}=useRegularApi()
+  const [editId, setEditId] = useState("");
+  const {loading,setLoading}=useResponse()
   const {request:getAllTrial}=useApi('get',3001)
   const [allTrials,setAllTrials]=useState<LeadData[]>([])
    const navigate=useNavigate()
+
+   
+  // State to manage modal visibility
+  const [isModalOpen, setIsModalOpen] = useState({
+
+    leadForm: false,
+  });
+
+  // Function to toggle modal visibility
+  const handleModalToggle = (
+   
+    leadForm = false
+  ) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+     
+      leadForm: leadForm,
+    }));
+    getTrials()
+    refreshContext({customerCounts:true})
+  };
     
       const handleView=(id:any)=>{
         navigate(`/trial/${id}`)
       }
     
+      
+  const handleEdit = (id: any) => {
+    setEditId(id);
+    handleModalToggle(true);
+  };
 
       // Data for HomeCards
   const homeCardData = [
@@ -55,7 +85,7 @@ const TrialHome = () => {
       ];
             
   const getTrials=async()=>{
-    
+    setLoading(true)
     try{
       const {response,error}=await getAllTrial(endPoints.TRIAL)
       console.log("res",response);
@@ -81,19 +111,28 @@ const TrialHome = () => {
       }
     }catch(err){
       console.log(err);
+    }finally{
+      setLoading(false)
     }
   }
 
   useEffect(()=>{
     getTrials()
+    refreshContext({customerCounts:true})
   },[])
 
   
   return (
+    <>
     <div className="space-y-3">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h1 className="text-[#303F58] text-xl font-bold">Trial</h1>
+      <div>
+         <h1 className="text-[#303F58] text-xl font-bold">Trial</h1>
+          <p className="text-ashGray text-sm">
+          A temporary access period to evaluate a product or service. 
+            </p>
+         </div>
 
       </div>
 
@@ -119,9 +158,16 @@ const TrialHome = () => {
         }}
         actionList={[
             { label: 'view', function: handleView },
-          ]} />
+            { label: 'edit', function: handleEdit },
+          ]} 
+          loading={loading}
+          />
       </div>
     </div>
+    <Modal open={isModalOpen.leadForm} onClose={() => handleModalToggle()}>
+        <TrialForm editId={editId}  regionId={regionId} areaId={areaId} onClose={() => handleModalToggle()} />
+      </Modal>
+    </>
   )
 }
 

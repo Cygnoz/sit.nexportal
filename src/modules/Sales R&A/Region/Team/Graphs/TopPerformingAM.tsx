@@ -14,6 +14,9 @@ function TopPerformingAM({ graphData }: Props) {
     CR: data?.conversionRate,
     avatar: data?.userImage || profileImage, // Use a default avatar if not provided
   }));
+  
+  console.log("chart",chartData);
+  
 
   
   
@@ -22,24 +25,24 @@ function TopPerformingAM({ graphData }: Props) {
 
   return (
    <div className="p-3 bg-white w-full space-y-2 rounded-lg">
-   <p className="text-[#303F58] text-lg font-bold p-3">
+   <p className="text-[#303F58] text-lg font-bold">
       Top performing Area Managers
     </p>
-    <p className="text-[#4B5C79] text-xs font-normal p-3">
+    <p className="text-[#4B5C79] text-xs font-normal">
       Based on lead Conversion Performance Metric
     </p>
      
      <div className="mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
        {/* Wrapper for dynamic width */}
-       <div style={{ width: '100%' }} className="-ms-4">
-         <ResponsiveContainer minWidth={500} minHeight={280}>
+       <div style={{ width: '100%' }} className="-ms-4 mt-3">
+         <ResponsiveContainer minWidth="100%"  minHeight={320}>
          <BarChart
            height={280}
            data={chartData}
          >
            <CartesianGrid strokeDasharray="3 3" vertical={false} />
            <XAxis dataKey="name" axisLine={false} tickLine={false} />
-           <YAxis axisLine={false} tickLine={false} domain={[0, 100]} />
+           <YAxis tickFormatter={(value) => `${value}%`}  axisLine={false} tickLine={false} domain={[0, 100]} />
            <Tooltip />
            <Bar barSize={30} dataKey="CR" radius={10}>
              {chartData?.map((entry: any, index: any) => (
