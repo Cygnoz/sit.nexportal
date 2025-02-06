@@ -1,17 +1,18 @@
-import { ChangeEvent,  MouseEventHandler } from "react";
+import { ChangeEvent } from "react";
 import SearchIcon from "../../assets/icons/SearchIcon";
 
 type Props = {
   searchValue?: string;
   onSearchChange: (value: string) => void;
   placeholder?: string;
-  onClick?: MouseEventHandler<HTMLInputElement>; // onFocus prop added
+  setDropdownVisible?:any;
   bg?:string
 };
 
-const SearchBar = ({ searchValue, onSearchChange, placeholder = "Search", onClick,bg }: Props) => {
+const SearchBar = ({ searchValue, onSearchChange, placeholder = "Search",bg,setDropdownVisible }: Props) => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     onSearchChange(e.target.value);
+    setDropdownVisible?.setDropdownVisible(true)
   };
 
   return (
@@ -26,7 +27,9 @@ const SearchBar = ({ searchValue, onSearchChange, placeholder = "Search", onClic
         placeholder={placeholder}
         onChange={handleSearch}
         value={searchValue}
-        onClick={onClick} // Pass onFocus here
+        onClick={()=>{ 
+          setDropdownVisible?.setDropdownVisible((prev:any)=>!prev)
+        }}
       />
     </div>
   );

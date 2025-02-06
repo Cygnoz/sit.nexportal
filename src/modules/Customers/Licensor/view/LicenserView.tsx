@@ -24,6 +24,7 @@ import RecentActivityView from "./RecenetActivity";
 import SupportTicketTable from "./SupportTicketTable";
 import { getStatusClass } from "../../../../components/ui/GetStatusClass";
 import { useResponse } from "../../../../context/ResponseContext";
+import RenewalModal from "./RenewalModal";
 
 type Props = {
 };
@@ -45,7 +46,7 @@ function LicenserView({ }: Props) {
     editLicenser: false,
     viewLicenser: false,
     confirm: false,
-    
+    renewalLicenser:false
     
   });
   const handleModalToggle = (
@@ -53,7 +54,7 @@ function LicenserView({ }: Props) {
     editLicenser = false,
     viewLicenser= false,
     confirm = false,
-    
+    renewalLicenser=false
     
     
   ) => {
@@ -62,8 +63,9 @@ function LicenserView({ }: Props) {
       editLicenser,
       viewLicenser,
       confirm,
+      renewalLicenser
     }));
-  getOneLicenser
+  getOneLicenser()
    // if (getLead) getLead(); // Safeguard
   };
    
@@ -252,21 +254,32 @@ console.log("Support Tickets:", supportTickets);
                 <CalenderClock size={24} />
               </div>
             </div>
-            <div className="col-span-10 flex flex-col space-y-2">
-  <div>
-    <p>License Expiry Alert</p>
-    <div
-      className={`${getStatusClass(licenseData?.licensorStatus)} flex items-center gap-2 w-fit`}
-    >
-      <p className="text-sm">{licenseData?.licensorStatus}</p>
-    </div>
+            <div className="col-span-10 flex flex-col justify-between h-full  space-y-2">
+           
+            {licenseData?.licensorStatus === "Expired" ? (
+              <>
+               <p>Licenser Alert</p>
+               <p className="text-[#E04F52] text-[16px] font-semibold">The Licenser has been expired</p>
+               <div
+               onClick={()=>handleModalToggle(false,false,false,true)}
+    className={`${getStatusClass(licenseData?.licensorStatus)} flex items-center  gap-2 w-fit ms-auto cursor-pointer`}
+  >
+    <p className="text-sm">Renew</p>
   </div>
-
-  {licenseData?.licensorStatus === "Expired" ? (
-    <p className="text-[#E04F52] text-[16px] font-semibold">Update This Licensor</p>
-  ) : (
+  
+    
+  </>
+  ): (
     (licenseData?.licensorStatus === "Active" || licenseData?.licensorStatus === "Pending Renewal") && (
       <>
+      <div className="flex justify-between items-center">
+      <p>Licenser Alert</p>
+      <div
+    className={`${getStatusClass(licenseData?.licensorStatus)} flex items-center ms-auto gap-2 w-fit`}
+  >
+    <p className="text-sm">{licenseData?.licensorStatus}</p>
+  </div>
+      </div>
         <p className="text-[#E04F52] text-[16px] font-semibold">
           {licenseData?.endDate
             ? new Date(licenseData.endDate).toLocaleDateString("en-GB")
@@ -283,6 +296,7 @@ console.log("Support Tickets:", supportTickets);
       </>
     )
   )}
+
 </div>
 
 
@@ -377,6 +391,9 @@ console.log("Support Tickets:", supportTickets);
    </Modal>
    <Modal open={isModalOpen.confirm} align="center" onClose={() => handleModalToggle()} className="w-[30%]">
         <ConfirmModal prompt="Are you sure want to delete this licenser?"  action={handleDelete} onClose={() => handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.renewalLicenser} onClose={() => handleModalToggle()} className="w-[30%]">
+        <RenewalModal onClose={()=>handleModalToggle()}/>
       </Modal>
     </>
   );
