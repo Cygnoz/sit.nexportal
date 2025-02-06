@@ -393,7 +393,7 @@ console.log("Support Tickets:", supportTickets);
         <ConfirmModal prompt="Are you sure want to delete this licenser?"  action={handleDelete} onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.renewalLicenser} onClose={() => handleModalToggle()} className="w-[30%]">
-        <RenewalModal onClose={()=>handleModalToggle()}/>
+        <RenewalModal  id={id} onClose={()=>handleModalToggle()}/>
       </Modal>
     </>
   );

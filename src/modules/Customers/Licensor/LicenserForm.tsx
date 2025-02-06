@@ -418,25 +418,8 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
               )}
               
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
-
-
-
-
-              <Input
-                label="Address"
-                placeholder="Address"
-                error={errors.address?.message}
-                {...register("address")}
-              />
-              <Input
-                label="City"
-                placeholder="Enter City Name"
-                error={errors.city?.message}
-                {...register("city")}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+        
+            <div className="grid grid-cols-3 gap-4 mt-4">
               <Select
                 placeholder="Select Country"
                 label="Country"
@@ -464,12 +447,41 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
                 options={data.state}
               />
               <Input
+                label="City"
+                placeholder="Enter City Name"
+                error={errors.city?.message}
+                {...register("city")}
+              />
+            </div>
+
+
+
+             
+             
+          
+           
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              
+
+              
+
+              <Input
+                label="Address"
+                placeholder="Address"
+                error={errors.address?.message}
+                {...register("address")}
+              />
+              
+               <Input
                 label="Company Name"
                 required
                 placeholder="Enter Company Name"
                 error={errors.companyName?.message}
                 {...register("companyName")}
               />
+            </div>
+           
+           {!editId &&<div className="grid grid-cols-2 gap-4 my-4">
               <Input
                 required
                 label="Start Date"
@@ -477,12 +489,28 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
                 placeholder="Select Start Date"
                 error={errors.startDate?.message}
                 {...register("startDate")}
+                value={
+                  watch("startDate")
+                    ? watch("startDate")
+                    : new Date().toISOString().split("T")[0]
+                } // Sets current date as defau
+              />
+              <Input
+                required
+                label="End Date"
+                type="date"
+                placeholder="Select End Date"
+                error={errors.endDate?.message}
+                {...register("endDate")}
               />
               
-              
             </div>
-            <div className="grid grid-cols-2 gap-4 my-4">
-            <Select
+}
+            
+           
+              
+              <div className=" gap-3 grid grid-cols-3 my-4">
+              <Select
                   readOnly={regionId || user?.role === "BDA"}
 
                   required
@@ -498,16 +526,6 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
                   error={errors.regionId?.message}
                   options={regionData}
                 />
-              <Input
-                required
-                label="End Date"
-                type="date"
-                placeholder="Select End Date"
-                error={errors.endDate?.message}
-                {...register("endDate")}
-              />
-              <div className="col-span-2 gap-3 grid grid-cols-2">
-               
                 <Select
                   readOnly={areaId || user?.role === "BDA"}
                   required
@@ -537,9 +555,9 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
                   error={errors.bdaId?.message}
                   options={data.bdas}
                 />
-              </div>
+     
             </div>
-            <div className="bottom-0 left-0 w-full pt-2 ps-2 bg-white flex gap-2 justify-end">
+            <div className="bottom-0 left-0 w-full pt-3 ps-2  bg-white flex gap-2 justify-end">
               <Button
                 variant="tertiary"
                 className="h-8 text-sm border rounded-lg"

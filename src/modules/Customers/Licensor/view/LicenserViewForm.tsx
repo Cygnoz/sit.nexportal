@@ -20,7 +20,7 @@ type Props = {
 const LicenserViewForm = ({onClose}: Props) => {
   const {request: getaLicenser}=useApi('get',3001)
   const { id } = useParams();
-  const [data, setData] = useState<LicenserData>()
+  const [data, setData] = useState<any>()
 
      const getOneLicenser = async () => {
           try {

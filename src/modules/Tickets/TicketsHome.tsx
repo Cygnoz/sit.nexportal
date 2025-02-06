@@ -164,7 +164,7 @@ const handleSort = useCallback(
     let sortedTickets = [];
     setActiveLabel(type);
     setFilterWorking(false)
-    
+    setFilteredTickets(allTickets)
     switch (type) {
       case "Total Tickets":
         sortedTickets = allTickets; // All tickets
