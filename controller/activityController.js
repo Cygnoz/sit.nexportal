@@ -422,12 +422,14 @@ exports.getActivity = async (req, res) => {
       const { leadId } = req.params;
       const { date } = req.query;
    
-      if (!date || !/^\d{4}-\d{2}$/.test(date)) {
-        return res.status(400).json({
-          message: "Date query parameter is required in YYYY-MM format.",
-        });
-      }
-   
+      // if (!date || !/^\d{4}-\d{2}$/.test(date)) {
+      //   return res.status(400).json({
+      //     message: "Date query parameter is required in YYYY-MM format.",
+      //   });
+      // }
+
+
+
       const [year, month] = date.split("-").map(Number);
       const startDate = new Date(year, month - 1, 1);
       const endDate = new Date(year, month, 0);
