@@ -115,6 +115,10 @@ function Otp({}: Props) {
         const errorMessage = result.error?.response?.data?.message || 'OTP verification failed.';
         setError(errorMessage);
         toast.error(errorMessage);
+        setIsLoading(false)
+        // setTimeout(() => {
+        //   navigate('/')
+        // }, 1000);
       }
     } catch (error) {
       // Handle exceptions (e.g., network errors)
