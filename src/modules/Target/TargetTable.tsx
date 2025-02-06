@@ -33,7 +33,7 @@ const ImageAndLabel = [
 
 interface TableProps<T> {
   data: T[] | null;
-  columns: { key: keyof T; label: string }[];
+  columns: { key: any; label: string }[];
   headerContents: {
     title?: string;
     search?: { placeholder: string };

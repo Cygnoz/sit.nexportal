@@ -68,6 +68,7 @@ const RegionHome = () => {
 
   useEffect(() => {
     getAllRegions();
+    refreshContext({counts:true})
   }, []);
 
  
