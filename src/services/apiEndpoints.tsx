@@ -111,5 +111,9 @@ export const endPoints = {
   GET_ALL_BUSINESSCARD:'/business-card',
   // Chat History
   CHAT_HISTORY:'/history',
-  CHATS_LEAD:'/chats/lead'
+  CHATS_LEAD:'/chats/lead',
+
+  RENEW:'/renew'
+
+
 };

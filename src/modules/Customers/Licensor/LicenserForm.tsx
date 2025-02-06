@@ -387,25 +387,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 {...register("confirmPassword")}
              />
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              
-
-              
-
-              <Input
-                label="Address"
-                placeholder="Address"
-                error={errors.address?.message}
-                {...register("address")}
-              />
-              <Input
-                label="City"
-                placeholder="Enter City Name"
-                error={errors.city?.message}
-                {...register("city")}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+            <div className="grid grid-cols-3 gap-4 mt-4">
               <Select
                 placeholder="Select Country"
                 label="Country"
@@ -433,12 +415,25 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 options={data.state}
               />
               <Input
-                label="Company ID"
-                placeholder="Enter Company ID"
-                {...register("companyId")}
-                error={errors.companyId?.message}
+                label="City"
+                placeholder="Enter City Name"
+                error={errors.city?.message}
+                {...register("city")}
               />
+            </div>
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              
+
+              
+
               <Input
+                label="Address"
+                placeholder="Address"
+                error={errors.address?.message}
+                {...register("address")}
+              />
+              
+               <Input
                 label="Company Name"
                 required
                 placeholder="Enter Company Name"
@@ -446,7 +441,8 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 {...register("companyName")}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4 my-4">
+           
+           {!editId &&<div className="grid grid-cols-2 gap-4 my-4">
               <Input
                 required
                 label="Start Date"
@@ -454,6 +450,11 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 placeholder="Select Start Date"
                 error={errors.startDate?.message}
                 {...register("startDate")}
+                value={
+                  watch("startDate")
+                    ? watch("startDate")
+                    : new Date().toISOString().split("T")[0]
+                } // Sets current date as defau
               />
               <Input
                 required
@@ -510,7 +511,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                   options={data.bdas}
                 />
               </div>
-            </div>
+            </div>}
             <div className="bottom-0 left-0 w-full pt-2 ps-2 bg-white flex gap-2 justify-end">
               <Button
                 variant="tertiary"

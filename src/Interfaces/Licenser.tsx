@@ -16,7 +16,6 @@ export interface LicenserData {
     regionId: string;
     areaId: string;
     bdaId: string;
-    companyId?: string;
     companyName: string;
     licensorStatus?: string;
 }
