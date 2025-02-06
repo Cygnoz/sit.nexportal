@@ -267,6 +267,51 @@ if (!existingLicenser) {
   }
 };
  
+
+exports.renewLicenser = async (req, res , next) => {
+  try {
+    const { licenserId, newEndDate } = req.body;
+ 
+    // Step 1: Find the licenser in the Leads collection
+    const licenser = await Lead.findById(licenserId);
+    if (!licenser) {
+      return res.status(404).json({ message: "Licenser not found" });
+    }
+ 
+    // Step 2: Count previous renewals for this licenser
+    const renewalCount = await RenewalLicenser.countDocuments({ licenser: licenserId });
+ 
+    // Step 3: Update startDate, endDate, and licenserStatus in Leads collection
+    const renewalDate = new Date().toISOString().split("T")[0]; // Current date in YYYY-MM-DD format
+    licenser.startDate = renewalDate; // Set renewal date as new start date
+    licenser.endDate = newEndDate; // Set new end date
+    // licenser.licensorStatus = "Active"; // Set licenser status to Active
+ 
+    await licenser.save();
+ 
+    // Step 4: Create a new renewal record in RenewalLicenser collection
+    const newRenewal = new RenewalLicenser({
+      renewalDate: renewalDate, // Store the renewal date
+      licenser: licenserId,
+      renewalCount: renewalCount + 1 // First time = 1, then increment
+    });
+ 
+    await newRenewal.save();
+ 
+    res.status(200).json({
+      message: "Licenser renewed successfully",
+      
+    });
+    ActivityLog(req, "successfully", newRenewal._id);
+    next();
+ 
+  } catch (error) {
+    console.error("Renewal error:", error);
+    res.status(500).json({ message: "Internal server error" });
+    ActivityLog(req, "Failed");
+    next();
+  }
+};
  
  
  

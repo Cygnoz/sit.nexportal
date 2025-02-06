@@ -58,6 +58,7 @@ router.put('/licenser/:id',verifyToken,checkPermission('Edit Licenser'),licenser
 
 router.get('/licenser/:id/details',verifyToken,checkPermission('View Licenser'),licenserController.getLicenserDetails)
 
+router.post('/renew',verifyToken,checkPermission('Renew Licenser'), licenserController.renewLicenser,ActivityLogGeneration('Renew Licenser'));
  
 // router.delete('/licenser/:licenserId',verifyToken,checkPermission('Delete Licenser'),leadController.deleteLead,ActivityLogGeneration('Delete Licenser'))
 
