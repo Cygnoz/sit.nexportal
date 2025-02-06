@@ -13,6 +13,7 @@ export const endPoints = {
   // Region
   REGION: "/region",
   GET_REGIONS: "/regions",
+  AREA_PERFORMANCE:"/areaPerformance",
 
   // Area
   AREA: "/area",
