@@ -1,9 +1,8 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import Eye from "../../../../assets/icons/Eye";
 import IndiaLogo from "../../../../assets/image/IndiaLogo.png";
 import SaudhiLogo from "../../../../assets/image/SaudiLogo.png";
 import UAELogo from "../../../../assets/image/UAELogo.webp";
-import No_Data_found from "../../../../assets/image/NO_DATA.png";
 import SearchBar from "../../../../components/ui/SearchBar";
 // import SortBy from "../../../../components/ui/SortBy";
 import UserIcon from "../../../../assets/icons/UserIcon";
@@ -16,6 +15,7 @@ import NextIcon from "../../../../assets/icons/NextIcon";
 import TickIcon from "../../../../assets/icons/TickIcon";
 import Modal from "../../../../components/modal/Modal";
 import TasksForm from "../ViewModals/TasksForm";
+import NoRecords from "../../../../components/ui/NoRecords";
 // import EllipsisVerticalIcon from "../../../../assets/icons/ellipsisVerticalIcon";
 
 const ImageAndLabel = [
@@ -48,6 +48,7 @@ interface TableProps<T> {
   maxHeight?: string;
   skeltonCount?: number;
   getTask?: () => void;  // Add getTask to the props
+  loading?: boolean;
 }
 
 
@@ -61,11 +62,12 @@ const TaskTable = <T extends object>({
   maxHeight,
   skeltonCount = 5,
   getTask,
+  loading
 }: TableProps<T>) => {
   const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
-  const [noDataFound, setNoDataFound] = useState(false);
+  // const [noDataFound, setNoDataFound] = useState(false);
   // Filter data based on the search value
   const filteredData: any = useMemo(() => {
     return data?.filter((row) =>
@@ -178,8 +180,8 @@ const TaskTable = <T extends object>({
   const renderHeader = () => (
     <div
       className={`flex  ${headerContents.search && !headerContents.title && !headerContents.sort
-          ? "justify-start"
-          : "justify-between"
+        ? "justify-start"
+        : "justify-between"
         } items-center mb-4`}
     >
       {headerContents.title && (
@@ -266,16 +268,16 @@ const TaskTable = <T extends object>({
     </tr>
   );
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      if (data?.length === 0) {
-        setNoDataFound(true);
-      } else {
-        setNoDataFound(false);
-      }
-    }, 3000);
-    return () => clearTimeout(timeout);
-  }, [data]);
+  // useEffect(() => {
+  //   const timeout = setTimeout(() => {
+  //     if (data?.length === 0) {
+  //       setNoDataFound(true);
+  //     } else {
+  //       setNoDataFound(false);
+  //     }
+  //   }, 3000);
+  //   return () => clearTimeout(timeout);
+  // }, [data]);
 
   // State to manage modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -283,7 +285,7 @@ const TaskTable = <T extends object>({
   // Update handleModalToggle to accept getTask function as parameter
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
-      getTask?.();  // Call the getTask function
+    getTask?.();  // Call the getTask function
   };
 
   return (
@@ -311,15 +313,15 @@ const TaskTable = <T extends object>({
                 <th
                   key={String(col.key)}
                   className={`border border-[#e7e6e6]  p-4 text-sm  text-[#303F58] font-medium ${col.key == "convert"
-                      ? "w-48 text-center"
-                      : col.key?.toLowerCase().includes("status") &&
-                      "text-center min-w-[120px]"
+                    ? "w-48 text-center"
+                    : col.key?.toLowerCase().includes("status") &&
+                    "text-center min-w-[120px]"
                     }`}
                 >
                   {col.key == "convert" ? "Convert" : col.label}
                 </th>
               ))}
-              {data&&data?.length>0&&<>
+              {data && data?.length > 0 && <>
                 <th className="border border-[#e7e6e6] p-4 text-sm text-[#303F58] text-center font-medium"></th>
               </>}
               {!noAction && (
@@ -330,20 +332,18 @@ const TaskTable = <T extends object>({
             </tr>
           </thead>
           <tbody>
-            {noDataFound ? (
+            {loading ? (
+              renderSkeletonLoader()
+            ) : data?.length === 0 ? (
+              // renderSkeletonLoader()
               <tr>
                 <td
-                  colSpan={noAction ? columns?.length + 2 : columns?.length + 0}
+                  colSpan={noAction ? columns?.length + 1 : columns?.length + 2}
                   className="text-center py-4 text-gray-500"
                 >
-                  <div className="flex justify-center flex-col items-center ml-56">
-                    <img width={70} src={No_Data_found} alt="No Data Found" />
-                    <p className="font-bold text-red-700">No Records Found!</p>
-                  </div>
+                  <NoRecords imgSize={70} textSize="md" />
                 </td>
               </tr>
-            ) : data?.length === 0 ? (
-              renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr
@@ -363,8 +363,8 @@ const TaskTable = <T extends object>({
                     >
                       <div
                         className={`flex ${col.key.toLowerCase().includes("status") || col?.key == "convert"
-                            ? "justify-center"
-                            : "justify-start"
+                          ? "justify-center"
+                          : "justify-start"
                           } items-center gap-2`}
                       >
                         {col.key === "country" ? (
@@ -408,7 +408,7 @@ const TaskTable = <T extends object>({
                     </div>
 
                   </td>
-                
+
                   {!noAction && (
                     <td
                       className="border-b border-[#e7e6e6] p-4 text-xs text-[#4B5C79] font-medium bg-[#FFFFFF]"
@@ -449,7 +449,7 @@ const TaskTable = <T extends object>({
         </table>
       </div>
 
-      {data&&data.length > 10 &&!noPagination && (
+      {data && data.length > 10 && !noPagination && (
         <div className="flex justify-between items-center mt-4">
           <div className="text-xs text-[#71736B] font-medium flex gap-2">
             Showing {currentPage} of {totalPages || 1}

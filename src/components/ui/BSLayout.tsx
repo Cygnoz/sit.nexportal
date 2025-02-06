@@ -1,10 +1,10 @@
 import EmailIcon from "../../assets/icons/EmailIcon";
 import LocationIcon from "../../assets/icons/LocationIcon";
 import PhoneIcon from "../../assets/icons/PhoneIcon";
-import c from '../../assets/image/card-c.png'
+ import c from '../../assets/image/card-c.png'
 import cygnoz from '../../assets/image/cygnoz.com.png'
 import profile from '../../assets/image/AvatarImg.png'
-import busniessIcon from '../../assets/image/businesscardLogo.png'
+ import busniessIcon from '../../assets/image/businesscardLogo.png'
 import previewBack from '../../assets/image/preview-card-back.png'
 // import polygon from '../../assets/image/polygon.png'
 // import template2 from '../../assets/image/preview-template2.png'
@@ -12,6 +12,7 @@ import template2Back from '../../assets/image/template2-back.png'
 // import previewFront from '../../assets/image/preview-card-front.png'
 import idCardFront from '../../assets/image/idCard.png'
 import template1Front from '../../assets/image/template1-back.png'
+import '../../components/modal/IdBcardModal.css'
 
 interface LayoutProps {
     toggleState?: any;
@@ -20,8 +21,6 @@ interface LayoutProps {
 }
 
 export const Layout1Front: React.FC<LayoutProps> = ({ toggleState, role, staffData }) => {
-    // console.log("role", role);
-    // console.log("staffData", staffData);
 
     return <div className="bg-[#184D81] min-h-[200px] relative rounded-lg w-full h-fit overflow-hidden flex flex-col justify-between">
         <img className="w-40 h-[72px] absolute right-3" src={c} alt="" />
@@ -130,8 +129,8 @@ export const Layout1Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
         </div>
     </div>
 
-    //     return  <div
-    //     className="bg-cover bg-center bg-no-repeat rounded-lg relative"
+    // return <div
+    //     className="bg-cover bg-center bg-no-repeat rounded-lg relative flex flex-col justify-between"
     //     style={{ backgroundImage: `url(${previewFront})`, minHeight: '200px' }}
     // >
     //     <div className="absolute inset-0 rounded-lg"></div>
@@ -146,13 +145,13 @@ export const Layout1Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
     //             {toggleState?.["Name"] && (
     //                 <div className="border-r">
     //                     <p className="text-[#FFFFFF] font-light text-[10px] mx-2">Name</p>
-    //                     <p className="text-[#FFFFFF] font-semibold text-xs mx-2">John Doe</p>
+    //                     <p className="text-[#FFFFFF] font-semibold text-xs mx-2">{staffData?.userName ? staffData?.userName : 'John Doe'}</p>
     //                 </div>
     //             )}
     //             {toggleState?.["Designation"] && (
     //                 <div>
     //                     <p className="text-[#FFFFFF] font-light text-[10px]">Designation</p>
-    //                     <p className="text-[#FFFFFF] font-semibold text-xs">Regional Manager</p>
+    //                     <p className="text-[#FFFFFF] font-semibold text-xs">{role ? role : 'Regional Manager'}</p>
     //                 </div>
     //             )}
     //         </div>
@@ -161,7 +160,7 @@ export const Layout1Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
     //             {toggleState?.["Employee ID"] && (
     //                 <div>
     //                     <p className="text-[#FFFFFF] font-light text-[10px]">Employee ID</p>
-    //                     <p className="text-[#FFFFFF] font-medium text-xs">RM-210215</p>
+    //                     <p className="text-[#FFFFFF] font-medium text-xs">{staffData?.employeeId ? staffData?.employeeId : "RM-210215"}</p>
     //                 </div>
     //             )}
     //             {toggleState?.["Region"] && (
@@ -175,32 +174,32 @@ export const Layout1Front: React.FC<LayoutProps> = ({ toggleState, role, staffDa
     //         <div className="mt-4">
     //             <p className="text-[#FFFFFF] font-light text-[10px] my-1 text-start">Personal Address & Mail</p>
     //             <div className="grid grid-cols-2">
-    //             {toggleState?.["Email"] && (
-    //                 <div className="flex gap-2 items-center">
-    //                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
-    //                         <EmailIcon size={11} color="#FFFFFF" />
-    //                     </div>
+    //                 {toggleState?.["Email"] && (
+    //                     <div className="flex gap-2 items-center">
+    //                         <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
+    //                             <EmailIcon size={11} color="#FFFFFF" />
+    //                         </div>
     //                         <p className="text-[#FFFFFF] font-light text-[9px]">john.doe@example.com</p>
 
-    //                 </div>
-    //                  )}
-    //                 {toggleState?.["phoneNo"] && (
-    //                 <div className="flex gap-2 items-center">
-    //                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
-    //                         <PhoneIcon size={11} color="#FFFFFF" />
     //                     </div>
+    //                 )}
+    //                 {toggleState?.["phoneNo"] && (
+    //                     <div className="flex gap-2 items-center">
+    //                         <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
+    //                             <PhoneIcon size={11} color="#FFFFFF" />
+    //                         </div>
     //                         <p className="text-[#FFFFFF] font-light text-[9px]">+919633564547</p>
-    //                 </div>
+    //                     </div>
     //                 )}
     //                 {toggleState?.["Address"] && (
-    //                 <div className="flex gap-2 items-center">
-    //                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
-    //                         <LocationIcon size={12} color="#FFFFFF" />
-    //                     </div>
+    //                     <div className="flex gap-2 items-center">
+    //                         <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+    //                             <LocationIcon size={12} color="#FFFFFF" />
+    //                         </div>
     //                         <p className="text-[#FFFFFF] font-light text-[9px] text-start">
     //                             2972 Westheimer Rd. Santa Ana, Illinois 85486
     //                         </p>
-    //                 </div>
+    //                     </div>
     //                 )}
 
     //             </div>

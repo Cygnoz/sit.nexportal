@@ -16,9 +16,10 @@ type Props = {
 const PraiseForm = ({ onClose }: Props) => {
 
   const { request: getUsers } = useApi('get', 3002)
-  const { request: addPraise} = useApi('post',3004)
+  const { request: addPraise } = useApi('post', 3004)
   // const [allUsers, setAllUsers] = useState<UserData[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<any>([]);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [search, setSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [prise, setPrise] = useState({
@@ -26,7 +27,7 @@ const PraiseForm = ({ onClose }: Props) => {
   })
 
   const [allUsers, setAllUsers] = useState<any>([]);
- 
+
 
   const getAllUsers = async () => {
     const url = endPoints.GET_USERS
@@ -35,7 +36,7 @@ const PraiseForm = ({ onClose }: Props) => {
       console.log(response)
       console.log(error)
       if (response && !error) {
-        
+
 
         // setAllUsers(response.data.AllUsers);
         setAllUsers(response.data.AllUsers);
@@ -82,17 +83,17 @@ const PraiseForm = ({ onClose }: Props) => {
     }
     return true;
   };
-  
+
   const handleSubmit = async () => {
     if (!validateForm()) return; // Prevent submission if validation fails
-  
+
     try {
       const { response, error } = await addPraise(endPoints.PRAISE, prise);
-      
+
       if (response && !error) {
         toast.success(response.data.message);
         onClose();
-        
+
       } else {
         toast.error(error.response?.data?.message || "An error occurred.");
       }
@@ -101,12 +102,12 @@ const PraiseForm = ({ onClose }: Props) => {
       toast.error("An unexpected error occurred.");
     }
   };
-  
- 
+
+
 
   // const ribbonBg = comfetti;
 
-  
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Handle clicks outside the dropdown
@@ -128,8 +129,7 @@ const PraiseForm = ({ onClose }: Props) => {
 
   useEffect(() => {
     const searchValue = search.toLowerCase();
-  
-    // Always filter and sort from the full list
+
     const sortedUsers = allUsers
       .filter((user: any) =>
         user.userName.toLowerCase().includes(searchValue)
@@ -137,15 +137,14 @@ const PraiseForm = ({ onClose }: Props) => {
       .sort((a: any, b: any) => {
         const aStartsWith = a.userName.toLowerCase().startsWith(searchValue);
         const bStartsWith = b.userName.toLowerCase().startsWith(searchValue);
-  
-        if (aStartsWith && !bStartsWith) return -1; // a should come before b
-        if (!aStartsWith && bStartsWith) return 1; // b should come before a
-        return a.userName.localeCompare(b.userName); // Sort alphabetically
+
+        if (aStartsWith && !bStartsWith) return -1;
+        if (!aStartsWith && bStartsWith) return 1;
+        return a.userName.localeCompare(b.userName);
       });
-  
+
     setFilteredUsers(sortedUsers);
-  }, [search, allUsers]); // Use allUsers instead of filteredUsers
-  
+  }, [search, allUsers]);
 
 
 
@@ -162,54 +161,57 @@ const PraiseForm = ({ onClose }: Props) => {
           <p>To</p>
           <div className="relative" ref={dropdownRef}>
             {/* Input Field */}
-           
+
             <Input
               className="w-[672px] h-[40px] px-3 my-2 border border-gray-300 rounded-lg"
               type="text"
               placeholder="Search by name..."
               value={search}
               onFocus={() => setShowDropdown(true)}
-              onChange={(event) => setSearch(event.target.value)} // Update the input value
-              style={{ appearance: "none" }} // Remove default icon
+              onChange={(event) => setSearch(event.target.value)}
+              style={{ appearance: "none" }}
               required
             />
-        
+            {/* Role Display */}
+            {selectedUser && <p className="text-gray-600 mt-1">Role: {selectedUser.role}</p>}
             {/* Custom Dropdown */}
             {showDropdown && (
-  <div
-    className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-[200px] overflow-y-auto z-10 custom-scrollbar"
-    style={{ width: "672px" }}
-  >
-    {filteredUsers.length > 0 ? (
-      filteredUsers.map((user: any) => (
-        <div
-          key={user.value}
-          className="px-3 py-2 cursor-pointer hover:bg-gray-200"
-          onClick={() => {
-            setSearch(user.userName); // Display the selected value in the input
-            setPrise((prevData: any) => ({
-              ...prevData,
-              usersId: user._id,
-            }));
-            setShowDropdown(false); // Close the dropdown
-          }}
-        >
-          {user.userName}
-        </div>
-      ))
-    ) : (
-      <div className="px-3 text-center text-red-500 font-bold py-5">
-        No Users Found
-      </div>
-    )}
-  </div>
-)}
+              <div
+                className="absolute w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-md max-h-[200px] overflow-y-auto z-10 custom-scrollbar"
+                style={{ width: "672px" }}
+              >
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((user: any) => (
+                    <div
+                      key={user._id}
+                      className="px-3 py-2 cursor-pointer hover:bg-gray-200"
+                      onClick={() => {
+                        setSearch(user.userName);
+                        setSelectedUser(user); // Set the selected user
+                        setPrise((prevData: any) => ({
+                          ...prevData,
+                          usersId: user._id,
+                          role: user.role,
+                        }));
+                        setShowDropdown(false);
+                      }}
+                    >
+                      {user.userName} ({user.role})
+                    </div>
+                  ))
+                ) : (
+                  <div className="px-3 text-center text-red-500 font-bold py-5">
+                    No Users Found
+                  </div>
+                )}
+              </div>
+            )}
 
           </div>
 
         </div>
 
-    
+
         <div className="flex flex-wrap gap-4 mt-6 cursor-pointer">
           {achievements.map((achievement, index) => (
             <div
@@ -225,10 +227,10 @@ const PraiseForm = ({ onClose }: Props) => {
             </div>
           ))}
         </div>
-      
+
 
         <p className="my-3">Select Background</p>
-       
+
         <div className="flex mb-6 gap-2 flex-wrap cursor-pointer">
           {themes.map((item, index) => (
             <div
@@ -245,27 +247,27 @@ const PraiseForm = ({ onClose }: Props) => {
             </div>
           ))}
         </div>
-      
+
 
 
         <div className="bg-[#F3F3F3] border border-[#EAECF0] rounded-2xl p-6">
           <p className="gap-2 my-2">Add Notes </p>
           <div className="bg-[#FFFFFFA1] rounded-lg">
-          
+
             <textarea onChange={(e) => setPrise((prevData: any) => ({
               ...prevData,
-              notes:e.target.value,
+              notes: e.target.value,
             }))} className="w-full min-h-28 rounded-lg outline-none p-3 text-[#2C3E50A3] text-xs font-normal" name="" id=""></textarea>
+          </div>
+
         </div>
 
-      </div>
+        <div className="w-full bg-white flex justify-end gap-2 mt-4">
+          <Button variant="tertiary" onClick={onClose} className="h-8 text-sm border rounded-lg" size="lg">Cancel</Button>
+          <Button variant="primary" onClick={handleSubmit} className="h-8 text-sm border rounded-lg" size="lg">Send</Button>
 
-      <div className="w-full bg-white flex justify-end gap-2 mt-4">
-        <Button variant="tertiary" onClick={onClose} className="h-8 text-sm border rounded-lg" size="lg">Cancel</Button>
-        <Button variant="primary" onClick={handleSubmit} className="h-8 text-sm border rounded-lg" size="lg">Send</Button>
-
+        </div>
       </div>
-    </div>
     </div >
   )
 }

@@ -227,7 +227,26 @@ const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
         <div className="col-span-7">
           <div className="py-3 bg-white p-2">
             <div className="py-1 ms-2 flex justify-between">
-              <h2 className="font-bold">Lead Conversion Rate per Region</h2>
+              <h2 className="font-bold">Monthly Sales Growth by Area</h2>
+              <div className="flex gap-1">
+                <label htmlFor="month-select"></label>
+
+                <SelectDropdown
+                  setSelectedValue={setSelectedMonth}
+                  selectedValue={selectedMonth}
+                  filteredData={months}
+                  //   searchPlaceholder="Search Month"
+                  width="w-32"
+                />
+                 <SelectDropdown
+                  setSelectedValue={setSelectedYear}
+                  selectedValue={selectedYear}
+                 filteredData={years}
+        
+                 searchPlaceholder="Search Month"
+                  width="w-28"
+                />
+              </div>
               
             </div>
             <div className="mt-5">
@@ -307,7 +326,7 @@ const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
                   selectedValue={selectedMonth}
                   filteredData={months}
                   //   searchPlaceholder="Search Month"
-                  width="w-44"
+                  width="w-32"
                 />
                  <SelectDropdown
                   setSelectedValue={setSelectedYear}

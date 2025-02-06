@@ -14,6 +14,10 @@ import Trash from "../../../assets/icons/Trash"
 import ConfirmModal from "../../../components/modal/ConfirmModal"
 import toast from "react-hot-toast"
 import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon"
+import SalaryInfoModal from "../../../components/modal/SalaryInfoModal"
+import CommissionModal from "../../../components/modal/CommissionModal"
+import SalaryRoundIcon from "../../../assets/icons/SalaryRoundIcon"
+import CommissionRoundIcon from "../../../assets/icons/CommissionRoundIcon"
 
 type Props = {
   id:any
@@ -26,15 +30,19 @@ const ViewHeader = ({id}: Props) => {
         viewSA:false,
         confirm: false,
         deacivateSA:false,
+        salaryInfoSA:false,
+        commissionSA:false,
       });
     
-      const handleModalToggle = (editSA=false, viewSA=false, confirm=false,deacivateSA=false) => {
+      const handleModalToggle = (editSA=false, viewSA=false, confirm=false,deacivateSA=false, salaryInfoSA=false, commissionSA=false) => {
         setIsModalOpen((prevState:any )=> ({
             ...prevState,
             editSA: editSA,
             viewSA: viewSA,
             confirm: confirm,
             deacivateSA:deacivateSA,
+            salaryInfoSA:salaryInfoSA,
+            commissionSA:commissionSA
         }));
         getASA()
     }
@@ -112,16 +120,16 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
           <div className="h-[150px] relative flex flex-col  bg-white rounded-lg">
           {
              getData.saData?.user?.userImage && getData.saData?.user?.userImage.length > 500 ?(
-             <img src={getData.saData?.user?.userImage} className="rounded-full absolute top-8 left-8 w-20 h-20 border-[3px] border-white"></img> 
+             <img src={getData.saData?.user?.userImage} className="rounded-full absolute top-8 left-4 w-20 h-20 border-[3px] border-white"></img> 
             ) : (
-                <p className="w-20 h-20 absolute top-8  left-8 bg-black rounded-full flex justify-center items-center">
+                <p className="w-20 h-20 absolute top-8  left-4 bg-black rounded-full flex justify-center items-center">
                 <UserIcon color="white" size={35} />
               </p>
                  )}
             {/* <img src={profileImage} className="rounded-full absolute top-8 left-5 border-2 border-white bg-slate-500 w-20 h-20"></img> */}
             <div className="h-[65px] bg-cover rounded-t-lg w-full flex justify-center" style={{ backgroundImage: `url(${supportAgentbg})` }}>
-              <div className="flex mt-[88px] gap-8 ms-32">
-              <div className="gap-4">
+              <div className="flex mt-[88px] gap-4 ms-24">
+              <div className="">
             <p className="text-[#8F99A9] text-xs font-medium mb-1">Support Agent</p>
             <p className="text-[#303F58] text-xs font-medium">{getData.saData?.user?.userName ? getData.saData?.user?.userName:'N/A'}</p>
         </div>
@@ -153,7 +161,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
               </div>
               <div className="flex  mt-20 ms-auto me-2 gap-2">
               <div className="flex flex-col items-center">
-                <div onClick={()=>handleModalToggle(true,false,false,false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+                <div onClick={()=>handleModalToggle(true,false,false,false,false, false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <EditIcon size={18} color="#4B5C79" />
@@ -164,7 +172,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
               </div>
 
               <div className="flex flex-col  items-center">
-                <div onClick={()=>handleModalToggle(false,true,false,false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+                <div onClick={()=>handleModalToggle(false,true,false,false, false, false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <ViewRoundIcon size={18} color="#4B5C79" />
@@ -174,7 +182,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
                 <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium">View Details</p>
               </div>
 
-              <div onClick={() => handleModalToggle(false, false,false, true)} className="flex flex-col  items-center">
+              <div onClick={() => handleModalToggle(false, false,false, true, false,false)} className="flex flex-col  items-center">
               <div className="w-8 h-8 mb-1 rounded-full cursor-pointer">
               {getData.saData?.status === "Active" ?
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -198,7 +206,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
               </div>
 
               <div className="flex flex-col  items-center">
-                <div onClick={() => handleModalToggle(false, false,true, false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+                <div onClick={() => handleModalToggle(false, false,true, false, false, false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
                 <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                    <div className="ms-2 mt-2">
                    <Trash size={18} color="#BC3126" />
@@ -208,8 +216,27 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
                 <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium">Delete</p>
               </div>
 
+              <div className="flex flex-col  items-center">
+                <div onClick={() => handleModalToggle(false, false,false, false, true, false)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <SalaryRoundIcon size={18} color="#4B5C79" />
+                   </div>
+                    </div>
+                </div>
+                <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium">Salary Info</p>
+              </div>
 
-             
+              <div className="flex flex-col  items-center">
+                <div onClick={() => handleModalToggle(false, false,false, false, false, true)} className="w-8 h-8 mb-1 rounded-full cursor-pointer">
+                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                   <div className="ms-2 mt-2">
+                   <CommissionRoundIcon size={18} color="#4B5C79" />
+                   </div>
+                    </div>
+                </div>
+                <p className="text-center ms-3 text-[#4B5C79] text-xs font-medium">Commission</p>
+              </div>
 
             </div>
             </div>
@@ -249,6 +276,15 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
           onClose={() => handleModalToggle()}
         />
       </Modal>
+
+      <Modal open={isModalOpen.salaryInfoSA} onClose={()=>handleModalToggle()} >
+    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
+  </Modal>
+
+  <Modal open={isModalOpen.commissionSA} onClose={()=>handleModalToggle()} className="w-[45%]">
+    <CommissionModal  onClose={()=>handleModalToggle()} />
+  </Modal>
+
 
     </div>
   )
