@@ -26,6 +26,9 @@ import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
 import IdBcardModal from "../../../components/modal/IdBcardModal";
+import AreaForm from "../../Sales R&A/Area/AreaForm";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
+import WCommissionForm from "../../Users/WorkerCommision/WCommissionForm";
 // import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
 // import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
@@ -85,12 +88,27 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId, regionId }) =>
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
 
-  const { request: checkAm } = useApi("put", 3002)
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [empId,setEmpId]=useState('')
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
+  const [isModalOpen, setIsModalOpen] = useState({
+    idCard: false,
+    region: false,
+    area:false,
+    commission: false
+  });
+  
+  const handleModalToggle = (idCard = false, region = false,area = false,commission = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      idCard: idCard,
+      region: region,
+      commission: commission,
+      area:area
+    }));
+    refreshContext({dropdown:true})
   };
+  
+
+  const { request: checkAm } = useApi("put", 3002)
+  const [empId,setEmpId]=useState('')
 
   const { request: addAM } = useApi("post", 3002);
   const { request: editAM } = useApi("put", 3002);
@@ -755,6 +773,10 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId, regionId }) =>
                     }}
                     error={errors.region?.message}
                     options={regionData}
+                    addButtonLabel="Add Region"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={2}
+                    paramsPosition={2}
                   />
                   <Select
                     required
@@ -773,6 +795,10 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId, regionId }) =>
                     }}
                     error={errors.area?.message}
                     options={data.areas}
+                    addButtonLabel="Add Area"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={3}
+                    paramsPosition={3}
                   />
                   <Select
                     label="Choose Commission Profile"
@@ -784,6 +810,10 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId, regionId }) =>
                     }}
                     error={errors.commission?.message}
                     options={data.workerCommission}
+                    addButtonLabel="Add Commission"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={4}
+                    paramsPosition={4}
                   />
                   <Input
                     placeholder="Enter Amount"
@@ -985,13 +1015,22 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId, regionId }) =>
     <Modal open={isModalOpen.viewIdcard} onClose={() => handleModalToggle()} className="w-[35%]">
       <AMIdCardView onClose={() => handleModalToggle()} />
     </Modal> */}
-      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <Modal className="w-[60%]" open={isModalOpen.idCard} onClose={handleModalToggle}>
         <IdBcardModal
           parentOnClose={onClose}
           onClose={handleModalToggle}
           role="Area Manager"
           staffData={staffData}
         />
+      </Modal>
+      <Modal open={isModalOpen.area} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <AreaForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.commission} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <WCommissionForm  onClose={()=>handleModalToggle()} />
       </Modal>
 
     </>
