@@ -67,7 +67,7 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
-  const { dropdownRegions, dropDownWC, allCountries, refreshContext } = useRegularApi();
+  const { dropdownRegions, allCountries,refreshContext } = useRegularApi();
   const { request: checkSVs } = useApi("get", 3003)
   const { request: addSV } = useApi("post", 3003);
   const { request: editSV } = useApi("put", 3003);
@@ -79,10 +79,9 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
-    wc: { label: string; value: string }[];
-    country: { label: string; value: string }[];
+  country: { label: string; value: string }[];
     state: { label: string; value: string }[];
-  }>({ regions: [], wc: [], country: [], state: [] });
+  }>({ regions: [], country: [], state: [] });
   // State to manage modal visibility
   const {
     register,
@@ -241,20 +240,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
     }));
   }, [dropdownRegions]);
 
-  // UseEffect for updating wc
-  useEffect(() => {
-    const filteredCommission = dropDownWC?.map((commission: any) => ({
-      label: commission.profileName,
-      value: String(commission._id),
-    }));
-
-    // Update wc
-    setData((prevData: any) => ({
-      ...prevData,
-      wc: filteredCommission,
-    }));
-  }, [dropDownWC]);
-
+  
   // UseEffect for updating countries
   useEffect(() => {
     const filteredCountry = allCountries?.map((country: any) => ({
@@ -699,17 +685,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                     options={data.regions}
                   />
 
-                  <Select
-                    label="Choose Commission Profile"
-                    placeholder="Commission Profile"
-                    value={watch("commission")}
-                    onChange={(selectedValue) => {
-                      setValue("commission", selectedValue); // Manually update the commission value
-                      handleInputChange("commission");
-                    }}
-                    error={errors.commission?.message}
-                    options={data.wc}
-                  />
+               
                   <Input
                     placeholder="Enter Amount"
                     label="Salary Amount"
