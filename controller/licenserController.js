@@ -285,7 +285,8 @@ exports.renewLicenser = async (req, res , next) => {
     // Step 3: Update startDate, endDate, and licenserStatus in Leads collection
     const renewalDate = new Date().toISOString().split("T")[0]; // Current date in YYYY-MM-DD format
     licenser.startDate = renewalDate; // Set renewal date as new start date
-    licenser.endDate = newEndDate; // Set new end date
+    licenser.endDate = newEndDate; 
+    licenser.renewalDate = renewalDate; 
     // licenser.licensorStatus = "Active"; // Set licenser status to Active
  
     await licenser.save();

@@ -74,6 +74,8 @@ router.put("/activity/:id",verifyToken,checkPermission('Edit Activity'),activity
 router.delete("/activity/:activityId",verifyToken,checkPermission('Delete Activity'), activityController.deleteActivity,ActivityLogGeneration('Delete Activity'));
  
 router.get('/activities/:leadId',verifyToken,checkPermission('View Activity'),activityController.getLeadsActivityDetails);
+
+router.get("/leads/:leadId",verifyToken,checkPermission('View Activity'), activityController.getLeadInteraction);
  
 router.get("/leads/:leadId/engagement",verifyToken,checkPermission('View Activity'), activityController.getLeadEngagementOverTime);
  

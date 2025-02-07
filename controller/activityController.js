@@ -479,6 +479,49 @@ exports.getActivity = async (req, res) => {
   };
    
  
+  exports.getLeadInteraction = async (req, res) => {
+    try {
+      const { leadId } = req.params;
+ 
+      if (!leadId) {
+        return res.status(400).json({ message: "Lead ID is required." });
+      }
+ 
+      // Count activities by type without any date filtering
+      const engagementCounts = await Activity.aggregate([
+        {
+          $match: { leadId },
+        },
+        {
+          $group: {
+            _id: "$activityType",
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+ 
+      // Convert aggregation result into a structured response
+      const engagementData = {
+        Mail: 0,
+        Meeting: 0,
+        Task: 0,
+        Note: 0,
+      };
+ 
+      engagementCounts.forEach(({ _id, count }) => {
+        engagementData[_id] = count;
+      });
+ 
+      res.status(200).json({
+        message: "Lead engagement data retrieved successfully.",
+        leadId,
+        engagementData,
+      });
+    } catch (error) {
+      console.error("Error fetching lead engagement over time:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  };
  
  
  
