@@ -92,7 +92,7 @@ const ProgressBar = ({}: Props) => {
         Great progress! You’re {balance}% toward your goal.
       </p>
 
-      <Modal open={isModalOpen.addInfo} onClose={() => handleModalToggle()} className="w-[40%]">
+      <Modal open={isModalOpen.addInfo} onClose={() => handleModalToggle()} className="w-[40%] h-[700px]" >
         <TargetInfoModal onClose={() => handleModalToggle()} />
       </Modal>
     </div>

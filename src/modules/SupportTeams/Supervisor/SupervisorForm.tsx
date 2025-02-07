@@ -96,7 +96,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [empId,setEmpId]=useState('')
+  const [empId, setEmpId] = useState('')
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
@@ -125,14 +125,14 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
         }
 
         if (response && !error) {
-          const {employeeId,region}=response.data
-       const  staffDetails={
-          ...watch(),
-          regionName:region?.regionName,
-          employeeId:editId?empId:employeeId
-        }
-        // staffData=response.data
-        setStaffData(staffDetails)
+          const { employeeId, region } = response.data
+          const staffDetails = {
+            ...watch(),
+            regionName: region?.regionName,
+            employeeId: editId ? empId : employeeId
+          }
+          // staffData=response.data
+          setStaffData(staffDetails)
           toast.success(response.data.message); // Show success toast
           handleModalToggle()
         } else {
@@ -320,7 +320,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
             userImage: user?.userImage,
             region: SV.region?._id,
             commission: SV.commission?._id,
-            employeeId:user?.employeeId
+            employeeId: user?.employeeId
           }
           : null;
 
@@ -339,7 +339,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
 
   useEffect(() => {
     getOneSV();
-    refreshContext({dropdown:true})
+    refreshContext({ dropdown: true })
   }, [editId]); // Trigger the effect when editId changes
 
   useEffect(() => {
@@ -365,13 +365,13 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
       });
 
       // Show the first error message in a toast
-     // If the error is related to the 'address.street1' field
-     if (errorrs["address"] && errorrs["address"].street1) {
-      toast.error(errorrs["address"].street1.message);
-    } else if (firstErrorField) {
-      toast.error(errorrs[firstErrorField]?.message);
+      // If the error is related to the 'address.street1' field
+      if (errorrs["address"] && errorrs["address"].street1) {
+        toast.error(errorrs["address"].street1.message);
+      } else if (firstErrorField) {
+        toast.error(errorrs[firstErrorField]?.message);
+      }
     }
-  }
   }, [errors]);
 
   return (
@@ -403,8 +403,8 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
-                  ? "text-deepStateBlue border-b-2 border-secondary2"
-                  : "text-gray-600"
+                ? "text-deepStateBlue border-b-2 border-secondary2"
+                : "text-gray-600"
                 }`}
             >
               <p>
@@ -548,17 +548,47 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                   />
                   <Input
                     label="Aadhaar No"
-                    type="number"
-                    placeholder="Enter Aadhar"
-                    error={errors.adhaarNo?.message}
-                    {...register("adhaarNo")}
+                    type="text"
+                    placeholder="Enter Aadhaar Number"
+                    {...register("adhaarNo", {
+                      required: "Aadhaar number is required",
+                      pattern: {
+                        value: /^[0-9]{12}$/, 
+                        message: "Aadhaar number must be exactly 12 digits",
+                      },
+                    })}
+
+                    maxLength={12} // Restrict input length to 12 digits
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.replace(/\D/g, ""); 
+                      setValue("adhaarNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
                   <Input
                     label="PAN No"
-                    placeholder="Enter Pan Number"
-                    error={errors.panNo?.message}
-                    {...register("panNo")}
+                    type="text"
+                    placeholder="Enter PAN Number"
+                    {...register("panNo", {
+                      required: "PAN number is required",
+                      pattern: {
+                        value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                        message: "Invalid PAN format (e.g., ABCDE1234F)",
+                      },
+                      validate: (value: any) => {
+                        if (/[^A-Z0-9]/.test(value)) {
+                          return "Special characters are not allowed!";
+                        }
+                        return true;
+                      },
+                    })}
+
+                    maxLength={10} 
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); 
+                      setValue("panNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
+
 
                   <Input
                     type="date"
