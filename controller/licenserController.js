@@ -9,6 +9,8 @@ const moment = require("moment");
 const Lead = require("../database/model/leads");
 const filterByRole = require("../services/filterByRole");
 const axios = require('axios');
+const AreaManager = require("../database/model/areaManager");
+const RegionManager = require("../database/model/regionManager");
 
 
 const Ticket = require("../database/model/ticket");
@@ -80,6 +82,14 @@ exports.addLicenser = async (req, res, next) => {
       requestBody,
       axiosConfig
     );
+
+    const [regionManager, areaManager] = await Promise.all([
+      RegionManager.findOne({ region: regionId }),
+      AreaManager.findOne({ area: areaId })
+    ]);
+
+      cleanedData.regionManager = regionManager._id
+      cleanedData.areaManager = areaManager._id
 
     const organizationId = response.data.organizationId;
     const savedLicenser = await createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName, organizationId);
