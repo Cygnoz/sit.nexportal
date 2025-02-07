@@ -22,9 +22,9 @@ const SelectDropdown: React.FC<Props> = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [filteredItems, setFilteredItems] = useState(filteredData);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Initialize the filtered items and set the initial selected value
   useEffect(() => {
     const items = placeholder
       ? [{ label: placeholder, value: "" }, ...filteredData]
@@ -32,13 +32,11 @@ const SelectDropdown: React.FC<Props> = ({
 
     setFilteredItems(items);
 
-    // Ensure initial selected value is set correctly
     if (!selectedValue && items.length > 0) {
-      setSelectedValue?.(items[0]); // Default to first item or placeholder
+      setSelectedValue?.(items[0]);
     }
   }, [filteredData, placeholder, selectedValue, setSelectedValue]);
 
-  // Update filtered items when the search value changes
   useEffect(() => {
     const items = placeholder
       ? [{ label: placeholder, value: "" }, ...filteredData]
@@ -51,13 +49,44 @@ const SelectDropdown: React.FC<Props> = ({
     );
   }, [searchValue, filteredData, placeholder]);
 
-  // Handle item selection
   const handleSelect = (item: any) => {
     setSelectedValue?.(item);
     setIsOpen(false);
+    setHighlightedIndex(-1);
   };
 
-  // Close dropdown when clicking outside
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!isOpen) return;
+
+    switch (event.key) {
+      case "ArrowDown":
+        event.preventDefault();
+        setHighlightedIndex((prev) =>
+          prev < filteredItems.length - 1 ? prev + 1 : prev
+        );
+        break;
+
+      case "ArrowUp":
+        event.preventDefault();
+        setHighlightedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+        break;
+
+      case "Enter":
+        if (highlightedIndex >= 0) {
+          handleSelect(filteredItems[highlightedIndex]);
+        }
+        break;
+
+      case "Escape":
+        setIsOpen(false);
+        setHighlightedIndex(-1);
+        break;
+
+      default:
+        break;
+    }
+  };
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -65,6 +94,7 @@ const SelectDropdown: React.FC<Props> = ({
         !dropdownRef.current.contains(event.target as Node)
       ) {
         setIsOpen(false);
+        setHighlightedIndex(-1);
       }
     };
 
@@ -72,16 +102,13 @@ const SelectDropdown: React.FC<Props> = ({
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [dropdownRef]);
-
-
-
+  }, []);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} onKeyDown={handleKeyDown} tabIndex={0}>
       <button
         className={`flex items-center px-4 py-2 border rounded-xl bg-[#FEFDFA] ${width}`}
-        onClick={() => setIsOpen((prev: boolean) => !prev)}
+        onClick={() => setIsOpen((prev) => !prev)}
       >
         {selectedValue?.label || placeholder || filteredData[0]?.label || "Select"}
         <div className="ms-auto">
@@ -90,10 +117,7 @@ const SelectDropdown: React.FC<Props> = ({
       </button>
 
       {isOpen && (
-        <div
-          className={`absolute mt-2 top-10 bg-white border rounded-md shadow-lg max-h-72 custom-scrollbar overflow-y-auto z-10 ${width}`}
-        >
-          {/* Search Bar */}
+        <div className={`absolute mt-2 top-10 bg-white border rounded-md shadow-lg max-h-72 custom-scrollbar overflow-y-auto z-10 ${width}`}>
           <div className="p-2">
             <SearchBar
               placeholder={searchPlaceholder}
@@ -102,17 +126,14 @@ const SelectDropdown: React.FC<Props> = ({
             />
           </div>
 
-          {/* Dropdown Items */}
           <div className="max-h-52 overflow-y-auto custom-scrollbar">
             {filteredItems.length > 0 ? (
-              filteredItems.map((item) => (
+              filteredItems.map((item, index) => (
                 <div
                   key={item.value}
                   className={`px-4 py-2 hover:bg-gray-100 cursor-pointer ${
-                    selectedValue?.value === item.value
-                      ? "bg-gray-100 font-bold"
-                      : ""
-                  }`}
+                    selectedValue?.value === item.value ? "bg-gray-100 font-bold" : ""
+                  } ${highlightedIndex === index ? "bg-blue-100" : ""}`}
                   onClick={() => handleSelect(item)}
                 >
                   {item.label}

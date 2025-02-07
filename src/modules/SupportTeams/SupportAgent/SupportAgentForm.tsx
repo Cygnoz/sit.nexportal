@@ -71,7 +71,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   editId
   , regionId
 }) => {
-  const { dropdownRegions, dropDownWC, allCountries,refreshContext } = useRegularApi();
+  const { dropdownRegions, allCountries,refreshContext } = useRegularApi();
   const { request: addSA } = useApi("post", 3003);
   const { request: editSA } = useApi("put", 3003);
   const { request: getSA } = useApi("get", 3003);
@@ -79,10 +79,9 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   const [regionData, setRegionData] = useState<any[]>([]);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
-    wc: { label: string; value: string }[];
     country: { label: string; value: string }[];
     state: { label: string; value: string }[];
-  }>({ regions: [], wc: [], country: [], state: [] });
+  }>({ regions: [], country: [], state: [] });
 
   const {
     register,
@@ -208,19 +207,6 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
     }
   }, [dropdownRegions, regionId])
 
-  // UseEffect for updating wc
-  useEffect(() => {
-    const filteredCommission = dropDownWC?.map((commission: any) => ({
-      label: commission.profileName,
-      value: String(commission._id),
-    }));
-
-    // Update wc
-    setData((prevData: any) => ({
-      ...prevData,
-      wc: filteredCommission,
-    }));
-  }, [dropDownWC]);
 
   // UseEffect for updating countries
   useEffect(() => {
@@ -636,17 +622,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                     options={regionData}
                   />
 
-                  <Select
-                    label="Choose Commission Profile"
-                    placeholder="Commission Profile"
-                    value={watch("commission")}
-                    onChange={(selectedValue) => {
-                      setValue("commission", selectedValue); // Manually update the commission value
-                      handleInputChange("commission");
-                    }}
-                    error={errors.commission?.message}
-                    options={data.wc}
-                  />
+               
                   <Input
                     placeholder="Enter Amount"
                     label="Salary Amount"
