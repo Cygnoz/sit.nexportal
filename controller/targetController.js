@@ -2,6 +2,10 @@
 const Target = require("../database/model/target");
 const Area = require("../database/model/area")
 const User = require('../database/model/user')
+const RegionManager = require("../database/model/regionManager");
+const AreaManager = require("../database/model/areaManager");
+const Bda = require("../database/model/bda");
+const mongoose = require("mongoose");
 
 
 function cleanTargetData(data) {
@@ -80,80 +84,121 @@ exports.addTarget = async (req, res , next) => {
 
   exports.getAllTargets = async (req, res) => {
     try {
-      const { targetType } = req.params;
- 
-      if (!targetType) {
-        return res.status(400).json({ error: "targetType parameter is required." });
+      const userId = req.user.id;
+      console.log("User ID:", userId);
+   
+      const user = await User.findById(userId).select("role");
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
       }
- 
-      if (!["Region", "Area", "Bda"].includes(targetType)) {
-        return res.status(400).json({
-          error: "Invalid targetType. Allowed values: Region, Area, Bda.",
-        });
+   
+      const { role } = user;
+      console.log("User Role:", role);
+      let query = {};
+   
+      if (role === "Super Admin") {
+        query = {}; // Super Admin gets all targets
       }
- 
-      // Define filters based on targetType
-      let filters = {};
-      if (targetType === "Region") {
-        filters = { targetType: { $in: ["Region", "Area", "Bda"] } };
-      } else if (targetType === "Area") {
-        filters = { targetType: { $in: ["Area", "Bda"] } };
-      } else if (targetType === "Bda") {
-        filters = { targetType: "Bda" };
+      else if (role === "Region Manager") {
+        // Get the Region Manager's assigned region
+        const regionManager = await RegionManager.findOne({ user: userId }).populate("region");
+        if (!regionManager || !regionManager.region) {
+          return res.status(404).json({ error: "Region Manager or assigned region not found." });
+        }
+   
+        const regionId = regionManager.region._id;
+        console.log("Region ID:", regionId);
+   
+        // Get all areas under this region
+        const areas = await Area.find({ region: regionId }).select("_id");
+        const areaIds = areas.map(a => a._id);
+   
+        console.log("Area IDs under Region:", areaIds);
+   
+        // Get all BDAs under these areas
+        const bdas = await Bda.find({ area: { $in: areaIds } }).select("_id");
+        const bdaIds = bdas.map(b => new mongoose.Types.ObjectId(b._id)); // Ensure ObjectId type
+   
+        console.log("BDA IDs under Region:", bdaIds);
+   
+        query = {
+          $or: [
+            { area: { $in: areaIds }, targetType: "Area" }, // Area targets
+            { bda: { $in: bdaIds }, targetType: "Bda" } // BDA targets
+          ]
+        };
       }
- 
-      // Fetch data based on filters
-      const targets = await Target.find(filters)
+      else if (role === "Area Manager") {
+        // Get the Area Manager's assigned area
+        const areaManager = await AreaManager.findOne({ user: userId }).populate("area");
+        if (!areaManager || !areaManager.area) {
+          return res.status(404).json({ error: "Area Manager or assigned area not found." });
+        }
+   
+        const areaId = areaManager.area._id;
+   
+        // Get all BDAs under this area
+        const bdas = await Bda.find({ area: areaId }).select("_id");
+        const bdaIds = bdas.map(b => new mongoose.Types.ObjectId(b._id)); // Ensure ObjectId type
+   
+        console.log("BDA IDs under Area Manager:", bdaIds);
+   
+        query = {
+          bda: { $in: bdaIds },
+          targetType: "Bda"
+        };
+      }
+      else {
+        return res.status(403).json({ error: "Unauthorized role." });
+      }
+   
+      console.log("Final Query:", JSON.stringify(query, null, 2));
+   
+      // Fetch targets based on the updated query
+      const targets = await Target.find(query)
         .populate("region", "_id regionName")
         .populate("area", "_id areaName")
         .populate({
           path: "bda",
-          select: "user",
+          select: "_id user",
           populate: {
             path: "user",
             select: "userName userImage",
           },
         });
- 
-      // Separate targets into categories
-      const regionTargets = [];
-      const areaTargets = [];
-      const bdaTargets = [];
- 
-      let totalRegionTarget = 0;
-      let totalAreaTarget = 0;
-      let totalBdaTarget = 0;
- 
-      targets.forEach((item) => {
-        if (item.targetType === "Region") {
-          regionTargets.push(item);
-          totalRegionTarget += item.target; // Sum targets for regions
-        } else if (item.targetType === "Area") {
-          areaTargets.push(item);
-          totalAreaTarget += item.target; // Sum targets for areas
-        } else if (item.targetType === "Bda") {
-          bdaTargets.push(item);
-          totalBdaTarget += item.target; // Sum targets for BDAs
-        }
-      });
- 
-      // Prepare response structure
-      const response = {
+   
+      console.log("Fetched Targets:", targets);
+   
+      if (!targets || targets.length === 0) {
+        return res.status(404).json({ message: "No targets found." });
+      }
+   
+      // Categorize targets
+      const regionTargets = targets.filter(item => item.targetType === "Region");
+      const areaTargets = targets.filter(item => item.targetType === "Area");
+      const bdaTargets = targets.filter(item => item.targetType === "Bda");
+   
+      // Calculate totals safely (ensure target is a number)
+      const totalRegionTarget = regionTargets.reduce((sum, target) => sum + (target.target || 0), 0);
+      const totalAreaTarget = areaTargets.reduce((sum, target) => sum + (target.target || 0), 0);
+      const totalBdaTarget = bdaTargets.reduce((sum, target) => sum + (target.target || 0), 0);
+   
+      return res.status(200).json({
         message: "Targets retrieved successfully",
         totalRegionTarget,
         totalAreaTarget,
         totalBdaTarget,
-        region: regionTargets.length ? regionTargets : null,
-        area: areaTargets.length ? areaTargets : null,
-        bda: bdaTargets.length ? bdaTargets : null,
-      };
- 
-      res.status(200).json(response);
+        region: regionTargets.length ? regionTargets : [],
+        area: areaTargets.length ? areaTargets : [],
+        bda: bdaTargets.length ? bdaTargets : [],
+      });
+   
     } catch (error) {
       console.error("Error fetching targets:", error);
-      res.status(500).json({ message: "Internal server error" });
+      return res.status(500).json({ message: "Internal server error" });
     }
   };
+   
 
   exports.getTargetById = async (req, res) => {
     try {
