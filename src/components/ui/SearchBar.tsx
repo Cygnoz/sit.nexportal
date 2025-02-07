@@ -12,7 +12,7 @@ type Props = {
 const SearchBar = ({ searchValue, onSearchChange, placeholder = "Search",bg,setDropdownVisible }: Props) => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     onSearchChange(e.target.value);
-    setDropdownVisible?.setDropdownVisible(true)
+    setDropdownVisible(true)
   };
 
   return (
@@ -28,7 +28,7 @@ const SearchBar = ({ searchValue, onSearchChange, placeholder = "Search",bg,setD
         onChange={handleSearch}
         value={searchValue}
         onClick={()=>{ 
-          setDropdownVisible?.setDropdownVisible((prev:any)=>!prev)
+          setDropdownVisible((prev:any)=>!prev)
         }}
       />
     </div>
