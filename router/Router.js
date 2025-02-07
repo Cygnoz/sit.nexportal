@@ -50,7 +50,7 @@ router.get("/praises/:userId",verifyToken,checkPermission('View Praise'),PraiseC
 //Target
 router.post("/targets",verifyToken,checkPermission('Add Target'), targetController.addTarget,ActivityLogGeneration('Add Target'));
 
-router.get('/targets/:targetType',verifyToken,checkPermission('View Target'), targetController.getAllTargets);
+router.get('/targets',verifyToken,checkPermission('View Target'), targetController.getAllTargets);
 
 router.get('/targets/:id',verifyToken,checkPermission('View Target'), targetController.getTargetById);
 
