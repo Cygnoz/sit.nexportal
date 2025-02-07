@@ -47,15 +47,15 @@ interface InsideAmData {
 
 type Props = {
   staffId?: any
-  
+
 }
 
 const AMView = ({ staffId }: Props) => {
 
-       const {user}=useUser()
-       user?.role
+  const { user } = useUser()
+  user?.role
   const [insideAmData, setInsideAmData] = useState<InsideAmData | null>(null);
-  const {loading,setLoading}=useResponse()
+  const { loading, setLoading } = useResponse()
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -70,11 +70,11 @@ const AMView = ({ staffId }: Props) => {
     awardAM: false,
     confirm: false,
     deactiveAM: false,
-    salaryInfoAM:false,
-    commissionAM:false,
+    salaryInfoAM: false,
+    commissionAM: false,
   });
 
-  const handleModalToggle = (editAM = false, viewAM = false, awardAM = false, confirm = false, deactiveAM = false, salaryInfoAM=false, commissionAM=false) => {
+  const handleModalToggle = (editAM = false, viewAM = false, awardAM = false, confirm = false, deactiveAM = false, salaryInfoAM = false, commissionAM = false) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
       editAM: editAM,
@@ -82,8 +82,8 @@ const AMView = ({ staffId }: Props) => {
       awardAM: awardAM,
       confirm: confirm,
       deactiveAM: deactiveAM,
-      salaryInfoAM:salaryInfoAM,
-      commissionAM:commissionAM
+      salaryInfoAM: salaryInfoAM,
+      commissionAM: commissionAM
     }));
     getAAM()
   }
@@ -116,7 +116,7 @@ const AMView = ({ staffId }: Props) => {
     }
     catch (err) {
       console.error("Error fetching AM data:", err);
-    }finally{
+    } finally {
       setLoading(false)
     }
   }
@@ -185,49 +185,50 @@ const AMView = ({ staffId }: Props) => {
           endDate: item.endDate ? new Date(item.endDate).toLocaleDateString() : 'N/A'
 
         }))
-      
-        
+
+
         setLicenserDetails(processData);
 
-            // Function to map index to color
-            const getColorForIndex = (index: number) => {
-              const colors = ['#1B6C75', '#30B777', '#6ABAF3', '#7CD5AB', '#00B5B5'];
-              return colors[index] || '#808080'; // Default color for out-of-bounds index
-            };
-  
-      
+        // Function to map index to color
+        const getColorForIndex = (index: number) => {
+          const colors = ['#1B6C75', '#30B777', '#6ABAF3', '#7CD5AB', '#00B5B5'];
+          return colors[index] || '#808080'; // Default color for out-of-bounds index
+        };
 
 
-// Dynamically map leadlicenserData to updatedRoles
-const updatedRoles = leadlicenserData.map((statusDetail: any, index:any) => ({
-  name: statusDetail.status || "Unknown", // Fallback for missing status
-  Count: statusDetail.count ?? 0,         // Use Count, default to 0 if missing
- color: getColorForIndex(index),         // Assign colors based on index
-}));
 
 
-if (updatedRoles.length > 0) {
- setRoles(updatedRoles)
-} else {
-  console.error("No roles to update. Check leadlicenserData.");
-}
-      
-          // Filter out roles with Count 0 and create pie chart data
-          const pieChartData = updatedRoles
-            .filter((role:any) => role.Count > 0) // Only include roles with Count > 0
-            .map((role:any) => ({
-              x: role.name,
-              y: role.Count,
-              color: role.color,
-            }));
+        // Dynamically map leadlicenserData to updatedRoles
+        const updatedRoles = leadlicenserData.map((statusDetail: any, index: any) => ({
+          name: statusDetail.status || "Unknown", // Fallback for missing status
+          Count: statusDetail.count ?? 0,         // Use Count, default to 0 if missing
+          color: getColorForIndex(index),         // Assign colors based on index
+        }));
 
-          // Update state
-          setRoles(updatedRoles);
-          setPieData(pieChartData);
+        console.log("updateedRole", updatedRoles);
 
-          
+        if (updatedRoles.length > 0) {
+          setRoles(updatedRoles)
+        } else {
+          console.error("No roles to update. Check leadlicenserData.");
+        }
 
-       
+        // Filter out roles with Count 0 and create pie chart data
+        const pieChartData = updatedRoles
+          .filter((role: any) => role.Count > 0) // Only include roles with Count > 0
+          .map((role: any) => ({
+            x: role.name,
+            y: role.Count,
+            color: role.color,
+          }));
+
+        // Update state
+        setRoles(updatedRoles);
+        setPieData(pieChartData);
+
+
+
+
 
 
       } else {
@@ -235,7 +236,7 @@ if (updatedRoles.length > 0) {
       }
     } catch (err) {
       console.error("Error fetching AM data:", err);
-    }finally{
+    } finally {
       setLoading(false)
     }
   };
@@ -246,7 +247,7 @@ if (updatedRoles.length > 0) {
 
 
 
-  
+
 
   //console.log(pieData);
 
@@ -283,7 +284,7 @@ if (updatedRoles.length > 0) {
       toast.error("Failed to Deactivate the lead.");
     }
   }
-  
+
 
 
   const CustomLegend = () => {
@@ -501,66 +502,66 @@ if (updatedRoles.length > 0) {
       </div>
 
       <div className="mt-4">
-{user?.role === 'Area Manager' && <ProgressBar />}
-</div>
+        {user?.role === 'Area Manager' && <ProgressBar />}
+      </div>
 
       {/* Card & table */}
-      <AMViewCardandTable loading={loading} bdaDetails={bdaDetails} insideAmData={insideAmData}/>
+      <AMViewCardandTable loading={loading} bdaDetails={bdaDetails} insideAmData={insideAmData} />
       {/* Charts */}
-    
+
       <div className="grid grid-cols-12 mb-5 gap-4">
         <div className="col-span-4 h-full">
           <div className="bg-white rounded-lg w-full h-full  p-3">
             <h1 className="text-[#303F58] text-lg font-bold p-3">Lead status distribution</h1>
             {roles.filter(role => role.count > 0).length > 0 ? (
-            <div className="-mt-3 relative">
-              
-              <div className='absolute top-[35%] left-[38%] z-20 text-center -mt-7'>
-              <p className='text-xl font-semibold ms-4'>{insideAmData?.totalLeads || 0}</p>
+              <div className="-mt-3 relative">
 
-                <p className='text-xs ms-4'>Total Leads</p>
-              </div>
-              <VictoryPie
-                innerRadius={48}
-                padAngle={4}
-                data={pieData}
-                categories={{
-                  y: roles.map(role => role.name),
-                }}
-                theme={VictoryTheme.clean}
-                labels={({ datum }) => `${((datum.y / roles.reduce((acc, role) => acc + role.Count, 0)) * 100).toFixed(1)}%`}
-                labelComponent={<VictoryLabel style={{ fill: '#303F58', fontSize: 15, marginLeft: -50 }} />}
-                style={{
-                  data: {
-                    fill: ({ datum }) => datum.color,
-                  },
-                }}
+                <div className='absolute top-[35%] left-[38%] z-20 text-center -mt-7'>
+                  <p className='text-xl font-semibold ms-4'>{insideAmData?.totalLeads || 0}</p>
 
-              />
-              <div className='flex justify-center'>
-                <div className="space-y-3">
-                
-                 {roles?.map((role) => (
-                    <div key={role.name} className="flex items-center gap-20 w-64 justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
-                        <span className="text-gray-800 font-medium text-xs">{role.name}</span>
+                  <p className='text-xs ms-4'>Total Leads</p>
+                </div>
+                <VictoryPie
+                  innerRadius={48}
+                  padAngle={4}
+                  data={pieData}
+                  categories={{
+                    y: roles.map(role => role.name),
+                  }}
+                  theme={VictoryTheme.clean}
+                  labels={({ datum }) => `${((datum.y / roles.reduce((acc, role) => acc + role.Count, 0)) * 100).toFixed(1)}%`}
+                  labelComponent={<VictoryLabel style={{ fill: '#303F58', fontSize: 15, marginLeft: -50 }} />}
+                  style={{
+                    data: {
+                      fill: ({ datum }) => datum.color,
+                    },
+                  }}
+
+                />
+                <div className='flex justify-center'>
+                  <div className="space-y-3">
+
+                    {roles?.map((role) => (
+                      <div key={role.name} className="flex items-center gap-20 w-64 justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-3 h-3 rounded-full`} style={{ backgroundColor: role.color }} />
+                          <span className="text-gray-800 font-medium text-xs">{role.name}</span>
+                        </div>
+                        <span className=" text-gray-600 text-xs">{role.Count}</span>
                       </div>
-                      <span className=" text-gray-600 text-xs">{role.Count}</span>
-                    </div>
-                  ))}
-                
+                    ))}
+
+                  </div>
                 </div>
               </div>
-            </div>
             ) : (
               // <div className="flex justify-center flex-col items-center">
               //   <img width={70} src={No_Data_found} alt="No Data Found" />
               //   <p className="font-bold text-red-700">No Records Found!</p>
               // </div>
-             
-               <NoRecords imgSize={70} textSize="md" parentHeight="380px"/>
-            
+
+              <NoRecords imgSize={70} textSize="md" parentHeight="380px" />
+
             )}
           </div>
         </div>
@@ -597,7 +598,7 @@ if (updatedRoles.length > 0) {
           </div>
         </div>
       </div>
-     
+
       <div>
         <LicensersTable<AMData>
           data={licenserDetails}
@@ -712,13 +713,13 @@ if (updatedRoles.length > 0) {
           onClose={() => handleModalToggle()}
         />
       </Modal>
-      <Modal open={isModalOpen.salaryInfoAM} onClose={()=>handleModalToggle()} className="w-[45%]">
-    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
-  </Modal>
+      <Modal open={isModalOpen.salaryInfoAM} onClose={() => handleModalToggle()} className="w-[45%]">
+        <SalaryInfoModal onClose={() => handleModalToggle()} />
+      </Modal>
 
-  <Modal open={isModalOpen.commissionAM} onClose={()=>handleModalToggle()} className="w-[45%]">
-    <CommissionModal  onClose={()=>handleModalToggle()} />
-  </Modal>
+      <Modal open={isModalOpen.commissionAM} onClose={() => handleModalToggle()} className="w-[45%]">
+        <CommissionModal onClose={() => handleModalToggle()} />
+      </Modal>
 
 
 

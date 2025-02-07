@@ -120,10 +120,15 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
             unit: 'px',
             format: 'a4'
         })
-        const imgProperties = pdf.getImageProperties(data)
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width
-        pdf.addImage(data, "PNG", 0, 0, pdfWidth, pdfHeight);
+        // const imgProperties = pdf.getImageProperties(data)
+        // const pdfWidth = pdf.internal.pageSize.getWidth();
+        // const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width
+        const pdfWidth = 300
+        const pdfHeight=350
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const xPos = (pageWidth - pdfWidth) / 2; // Center horizontally
+        const yPos = 20; // Position it near the top
+        pdf.addImage(data, "PNG", xPos, yPos, pdfWidth, pdfHeight);
         pdf.save("ID_Card.pdf");
     }
 
@@ -201,24 +206,32 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
     const printRef = React.useRef(null)
 
     const businessCardDownload = async () => {
-        const element = printRef.current
+        const element = printRef.current;
         if (!element) {
-            return
+            return;
         }
+        
         const bCardCanvas = await html2canvas(element, { scale: 3 });
-        const bCardData = bCardCanvas.toDataURL('image/png')
-
+        const bCardData = bCardCanvas.toDataURL('image/png');
+    
         const bCardPdf = new jsPDF({
             orientation: 'portrait',
             unit: 'px',
             format: 'a4'
         });
-        const bcardProperties = bCardPdf.getImageProperties(bCardData)
-        const bcardWidth = bCardPdf.internal.pageSize.getWidth()
-        const bcardHeight = (bcardProperties.height * bcardWidth) / bcardProperties.width;
-        bCardPdf.addImage(bCardData, "PNG", 0, 0, bcardWidth, bcardHeight)
-        bCardPdf.save('BusinessCard.pdf')
-    }
+    
+        const pageWidth = bCardPdf.internal.pageSize.getWidth();
+        const bcardWidth = 300;
+        const bcardHeight = 350;
+    
+        const xPos = (pageWidth - bcardWidth) / 2; // Center horizontally
+        const yPos = 20; // Position it near the top
+    
+        bCardPdf.addImage(bCardData, "PNG", xPos, yPos, bcardWidth, bcardHeight);
+        bCardPdf.save('BusinessCard.pdf');
+    };
+    
+    
 
     return (
         <div className="p-5 bg-white rounded shadow-md hide-scrollbar">
