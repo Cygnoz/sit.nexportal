@@ -143,7 +143,16 @@ function TicketsForm({ onClose, editId }: Props) {
         })) || [];
     } else {
       saList = dropDownSA?.map((sa: any) => ({
-        label: `${sa?.userName}-${sa?.unsolvedTickets}`,
+        label:(
+         
+          <div className="flex justify-between items-center">
+            <p>
+            <strong>{sa?.userName}</strong>
+          </p>
+          {/* <p>{sa?.unsolvedTickets}</p> */}
+          <div className="px-2 py-1"></div>
+          </div>
+        ),
         value: sa?._id,
       })) || [];
     }
