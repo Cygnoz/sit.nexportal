@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import ChevronDown from "../../assets/icons/ChevronDown";
 import SearchBar from "../ui/SearchBar";
+import PlusCircle from "../../assets/icons/PlusCircle";
 
 interface SelectProps {
   required?: boolean;
@@ -11,6 +12,7 @@ interface SelectProps {
   readOnly?: boolean;
   value?: string;
   onChange?: (value: string) => void;
+  addButtonLabel?: string
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -22,6 +24,7 @@ const Select: React.FC<SelectProps> = ({
   readOnly,
   value,
   onChange,
+  addButtonLabel
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -63,32 +66,38 @@ const Select: React.FC<SelectProps> = ({
   useEffect(() => {
     if (isOpen && dropdownRef.current) {
       const dropdownRect = dropdownRef.current.getBoundingClientRect();
+      const parentRect = dropdownRef.current.offsetParent?.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
-
-      if (dropdownRect.bottom + 150 > viewportHeight) {
-        setDropdownPosition("top");
-      } else {
-        setDropdownPosition("bottom");
+  
+      if (parentRect) {
+        const spaceBelow = viewportHeight - dropdownRect.bottom;
+        const spaceAbove = parentRect.top;
+  
+        if (spaceBelow < 150 && spaceAbove > spaceBelow) {
+          setDropdownPosition("top");
+        } else {
+          setDropdownPosition("bottom");
+        }
       }
     }
   }, [isOpen]);
+  
 
   const handleOptionSelect = (selectedValue: string) => {
     if (onChange) onChange(selectedValue);
-    setIsOpen(false);
+    setIsOpen((prev)=>!prev);
     setSelectedIndex(null);
   };
 
   return (
-    <div className="relative w-full" ref={dropdownRef}>
+    <div className="relative w-full" >
       <label className={`block text-sm font-medium ${label && "mb-2"}`}>
         {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div
-        className={`relative ${
-          readOnly ? "pointer-events-none opacity-50" : "cursor-pointer"
-        }`}
-        onClick={() => !readOnly && setIsOpen(!isOpen)}
+        className={`relative ${readOnly ? "pointer-events-none opacity-50" : "cursor-pointer"
+          }`}
+        onClick={() => !readOnly && setIsOpen((prev)=>!prev)}
       >
         <div
           className={`block w-full h-9 pt-2 text-[#818894] bg-white border 
@@ -105,9 +114,9 @@ const Select: React.FC<SelectProps> = ({
       </div>
       {isOpen && (
         <div
-          className={`absolute z-10 mt-1 w-full p-1 bg-white border border-gray-300 rounded-md shadow-lg ${
-            dropdownPosition === "top" ? "bottom-full mb-1" : "top-full mt-1"
-          }`}
+        ref={dropdownRef}
+          className={`absolute z-10 mt-1 w-full p-1 bg-white border border-gray-300 rounded-md shadow-lg ${dropdownPosition === "top" ? "bottom-full mb-1" : "top-full mt-1"
+            }`}
           tabIndex={0}
         >
           <SearchBar searchValue={searchValue} onSearchChange={setSearchValue} />
@@ -119,19 +128,29 @@ const Select: React.FC<SelectProps> = ({
               <div
                 key={option.value}
                 onClick={() => handleOptionSelect(option.value)}
-                className={`px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 ${
-                  selectedIndex === index ? "bg-gray-200" : ""
-                }`}
+                className={`px-4 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 ${selectedIndex === index ? "bg-gray-200" : ""
+                  }`}
               >
                 {option.label}
               </div>
             ))}
+
+          
           </div>
+
           {filteredOptions.length === 0 && (
             <div className="px-4 py-2 font-bold text-red-500 text-center text-sm">
               No options found!
             </div>
           )}
+            {addButtonLabel && (
+              <div className="mt-1">
+                <button className="bg-darkGreen text-[#820000] rounded-lg py-4 px-6 flex items-center text-sm font-bold border-slate-400 border gap-2 w-full hover:bg-lightRed">
+                  <PlusCircle color="#000000" />
+                  <p>{addButtonLabel}</p>
+                </button>
+              </div>
+            )}
         </div>
       )}
       {error && <p className="text-red-500 text-sm mt-1">{error}</p>}

@@ -619,17 +619,46 @@ const AMForm: React.FC<AddAreaManagerProps> = ({ onClose, editId, regionId }) =>
                     {...register("city")}
                   />
                   <Input
-                    label="Aadhaar Number"
-                    placeholder="Enter Aadhar"
-                    type="number"
-                    error={errors.adhaarNo?.message}
-                    {...register("adhaarNo")}
+                    label="Aadhaar No"
+                    type="text"
+                    placeholder="Enter Aadhaar Number"
+                    {...register("adhaarNo", {
+                      required: "Aadhaar number is required",
+                      pattern: {
+                        value: /^[0-9]{12}$/, 
+                        message: "Aadhaar number must be exactly 12 digits",
+                      },
+                    })}
+
+                    maxLength={12} // Restrict input length to 12 digits
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.replace(/\D/g, ""); 
+                      setValue("adhaarNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
                   <Input
-                    label="PAN Number"
-                    placeholder="Enter Pan Number"
-                    error={errors.panNo?.message}
-                    {...register("panNo")}
+                    label="PAN No"
+                    type="text"
+                    placeholder="Enter PAN Number"
+                    {...register("panNo", {
+                      required: "PAN number is required",
+                      pattern: {
+                        value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                        message: "Invalid PAN format (e.g., ABCDE1234F)",
+                      },
+                      validate: (value: any) => {
+                        if (/[^A-Z0-9]/.test(value)) {
+                          return "Special characters are not allowed!";
+                        }
+                        return true;
+                      },
+                    })}
+
+                    maxLength={10} 
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); 
+                      setValue("panNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
 
                   <Input
