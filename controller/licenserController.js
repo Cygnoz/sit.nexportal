@@ -318,26 +318,63 @@ exports.renewLicenser = async (req, res , next) => {
  
  
  
-async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName , organizationId) {
-  const { ...rest } = cleanedData;
+// async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName , organizationId) {
+//   const { ...rest } = cleanedData;
  
+//   // Generate the next licenser ID
+//   let nextId = 1;
+ 
+//   // Fetch the last licenser based on the numeric part of customerId
+//   const lastLicenser = await Leads.findOne().sort({ customerId: -1 }); // Sort by customerId in descending order
+ 
+//   if (lastLicenser) {
+//     const lastId = parseInt(lastLicenser.customerId.split("-")[1]); // Extract numeric part
+//     nextId = lastId + 1; // Increment the last ID
+//   }
+ 
+//   // Format the new licenser ID
+//   const customerId = `CSTMID-${nextId.toString().padStart(4, "0")}`;
+ 
+//   // Save the new licenser
+//   const savedLicenser = await createNewLicenser(
+//     { ...rest, customerId },
+//     regionId,
+//     areaId,
+//     bdaId,
+//     true,
+//     userId,
+//     userName,
+//     organizationId
+//   );
+ 
+//   return savedLicenser;
+// }
+ 
+
+
+async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, userName, organizationId) {
+  const { ...rest } = cleanedData;
+  
   // Generate the next licenser ID
   let nextId = 1;
- 
+  
   // Fetch the last licenser based on the numeric part of customerId
   const lastLicenser = await Leads.findOne().sort({ customerId: -1 }); // Sort by customerId in descending order
- 
+  
   if (lastLicenser) {
     const lastId = parseInt(lastLicenser.customerId.split("-")[1]); // Extract numeric part
     nextId = lastId + 1; // Increment the last ID
   }
- 
+  
   // Format the new licenser ID
   const customerId = `CSTMID-${nextId.toString().padStart(4, "0")}`;
- 
+  
+  // Get the current date and time
+  const licensorDate = moment().format("YYYY-MM-DD HH:mm:ss"); // Example format: 2024-02-07 14:30:00
+  
   // Save the new licenser
   const savedLicenser = await createNewLicenser(
-    { ...rest, customerId },
+    { ...rest, customerId, licensorDate },
     regionId,
     areaId,
     bdaId,
@@ -346,10 +383,10 @@ async function createLicenser(cleanedData, regionId, areaId, bdaId, userId, user
     userName,
     organizationId
   );
- 
+  
   return savedLicenser;
 }
- 
+
  
  
  
