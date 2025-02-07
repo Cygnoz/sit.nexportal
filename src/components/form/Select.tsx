@@ -136,6 +136,7 @@ const Select: React.FC<SelectProps> = ({
                       ${dropdownPosition === "top" ? "bottom-[70%]" : "top-full mt-1"}`}
         >
           <SearchBar searchValue={searchValue} onSearchChange={setSearchValue} />
+          
           <div className="max-h-52 overflow-y-auto custom-scrollbar">
             {filteredOptions.length > 0 ? (
               filteredOptions.map((option) => (
