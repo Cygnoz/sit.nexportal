@@ -10,6 +10,13 @@ const areaManagerController = require('../controller/areaManagerController')
 
 const bdaController = require('../controller/bdaController')
 
+const payrollController = require('../controller/payrollController')
+
+const categoryController = require('../controller/categoryController')
+
+const expenseController = require('../controller/expenseController')
+
+
 
 const checkPermission = require('../controller/authController/permission');
 
@@ -88,6 +95,32 @@ router.get("/bda/:id/trial-conversions",verifyToken,checkPermission('View BDA'),
 router.put("/deactivateBda/:id", verifyToken,checkPermission('Deactivate BDA'),bdaController.deactivateBda,ActivityLogGeneration('Deactivate BDA'));
 
 router.get('/get-activity-logs',verifyToken,checkPermission('View logs'),userController.getAllActivityLogs)
+
+
+// payroll
+router.post("/generate-payslip", payrollController.generatePayroll);
+
+// expense category
+router.post("/category",verifyToken,checkPermission('Add Category'), categoryController.addCategory,ActivityLogGeneration('Add Category'));
+
+router.get("/category/:id",verifyToken,checkPermission('View Category'), categoryController.getCategory);
+
+router.get("/category",verifyToken,checkPermission('View Category'), categoryController.getAllCategories);
+
+router.put("/category/:id",verifyToken,checkPermission('Edit Category'), categoryController.updateCategory,ActivityLogGeneration('Edit Category'));
+
+router.delete("/category/:id",verifyToken,checkPermission('Delete Category'), categoryController.deleteCategory,ActivityLogGeneration('Delete Category'));
+
+// expense 
+router.post("/expense",verifyToken,checkPermission('Add Expense'), expenseController.addExpense,ActivityLogGeneration('Add Expense'));
+
+router.get("/expense/:id",verifyToken,checkPermission('View Expense'), expenseController.getExpense);
+
+router.get("/expense",verifyToken,checkPermission('View Expense'), expenseController.getAllExpenses);
+
+router.put("/expense/:id",verifyToken,checkPermission('Edit Expense'), expenseController.updateExpense,ActivityLogGeneration('Edit Expense'));
+
+router.delete("/expense/:id",verifyToken,checkPermission('Delete Expense'), expenseController.deleteExpense,ActivityLogGeneration('Delete Expense'));
 
 
 module.exports = router
