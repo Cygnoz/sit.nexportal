@@ -51,7 +51,7 @@ router.get("/regions/:id/areas",verifyToken,checkPermission('View Region'), regi
 router.get("/regions/:id/details",verifyToken,checkPermission('View Region'), regionController.getRegionDetails);
 
 router.get("/areaPerformance/:regionId",verifyToken,checkPermission('View Region'),regionDashboardController.getPerformanceByArea);
- 
+
  
 
 // region dashboard

@@ -431,6 +431,18 @@ const roles = [
        { action: "View Target", note: "View Target" },
       { action: "Edit Target", note: "Edit Target" },
       { action: "Delete Target", note: "Delete Target" },
+
+       //  Category
+       { action: "Add Category", note: "Add Category" },
+       { action: "View Category", note: "View Category" },
+      { action: "Edit Category", note: "Edit Category" },
+      { action: "Delete Category", note: "Delete Category" },
+
+      //  Expense
+      { action: "Add Expense", note: "Add Expense" },
+      { action: "View Expense", note: "View Expense" },
+     { action: "Edit Expense", note: "Edit Expense" },
+     { action: "Delete Expense", note: "Delete Expense" },
     ],
   },
   {
@@ -520,6 +532,7 @@ const roles = [
       { action: "View Licenser", note: "View Licenser" },
       { action: "Edit Licenser", note: "Edit Licenser" },
       { action: "Delete Licenser", note: "Delete Licenser" },
+      { action: "Renew Licenser", note: "Renew Licenser" },
       
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
@@ -546,6 +559,18 @@ const roles = [
        { action: "View Target", note: "View Target" },
       { action: "Edit Target", note: "Edit Target" },
       { action: "Delete Target", note: "Delete Target" },
+
+      //  Category
+      { action: "Add Category", note: "Add Category" },
+      { action: "View Category", note: "View Category" },
+     { action: "Edit Category", note: "Edit Category" },
+     { action: "Delete Category", note: "Delete Category" },
+
+     //  Expense
+     { action: "Add Expense", note: "Add Expense" },
+     { action: "View Expense", note: "View Expense" },
+    { action: "Edit Expense", note: "Edit Expense" },
+    { action: "Delete Expense", note: "Delete Expense" },
     ],
   },
   {
@@ -635,6 +660,7 @@ const roles = [
       { action: "View Licenser", note: "View Licenser" },
       { action: "Edit Licenser", note: "Edit Licenser" },
       { action: "Delete Licenser", note: "Delete Licenser" },
+      { action: "Renew Licenser", note: "Renew Licenser" },
       
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
@@ -662,6 +688,18 @@ const roles = [
        { action: "View Target", note: "View Target" },
       { action: "Edit Target", note: "Edit Target" },
       { action: "Delete Target", note: "Delete Target" },
+
+      //  Category
+      { action: "Add Category", note: "Add Category" },
+      { action: "View Category", note: "View Category" },
+     { action: "Edit Category", note: "Edit Category" },
+     { action: "Delete Category", note: "Delete Category" },
+
+     //  Expense
+     { action: "Add Expense", note: "Add Expense" },
+     { action: "View Expense", note: "View Expense" },
+    { action: "Edit Expense", note: "Edit Expense" },
+    { action: "Delete Expense", note: "Delete Expense" },
     ],
   },
   {
@@ -751,6 +789,7 @@ const roles = [
       { action: "View Licenser", note: "View Licenser" },
       { action: "Edit Licenser", note: "Edit Licenser" },
       { action: "Delete Licenser", note: "Delete Licenser" },
+      { action: "Renew Licenser", note: "Renew Licenser" },
       
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
@@ -778,6 +817,18 @@ const roles = [
        { action: "View Target", note: "View Target" },
       { action: "Edit Target", note: "Edit Target" },
       { action: "Delete Target", note: "Delete Target" },
+
+      //  Category
+      { action: "Add Category", note: "Add Category" },
+      { action: "View Category", note: "View Category" },
+     { action: "Edit Category", note: "Edit Category" },
+     { action: "Delete Category", note: "Delete Category" },
+
+     //  Expense
+     { action: "Add Expense", note: "Add Expense" },
+     { action: "View Expense", note: "View Expense" },
+    { action: "Edit Expense", note: "Edit Expense" },
+    { action: "Delete Expense", note: "Delete Expense" },
     ],
   },
   {
@@ -867,6 +918,7 @@ const roles = [
       { action: "View Licenser", note: "View Licenser" },
       { action: "Edit Licenser", note: "Edit Licenser" },
       { action: "Delete Licenser", note: "Delete Licenser" },
+      { action: "Renew Licenser", note: "Renew Licenser" },
       
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
@@ -893,6 +945,18 @@ const roles = [
        { action: "View Target", note: "View Target" },
       { action: "Edit Target", note: "Edit Target" },
       { action: "Delete Target", note: "Delete Target" },
+
+      //  Category
+      { action: "Add Category", note: "Add Category" },
+      { action: "View Category", note: "View Category" },
+     { action: "Edit Category", note: "Edit Category" },
+     { action: "Delete Category", note: "Delete Category" },
+
+     //  Expense
+     { action: "Add Expense", note: "Add Expense" },
+     { action: "View Expense", note: "View Expense" },
+    { action: "Edit Expense", note: "Edit Expense" },
+    { action: "Delete Expense", note: "Delete Expense" },
     ],
   },
   {
@@ -982,6 +1046,7 @@ const roles = [
       { action: "View Licenser", note: "View Licenser" },
       { action: "Edit Licenser", note: "Edit Licenser" },
       { action: "Delete Licenser", note: "Delete Licenser" },
+      { action: "Renew Licenser", note: "Renew Licenser" },
       
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
@@ -1006,6 +1071,18 @@ const roles = [
 
        // target
        { action: "View Target", note: "View Target" },
+
+       //  Category
+       { action: "Add Category", note: "Add Category" },
+       { action: "View Category", note: "View Category" },
+      { action: "Edit Category", note: "Edit Category" },
+      { action: "Delete Category", note: "Delete Category" },
+
+      //  Expense
+      { action: "Add Expense", note: "Add Expense" },
+      { action: "View Expense", note: "View Expense" },
+     { action: "Edit Expense", note: "Edit Expense" },
+     { action: "Delete Expense", note: "Delete Expense" },
     ],
   },
   {
@@ -1095,6 +1172,7 @@ const roles = [
       { action: "View Licenser", note: "View Licenser" },
       { action: "Edit Licenser", note: "Edit Licenser" },
       { action: "Delete Licenser", note: "Delete Licenser" },
+      { action: "Renew Licenser", note: "Renew Licenser" },
       
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
@@ -1116,6 +1194,18 @@ const roles = [
 
        //  chat
        { action: "View Chat", note: "View Chat" },
+
+       //  Category
+       { action: "Add Category", note: "Add Category" },
+       { action: "View Category", note: "View Category" },
+      { action: "Edit Category", note: "Edit Category" },
+      { action: "Delete Category", note: "Delete Category" },
+
+      //  Expense
+      { action: "Add Expense", note: "Add Expense" },
+      { action: "View Expense", note: "View Expense" },
+     { action: "Edit Expense", note: "Edit Expense" },
+     { action: "Delete Expense", note: "Delete Expense" },
     ],
   },
   {
@@ -1205,6 +1295,7 @@ const roles = [
       { action: "View Licenser", note: "View Licenser" },
       { action: "Edit Licenser", note: "Edit Licenser" },
       { action: "Delete Licenser", note: "Delete Licenser" },
+      { action: "Renew Licenser", note: "Renew Licenser" },
       
       // Tickets
       { action: "Add Ticket", note: "Add Ticket" },
@@ -1226,6 +1317,18 @@ const roles = [
 
        //  chat
        { action: "View Chat", note: "View Chat" },
+
+       //  Category
+       { action: "Add Category", note: "Add Category" },
+       { action: "View Category", note: "View Category" },
+      { action: "Edit Category", note: "Edit Category" },
+      { action: "Delete Category", note: "Delete Category" },
+
+      //  Expense
+      { action: "Add Expense", note: "Add Expense" },
+      { action: "View Expense", note: "View Expense" },
+     { action: "Edit Expense", note: "Edit Expense" },
+     { action: "Delete Expense", note: "Delete Expense" },
     ],
   }
 ];
