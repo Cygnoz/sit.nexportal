@@ -5,8 +5,11 @@ const ActivityLog = require('../database/model/activityLog');
 // Add a new expense
 exports.addExpense = async (req, res, next) => {
   try {
+    
     const { image, expenseName, date, expenseAccount, amount, category, note } = req.body;
     const data = req.body
+     data.addedBy = req.user.id
+    data.status = "Pending Approval"
     if (!expenseName || !date || !expenseAccount || !amount || !category) {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
@@ -25,18 +28,23 @@ exports.addExpense = async (req, res, next) => {
 
 // Get a specific expense
 exports.getExpense = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const expense = await Expense.findById(id).populate("category");
-    if (!expense) {
-      return res.status(404).json({ message: "Expense not found" });
+    try {
+      const { id } = req.params;
+      const expense = await Expense.findById(id)
+        .populate("category","categoryName")
+        .populate("approvedBy", "userName role") // Populate approvedBy with selected fields
+        .populate("addedBy", "userName role"); // Populate addedBy with selected fields
+  
+      if (!expense) {
+        return res.status(404).json({ message: "Expense not found" });
+      }
+  
+      res.status(200).json(expense);
+    } catch (error) {
+      console.error("Error fetching expense:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-    res.status(200).json(expense);
-  } catch (error) {
-    console.error("Error fetching expense:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
+  };
 
 // Get all expenses
 exports.getAllExpenses = async (req, res) => {
@@ -50,30 +58,6 @@ exports.getAllExpenses = async (req, res) => {
   };
   
 
-// Update an expense
-// exports.updateExpense = async (req, res, next) => {
-//   try {
-//     const { id } = req.params;
-//     // const { image, expenseName, date, expenseAccount, amount, category, note } = req.body;
-//     const data = req.body;
-//     const expense = await Expense.findByIdAndUpdate(
-//       id,
-//       { ...data },
-//       { new: true }
-//     );
-//     if (!expense) {
-//       return res.status(404).json({ message: "Expense not found" });
-//     }
-//     res.status(200).json({ message: "Expense updated successfully", expense });
-//     logOperation(req, "successfully", expense._id);
-//     next();
-//   } catch (error) {
-//     console.error("Error updating expense:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//     logOperation(req, "Failed");
-//     next();
-//   }
-// };
 
 
 exports.updateExpense = async (req, res, next) => {
@@ -145,22 +129,35 @@ exports.updateExpense = async (req, res, next) => {
 
 // Delete an expense
 exports.deleteExpense = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const expense = await Expense.findByIdAndDelete(id);
-    if (!expense) {
-      return res.status(404).json({ message: "Expense not found" });
+    try {
+      const { id } = req.params;
+      const expense = await Expense.findById(id);
+  
+      if (!expense) {
+        return res.status(404).json({ message: "Expense not found" });
+      }
+  
+      // Allow deletion only if status is "Pending Approval"
+      if (expense.status !== "Pending Approval") {
+        return res
+          .status(400)
+          .json({ message: "Cannot delete expense as it has already been processed." });
+      }
+  
+      // Delete the expense
+      await Expense.findByIdAndDelete(id);
+  
+      res.status(200).json({ message: "Expense deleted successfully" });
+      logOperation(req, "successfully");
+      next();
+    } catch (error) {
+      console.error("Error deleting expense:", error);
+      res.status(500).json({ message: "Internal server error" });
+      logOperation(req, "Failed");
+      next();
     }
-    res.status(200).json({ message: "Expense deleted successfully" });
-    logOperation(req, "successfully");
-    next();
-  } catch (error) {
-    console.error("Error deleting expense:", error);
-    res.status(500).json({ message: "Internal server error" });
-    logOperation(req, "Failed");
-    next();
-  }
-};
+  };
+  
 
 // Logging operation middleware
 const logOperation = (req, status, operationId = null) => {

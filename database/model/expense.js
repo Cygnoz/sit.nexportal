@@ -15,6 +15,7 @@ const expenseSchema = new Schema(
     approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     rejectedDate: { type: String },
     rejectedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    addedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true }
 );
