@@ -7,6 +7,9 @@ const AreaManager = require("../database/model/areaManager");
 const Bda = require("../database/model/bda");
 const mongoose = require("mongoose");
 
+const Leads = require("../database/model/leads")
+ 
+ 
 
 function cleanTargetData(data) {
   const cleanData = (value) =>
@@ -296,6 +299,161 @@ exports.deleteTarget = async (req, res, next) => {
   };
 
 
+ 
+ 
+  exports.getAchievedTargets = async (req, res) => {
+    try {
+      const userId = req.user.id;
+      let { month } = req.query; // Expecting either "YYYY-MM" or "YYYY-MM-DD"
+ 
+      if (!month) {
+        return res.status(400).json({ error: "Month is required as a query parameter." });
+      }
+ 
+      // If the month string is in "YYYY-MM-DD" format, extract just the "YYYY-MM" portion.
+      if (month.length === 10) {
+        month = month.slice(0, 7);
+      }
+ 
+      console.log("User ID:", userId, "Query Month:", month);
+ 
+      // Convert "YYYY-MM" to a full month name (e.g. "2025-02" => "February")
+      const monthName = convertMonth(month);
+      console.log("Converted Month:", monthName);
+ 
+      // Create a date range for the given month.
+      // Start: first day of the month; End: first day of the next month.
+      const startDate = new Date(`${month}-01T00:00:00.000Z`);
+      const endDate = new Date(startDate);
+      endDate.setMonth(endDate.getMonth() + 1);
+      console.log("Date Range:", startDate.toISOString(), "to", endDate.toISOString());
+ 
+      // Fetch the user to determine the role.
+      const user = await User.findById(userId).select("role");
+      if (!user) {
+        return res.status(404).json({ error: "User not found." });
+      }
+      const { role } = user;
+      console.log("User Role:", role);
+ 
+      let totalTarget = 0;
+      let achievedTargets = 0;
+ 
+      if (role === "Super Admin") {
+        // Super Admin: Use region-level targets.
+        const targetRecords = await Target.find({
+          month: { $regex: monthName, $options: "i" },
+          region: { $exists: true }
+        });
+        totalTarget = targetRecords.reduce((acc, record) => acc + (record.target || 0), 0);
+ 
+        achievedTargets = await Leads.countDocuments({
+          customerStatus: "Licenser",
+          licensorDate: { $gte: startDate.toISOString(), $lt: endDate.toISOString() }
+        });
+ 
+      } else if (role === "Region Manager") {
+        // Region Manager: Use regionManager field.
+        const regionManager = await RegionManager.findOne({ user: userId });
+        if (!regionManager) {
+          return res.status(404).json({ error: "Region Manager record not found." });
+        }
+ 
+        // For region managers, fetch the target document by matching the regionManager field.
+        const targetDoc = await Target.findOne({
+          regionManager: regionManager._id,
+          targetType: "Region", // Assuming region targets have targetType "Region"
+          month: { $regex: monthName, $options: "i" }
+        });
+        totalTarget = targetDoc ? targetDoc.target || 0 : 0;
+ 
+        achievedTargets = await Leads.countDocuments({
+          regionManager: regionManager._id,
+          customerStatus: "Licenser",
+          licensorDate: { $gte: startDate.toISOString(), $lt: endDate.toISOString() }
+        });
+ 
+      } else if (role === "Area Manager") {
+        // Area Manager: Use areaManager field.
+        const areaManager = await AreaManager.findOne({ user: userId });
+        if (!areaManager) {
+          return res.status(404).json({ error: "Area Manager record not found." });
+        }
+ 
+        const targetDoc = await Target.findOne({
+          areaManager: areaManager._id,
+          targetType: "Area",
+          month: { $regex: monthName, $options: "i" }
+        });
+        totalTarget = targetDoc ? targetDoc.target || 0 : 0;
+ 
+        achievedTargets = await Leads.countDocuments({
+          areaManager: areaManager._id,
+          customerStatus: "Licenser",
+          licensorDate: { $gte: startDate.toISOString(), $lt: endDate.toISOString() }
+        });
+ 
+      } else if (role === "Bda") {
+        // BDA: Use bda field.
+        const bda = await Bda.findOne({ user: userId });
+        if (!bda) {
+          return res.status(404).json({ error: "BDA record not found." });
+        }
+ 
+        const targetDoc = await Target.findOne({
+          bda: bda._id,
+          targetType: "Bda",
+          month: { $regex: monthName, $options: "i" }
+        });
+        totalTarget = targetDoc ? targetDoc.target || 0 : 0;
+ 
+        achievedTargets = await Leads.countDocuments({
+          bdaId: bda._id,
+          customerStatus: "Licenser",
+          licensorDate: { $gte: startDate.toISOString(), $lt: endDate.toISOString() }
+        });
+      } else {
+        return res.status(403).json({ error: "Unauthorized role." });
+      }
+ 
+      const balanceTarget = totalTarget - achievedTargets;
+ 
+      return res.status(200).json({
+        message: "Achieved targets retrieved successfully",
+        totalTarget,
+        achievedTargets,
+        balanceTarget
+      });
+    } catch (error) {
+      console.error("Error fetching achieved targets:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  };
+ 
+  // Helper function to convert "YYYY-MM" to full month name (if needed)
+  function convertMonth(queryMonth) {
+    const monthMap = {
+      "01": "January",
+      "02": "February",
+      "03": "March",
+      "04": "April",
+      "05": "May",
+      "06": "June",
+      "07": "July",
+      "08": "August",
+      "09": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    };
+ 
+    const parts = queryMonth.split("-");
+    if (parts.length === 2) {
+      const mm = parts[1];
+      return monthMap[mm] || queryMonth;
+    }
+    return queryMonth;
+  }
 
 
 

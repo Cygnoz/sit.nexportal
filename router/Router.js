@@ -58,4 +58,6 @@ router.put("/targets/:id",verifyToken,checkPermission('Edit Target'),targetContr
 
 router.delete("/targets/:id",verifyToken,checkPermission('Delete Target'),targetController.deleteTarget,ActivityLogGeneration('Delete Target'));
 
+router.get('/targetAchieved',verifyToken,checkPermission('View Target'), targetController.getAchievedTargets);
+
 module.exports = router
