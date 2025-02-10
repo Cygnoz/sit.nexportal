@@ -86,11 +86,11 @@ exports.updateExpense = async (req, res, next) => {
     let action = "Edit"; // Default action
 
     if (status) {
-      if (status === "Reject") {
+      if (status === "Rejected") {
         updateFields.rejectedDate = actionDate;
         updateFields.rejectedBy = userId;
         action = "Rejected";
-      } else if (status === "Approve") {
+      } else if (status === "Approval Granted") {
         updateFields.approvalDate = actionDate;
         updateFields.approvedBy = userId;
         action = "Approved";
