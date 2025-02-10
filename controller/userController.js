@@ -443,6 +443,9 @@ const roles = [
       { action: "View Expense", note: "View Expense" },
      { action: "Edit Expense", note: "Edit Expense" },
      { action: "Delete Expense", note: "Delete Expense" },
+
+     { action: "Generate Payroll", note: "Generate Payroll" },
+     { action: "View Payroll", note: "View Payroll" },
     ],
   },
   {
@@ -571,6 +574,9 @@ const roles = [
      { action: "View Expense", note: "View Expense" },
     { action: "Edit Expense", note: "Edit Expense" },
     { action: "Delete Expense", note: "Delete Expense" },
+
+    { action: "Generate Payroll", note: "Generate Payroll" },
+    { action: "View Payroll", note: "View Payroll" },
     ],
   },
   {
@@ -700,6 +706,10 @@ const roles = [
      { action: "View Expense", note: "View Expense" },
     { action: "Edit Expense", note: "Edit Expense" },
     { action: "Delete Expense", note: "Delete Expense" },
+
+    { action: "Generate Payroll", note: "Generate Payroll" },
+    { action: "View Payroll", note: "View Payroll" },
+
     ],
   },
   {

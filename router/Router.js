@@ -48,6 +48,9 @@ router.delete("/region/:regionId",verifyToken,checkPermission('Delete Region'), 
 router.put("/deactivateRegion/:regionId",verifyToken,checkPermission('Deactivate Region'), regionController.deactivateRegion,ActivityLogGeneration('Deactivate Region'));
 
 router.get("/regions/:id/areas",verifyToken,checkPermission('View Region'), regionController.getAreasByRegion);
+
+router.get('/lead-source', verifyToken,checkPermission('View Region'), regionDashboardController.getLeadSourceGraph);
+
 router.get("/regions/:id/details",verifyToken,checkPermission('View Region'), regionController.getRegionDetails);
 
 router.get("/areaPerformance/:regionId",verifyToken,checkPermission('View Region'),regionDashboardController.getPerformanceByArea);

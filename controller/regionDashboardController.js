@@ -226,3 +226,41 @@ exports.getPerformanceByArea = async (req, res) => {
   }
 };
  
+
+exports.getLeadSourceGraph = async (req, res) => {
+  try {
+    // Use an aggregation pipeline to group by leadSource and count documents
+    const graphData = await Leads.aggregate([
+      {
+        $group: {
+          _id: "$leadSource",  // Group by the leadSource field
+          count: { $sum: 1 }    // Count the number of leads for each group
+        }
+      }
+    ]);
+ 
+    // Initialize an object with the expected keys and default 0 counts
+    const result = {
+      "Social Media": 0,
+      "Website": 0,
+      "Refferal": 0,
+      "Events": 0
+    };
+ 
+    // Populate the result object with the counts from the aggregation
+    graphData.forEach(item => {
+      // Ensure that only the defined lead sources are updated.
+      if (result.hasOwnProperty(item._id)) {
+        result[item._id] = item.count;
+      }
+    });
+ 
+    return res.status(200).json({
+      message: "Lead source graph data retrieved successfully",
+      data: result
+    });
+  } catch (error) {
+    console.error("Error retrieving lead source graph data:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
