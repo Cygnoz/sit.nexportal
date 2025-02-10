@@ -135,29 +135,45 @@ function TicketsForm({ onClose, editId }: Props) {
     let saList: any = []; // Initialize as an empty array
   
     if (user?.role === "Supervisor") {
-      saList = dropDownSA
-        ?.filter((drop:any) => drop.region === regionId)
-        .map((sa: any) => ({
-          label: `${sa?.userName}-${sa?.unsolvedTickets}`,
-          value: sa?._id,
-        })) || [];
+      saList =
+        dropDownSA
+          ?.filter((drop: any) => drop.region === regionId)
+          .map((sa: any) => ({
+            label: (
+              <div className="flex justify-between items-center">
+                <p>
+                  <strong>{sa?.userName}</strong>
+                </p>
+                <div className="px-2 py-1 bg-primary rounded-lg text-white">
+                  Unresolved <b className="text-yellow-200">{sa?.unsolvedTickets}</b>
+                </div>
+              </div>
+            ),
+            value: sa?._id,
+            unsolvedTickets: sa?.unsolvedTickets ?? 0, // Ensure it's a number for sorting
+          }))
+          .sort((a: any, b: any) => a.unsolvedTickets - b.unsolvedTickets) || []; // Sort by unsolved tickets (ascending)
     } else {
-      saList = dropDownSA?.map((sa: any) => ({
-        label:(
-         
-          <div className="flex justify-between items-center">
-            <p>
-            <strong>{sa?.userName}</strong>
-          </p>
-          {/* <p>{sa?.unsolvedTickets}</p> */}
-          <div className="px-2 py-1"></div>
-          </div>
-        ),
-        value: sa?._id,
-      })) || [];
+      saList =
+        dropDownSA
+          ?.map((sa: any) => ({
+            label: (
+              <div className="flex justify-between items-center">
+                <p>
+                  <strong>{sa?.userName}</strong>
+                </p>
+                <div className="px-2 py-1 bg-primary rounded-lg text-white">
+                  Unresolved <b className="text-yellow-200">{sa?.unsolvedTickets}</b>
+                </div>
+              </div>
+            ),
+            value: sa?._id,
+            unsolvedTickets: sa?.unsolvedTickets ?? 0,
+          }))
+          .sort((a: any, b: any) => a.unsolvedTickets - b.unsolvedTickets) || []; // Sort by unsolved tickets (ascending)
     }
   
-    setAllSa(saList); // Set the filtered or mapped `saList`
+    setAllSa(saList); // Set the sorted `saList`
   
     if (user?.role === "Support Agent") {
       const loggedInSA: any = dropDownSA?.find((sa: any) => sa?._id === user?.userId);
@@ -165,6 +181,7 @@ function TicketsForm({ onClose, editId }: Props) {
       setValue("supportAgentId", loggedInSA?._id);
     }
   }, [dropDownSA]);
+  
   
   
 
@@ -272,6 +289,7 @@ function TicketsForm({ onClose, editId }: Props) {
                     handleInputChange("supportAgentId");
                     setValue("supportAgentId", selectedValue);
                   }}
+                  from="ticket"
                 />
 
                 <div
