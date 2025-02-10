@@ -2,8 +2,9 @@ const mongoose = require('mongoose');
 
 const payrollSchema = new mongoose.Schema(
   {
-    staffId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    staffId: { type: mongoose.Schema.Types.ObjectId, ref: 'RegionManager' },
     payslipStatus: { type: String },
+    payslipId: { type: String },
     basicSalary: { type: Number },
     commissionProfile: { type: mongoose.Schema.Types.ObjectId, ref: 'Commission'},
     totalLicenses: { type: Number, default: 0 },
@@ -16,6 +17,7 @@ const payrollSchema = new mongoose.Schema(
     month: { type: String },
     approvalDate: { type: String },
     approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    generatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true } // Adds createdAt and updatedAt automatically
 );

@@ -1,6 +1,5 @@
-
-const mongoose = require('mongoose');
-const moment = require('moment');
+const mongoose = require("mongoose");
+const moment = require("moment");
 const Payroll = require("../database/model/payroll");
 const RegionManager = require("../database/model/regionManager");
 const AreaManager = require("../database/model/areaManager");
@@ -12,18 +11,22 @@ const Leads = require("../database/model/leads");
 exports.generatePayroll = async (req, res) => {
   try {
     const { month, year } = req.body;
+
+    const userId = req.user.id;
     const payrollMonth = `${year}-${month}`;
-    console.log("Payroll Month:", payrollMonth);
-    
-    const startDate = moment(`${payrollMonth}-01`).startOf('month').format("YYYY-MM-DD HH:mm:ss");
-    const endDate = moment(`${payrollMonth}-01`).endOf('month').format("YYYY-MM-DD HH:mm:ss");
+
+    const startDate = moment(`${payrollMonth}-01`)
+      .startOf("month")
+      .format("YYYY-MM-DD HH:mm:ss");
+    const endDate = moment(`${payrollMonth}-01`)
+      .endOf("month")
+      .format("YYYY-MM-DD HH:mm:ss");
 
     // Check if payroll already exists for this month
     const existingPayroll = await Payroll.find({ month: payrollMonth });
     if (existingPayroll.length > 0) {
-      
-      return res.status(200).json({ 
-        message: "Payroll already generated for this month."
+      return res.status(200).json({
+        message: "Payroll already generated for this month.",
       });
     }
 
@@ -47,27 +50,35 @@ exports.generatePayroll = async (req, res) => {
       for (const staff of staffList) {
         const { _id, dateOfJoining, salaryAmount, commission } = staff;
         const joiningMonthYear = moment(dateOfJoining).format("YYYY-MM");
-        
+
         let adjustedSalary = salaryAmount;
 
         // Adjust salary for joining month
         if (joiningMonthYear === payrollMonth) {
           const joiningDate = moment(dateOfJoining);
           const payrollDate = moment(`${year}-${month}-01`);
-          const endOfMonth = payrollDate.clone().endOf('month');
+          const endOfMonth = payrollDate.clone().endOf("month");
 
           let workingDays = 0;
-          for (let d = joiningDate.clone(); d.isBefore(endOfMonth); d.add(1, 'days')) {
-            if (d.isoWeekday() !== 6 && d.isoWeekday() !== 7) { // Exclude weekends
+          for (
+            let d = joiningDate.clone();
+            d.isBefore(endOfMonth);
+            d.add(1, "days")
+          ) {
+            if (d.isoWeekday() !== 6 && d.isoWeekday() !== 7) {
+              // Exclude weekends
               workingDays++;
             }
           }
-          
+
           const perDaySalary = salaryAmount / 22;
           adjustedSalary = Number((perDaySalary * workingDays).toFixed(0));
         }
 
-        let newLicenseEarnings = 0, recuringAmount = 0, totalLicenses = 0, recurringLicenses = 0;
+        let newLicenseEarnings = 0,
+          recuringAmount = 0,
+          totalLicenses = 0,
+          recurringLicenses = 0;
 
         if (hasCommission && commission) {
           // Fetch total and recurring licenses
@@ -86,27 +97,47 @@ exports.generatePayroll = async (req, res) => {
           // Calculate commission earnings
           if (totalLicenses >= commission.thresholdLicense) {
             const newLicenses = totalLicenses - commission.thresholdLicense;
-            const licenseCommissionPoint = newLicenses * commission.commissionPoint;
-            newLicenseEarnings = licenseCommissionPoint * commission.perPointValue;
+            const licenseCommissionPoint =
+              newLicenses * commission.commissionPoint;
+            newLicenseEarnings =
+              licenseCommissionPoint * commission.perPointValue;
 
-            const renewalCommissionPoint = recurringLicenses * commission.recurringPoint;
+            const renewalCommissionPoint =
+              recurringLicenses * commission.recurringPoint;
             recuringAmount = renewalCommissionPoint * commission.perPointValue;
           }
         }
 
         // If no commission, basic salary = total salary
-        const totalSalary = hasCommission 
-          ? Number((adjustedSalary + newLicenseEarnings + recuringAmount).toFixed(0))
+        const totalSalary = hasCommission
+          ? Number(
+              (adjustedSalary + newLicenseEarnings + recuringAmount).toFixed(0)
+            )
           : adjustedSalary;
 
+        // Payroll id
+        let nextId = 1;
+        const lastPayroll = await Payroll.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+        if (lastPayroll) {
+          const lastId = parseInt(lastPayroll.payslipId.slice(6));
+          // Extract the numeric part from the customerID
+          nextId = lastId + 1; // Increment the last numeric part
+        }
+        const payslipId = `PAYROLL-${nextId.toString().padStart(4, "0")}`;
+
         // Ensure only one payroll document per staff per month
-        const existingPayrollEntry = await Payroll.findOne({ staffId: _id, month: payrollMonth });
+        const existingPayrollEntry = await Payroll.findOne({
+          staffId: _id,
+          month: payrollMonth,
+        });
         if (!existingPayrollEntry) {
           payrollEntries.push({
             staffId: _id,
+            payslipId ,
             payslipStatus: "Pending Generation",
             basicSalary: adjustedSalary,
-            commissionProfile: hasCommission && commission ? commission._id : null,
+            commissionProfile:
+              hasCommission && commission ? commission._id : null,
             totalLicenses,
             recurringLicenses,
             newLicenseEarnings,
@@ -115,7 +146,7 @@ exports.generatePayroll = async (req, res) => {
             TravelAllowance: 0,
             comments: "",
             month: payrollMonth,
-            generatedAt: new Date(),
+            generatedBy: userId,
           });
         }
       }
@@ -124,9 +155,59 @@ exports.generatePayroll = async (req, res) => {
     if (payrollEntries.length > 0) {
       await Payroll.insertMany(payrollEntries);
     }
-    res.status(200).json({ message: "Payroll generated successfully.", entries: payrollEntries });
+    res
+      .status(200)
+      .json({
+        message: "Payroll generated successfully.",
+        entries: payrollEntries,
+      });
   } catch (error) {
     console.error("Error generating payroll:", error.message);
     res.status(500).json({ message: error.message });
+  }
+};
+
+
+exports.getAllPayrolls = async (req, res) => {
+  try {
+    const payrolls = await Payroll.find()
+      .populate({
+        path: "staffId",
+        select: "user", // Only include `user` in staffId
+        populate: { path: "user", select: "userName role -_id" } // Nested population, only `userName` and `role`
+      });
+
+    res.status(200).json(payrolls);
+  } catch (error) {
+    console.error("Error fetching payrolls:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+
+exports.getPayrollById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const payroll = await Payroll.findById(id)
+    .populate({
+      path: "staffId",
+      select: "user", // Only include `user` in staffId
+      populate: { path: "user", select: "userName role -_id" } // Nested population, only `userName` and `role`
+    })
+  
+      .populate("commissionProfile", "profileName commissionPoint recurringPoint thresholdLicense")
+      .populate("approvedBy", "userName")
+      .populate("generatedBy", "userName"); // Ensure generatedBy exists in schema
+
+    if (!payroll) {
+      return res.status(404).json({ message: "Payroll not found" });
+    }
+
+    res.status(200).json(payroll);
+  } catch (error) {
+    console.error("Error fetching payroll:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };

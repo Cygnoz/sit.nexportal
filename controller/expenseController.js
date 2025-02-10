@@ -14,7 +14,7 @@ exports.addExpense = async (req, res, next) => {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
 
-// employee id
+// Expense id
 let nextId = 1;
 const lastUser = await Expense.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
 if (lastUser) {
