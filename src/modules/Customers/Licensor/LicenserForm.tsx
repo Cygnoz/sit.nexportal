@@ -16,6 +16,10 @@ import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { useUser } from "../../../context/UserContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
+import Modal from "../../../components/modal/Modal";
+import AreaForm from "../../Sales R&A/Area/AreaForm";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
+import BDAForm from "../../SalesTeams/BDA/BDAForm";
 
 type Props = {
   onClose: () => void;
@@ -93,6 +97,26 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
       salutation: "Mr.", // Default value for salutation
     },
   });
+
+  const [isModalOpen, setIsModalOpen] = useState({
+
+    region: false,
+    area:false,
+    bda:false
+ 
+  });
+  
+  const handleModalToggle = ( region = false,area = false,bda = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      region: region,
+      area:area,
+      bda:bda
+    }));
+    refreshContext({dropdown:true})
+  };
+ 
+
 
   const onSubmit: SubmitHandler<LicenserData> = async (data: any, event) => {
     event?.preventDefault(); // Prevent default form submission
@@ -525,6 +549,10 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
                   }}
                   error={errors.regionId?.message}
                   options={regionData}
+                  addButtonLabel="Add Region"
+                  addButtonFunction={handleModalToggle}
+                  totalParams={1}
+                  paramsPosition={1}
                 />
                 <Select
                   readOnly={areaId || user?.role === "BDA"}
@@ -541,6 +569,10 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
                   }}
                   error={errors.areaId?.message}
                   options={areaData}
+                  addButtonLabel="Add Area"
+                  addButtonFunction={handleModalToggle}
+                  totalParams={2}
+                  paramsPosition={2}
                 />
                 <Select
                   readOnly={user?.role == "BDA" ? true : false}
@@ -554,6 +586,10 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
                   }}
                   error={errors.bdaId?.message}
                   options={data.bdas}
+                  addButtonLabel="Add BDA"
+                  addButtonFunction={handleModalToggle}
+                  totalParams={3}
+                  paramsPosition={3}
                 />
      
             </div>
@@ -578,7 +614,15 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
           </div>
         </form>
       </div>
-
+      <Modal open={isModalOpen.area} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <AreaForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.bda} onClose={()=>handleModalToggle()} className="w-[55%]">
+        <BDAForm  onClose={()=>handleModalToggle()} />
+      </Modal>
     </>
   );
 }

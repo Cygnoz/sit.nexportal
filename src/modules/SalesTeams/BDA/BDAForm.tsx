@@ -27,6 +27,9 @@ import Modal from "../../../components/modal/Modal";
 // import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
 // import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 import IdBcardModal from "../../../components/modal/IdBcardModal";
+import AreaForm from "../../Sales R&A/Area/AreaForm";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
+import WCommissionForm from "../../Users/WorkerCommision/WCommissionForm";
 
 interface BDAProps {
   onClose: () => void; // Prop for handling modal close
@@ -105,11 +108,26 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
   });
   const { request: checkBda } = useApi("put", 3002)
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [empId,setEmpId]=useState('')
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
+  const [isModalOpen, setIsModalOpen] = useState({
+    idCard: false,
+    region: false,
+    area:false,
+    commission: false
+  });
+  
+  const handleModalToggle = (idCard = false, region = false,area = false,commission = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      idCard: idCard,
+      region: region,
+      area:area,
+      commission: commission,
+   
+    }));
+    refreshContext({dropdown:true})
   };
+ 
 
   const [staffData, setStaffData] = useState<any>(null);
   const onSubmit: SubmitHandler<BDAData> = async (data, event) => {
@@ -752,6 +770,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
                     }}
                     error={errors.region?.message}
                     options={regionData}
+                    addButtonLabel="Add Region"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={2}
+                    paramsPosition={2}
                   />
                   <Select
                     required
@@ -771,6 +793,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
                     }}
                     error={errors.area?.message}
                     options={areaData}
+                    addButtonLabel="Add Area"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={3}
+                    paramsPosition={3}
                   />
                   <Select
                     label="Choose Commission Profile"
@@ -782,6 +808,10 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
                     }}
                     error={errors.commission?.message}
                     options={data.wc}
+                    addButtonLabel="Add Commission"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={4}
+                    paramsPosition={4}
                   />
                   <Input
                     placeholder="Enter Amount"
@@ -977,12 +1007,21 @@ const BDAForm: React.FC<BDAProps> = ({ onClose, editId, regionId, areaId }) => {
           </div>
         </form>
       </div>
-      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <Modal className="w-[60%]" open={isModalOpen.idCard} onClose={handleModalToggle}>
         <IdBcardModal
           parentOnClose={onClose}
           onClose={handleModalToggle}
           role="BDA"
           staffData={staffData} />
+      </Modal>
+      <Modal open={isModalOpen.area} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <AreaForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.commission} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <WCommissionForm  onClose={()=>handleModalToggle()} />
       </Modal>
     </>
   );

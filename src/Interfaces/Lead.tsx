@@ -6,7 +6,7 @@ export interface LeadData {
     email?: string;
     phone: string;
     website?: string;
-    leadSource?: string;
+    leadSource: string;
     regionId: string;
     areaId: string;
     bdaId: string;
