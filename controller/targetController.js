@@ -430,6 +430,69 @@ exports.deleteTarget = async (req, res, next) => {
     }
   };
  
+
+  exports.getYearlyTargets = async (req, res) => {
+    try {
+      const { year } = req.query;
+      if (!year) {
+        return res.status(400).json({ error: "Year is required as a query parameter." });
+      }
+      const numericYear = parseInt(year, 10);
+      if (isNaN(numericYear)) {
+        return res.status(400).json({ error: "Invalid year provided." });
+      }
+   
+      // Define an array with full month names (you can adjust if needed)
+      const monthNames = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+   
+   
+      let results = [];
+   
+      for (let m = 0; m < 12; m++) {
+   
+        const startDate = new Date(numericYear, m, 1);
+        const endDate = new Date(numericYear, m + 1, 1);
+   
+     
+        const targetDocs = await Target.find({
+          targetType: "Region",
+          createdAt: { $gte: startDate, $lt: endDate }
+        });
+   
+        const totalTarget = targetDocs.reduce((sum, doc) => sum + (doc.target || 0), 0);
+   
+   
+        const achievedTargets = await Leads.countDocuments({
+          customerStatus: "Licenser",
+          licensorDate: { $gte: startDate.toISOString(), $lt: endDate.toISOString() }
+        });
+   
+        // Compute balance target as totalTarget minus achievedTargets.
+        const balanceTarget = totalTarget - achievedTargets;
+   
+        // Add the result for this month.
+        results.push({
+          month: monthNames[m],
+          totalTarget,
+          achievedTargets,
+          balanceTarget
+        });
+      }
+   
+      return res.status(200).json({
+        message: "Yearly targets retrieved successfully",
+        data: results
+      });
+    } catch (error) {
+      console.error("Error fetching yearly targets:", error);
+      return res.status(500).json({ message: "Internal server error" });
+    }
+  };
+   
+
   // Helper function to convert "YYYY-MM" to full month name (if needed)
   function convertMonth(queryMonth) {
     const monthMap = {

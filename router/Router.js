@@ -60,4 +60,6 @@ router.delete("/targets/:id",verifyToken,checkPermission('Delete Target'),target
 
 router.get('/targetAchieved',verifyToken,checkPermission('View Target'), targetController.getAchievedTargets);
 
+router.get('/yearlyTargets',verifyToken,checkPermission('View Target'), targetController.getYearlyTargets);
+
 module.exports = router
