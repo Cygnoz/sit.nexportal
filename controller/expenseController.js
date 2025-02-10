@@ -16,14 +16,14 @@ exports.addExpense = async (req, res, next) => {
 
 // employee id
 let nextId = 1;
-const lastUser = await User.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+const lastUser = await Expense.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
 if (lastUser) {
-  const lastId = parseInt(lastUser.employeeId.slice(6));
+  const lastId = parseInt(lastUser.expenseId.slice(6));
   // Extract the numeric part from the customerID
   nextId = lastId + 1; // Increment the last numeric part
 }
-const employeeId = `EMPID-${nextId.toString().padStart(4, "0")}`;
-
+const expenseId = `EXPID-${nextId.toString().padStart(4, "0")}`;
+data.expenseId = expenseId
 
     const expense = new Expense({ ...data });
     await expense.save();
