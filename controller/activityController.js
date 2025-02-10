@@ -522,7 +522,72 @@ exports.getActivity = async (req, res) => {
       res.status(500).json({ message: "Internal server error." });
     }
   };
- 
+  exports.getLeadEngagementOverTime = async (req, res) => {
+    try {
+      const { leadId } = req.params;
+      const { date } = req.query;
+     
+      // // Ensure date is provided in "YYYY-MM" format.
+      // if (!date || !/^\d{4}-\d{2}$/.test(date)) {
+      //   return res.status(400).json({
+      //     message: "Date query parameter is required in YYYY-MM format.",
+      //   });
+      // }
+     
+      // Parse year and month from the date string.
+      const [year, month] = date.split("-").map(Number);
+      // Create start date: first day of the given month
+      const startDate = new Date(year, month - 1, 1);
+      // Create end date: first day of the next month
+      const endDate = new Date(year, month, 1);
+     
+      if (!leadId) {
+        return res.status(400).json({ message: "Lead ID is required." });
+      }
+     
+      // Use aggregation to count activities by type within the date range.
+      const engagementCounts = await Activity.aggregate([
+        {
+          $match: {
+            leadId,  // Ensure the document's leadId matches the parameter
+            createdAt: { $gte: startDate, $lt: endDate },
+          },
+        },
+        {
+          $group: {
+            _id: "$activityType",
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+     
+      // Initialize a response object for the four expected activity types.
+      const engagementData = {
+        Mail: 0,
+        Meeting: 0,
+        Task: 0,
+        Note: 0,
+      };
+     
+      // Map the aggregation results to the response object.
+      engagementCounts.forEach(({ _id, count }) => {
+        // Only update if _id is one of the expected types.
+        if (engagementData.hasOwnProperty(_id)) {
+          engagementData[_id] = count;
+        }
+      });
+     
+      res.status(200).json({
+        message: "Lead engagement data retrieved successfully.",
+        leadId,
+        date,
+        engagementData,
+      });
+    } catch (error) {
+      console.error("Error fetching lead engagement over time:", error);
+      res.status(500).json({ message: "Internal server error." });
+    }
+  };
  
  
   // Clean Email Data
