@@ -13,6 +13,18 @@ exports.addExpense = async (req, res, next) => {
     if (!expenseName || !date || !expenseAccount || !amount || !category) {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
+
+// employee id
+let nextId = 1;
+const lastUser = await User.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
+if (lastUser) {
+  const lastId = parseInt(lastUser.employeeId.slice(6));
+  // Extract the numeric part from the customerID
+  nextId = lastId + 1; // Increment the last numeric part
+}
+const employeeId = `EMPID-${nextId.toString().padStart(4, "0")}`;
+
+
     const expense = new Expense({ ...data });
     await expense.save();
     res.status(201).json({ message: "Expense added successfully", expense });
@@ -33,7 +45,8 @@ exports.getExpense = async (req, res) => {
       const expense = await Expense.findById(id)
         .populate("category","categoryName")
         .populate("approvedBy", "userName role") // Populate approvedBy with selected fields
-        .populate("addedBy", "userName role"); // Populate addedBy with selected fields
+        .populate("addedBy", "userName role employeeId") // Populate addedBy with selected fields
+        .populate("rejectedBy", "userName role"); // Populate addedBy with selected fields
   
       if (!expense) {
         return res.status(404).json({ message: "Expense not found" });
@@ -49,7 +62,9 @@ exports.getExpense = async (req, res) => {
 // Get all expenses
 exports.getAllExpenses = async (req, res) => {
     try {
-      const expenses = await Expense.find().populate("category", "categoryName"); // Only fetching categoryName
+      const expenses = await Expense.find()
+      .populate("category", "categoryName") // Only fetching categoryName
+      .populate("addedBy", "userName role")
       res.status(200).json({ message: "Expenses retrieved successfully", expenses });
     } catch (error) {
       console.error("Error fetching expenses:", error);

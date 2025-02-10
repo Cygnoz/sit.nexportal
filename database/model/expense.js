@@ -5,6 +5,7 @@ const expenseSchema = new Schema(
   {
     image: { type: String }, // URL or path to the image
     expenseName: { type: String},
+    expenseId: { type: String},
     date: { type: Date },
     expenseAccount: { type: String },
     amount: { type: Number },
