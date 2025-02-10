@@ -72,7 +72,7 @@ const TargetForm = ({ onClose, type,editId }: Props) => {
     if (editId) {
       (async () => {
         try {
-          const { response, error } = await getTarget(`${endPoints.GET_ONE_TARGET}/${editId}`);
+          const { response, error } = await getTarget(`${endPoints.TARGET}/${editId}`);
           if (response && !error) {
             const target = response.data.target;
             setValue("month", target.month);

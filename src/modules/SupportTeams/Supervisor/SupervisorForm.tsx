@@ -67,7 +67,7 @@ const editValidationSchema = Yup.object().shape({
 });
 
 const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
-  const { dropdownRegions, dropDownWC, allCountries,refreshContext } = useRegularApi();
+  const { dropdownRegions, allCountries,refreshContext } = useRegularApi();
   const { request: checkSVs } = useApi("get", 3003)
   const { request: addSV } = useApi("post", 3003);
   const { request: editSV } = useApi("put", 3003);
@@ -79,10 +79,9 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
 
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
-    wc: { label: string; value: string }[];
-    country: { label: string; value: string }[];
+  country: { label: string; value: string }[];
     state: { label: string; value: string }[];
-  }>({ regions: [], wc: [], country: [], state: [] });
+  }>({ regions: [], country: [], state: [] });
   // State to manage modal visibility
   const {
     register,
@@ -97,7 +96,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [empId,setEmpId]=useState('')
+  const [empId, setEmpId] = useState('')
   const handleModalToggle = () => {
     setIsModalOpen((prev) => !prev);
   };
@@ -126,14 +125,14 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
         }
 
         if (response && !error) {
-          const {employeeId,region}=response.data
-       const  staffDetails={
-          ...watch(),
-          regionName:region?.regionName,
-          employeeId:editId?empId:employeeId
-        }
-        // staffData=response.data
-        setStaffData(staffDetails)
+          const { employeeId, region } = response.data
+          const staffDetails = {
+            ...watch(),
+            regionName: region?.regionName,
+            employeeId: editId ? empId : employeeId
+          }
+          // staffData=response.data
+          setStaffData(staffDetails)
           toast.success(response.data.message); // Show success toast
           handleModalToggle()
         } else {
@@ -241,20 +240,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
     }));
   }, [dropdownRegions]);
 
-  // UseEffect for updating wc
-  useEffect(() => {
-    const filteredCommission = dropDownWC?.map((commission: any) => ({
-      label: commission.profileName,
-      value: String(commission._id),
-    }));
-
-    // Update wc
-    setData((prevData: any) => ({
-      ...prevData,
-      wc: filteredCommission,
-    }));
-  }, [dropDownWC]);
-
+  
   // UseEffect for updating countries
   useEffect(() => {
     const filteredCountry = allCountries?.map((country: any) => ({
@@ -334,7 +320,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
             userImage: user?.userImage,
             region: SV.region?._id,
             commission: SV.commission?._id,
-            employeeId:user?.employeeId
+            employeeId: user?.employeeId
           }
           : null;
 
@@ -353,7 +339,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
 
   useEffect(() => {
     getOneSV();
-    refreshContext({dropdown:true})
+    refreshContext({ dropdown: true })
   }, [editId]); // Trigger the effect when editId changes
 
   useEffect(() => {
@@ -379,13 +365,13 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
       });
 
       // Show the first error message in a toast
-     // If the error is related to the 'address.street1' field
-     if (errorrs["address"] && errorrs["address"].street1) {
-      toast.error(errorrs["address"].street1.message);
-    } else if (firstErrorField) {
-      toast.error(errorrs[firstErrorField]?.message);
+      // If the error is related to the 'address.street1' field
+      if (errorrs["address"] && errorrs["address"].street1) {
+        toast.error(errorrs["address"].street1.message);
+      } else if (firstErrorField) {
+        toast.error(errorrs[firstErrorField]?.message);
+      }
     }
-  }
   }, [errors]);
 
   return (
@@ -417,8 +403,8 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`cursor-pointer py-3 px-[16px] ${activeTab === tab
-                  ? "text-deepStateBlue border-b-2 border-secondary2"
-                  : "text-gray-600"
+                ? "text-deepStateBlue border-b-2 border-secondary2"
+                : "text-gray-600"
                 }`}
             >
               <p>
@@ -562,17 +548,47 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                   />
                   <Input
                     label="Aadhaar No"
-                    type="number"
-                    placeholder="Enter Aadhar"
-                    error={errors.adhaarNo?.message}
-                    {...register("adhaarNo")}
+                    type="text"
+                    placeholder="Enter Aadhaar Number"
+                    {...register("adhaarNo", {
+                      required: "Aadhaar number is required",
+                      pattern: {
+                        value: /^[0-9]{12}$/, 
+                        message: "Aadhaar number must be exactly 12 digits",
+                      },
+                    })}
+
+                    maxLength={12} // Restrict input length to 12 digits
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.replace(/\D/g, ""); 
+                      setValue("adhaarNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
                   <Input
                     label="PAN No"
-                    placeholder="Enter Pan Number"
-                    error={errors.panNo?.message}
-                    {...register("panNo")}
+                    type="text"
+                    placeholder="Enter PAN Number"
+                    {...register("panNo", {
+                      required: "PAN number is required",
+                      pattern: {
+                        value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                        message: "Invalid PAN format (e.g., ABCDE1234F)",
+                      },
+                      validate: (value: any) => {
+                        if (/[^A-Z0-9]/.test(value)) {
+                          return "Special characters are not allowed!";
+                        }
+                        return true;
+                      },
+                    })}
+
+                    maxLength={10} 
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); 
+                      setValue("panNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
+
 
                   <Input
                     type="date"
@@ -669,17 +685,7 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                     options={data.regions}
                   />
 
-                  <Select
-                    label="Choose Commission Profile"
-                    placeholder="Commission Profile"
-                    value={watch("commission")}
-                    onChange={(selectedValue) => {
-                      setValue("commission", selectedValue); // Manually update the commission value
-                      handleInputChange("commission");
-                    }}
-                    error={errors.commission?.message}
-                    options={data.wc}
-                  />
+               
                   <Input
                     placeholder="Enter Amount"
                     label="Salary Amount"

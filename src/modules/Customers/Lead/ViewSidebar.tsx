@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CalenderRound from "../../../assets/icons/CalenderRound";
 import DeltaTech from "../../../assets/icons/DeltaTech";
 import EditIcon from "../../../assets/icons/EditIcon";
@@ -31,6 +31,10 @@ type Props = {
 
 const ViewSidebar = ({ leadData, getLead }: Props) => {
   const { request: deleteLead } = useApi("delete", 3001);
+  const { request: breakDownByRegion } = useApi('get', 3001);
+  const [breakDownData, setBreakDownData] = useState(null);
+  const [piechartData, setPiechartData] = useState([]);
+
   const [isModalOpen, setIsModalOpen] = useState({
     editLead: false,
     viewLead: false,
@@ -53,28 +57,28 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
       calender,
       confirm,
     }));
-  
+
     if (getLead) getLead(); // Safeguard
   };
 
-  const roles = [
-    { name: "Chats", count: 50, color: "#1B6C75" },
-    { name: "Meetings", count: 30, color: "#30B777" },
-    { name: "Calls", count: 80, color: "#6ABAF3" },
-    { name: "Email", count: 65, color: "#00B5B5" },
-  ];
+  // const roles = [
+  //   { name: "Chats", count: 50, color: "#1B6C75" },
+  //   { name: "Meetings", count: 30, color: "#30B777" },
+  //   { name: "Calls", count: 80, color: "#6ABAF3" },
+  //   { name: "Email", count: 65, color: "#00B5B5" },
+  // ];
 
-  const pieData = roles.map((role) => ({
-    x: role.name,
-    y: role.count,
-    color: role.color,
-  }));
+  // const pieData = roles.map((role) => ({
+  //   x: role.name,
+  //   y: role.count,
+  //   color: role.color,
+  // }));
 
   const covertModalToggle = () => {
     setConvLicModalOpen((prev) => !prev);
   };
 
- 
+
 
   const handleDelete = async () => {
     try {
@@ -90,9 +94,45 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
       toast.error("Failed to delete the lead.");
     }
   };
+
+
+  const getBreakDownRegion = async () => {
+    try {
+      const { response, error } = await breakDownByRegion(`${endPoints.LEADS}/${leadData?._id}`)
+      console.log("id", leadData?._id);
+      console.log("response", response);
+      console.log("err", error);
+      if (response && !error) {
+        console.log(response.data);
+        setBreakDownData(response.data.engagementData);
+
+        // Convert engagementData to pieData format
+        const transformeddata = response.data.engagementData?.map(([key, value]: any, index: any) => ({
+          x: key,    // Category name
+          y: value,  // Value count
+          color: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"][index] // Assign colors dynamically
+        }));
+        console.log("transformedData", transformeddata);
+        setPiechartData(transformeddata);
+      }
+      else {
+        console.log(error.message.data.message);
+
+      }
+    }
+    catch (err) {
+      console.error("error message", err)
+    }
+  }
+
+  useEffect(() => {
+    if (leadData) {
+      getBreakDownRegion();
+    }
+  }, [leadData]);
+  console.log(breakDownData);
   
 
- 
   return (
     <>
       <div className="space-y-4 mb-2">
@@ -106,12 +146,11 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
             )}  flex items-center gap-2  w-fit ms-auto `}
           >
             <div
-              className={`w-2 h-2 -mt-[2px] ${
-                leadData?.leadStatus == "In progress" ||
-                leadData?.leadStatus == "Proposal"
+              className={`w-2 h-2 -mt-[2px] ${leadData?.leadStatus == "In progress" ||
+                  leadData?.leadStatus == "Proposal"
                   ? "bg-black"
                   : "bg-white"
-              } rounded-full`}
+                } rounded-full`}
             ></div>
             <p className="text-sm">{leadData?.leadStatus}</p>
           </div>
@@ -143,7 +182,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
           <div className="flex gap-4 my-4  ">
             <EmailIcon color="#FFFFFF" size={16} />
             <p className="text-[#FFFFFF] text-xs font-normal">
-              {leadData?.email ? leadData?.email:'N/A'}
+              {leadData?.email ? leadData?.email : 'N/A'}
             </p>
           </div>
           <div className="flex gap-4 mb-2 ">
@@ -212,18 +251,18 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
                 View
               </p>
             </div>
-         
-              <div onClick={() => handleModalToggle(false,false,false,true)} className="cursor-pointer">
-                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2">
-                    <Trash size={18} color="red" />
-                  </div>
+
+            <div onClick={() => handleModalToggle(false, false, false, true)} className="cursor-pointer">
+              <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                <div className="ms-2 mt-2">
+                  <Trash size={18} color="red" />
                 </div>
-                <p className="text-[#FFF9F9] text-[10px] font-medium mt-1">
-                  Delete
-                </p>
               </div>
-        
+              <p className="text-[#FFF9F9] text-[10px] font-medium mt-1">
+                Delete
+              </p>
+            </div>
+
           </div>
           <div
             onClick={() => handleModalToggle(false, false, true, false)}
@@ -274,21 +313,12 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
                 innerRadius={40}
                 padAngle={4}
                 width={300}
-                data={pieData}
-                categories={{
-                  y: roles.map((role) => role.name),
-                }}
+                data={piechartData}
                 theme={VictoryTheme.clean}
-                labels={({ datum }) =>
-                  `${(
-                    (datum.y /
-                      roles.reduce((acc, role) => acc + role.count, 0)) *
-                    100
-                  ).toFixed(1)}%`
-                }
+                labels={({ datum }) => `${((datum.y / piechartData.reduce((acc, item:any) => acc + item.y, 0)) * 100).toFixed(1)}%`}
                 labelComponent={
                   <VictoryLabel
-                    style={{ fill: "#303F58", fontSize: 15, marginLeft: -50 }}
+                    style={{ fill: "#303F58", fontSize: 15 }}
                   />
                 }
                 style={{
@@ -297,23 +327,16 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
                   },
                 }}
               />
+
+              {/* Legend */}
               <div className="flex justify-center">
                 <div className="space-y-4">
-
                   <div className="grid grid-cols-2 w-72 gap-3">
-                    {roles.map((role) => (
-                      <div className="flex items-center gap-2">
-                        <div
-                          className={`w-3 h-3 rounded-full`}
-                          style={{ backgroundColor: role.color }}
-                        />
-                        <span className="text-gray-800 font-medium text-xs">
-                          {role.name}
-                        </span>
-
-                        <span className="ml-auto text-gray-600 text-xs">
-                          {role.count}
-                        </span>
+                    {piechartData.map((item:any) => (
+                      <div key={item.x} className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                        <span className="text-gray-800 font-medium text-xs">{item.x}</span>
+                        <span className="ml-auto text-gray-600 text-xs">{item.y}</span>
                       </div>
                     ))}
                   </div>
@@ -354,7 +377,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
         onClose={covertModalToggle}
         className="w-[30%]"
       >
-        <ConvertModal   onClose={covertModalToggle} type="lead" />
+        <ConvertModal onClose={covertModalToggle} type="lead" />
       </Modal>
       <Modal
         open={isModalOpen.confirm}

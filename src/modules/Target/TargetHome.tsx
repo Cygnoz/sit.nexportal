@@ -114,23 +114,23 @@ const TargetHome = () => {
   };
 
 
-  const targetType: any = user?.role === "Super Admin" ? 'Region' : user?.role === "Region Manager" ? 'Area' : 'Bda'
-  useEffect(() => {
+  //const targetType: any = user?.role === "Super Admin" ? 'Region' : user?.role === "Region Manager" ? 'Area' : 'Bda'
+  // useEffect(() => {
 
-    if (targetType) {
-      getTargets()
-    }
+  //   // if (targetType) {
+  //   //   getTargets()
+  //   // }
 
-  }, [user])
+  // }, [user])
   const getTargets = async () => {
     try {
       setLoading(true)
-      const endpoint = `${endPoints.TARGET}/${targetType}`
-      //console.log(endpoint);
-
+    
+       const endpoint = `${endPoints.TARGET}`
       const { response, error } = await getAllTarget(endpoint)
-      // console.log("res",response);
-      // console.log("err",error);
+     // console.log(endpoint);
+      //console.log("res",response);
+     // console.log("err",error);
       if (response && !error) {
         console.log("sss", response.data);
 
