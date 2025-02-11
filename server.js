@@ -40,7 +40,7 @@ server.use(Router)
 const PORT = 3001
 
 server.get('/',(req,res)=>{
-    res.status(200).json("BillBizz Sales and Support server started - Leads")
+    res.status(200).json(" Sales and Support server started - Leads")
 })
 
 server.listen(PORT,()=>{
