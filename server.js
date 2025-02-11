@@ -71,7 +71,7 @@ const PORT = 3004;
  
 // Health check route
 server.get('/', (req, res) => {
-    res.status(200).json("BillBizz Sales and Support server started - Tickets");
+    res.status(200).json("Sales and Support server started - Tickets");
 });
  
 // Start the server
