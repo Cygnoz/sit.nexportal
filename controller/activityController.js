@@ -417,67 +417,7 @@ exports.getActivity = async (req, res) => {
   };
    
  
-  exports.getLeadEngagementOverTime = async (req, res) => {
-    try {
-      const { leadId } = req.params;
-      const { date } = req.query;
-   
-      // if (!date || !/^\d{4}-\d{2}$/.test(date)) {
-      //   return res.status(400).json({
-      //     message: "Date query parameter is required in YYYY-MM format.",
-      //   });
-      // }
 
-
-
-      const [year, month] = date.split("-").map(Number);
-      const startDate = new Date(year, month - 1, 1);
-      const endDate = new Date(year, month, 0);
-   
-      if (!leadId) {
-        return res.status(400).json({ message: "Lead ID is required." });
-      }
-   
-      // Count activities by type within the date range
-      const engagementCounts = await Activity.aggregate([
-        {
-          $match: {
-            leadId,
-            createdAt: { $gte: startDate, $lte: endDate },
-          },
-        },
-        {
-          $group: {
-            _id: "$activityType",
-            count: { $sum: 1 },
-          },
-        },
-      ]);
-   
-      // Convert aggregation result into a structured response
-      const engagementData = {
-        Mail: 0,
-        Meeting: 0,
-        Task: 0,
-        Note: 0,
-      };
-   
-      engagementCounts.forEach(({ _id, count }) => {
-        engagementData[_id] = count;
-      });
-   
-      res.status(200).json({
-        message: "Lead engagement data retrieved successfully.",
-        leadId,
-        date,
-        engagementData,
-      });
-    } catch (error) {
-      console.error("Error fetching lead engagement over time:", error);
-      res.status(500).json({ message: "Internal server error." });
-    }
-  };
-   
  
   exports.getLeadInteraction = async (req, res) => {
     try {
@@ -522,6 +462,7 @@ exports.getActivity = async (req, res) => {
       res.status(500).json({ message: "Internal server error." });
     }
   };
+  
   exports.getLeadEngagementOverTime = async (req, res) => {
     try {
       const { leadId } = req.params;

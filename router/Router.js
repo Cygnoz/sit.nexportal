@@ -77,7 +77,6 @@ router.get('/activities/:leadId',verifyToken,checkPermission('View Activity'),ac
 
 router.get("/leads/:leadId",verifyToken,checkPermission('View Activity'), activityController.getLeadInteraction);
  
-router.get("/leads/:leadId/engagement",verifyToken,checkPermission('View Activity'), activityController.getLeadEngagementOverTime);
 
 router.get("/leadEngagementOverTime/:leadId",verifyToken,checkPermission('View Activity'), activityController.getLeadEngagementOverTime);
  
