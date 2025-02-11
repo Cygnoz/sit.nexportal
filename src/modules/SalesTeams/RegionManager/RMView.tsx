@@ -564,8 +564,8 @@ const RMView = ({ staffId }: Props) => {
           action={handleDeactivate}
           prompt={
             getData?.rmData?.regionManager?.status === "Active"
-              ? "Are you sure you want to deactivate this RM?"
-              : "Are you sure you want to activate this RM?"
+              ? "Are you sure want to deactivate this RM?"
+              : "Are you sure want to activate this RM?"
           }
           onClose={() => handleModalToggle()}
         />

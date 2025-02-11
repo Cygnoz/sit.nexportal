@@ -2,7 +2,7 @@
 import { cva } from "class-variance-authority";
  
 type ButtonProps = React.HTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "tertiary" | "fourthiary";
+  variant?: "primary" | "secondary" | "tertiary" | "fourthiary" |"success" | "failure";
   size?: "sm" | "md" | "lg" | "xl";
   type?: "button" | "submit" | "reset";
   className?: string;
@@ -20,6 +20,10 @@ const buttonVariants = cva("flex text-center items-center", {
         "bg-tertiary hover:bg-tertiary_hover active:bg-tertiary_active disabled:bg-tertiary_disabled rounded-md gap-2 border border-outlineButton text-outlineButton",
       fourthiary:
         "bg-fourthiary_main hover:bg-fourthiary_hover active:bg-fourthiary_active disabled:bg-fourthiary_disabled rounded-md gap-2 border border-gray-500 text-white",
+      success:
+        "bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-green-400 rounded-md gap-2 border border-green-700 text-white",
+      failure:
+        "bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:bg-red-400 rounded-md gap-2 border border-red-700 text-white",
     },
     size: {
       sm: "px-[0.625rem] py-2 rounded-[8px]",

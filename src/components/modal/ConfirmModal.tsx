@@ -18,7 +18,7 @@ function ConfirmModal({ onClose, action,prompt }: Props) {
       <div className="flex justify-between items-center">
         <div className="flex gap-2 items-center">
         <Warning size={20}/>
-        <p className="font-medium">{prompt?prompt:'Are you sure you want to proceed?'}</p>
+        <p className="font-medium">{prompt?prompt:'Are you sure want to proceed?'}</p>
         </div>
         <p onClick={onClose} className="text-xl font-bold cursor-pointer">
           &times;

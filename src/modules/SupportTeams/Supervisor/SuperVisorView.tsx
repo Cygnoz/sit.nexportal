@@ -632,8 +632,8 @@ const SuperVisorView = ({ staffId }: Props) => {
           action={handleDeactivate}
           prompt={
             getData.svData?.status === "Active"
-              ? "Are you sure you want to deactivate this Supervisor?"
-              : "Are you sure you want to activate this Supervisor?"
+              ? "Are you sure want to deactivate this Supervisor?"
+              : "Are you sure want to activate this Supervisor?"
           }
           onClose={() => handleModalToggle()}
         />

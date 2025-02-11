@@ -347,8 +347,8 @@ const AreaView = ({ }: // status,
           action={handleDeactivate}
           prompt={
             area?.area?.status === "Active"
-              ? "Are you sure you want to deactivate this area?"
-              : "Are you sure you want to activate this area?"
+              ? "Are you sure want to deactivate this area?"
+              : "Are you sure want to activate this area?"
           }
           onClose={() => handleModalToggle()}
         />

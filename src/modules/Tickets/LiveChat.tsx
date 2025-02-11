@@ -13,7 +13,9 @@ import SAImage from '../../assets/image/SAImage.png'
 import CygnozLogo from '../../assets/image/CygnozLogo.png'
 import NoImage from "../../components/ui/NoImage";
 
-import io, { Socket } from "socket.io-client";
+import 
+// io, 
+{ Socket } from "socket.io-client";
 import ArrowRight from "../../assets/icons/ArrowRight";
 import { useUser } from "../../context/UserContext";
 import NoRecords from "../../components/ui/NoRecords";
@@ -23,7 +25,6 @@ type Props = {};
 
 
 const LiveChat = ({}: Props) => {
-  console.log("agent",AGENT_SOCKET_URL);
   
   const {user}=useUser()
   const [initialCurrentRoom,setInitialCurrentRoom]=useState<any>(null)
@@ -95,11 +96,13 @@ const LiveChat = ({}: Props) => {
 
 
   useEffect(() => {
-    const newSocket = io(AGENT_SOCKET_URL, {
-      path: "/socket.io/", // Ensure this matches your backend
-      transports: ["websocket", "polling"], // Force WebSocket first
-      withCredentials: true, // Include credentials if needed
-    });
+    // const newSocket = io(AGENT_SOCKET_URL, {
+    //   path: "/nexsell-tickets/socket.io/", // Ensure this matches your backend
+    //   transports: ["websocket", "polling"], // Force WebSocket first
+    //   withCredentials: true, // Include credentials if needed
+    // });
+    // const newSocket = io(AGENT_SOCKET_URL);
+    const newSocket:any=''
   
     setSocket(newSocket);
   

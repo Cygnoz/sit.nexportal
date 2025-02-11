@@ -119,6 +119,10 @@ export const endPoints = {
 
  TARGET:'/targets',
  GET_ONE_TARGET:'/target',
+
+//  Expense Category
+EXPENSE_CATEGORY:'/category',
+EXPENSE:'/expense',
  TARGET_ACHEIVED:'/targetAchieved',
  YEARLY_TARGETS:'/yearlyTargets'
 };

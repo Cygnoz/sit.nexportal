@@ -312,10 +312,10 @@ const TargetHome = () => {
           action={handleDelete}
           prompt={
             activeTab === 'Region'
-              ? 'Are you sure you want to delete this Region Target?'
+              ? 'Are you sure want to delete this Region Target?'
               : activeTab === 'Area'
-                ? 'Are you sure you want to delete this Area Target?'
-                : 'Are you sure you want to delete this Bda Target?'
+                ? 'Are you sure want to delete this Area Target?'
+                : 'Are you sure want to delete this Bda Target?'
 
           }
           onClose={closeDeleteModal}
