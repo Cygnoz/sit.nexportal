@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const payrollSchema = new mongoose.Schema(
   {
     staffId: { type: mongoose.Schema.Types.ObjectId, ref: 'RegionManager' },
-    payslipStatus: { type: String },
-    payslipId: { type: String },
+    payRollStatus: { type: String },
+    payRollId: { type: String },
     basicSalary: { type: Number },
     commissionProfile: { type: mongoose.Schema.Types.ObjectId, ref: 'Commission'},
     totalLicenses: { type: Number, default: 0 },

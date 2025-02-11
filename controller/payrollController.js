@@ -121,14 +121,14 @@ exports.generatePayroll = async (req, res , next) => {
           month: payrollMonth,
         });
 
-        const payslipId = `PAYROLL-${nextId.toString().padStart(4, "0")}`;
+        const payRollId = `PAYROLL-${nextId.toString().padStart(4, "0")}`;
         nextId++;
 
         if (!existingPayrollEntry) {
           payrollEntries.push({
             staffId: _id,
-            payslipId,
-            payslipStatus: "Pending Generation",
+            payRollId,
+            payRollStatus: "Pending Generation",
             basicSalary: adjustedSalary,
             commissionProfile: hasCommission && commission ? commission._id : null,
             totalLicenses,
