@@ -169,17 +169,17 @@ exports.getAllPayrolls = async (req, res) => {
     const { month, year } = req.params; // Extract month and year from params
     const payrollMonth = `${year}-${month}`;
 
-    // Construct start and end dates for filtering
-    // const startDate = moment(`${year}-${month}-01`).startOf("month").toDate();
-    // const endDate = moment(`${year}-${month}-01`).endOf("month").toDate();
-
     const payrolls = await Payroll.find({
       month: payrollMonth
     }).populate({
       path: "staffId",
       select: "user",
-      populate: { path: "user", select: "userName role -_id" }
+      populate: { path: "user", select: "userName role " }
     });
+
+    if (payrolls.length === 0) {
+      return res.status(404).json({ message: "Payroll not generated for this month." });
+    }
 
     res.status(200).json(payrolls);
   } catch (error) {
@@ -187,6 +187,7 @@ exports.getAllPayrolls = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 
