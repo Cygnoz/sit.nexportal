@@ -222,20 +222,20 @@ exports.updatePayroll = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
-    const { payslipStatus, ...data } = req.body; // Extract payslipStatus separately
+    const { payRollStatus, ...data } = req.body; // Extract payslipStatus separately
     const actionDate = new Date().toISOString(); // Capture current date-time
 
     const updateFields = { ...data };
     let action = "Edit"; // Default action
 
-    if (payslipStatus) {
-      if (payslipStatus === "Approval Granted") {
-        updateFields.payslipStatus = "Approval Granted";
+    if (payRollStatus) {
+      if (payRollStatus === "Approval Granted") {
+        updateFields.payRollStatus = "Approval Granted";
         updateFields.approvalDate = actionDate;
         updateFields.approvedBy = userId;
         action = "Approved";
       } else {
-        updateFields.payslipStatus = "Awaiting Approval";
+        updateFields.payRollStatus = "Awaiting Approval";
       }
     }
 
