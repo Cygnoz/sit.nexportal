@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
-import { Bar, BarChart, CartesianGrid, Cell, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory';
 import AwardIcon from "../../../assets/icons/AwardIcon";
 import ChevronRight from "../../../assets/icons/ChevronRight";
@@ -30,6 +30,8 @@ import SalaryRoundIcon from "../../../assets/icons/SalaryRoundIcon";
 import CommissionRoundIcon from "../../../assets/icons/CommissionRoundIcon";
 import SalaryInfoModal from "../../../components/modal/SalaryInfoModal";
 import CommissionModal from "../../../components/modal/CommissionModal";
+import { months, years } from "../../../components/list/MonthYearList";
+import SelectDropdown from "../../../components/ui/SelectDropdown";
 
 
 // import AMViewAward from './AMViewAward';
@@ -97,6 +99,63 @@ const AMView = ({ staffId }: Props) => {
     amData: any;
   }>
     ({ amData: [] })
+
+
+  const { request: LeadsConverted } = useApi("get", 3002);
+
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  const currentMonthValue = new Date().toLocaleString("default", { month: "long" });
+  const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYear = years[years.length - 1];
+
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [selectedData, setSelectedData] = useState<string>("");
+
+  useEffect(() => {
+    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
+    setSelectedData(`${selectedYear.value}-${monthIndex}`);
+  }, [selectedMonth, selectedYear]);
+
+  const getPerformers = async () => {
+    try {
+      const endPoint = `${endPoints.LEADS_CONVERTED}/${iId}?date=${selectedData}`;
+      const { response, error } = await LeadsConverted(endPoint);
+
+      if (response && response.data) {
+        const transformedData = response.data.convertedOverTime.map((item: any) => {
+          // Create a new Date object from the ISO date string
+          const dateObj = new Date(item.date);
+          // Format the date as 'dd-mm-yyyy'
+          const formattedDate = dateObj.toLocaleDateString('en-GB').replace(/\//g, '-');
+          return {
+            date: formattedDate,
+            conversionCount: item.conversionCount,
+          };
+        });
+        setChartData(transformedData);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        setChartData([]);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // console.log(chartData);
+
+
+  useEffect(() => {
+    if (selectedData) {
+      getPerformers();
+    }
+  }, [selectedData]);
+
+
+
+
 
   const getAAM = async () => {
     try {
@@ -287,61 +346,61 @@ const AMView = ({ staffId }: Props) => {
 
 
 
-  const CustomLegend = () => {
-    return (
-      <div
-        className="justify-between mt-6"
-        style={{ display: "flex", gap: "10px" }}
-      >
-        <span style={{ color: "#e2b0ff" }}>Area1</span>
-        <span style={{ color: "#8884d8" }}>Area2</span>
-        <span style={{ color: "#82ca9d" }}>Area3</span>
-        <span style={{ color: "#d86a57" }}>Area4</span>
-        <span style={{ color: "#6ab6ff" }}>Area5</span>
-      </div>
-    );
-  };
+  // const CustomLegend = () => {
+  //   return (
+  //     <div
+  //       className="justify-between mt-6"
+  //       style={{ display: "flex", gap: "10px" }}
+  //     >
+  //       <span style={{ color: "#e2b0ff" }}>Area1</span>
+  //       <span style={{ color: "#8884d8" }}>Area2</span>
+  //       <span style={{ color: "#82ca9d" }}>Area3</span>
+  //       <span style={{ color: "#d86a57" }}>Area4</span>
+  //       <span style={{ color: "#6ab6ff" }}>Area5</span>
+  //     </div>
+  //   );
+  // };
 
 
 
-  const datas = [
-    {
-      name: "Jan 05",
-      Area1: 5673,
+  // const datas = [
+  //   {
+  //     name: "Jan 05",
+  //     Area1: 5673,
 
-      amt: 9000,
-    },
-    {
-      name: "Jan 10",
-      Area1: 4563,
+  //     amt: 9000,
+  //   },
+  //   {
+  //     name: "Jan 10",
+  //     Area1: 4563,
 
-      amt: 9777,
-    },
-    {
-      name: "Jan 15",
-      Area1: 1298,
+  //     amt: 9777,
+  //   },
+  //   {
+  //     name: "Jan 15",
+  //     Area1: 1298,
 
-      amt: 8000,
-    },
-    {
-      name: "Jan 20",
-      Area1: 1890,
+  //     amt: 8000,
+  //   },
+  //   {
+  //     name: "Jan 20",
+  //     Area1: 1890,
 
-      amt: 6000,
-    },
-    {
-      name: "Jan 25",
-      Area1: 1890,
+  //     amt: 6000,
+  //   },
+  //   {
+  //     name: "Jan 25",
+  //     Area1: 1890,
 
-      amt: 2181,
-    },
-    {
-      name: "Jan 30",
-      Area1: 1890,
+  //     amt: 2181,
+  //   },
+  //   {
+  //     name: "Jan 30",
+  //     Area1: 1890,
 
-      amt: 2500,
-    },
-  ];
+  //     amt: 2500,
+  //   },
+  // ];
 
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
 
@@ -612,69 +671,64 @@ const AMView = ({ staffId }: Props) => {
       </div>
       {/* Graph */}
       <div className="flex gap-3 py-2 mt-6">
-        <div className="py-3 bg-white p-2 w-full">
-          <div className="py-1 ms-2 flex justify-between">
-            <h2 className="font-bold">Leads Converted by Area Manager Over Time</h2>
-
-          </div>
-          <div className="mt-5 w-full">
-            <ResponsiveContainer width="100%" minHeight={400}>
-              <LineChart
-                width={1250}
-                height={400}
-                data={datas}
-                margin={{
-                  top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Legend content={<CustomLegend />} />
-                <Line
-                  type="monotone"
-                  dataKey="Area1"
-                  stroke="#e2b0ff"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area2"
-                  stroke="#8884d8"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area3"
-                  stroke="#82ca9d"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area4"
-                  stroke="#d86a57"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area5"
-                  stroke="#6ab6ff"
-                  strokeWidth={3}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+  <div className="py-3 bg-white p-2 w-full">
+    <div className="flex justify-between">
+      <div>
+        <h1 className="text-lg font-bold">Leads Converted by Area Manager Over Time</h1>
       </div>
+      <div className="flex gap-1">
+        <label htmlFor="month-select"></label>
+        <SelectDropdown
+          setSelectedValue={setSelectedYear}
+          selectedValue={selectedYear}
+          filteredData={years}
+          searchPlaceholder="Search Years"
+          width="w-44"
+        />
+        <SelectDropdown
+          setSelectedValue={setSelectedMonth}
+          selectedValue={selectedMonth}
+          filteredData={months}
+          searchPlaceholder="Search Months"
+          width="w-44"
+        />
+      </div>
+    </div>
+
+    <div className="mt-5 w-full">
+    {chartData.length > 0 && chartData.some((data) => data.conversionCount > 0) ? (
+        <ResponsiveContainer width="100%" minHeight={400}>
+          <LineChart
+            width={1250}
+            height={400}
+            data={chartData}
+            margin={{
+              top: 10,
+              right: 30,
+              left: 10,
+              bottom: 5,
+            }}
+          >
+            <CartesianGrid strokeDasharray="3 3" vertical={false} />
+            <XAxis dataKey="date" axisLine={false} tickLine={false} />
+            <YAxis axisLine={false} tickLine={false} />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="conversionCount"
+              stroke="#8884d8"
+              strokeWidth={3}
+              dot={false}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      ) : (
+        <NoRecords text="No Leads Found" parentHeight="320px" />
+      )}
+    </div>
+  </div>
+</div>
+
       <Modal open={isModalOpen.editAM} onClose={() => handleModalToggle()} className="">
         <AMForm editId={iId} onClose={() => handleModalToggle()} />
       </Modal>

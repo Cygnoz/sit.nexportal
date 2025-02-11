@@ -466,7 +466,7 @@ function RegionView({}: Props) {
           <div style={{zIndex:2}}  className="absolute w-full ">
             {activeTab === "Area" && <RegionAriaView loading={loading} regionAreaData={data.regionAreaData}  regionData={data.regionData} />}
             {activeTab === "Team" && <RegionTeamView teamData={teamData} handleModalToggle={handleModalToggle} setData={setData}  />}
-            {activeTab === "Performance Analytics" && <RegionPerformanceView />}
+            {activeTab === "Performance Analytics" && <RegionPerformanceView  regionId={id}/>}
           </div>
         </div>
       </div>
