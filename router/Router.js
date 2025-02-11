@@ -96,6 +96,8 @@ router.get("/bda/:id/trial-conversions",verifyToken,checkPermission('View BDA'),
 
 router.put("/deactivateBda/:id", verifyToken,checkPermission('Deactivate BDA'),bdaController.deactivateBda,ActivityLogGeneration('Deactivate BDA'));
 
+router.get("/renewalBda/:bdaId",verifyToken,checkPermission('View BDA'), bdaController.getBdaRenewalCount);
+
 router.get('/get-activity-logs',verifyToken,checkPermission('View logs'),userController.getAllActivityLogs)
 
 

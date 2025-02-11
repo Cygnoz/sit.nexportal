@@ -16,6 +16,8 @@ const ActivityLog = require('../database/model/activityLog')
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
 const moment = require("moment");
+const RenewalLicenser = require("../database/model/renewLicenser");
+
 //Encrpytion
 function encrypt(text) {
   try {
@@ -970,3 +972,55 @@ exports.getTrialConvertedOverTime = async (req, res) => {
   }
 };
 
+exports.getBdaRenewalCount = async (req, res) => {
+  try {
+    const { bdaId } = req.params; // BDA ID from params
+    const { year } = req.query; // Year from query
+ 
+    if (!bdaId) {
+      return res.status(400).json({ error: "BDA ID is required." });
+    }
+ 
+    if (!year || isNaN(parseInt(year))) {
+      return res.status(400).json({ error: "Valid year is required as a query parameter." });
+    }
+ 
+    const numericYear = parseInt(year, 10);
+    const monthNames = [
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
+    ];
+ 
+    let results = [];
+ 
+    for (let m = 0; m < 12; m++) {
+      const startDate = moment.utc({ year: numericYear, month: m, day: 1 }).startOf("month");
+      const endDate = moment.utc(startDate).endOf("month");
+ 
+      // Find licensers under the given BDA
+      const licenserIds = await Leads.find({
+        bdaId: bdaId,
+        customerStatus: "Licenser"
+      }).distinct("_id");
+ 
+      // Count renewals for those licensers in the current month
+      const renewalCount = await RenewalLicenser.countDocuments({
+        licenser: { $in: licenserIds },
+        renewalDate: { $gte: startDate.toISOString(), $lte: endDate.toISOString() }
+      });
+ 
+      results.push({
+        month: monthNames[m],
+        renewalCount
+      });
+    }
+ 
+    return res.status(200).json({
+      message: "Renewal counts retrieved successfully",
+      data: results
+    });
+  } catch (error) {
+    console.error("Error fetching renewal counts:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
