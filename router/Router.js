@@ -98,11 +98,11 @@ router.get('/get-activity-logs',verifyToken,checkPermission('View logs'),userCon
 
 
 // payroll
-router.post("/payslip",verifyToken,checkPermission('Generate Payroll'), payrollController.generatePayroll,ActivityLogGeneration('Generate Payroll'));
+router.post("/payroll",verifyToken,checkPermission('Generate Payroll'), payrollController.generatePayroll,ActivityLogGeneration('Generate Payroll'));
 
-router.get("/payslip/:id",verifyToken,checkPermission('View Payroll'), payrollController.getPayrollById);
+router.get("/payroll/:id",verifyToken,checkPermission('View Payroll'), payrollController.getPayrollById);
 
-router.get("/payslip",verifyToken,checkPermission('View Payroll'), payrollController.getAllPayrolls);
+router.get("/payroll/:year/:month",verifyToken,checkPermission('View Payroll'), payrollController.getAllPayrolls);
 
 // expense category
 router.post("/category",verifyToken,checkPermission('Add Category'), categoryController.addCategory,ActivityLogGeneration('Add Category'));

@@ -75,6 +75,8 @@ exports.generatePayroll = async (req, res) => {
           adjustedSalary = Number((perDaySalary * workingDays).toFixed(0));
         }
 
+
+
         let newLicenseEarnings = 0,
           recuringAmount = 0,
           totalLicenses = 0,
@@ -168,14 +170,38 @@ exports.generatePayroll = async (req, res) => {
 };
 
 
+// exports.getAllPayrolls = async (req, res) => {
+//   try {
+//     const payrolls = await Payroll.find()
+//       .populate({
+//         path: "staffId",
+//         select: "user", // Only include `user` in staffId
+//         populate: { path: "user", select: "userName role -_id" } // Nested population, only `userName` and `role`
+//       });
+
+//     res.status(200).json(payrolls);
+//   } catch (error) {
+//     console.error("Error fetching payrolls:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// };
+
+
 exports.getAllPayrolls = async (req, res) => {
   try {
-    const payrolls = await Payroll.find()
-      .populate({
-        path: "staffId",
-        select: "user", // Only include `user` in staffId
-        populate: { path: "user", select: "userName role -_id" } // Nested population, only `userName` and `role`
-      });
+    const { month, year } = req.params; // Extract month and year from params
+
+    // Construct start and end dates for filtering
+    const startDate = moment(`${year}-${month}-01`).startOf("month").toDate();
+    const endDate = moment(`${year}-${month}-01`).endOf("month").toDate();
+
+    const payrolls = await Payroll.find({
+      createdAt: { $gte: startDate, $lt: endDate }
+    }).populate({
+      path: "staffId",
+      select: "user",
+      populate: { path: "user", select: "userName role -_id" }
+    });
 
     res.status(200).json(payrolls);
   } catch (error) {

@@ -11,6 +11,7 @@ const expenseSchema = new Schema(
     amount: { type: Number },
     category: { type: Schema.Types.ObjectId, ref: "Category" }, // References the Category collection
     note: { type: String },
+    comment: { type: String },
     status: { type: String },
     approvalDate: { type: String },
     approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
