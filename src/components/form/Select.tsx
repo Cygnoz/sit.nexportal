@@ -17,6 +17,7 @@ interface SelectProps {
   addButtonFunction?: (...params: any[]) => void;
   totalParams?: number;
   paramsPosition?: number;
+  from?: string;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -32,6 +33,7 @@ const Select: React.FC<SelectProps> = ({
   addButtonFunction,
   totalParams,
   paramsPosition,
+  from
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
@@ -117,7 +119,7 @@ const Select: React.FC<SelectProps> = ({
         onClick={() => !readOnly && setIsOpen((prev) => !prev)}
       >
         <div
-          className={`block w-full h-9 pt-2 bg-white border text-sm px-2 pr-8 rounded-md leading-tight 
+          className={`block w-full h-9 ${from=="ticket" ?'pt-1':'pt-2'} bg-white border text-sm px-2 pr-8 items-center  rounded-md leading-tight 
                       ${error ? "border-red-500" : "border-gray-300"}`}
         >
           {value

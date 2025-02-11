@@ -27,6 +27,7 @@ import Modal from "../../../components/modal/Modal";
 // import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
 // import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 import IdBcardModal from "../../../components/modal/IdBcardModal";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
 
 interface AddSVProps {
   onClose: () => void; // Prop for handling modal close
@@ -94,13 +95,23 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
   } = useForm<SVData>({
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [empId, setEmpId] = useState('')
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
-  };
 
+  const [isModalOpen, setIsModalOpen] = useState({
+    idCard: false,
+    region: false,
+   
+  });
+  
+  const handleModalToggle = (idCard = false, region = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      idCard: idCard,
+      region: region,
+     
+    }));
+    refreshContext({dropdown:true})
+  };
   const [staffData, setStaffData] = useState<any>(null);
   const onSubmit: SubmitHandler<SVData> = async (data, event) => {
     event?.preventDefault(); // Prevent default form submission behavior
@@ -683,6 +694,10 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
                     }}
                     error={errors.region?.message}
                     options={data.regions}
+                    addButtonLabel="Add Region"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={2}
+                    paramsPosition={2}
                   />
 
                
@@ -882,13 +897,16 @@ const SupervisorForm: React.FC<AddSVProps> = ({ onClose, editId }) => {
           </div>
         </form>
       </div>
-      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <Modal className="w-[60%]" open={isModalOpen.idCard} onClose={handleModalToggle}>
         <IdBcardModal
           parentOnClose={onClose}
           onClose={handleModalToggle}
           role="Supervisor"
           staffData={staffData}
         />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
       </Modal>
     </>
   );

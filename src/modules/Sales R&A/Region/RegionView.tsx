@@ -512,8 +512,8 @@ function RegionView({}: Props) {
           action={handleDeactivate}
           prompt={
             data?.regionData?.region?.status === "Active"
-              ? "Are you sure you want to deactivate this Region?"
-              : "Are you sure you want to activate this Region?"
+              ? "Are you sure want to deactivate this Region?"
+              : "Are you sure want to activate this Region?"
           }
           onClose={() => handleModalToggle()}
         />
