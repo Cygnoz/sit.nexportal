@@ -25,6 +25,7 @@ import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
 import IdBcardModal from "../../../components/modal/IdBcardModal";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
 // import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
 // import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
@@ -94,11 +95,22 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   } = useForm<SAData>({
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [empId,setEmpId]=useState('')
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
+
+  const [isModalOpen, setIsModalOpen] = useState({
+    idCard: false,
+    region: false,
+   
+  });
+  
+  const handleModalToggle = (idCard = false, region = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      idCard: idCard,
+      region: region,
+     
+    }));
+    refreshContext({dropdown:true})
   };
 
   const [staffData, setStaffData] = useState<any>(null);
@@ -649,6 +661,10 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                     }}
                     error={errors.region?.message}
                     options={regionData}
+                    addButtonLabel="Add Region"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={2}
+                    paramsPosition={2}
                   />
 
                
@@ -845,12 +861,15 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
           </div>
         </form>
       </div>
-      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <Modal className="w-[60%]" open={isModalOpen.idCard} onClose={handleModalToggle}>
         <IdBcardModal
           parentOnClose={onClose}
           onClose={handleModalToggle}
           role="Support Agent"
           staffData={staffData} />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
       </Modal>
     </>
   );
