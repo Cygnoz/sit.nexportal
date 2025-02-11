@@ -15,6 +15,7 @@ const Bda = require("../database/model/bda");
 const ActivityLog = require('../database/model/activityLog')
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "utf8");
 const iv = Buffer.from(process.env.ENCRYPTION_IV, "utf8");
+const moment = require('moment'); 
 
 //Encrpytion
 function encrypt(text) {
