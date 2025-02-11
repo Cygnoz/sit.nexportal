@@ -40,7 +40,7 @@ exports.generatePayroll = async (req, res , next) => {
     let nextId = 1;
     const lastPayroll = await Payroll.findOne().sort({ _id: -1 });
     if (lastPayroll) {
-      const lastId = parseInt(lastPayroll.payslipId.slice(8));
+      const lastId = parseInt(lastPayroll.payRollId.slice(8));
       nextId = lastId + 1;
     }
 
