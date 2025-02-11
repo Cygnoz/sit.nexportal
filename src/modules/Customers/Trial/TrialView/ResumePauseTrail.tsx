@@ -44,7 +44,7 @@ const ResumePauseTrail = ({ onClose,trialStatus,setTrialStatus,handleScrollTop}:
             </div>
               <p className="font-semibold text-[#4B5C79] text-sm my-3">
                 Pausing this trial will restrict all user activities until
-                resumed. Are you sure you want to proceed?
+                resumed. Are you sure want to proceed?
               </p>
             
           </div>

@@ -270,8 +270,8 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
           action={handleDeactivate}
           prompt={
             getData.saData?.status === "Active"
-              ? "Are you sure you want to deactivate this Support Agent?"
-              : "Are you sure you want to activate this Support Agent?"
+              ? "Are you sure want to deactivate this Support Agent?"
+              : "Are you sure want to activate this Support Agent?"
           }
           onClose={() => handleModalToggle()}
         />

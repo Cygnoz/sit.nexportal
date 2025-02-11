@@ -53,7 +53,7 @@ function ConvertModal({ onClose, type,orgData, }: Props) {
                                         alt="Background"
                                     />
                                     <p className="font-semibold text-[#4B5C79] text-sm my-3 text-center">
-                                    Are you sure you want to convert this {type=="lead"?'lead':'trial'} into a {type=="lead"?'trial':'licencer'}? <br /> This action will move the {type=="lead"?'lead':'trial'} to the {type=="lead"?'trial':'licencer'} module.
+                                    Are you sure want to convert this {type=="lead"?'lead':'trial'} into a {type=="lead"?'trial':'licencer'}? <br /> This action will move the {type=="lead"?'lead':'trial'} to the {type=="lead"?'trial':'licencer'} module.
                                     </p>
                                 </div>
                             </div>

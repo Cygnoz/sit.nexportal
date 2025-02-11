@@ -707,8 +707,8 @@ const AMView = ({ staffId }: Props) => {
           action={handleDeactivate}
           prompt={
             getData?.amData?.status === "Active"
-              ? "Are you sure you want to deactivate this AM?"
-              : "Are you sure you want to activate this AM?"
+              ? "Are you sure want to deactivate this AM?"
+              : "Are you sure want to activate this AM?"
           }
           onClose={() => handleModalToggle()}
         />

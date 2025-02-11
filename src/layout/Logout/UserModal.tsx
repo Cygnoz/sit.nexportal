@@ -182,7 +182,7 @@ const UserModal = ({ }: Props) => {
     <Modal className="w-[30%]" align="center" open={isModalOpen.confirm} onClose={toggleConfirmModal}>
     <ConfirmModal
       action={getLogout}
-      prompt="Are you sure you want to logout?"
+      prompt="Are you sure want to logout?"
       onClose={toggleConfirmModal}
     />
   </Modal>

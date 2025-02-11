@@ -641,8 +641,8 @@ const BDAView = ({staffId}: Props) => {
           action={handleDeactivate}
           prompt={
             data.bdaData?.status === "Active"
-              ? "Are you sure you want to deactivate this BDA?"
-              : "Are you sure you want to activate this BDA?"
+              ? "Are you sure want to deactivate this BDA?"
+              : "Are you sure want to activate this BDA?"
           }
           onClose={() => handleModalToggle()}
         />
