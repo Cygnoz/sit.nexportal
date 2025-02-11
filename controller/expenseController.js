@@ -75,7 +75,7 @@ exports.getAllExpenses = async (req, res) => {
 
 
 
-exports.updateExpense = async (req, res, next) => {
+exports.updateExpense = async (req, res) => {
   try {
     const { id } = req.params;
     const userId = req.user.id;
