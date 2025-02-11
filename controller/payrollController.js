@@ -198,7 +198,7 @@ exports.getPayrollById = async (req, res) => {
     .populate({
       path: "staffId",
       select: "user", // Only include `user` in staffId
-      populate: { path: "user", select: "userName role -_id" } // Nested population, only `userName` and `role`
+      populate: { path: "user", select: "userName role userImage -_id" } // Nested population, only `userName` and `role`
     })
   
       .populate("commissionProfile", "profileName commissionPoint recurringPoint thresholdLicense")
