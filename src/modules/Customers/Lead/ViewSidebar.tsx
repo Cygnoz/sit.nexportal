@@ -32,8 +32,8 @@ type Props = {
 const ViewSidebar = ({ leadData, getLead }: Props) => {
   const { request: deleteLead } = useApi("delete", 3001);
   const { request: breakDownByRegion } = useApi('get', 3001);
-  const [breakDownData, setBreakDownData] = useState(null);
-  const [piechartData, setPiechartData] = useState([]);
+  const [breakDownData, setBreakDownData] = useState<Record<string, number> | null>(null);
+  const [pieData, setPieData] = useState<{ x: string; y: number; color: string }[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState({
     editLead: false,
@@ -98,40 +98,37 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
 
   const getBreakDownRegion = async () => {
     try {
-      const { response, error } = await breakDownByRegion(`${endPoints.LEADS}/${leadData?._id}`)
-      console.log("id", leadData?._id);
-      console.log("response", response);
-      console.log("err", error);
+      const { response, error } = await breakDownByRegion(`${endPoints.LEADS}/${leadData?._id}`);
+  
       if (response && !error) {
         console.log(response.data);
         setBreakDownData(response.data.engagementData);
-
+  
         // Convert engagementData to pieData format
-        const transformeddata = response.data.engagementData?.map(([key, value]: any, index: any) => ({
-          x: key,    // Category name
-          y: value,  // Value count
-          color: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"][index] // Assign colors dynamically
+        const formattedData = Object.entries(response.data.engagementData).map(([key, value], index) => ({
+          x: key,   
+          y: typeof value === "number" ? value : 0,  // Ensure 'y' is always a number
+          color: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"][index % 4] // Assign colors dynamically
         }));
-        console.log("transformedData", transformeddata);
-        setPiechartData(transformeddata);
+  
+        setPieData(formattedData);
+      } else {
+        console.log(error?.message?.data?.message || "Error fetching data");
       }
-      else {
-        console.log(error.message.data.message);
-
-      }
+    } catch (err) {
+      console.error("Error message:", err);
     }
-    catch (err) {
-      console.error("error message", err)
-    }
-  }
-
+  };
+  
   useEffect(() => {
     if (leadData) {
       getBreakDownRegion();
     }
   }, [leadData]);
-  console.log(breakDownData);
   
+
+  console.log(breakDownData);
+
 
   return (
     <>
@@ -147,9 +144,9 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
           >
             <div
               className={`w-2 h-2 -mt-[2px] ${leadData?.leadStatus == "In progress" ||
-                  leadData?.leadStatus == "Proposal"
-                  ? "bg-black"
-                  : "bg-white"
+                leadData?.leadStatus == "Proposal"
+                ? "bg-black"
+                : "bg-white"
                 } rounded-full`}
             ></div>
             <p className="text-sm">{leadData?.leadStatus}</p>
@@ -313,9 +310,9 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
                 innerRadius={40}
                 padAngle={4}
                 width={300}
-                data={piechartData}
+                data={pieData}
                 theme={VictoryTheme.clean}
-                labels={({ datum }) => `${((datum.y / piechartData.reduce((acc, item:any) => acc + item.y, 0)) * 100).toFixed(1)}%`}
+                labels={({ datum }) => `${((datum.y / pieData.reduce((acc, item) => acc + item.y, 0)) * 100).toFixed(1)}%`}
                 labelComponent={
                   <VictoryLabel
                     style={{ fill: "#303F58", fontSize: 15 }}
@@ -332,7 +329,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
               <div className="flex justify-center">
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 w-72 gap-3">
-                    {piechartData.map((item:any) => (
+                    {pieData.map((item:any) => (
                       <div key={item.x} className="flex items-center gap-2">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
                         <span className="text-gray-800 font-medium text-xs">{item.x}</span>

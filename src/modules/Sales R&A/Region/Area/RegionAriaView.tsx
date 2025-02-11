@@ -6,19 +6,22 @@ import LicenserCardIcon from "../../../../assets/icons/LicenserCardIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
 import HomeCard from "../../../../components/ui/HomeCards";
 import Table from "../../../../components/ui/Table";
-import { regionAreaData, RegionView,regionLicenserData } from "../../../../Interfaces/RegionView";
+import { regionAreaData, RegionView, regionLicenserData } from "../../../../Interfaces/RegionView";
 import RRecentActivityView from "./RecentActivityView";
 import { useNavigate } from "react-router-dom";
+import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
+import { useEffect, useState } from "react";
 
 
 
 type Props = {
   regionData?: any;
   regionAreaData?: RegionView;
-  loading?:boolean
+  loading?: boolean
 };
 
-const RegionAriaView = ({  regionAreaData,loading }: Props) => {
+const RegionAriaView = ({ regionAreaData, loading }: Props) => {
 
   const navigate = useNavigate();
 
@@ -29,6 +32,38 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
   const licenserHandleView = (id: any) => {
     navigate(`/licenser/${id}`);
   };
+
+  const { request: leadSource } = useApi("get", 3003)
+  const [pieChartData, setPieChartData] = useState<{ x: string; y: number; color: string }[]>([]);
+
+  const getLeadSource = async () => {
+    try {
+      const { response, error } = await leadSource(endPoints.LEAD_SOURCE);
+      if (response && !error) {
+        console.log(response.data);
+
+        // Extracting relevant data
+        const leadSourceData = response.data.data;
+
+        // Converting it into the required format
+        const formattedData = Object.entries(leadSourceData).map(([key, value], index) => ({
+          x: key,
+          y: typeof value === "number" ? value : 0,  // Ensure 'y' is always a number
+          color: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"][index % 4] // Assign colors dynamically
+        }));
+
+        setPieChartData(formattedData);
+      } else {
+        console.log(error?.response?.data?.message || "Error fetching data");
+      }
+    } catch (err) {
+      console.error("Error message:", err);
+    }
+  };
+
+  useEffect(() => {
+    getLeadSource();
+  }, []);
 
   // Data for HomeCards
   const homeCardData = [
@@ -72,7 +107,7 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
     },
   ];
 
-  
+
   const columns1: { key: any; label: string }[] = [
     { key: "customerId", label: "Licenser ID" },
     { key: "firstName", label: "Licenser Name" },
@@ -120,18 +155,18 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
     </text>
   );
 
-  const roles = [
-    { name: "Social Media", count: 50, color: "#1B6C75" }, // Updated color
-    { name: "WebSite", count: 30, color: "#30B777" }, // Updated color
-    { name: "Refferal", count: 80, color: "#6ABAF3" }, // Updated color
-    { name: "Events", count: 78, color: "#7CD5AB" }, // Updated color
-  ];
+  // const roles = [
+  //   { name: "Social Media", count: 50, color: "#1B6C75" }, // Updated color
+  //   { name: "WebSite", count: 30, color: "#30B777" }, // Updated color
+  //   { name: "Refferal", count: 80, color: "#6ABAF3" }, // Updated color
+  //   { name: "Events", count: 78, color: "#7CD5AB" }, // Updated color
+  // ];
 
-  const pieData = roles.map((role) => ({
-    x: role.name,
-    y: role.count,
-    color: role.color,
-  }));
+  // const pieData = roles.map((role) => ({
+  //   x: role.name,
+  //   y: role.count,
+  //   color: role.color,
+  // }));
 
   return (
     <div>
@@ -179,44 +214,44 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
 
       <div className="grid grid-cols-12 gap-2 mt-5">
         <div className="col-span-8">
-        <div className="bg-white rounded-lg w-full">
+          <div className="bg-white rounded-lg w-full">
             <div className="p-4 space-y-2">
               <h1 className="text-lg font-bold">Revenue By Area</h1>
               <h2 className="text-md">Area 0234</h2>
               <h2 className="text-md font-medium text-2xl">₹ 76,789,87</h2>
             </div>
             <div className="ms-1">
-               <ResponsiveContainer width="100%" minHeight={400}>
-          <BarChart
-                          width={670}
-                          height={400}
-                          data={AreaRevData}
-                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                          layout="vertical"
-                        >
-                          <YAxis
-                            type="category"
-                            dataKey="name"
-                            tick={<CustomizedAxisTick />}
-                            tickLine={false}
-                            axisLine={{ stroke: '#000' }} // Y axis line
-                          />
-                          <XAxis
-                            type="number"
-                            tick={{ fontSize: 10 }}
-                            axisLine={{ stroke: 'transparent' }} // Remove X axis line
-                            tickLine={false} // Remove ticks on the X axis
-                          />
-                          <Tooltip />
-                          <Bar dataKey="pv" radius={[5, 5, 5, 5]} barSize={20} label={<CustomLabel />}>
-                            {AreaRevData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry?.color} />
-                            ))}
-                          </Bar>
-                        </BarChart>
-                        </ResponsiveContainer>
-                        </div>
-                        </div>
+              <ResponsiveContainer width="100%" minHeight={400}>
+                <BarChart
+                  width={670}
+                  height={400}
+                  data={AreaRevData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  layout="vertical"
+                >
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    tick={<CustomizedAxisTick />}
+                    tickLine={false}
+                    axisLine={{ stroke: '#000' }} // Y axis line
+                  />
+                  <XAxis
+                    type="number"
+                    tick={{ fontSize: 10 }}
+                    axisLine={{ stroke: 'transparent' }} // Remove X axis line
+                    tickLine={false} // Remove ticks on the X axis
+                  />
+                  <Tooltip />
+                  <Bar dataKey="pv" radius={[5, 5, 5, 5]} barSize={20} label={<CustomLabel />}>
+                    {AreaRevData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry?.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
         <div className="col-span-4 mb-4">
@@ -224,10 +259,11 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
             <h1 className="text-[#303F58] text-lg font-bold p-3">
               Leads Generated by Area by Source
             </h1>
-            <div className="-mt-3 relative ">
-              <div className="absolute top-[27%] left-[39%] z-50 text-center">
-                <p className="text-2xl font-bold">3456</p>
-                <p className="text-md">Total Leads</p>
+
+            <div className="-mt-3 relative">
+              <div className="absolute top-[27%] left-[40%] z-50 text-center">
+                <p className="text-xl font-bold">3456</p>
+                <p className="text-xs">Total Leads</p>
               </div>
 
               <div className="mt-4">
@@ -235,21 +271,16 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
                   innerRadius={50}
                   width={400}
                   padAngle={6}
-                  data={pieData}
-                  categories={{
-                    y: roles.map((role) => role.name),
-                  }}
+                  data={pieChartData}
                   theme={VictoryTheme.clean}
                   labels={({ datum }) =>
                     `${(
-                      (datum.y /
-                        roles.reduce((acc, role) => acc + role.count, 0)) *
-                      100
+                      (datum.y / (pieChartData.reduce((acc, item) => acc + item.y, 0) || 1)) * 100
                     ).toFixed(1)}%`
                   }
                   labelComponent={
                     <VictoryLabel
-                      style={{ fill: "#303F58", fontSize: 15, marginLeft: -50 }}
+                      style={{ fill: "#303F58", fontSize: 15 }}
                     />
                   }
                   style={{
@@ -260,29 +291,23 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
                 />
 
                 <div className="space-y-4 mx-10 mt-2">
-                  {roles.map((role) => (
-                    <div
-                      key={role.name}
-                      className="flex items-center justify-between w-72 space-x-3"
-                    >
+                  {pieChartData.map((item) => (
+                    <div key={item.x} className="flex items-center justify-between w-72 space-x-3">
                       <div className="flex items-center gap-2">
                         <div
-                          className={`w-3 h-3 rounded-full`}
-                          style={{ backgroundColor: role.color }}
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: item.color }}
                         />
-                        <span className="text-gray-800 font-medium text-xs">
-                          {role.name}
-                        </span>
+                        <span className="text-gray-800 font-medium text-xs">{item.x}</span>
                       </div>
-                      <span className="ml-auto text-gray-600 text-xs">
-                        {role.count}
-                      </span>
+                      <span className="ml-auto text-gray-600 text-xs">{item.y}</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 

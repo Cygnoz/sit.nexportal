@@ -86,6 +86,7 @@ export const endPoints = {
   TEAM_BREAK_DOWN:'/team-counts',
   CONVERSION_RATE:'/conversion-rate',
   RESOLVED_TICKETS:'/tickets/solved-by-region',
+  LEAD_SOURCE:'/lead-source',
 
   // Region Inside View 
   CUSTOMERCOUNTS:"/customer/statistics",
