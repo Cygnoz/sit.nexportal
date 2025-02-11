@@ -1,9 +1,12 @@
 const mongoose = require('mongoose');
 
 const commissionSchema = new mongoose.Schema({
-    profileName: String,
-    commissionPercentage: Number,
-    thresholdAmount: Number,
+    profileName: { type: String },
+    commissionPoint: { type: Number},
+    recurringPoint: { type: Number},
+    perPointValue: { type: Number},
+    thresholdLicense: { type: Number},
+    remark: { type: String },
   }, {
     timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
   });
