@@ -72,6 +72,8 @@ router.put("/deactivateAm/:id",verifyToken,checkPermission('Deactivate Area Mana
 
 router.get('/area-manager/:id/details',verifyToken,checkPermission('View Area Manager'), areaManagerController.getAreaManagerDetails);
 
+router.get('/area-managerOverTime/:id',verifyToken,checkPermission('View Area Manager'), areaManagerController.getAreaManagerConversionOverTime);
+
 // BDA
 // Area manager
 router.put("/bda-check",verifyToken,checkPermission('Add BDA'), bdaController.bdaCheck);

@@ -582,6 +582,86 @@ exports.deactivateAreamanager = async (req, res, next) => {
     return res.status(500).json({ message: "Internal server error." });
   }
 };
+
+
+
+exports.getAreaManagerConversionOverTime = async (req, res) => {
+  try {
+    // Get Area Manager ID from the URL params
+    const { id } = req.params;
+    // Get the date from query (expecting "yyyy-mm-dd")
+    let { date } = req.query;
+    if (!date) {
+      return res.status(400).json({ error: "Date is required as a query parameter in format yyyy-mm-dd" });
+    }
+   
+    // If the date is in "yyyy-mm-dd" format, extract only "yyyy-mm"
+    if (date.length >= 10) {
+      date = date.slice(0, 7);
+    }
+   
+    // Parse year and month (month is 1-indexed)
+    const year = parseInt(date.slice(0, 4), 10);
+    const month = parseInt(date.slice(5, 7), 10);
+    if (isNaN(year) || isNaN(month)) {
+      return res.status(400).json({ error: "Invalid date format. Use yyyy-mm-dd." });
+    }
+   
+    // Calculate the number of days in the month.
+    const daysInMonth = new Date(year, month, 0).getDate();
+   
+    // Get the Area Manager record using the provided id
+    const areaManager = await AreaManager.findById(id);
+    if (!areaManager) {
+      return res.status(404).json({ error: "Area Manager not found." });
+    }
+   
+    let convertedOverTime = [];
+   
+    // Loop over the month in 5-day increments
+    for (let startDay = 1; startDay <= daysInMonth; startDay += 5) {
+      // Define the start date for this interval.
+      const intervalStart = new Date(year, month - 1, startDay);
+     
+      // Define the end date: 5 days later, unless that exceeds the month.
+      let endDay = startDay + 5;
+      if (endDay > daysInMonth + 1) {
+        endDay = daysInMonth + 1;
+      }
+      const intervalEnd = new Date(year, month - 1, endDay);
+     
+      // Choose a representative day: the last day of the interval (or the month's last day if needed)
+      let repDay = startDay + 5 - 1;
+      if (repDay > daysInMonth) {
+        repDay = daysInMonth;
+      }
+      const repDate = new Date(year, month - 1, repDay);
+     
+      // Count the number of leads (with customerStatus "Licenser") for this Area Manager
+      // whose licensorDate is within the interval.
+      const conversionCount = await Leads.countDocuments({
+        areaManager: areaManager._id,
+        customerStatus: "Licenser",
+        licensorDate: {
+          $gte: intervalStart.toISOString(),
+          $lt: intervalEnd.toISOString()
+        }
+      });
+     
+      convertedOverTime.push({
+        date: repDate.toISOString().substring(0, 10),
+        conversionCount
+      });
+    }
+   
+    return res.status(200).json({ convertedOverTime });
+  } catch (error) {
+    console.error("Error fetching conversion over time:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+};
+ 
+
 // Create a reusable transporter object using AWS SES
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
