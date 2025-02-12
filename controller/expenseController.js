@@ -210,40 +210,54 @@ exports.deleteExpense = async (req, res, next) => {
 
 
 
-exports.getAllAccounts = async (req, res) => {
-  try {
-    
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        organizationId: process.env.ORGANIZATION_ID,
-        
-      },
-      process.env.NEX_JWT_SECRET,
-      { expiresIn: "12h" }
-    );
-    console.log(process.env.ORGANIZATION_ID);
-    console.log(process.env.NEX_JWT_SECRET);
-    
-    // API call to external service
-    const response = await axios.get(
-      "https://billbizzapi.azure-api.net/staff-clone/get-all-account-nexportal",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+  
+  exports.getAllAccounts = async (req, res) => {
+    try {
+      // Generate JWT token
+      const token = jwt.sign(
+        {
+          organizationId: process.env.ORGANIZATION_ID,
         },
-      }
-    );
-
-
-    res.status(200).json(response.data);
-  } catch (error) {
-    console.error("Error fetching accounts:", error);
-    res.status(500).json({ message: "Internal server error" });
-  }
-};
-
+        process.env.NEX_JWT_SECRET,
+        { expiresIn: "12h" }
+      );
+  
+      console.log(process.env.ORGANIZATION_ID);
+      console.log(process.env.NEX_JWT_SECRET);
+  
+      // API call to external service
+      const response = await axios.get(
+        "http://localhost:5001/get-all-account-nexportal",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      const allAccounts = response.data;
+  
+      // Filtering into two sets
+      const paidThroughAccount = allAccounts.filter((account) =>
+        ["Cash", "Bank"].includes(account.accountSubhead)
+      );
+  
+      const ExpenseAccount = allAccounts.filter((account) =>
+        ["Direct Expense", "Indirect Expense"].includes(account.accountSubhead)
+      );
+  
+      // Sending response
+      res.status(200).json({
+        paidThroughAccount,
+        ExpenseAccount,
+      });
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
 
 
 
