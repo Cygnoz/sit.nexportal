@@ -19,7 +19,7 @@ import NoRecords from "../../../components/ui/NoRecords"; // Import the NoRecord
 type Props = {};
 
 const TargetComparison: FC<Props> = () => {
-  const { request: TopPerformingAM } = useApi("get", 3004);
+  const { request: TopTarget } = useApi("get", 3004);
 
   const [chartData, setChartData] = useState<any[]>([]);
 
@@ -39,7 +39,7 @@ const TargetComparison: FC<Props> = () => {
   const getPerformers = async () => {
     try {
       const endPoint = `${endPoints.YEARLY_TARGETS}?year=${selectedData}`;
-      const { response, error } = await TopPerformingAM(endPoint);
+      const { response, error } = await TopTarget(endPoint);
 
       if (response && response.data) {
         const transformedData = response.data.data.map((item: any) => ({

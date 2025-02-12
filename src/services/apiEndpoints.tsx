@@ -14,6 +14,7 @@ export const endPoints = {
   REGION: "/region",
   GET_REGIONS: "/regions",
   AREA_PERFORMANCE:"/areaPerformance",
+  CONVERTION_RATE:'/conversion-rate',
 
   // Area
   AREA: "/area",
@@ -35,6 +36,7 @@ export const endPoints = {
   AM: "/area-manager",
   CHECK_AM:'/area-manager-check',
   DEACTIVATE_AM:'/deactivateAm',
+  LEADS_CONVERTED:'/area-managerOvertime',
 
   //Worker Commission
   WC: "/commissions",
@@ -46,6 +48,7 @@ export const endPoints = {
   CHECK_BDA:'/bda-check',
   BDA_DETAILS:'/bda-details',
   DEACTIVATE_BDA:'/deactivateBda',
+  RENEWAL_BDA:'/renewalBda',
 //  CONVERTED_BDA:'/bda/67852f3fe76c8b4af14ec3dd/trial-conversions?date=2025-1-24',
 
   //SuperVisor
@@ -60,6 +63,7 @@ export const endPoints = {
   // Lead
   LEADS: "/leads",
   LEAD: "/lead",
+  LEAD_OVERTIME:'/leadEngagementOverTime',
 
   // All Counts
   COUNTS:'/counts',
