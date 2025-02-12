@@ -225,9 +225,7 @@ const RMView = ({ staffId }: Props) => {
     try {
       const { response, error } = await deactivateRM(`${endPoints.DEACTIVATE_RM}/${iId}`, body);
       console.log(response);
-      console.log(error, "error message");
-
-
+      console.log(error, "error message");  
       if (response) {
         toast.success(response.data.message);
         getARM()

@@ -37,9 +37,10 @@ const GraphTable = ({ bdaData,loading }: Props) => {
 
   const navigate = useNavigate();
   // const id=bdaData?bdaData:id
-
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth:any = months.find((m) => m.value === currentMonthValue) || months[0];
   const [chartData, setChartData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState<any>('');
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
   const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
   const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1-1`);
 

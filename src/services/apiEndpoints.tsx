@@ -127,6 +127,12 @@ export const endPoints = {
 //  Expense Category
 EXPENSE_CATEGORY:'/category',
 EXPENSE:'/expense',
+
+//Target
  TARGET_ACHEIVED:'/targetAchieved',
- YEARLY_TARGETS:'/yearlyTargets'
+ YEARLY_TARGETS:'/yearlyTargets',
+
+//  Payroll
+  PAYROLL: "/payroll",
+
 };

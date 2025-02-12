@@ -23,7 +23,7 @@ const TargetComparison: FC<Props> = () => {
 
   const [chartData, setChartData] = useState<any[]>([]);
 
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" });
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
   const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
   const currentYear = years[years.length - 1];
 
