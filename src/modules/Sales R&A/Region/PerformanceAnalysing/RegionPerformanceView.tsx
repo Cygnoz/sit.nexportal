@@ -41,13 +41,13 @@ const RegionPerformanceView = ({regionId}: Props) => {
       setSelectedData(`${selectedYear.value}-${monthIndex}`); // Format: YYYY-MM
     }
   }, [selectedMonth, selectedYear]);
+  const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
+      const formattedDate = `${selectedYear.value}-${monthIndex}`; // Ensure YYYY-MM format
   
   
   const getPerformers = async () => {
     try {
-      const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
-      const formattedDate = `${selectedYear.value}-${monthIndex}`; // Ensure YYYY-MM format
-  
+      
       const endPoint = `${endPoints.CONVERSION_RATE}/${regionId}?date=${formattedDate}`;
       console.log("Fetching data for:", formattedDate); // ✅ Debugging
       console.log("API Endpoint:", endPoint); // ✅ Debugging
