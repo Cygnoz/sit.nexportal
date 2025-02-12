@@ -299,86 +299,104 @@ exports.updatePayroll = async (req, res) => {
  
 exports.getSalaryInfo = async (req, res) => {
   try {
-      const { staffId } = req.params;
+    const { staffId } = req.params;
  
-      // Validate ObjectId
-      if (!mongoose.Types.ObjectId.isValid(staffId)) {
-          return res.status(400).json({ message: "Invalid staff ID" });
-      }
+    // Validate ObjectId
+    if (!mongoose.Types.ObjectId.isValid(staffId)) {
+      return res.status(400).json({ message: "Invalid staff ID" });
+    }
  
-      // Check which role the staff belongs to
-      let filter = null;
+    // Check which role the staff belongs to
+    let filter = null;
+    let includeLicenserData = false; // Flag to determine if we need licenser-related data
  
-      const isRegionManager = await RegionManager.findOne({ _id: staffId }).lean();
-      const isAreaManager = !isRegionManager ? await AreaManager.findOne({ _id: staffId }).lean() : null;
-      const isBda = !isRegionManager && !isAreaManager ? await Bda.findOne({ _id: staffId }).lean() : null;
+    const isRegionManager = await RegionManager.findOne({ _id: staffId }).lean();
+    const isAreaManager = !isRegionManager ? await AreaManager.findOne({ _id: staffId }).lean() : null;
+    const isBda = !isRegionManager && !isAreaManager ? await Bda.findOne({ _id: staffId }).lean() : null;
+    const isSupportAgent = !isRegionManager && !isAreaManager && !isBda ? await SupportAgent.findOne({ _id: staffId }).lean() : null;
+    const isSupervisor = !isRegionManager && !isAreaManager && !isBda && !isSupportAgent ? await Supervisor.findOne({ _id: staffId }).lean() : null;
  
-      if (isRegionManager) {
-          filter = { regionManager: staffId };
-      } else if (isAreaManager) {
-          filter = { areaManager: staffId };
-      } else if (isBda) {
-          filter = { bdaId: staffId };
-      } else {
-          return res.status(400).json({ message: "Invalid staff ID or role not found" });
-      }
+    if (isRegionManager) {
+      filter = { regionManager: staffId };
+      includeLicenserData = true;
+    } else if (isAreaManager) {
+      filter = { areaManager: staffId };
+      includeLicenserData = true;
+    } else if (isBda) {
+      filter = { bdaId: staffId };
+      includeLicenserData = true;
+    } else if (isSupportAgent || isSupervisor) {
+      filter = { staffId };
+    } else {
+      return res.status(400).json({ message: "Invalid staff ID or role not found" });
+    }
  
+    let licenserCount = 0;
+    let totalRenewalCount = 0;
+ 
+    if (includeLicenserData) {
       // Find all licensers under the given staff
       const licensers = await Leads.find({ ...filter, customerStatus: "Licenser" }).select("_id").lean();
-      let licenserCount = licensers.length;
-      let totalRenewalCount = 0;
+      licenserCount = licensers.length;
  
       if (licenserCount > 0) {
-          const licenserIds = licensers.map((licenser) => licenser._id);
+        const licenserIds = licensers.map((licenser) => licenser._id);
  
-          // Sum up all the renewalCounts for these licensers
-          const renewalData = await RenewalLicenser.aggregate([
-              { $match: { licenser: { $in: licenserIds } } },
-              { $group: { _id: null, totalRenewalCount: { $sum: "$renewalCount" } } }
-          ]);
+        // Sum up all the renewalCounts for these licensers
+        const renewalData = await RenewalLicenser.aggregate([
+          { $match: { licenser: { $in: licenserIds } } },
+          { $group: { _id: null, totalRenewalCount: { $sum: "$renewalCount" } } }
+        ]);
  
-          totalRenewalCount = renewalData.length ? renewalData[0].totalRenewalCount : 0;
+        totalRenewalCount = renewalData.length ? renewalData[0].totalRenewalCount : 0;
       }
+    }
  
-      // Find payroll records for the given staffId
-      const payrollRecords = await Payroll.find({ staffId })
-          .select("month totalSalary payRollStatus basicSalary")
-          .lean();
+    // Find payroll records for the given staffId
+    const payrollRecords = await Payroll.find({ staffId })
+      .select("month totalSalary payRollStatus basicSalary")
+      .lean();
  
-      let basicSalary = 0;
-      if (payrollRecords.length > 0) {
-          basicSalary = payrollRecords[0].basicSalary || 0;
-      }
+    let basicSalary = 0;
+    if (payrollRecords.length > 0) {
+      basicSalary = payrollRecords[0].basicSalary || 0;
+    }
  
-      // Helper function to extract month name from YYYY-MM format
-      const getMonthName = (dateString) => {
-          const months = [
-              "January", "February", "March", "April", "May", "June",
-              "July", "August", "September", "October", "November", "December"
-          ];
-          const monthNumber = parseInt(dateString.split("-")[1], 10);
-          return months[monthNumber - 1] || "Invalid Month";
-      };
+    // Helper function to extract month name from YYYY-MM format
+    const getMonthName = (dateString) => {
+      const months = [
+        "January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"
+      ];
+      const monthNumber = parseInt(dateString.split("-")[1], 10);
+      return months[monthNumber - 1] || "Invalid Month";
+    };
  
-      // Transform payroll records
-      const payrollData = payrollRecords.map((record) => ({
-          month: getMonthName(record.month),
-          totalSalary: record.totalSalary,
-          payRollStatus: record.payRollStatus,
-      }));
+    // Transform payroll records
+    const payrollData = payrollRecords.map((record) => ({
+      month: getMonthName(record.month),
+      totalSalary: record.totalSalary,
+      payRollStatus: record.payRollStatus,
+    }));
  
-      res.json({
-          licenserCount,
-          totalRenewalCount,
-          basicSalary,
-          payrollRecords: payrollData
-      });
+    // Prepare response object
+    const response = {
+      basicSalary,
+      payrollRecords: payrollData,
+    };
+ 
+    // Add licenserCount and totalRenewalCount only for RegionManager, AreaManager, and BDA
+    if (includeLicenserData) {
+      response.licenserCount = licenserCount;
+      response.totalRenewalCount = totalRenewalCount;
+    }
+ 
+    res.json(response);
   } catch (error) {
-      console.error("Error fetching salary info:", error);
-      res.status(500).json({ message: "Internal server error" });
+    console.error("Error fetching salary info:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
-
 
 // Logging operation middleware
 const logOperation = (req, status, operationId = null) => {
