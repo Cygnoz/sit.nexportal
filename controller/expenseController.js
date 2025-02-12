@@ -1,7 +1,8 @@
 // controllers/expenseController.js
 const Expense = require("../database/model/expense");
 const ActivityLog = require('../database/model/activityLog');
-
+const axios = require("axios");
+const jwt = require("jsonwebtoken");
 // Add a new expense
 exports.addExpense = async (req, res, next) => {
   try {
@@ -61,17 +62,32 @@ exports.getExpense = async (req, res) => {
 
 // Get all expenses
 exports.getAllExpenses = async (req, res) => {
-    try {
-      const expenses = await Expense.find()
-      .populate("category", "categoryName") // Only fetching categoryName
-      .populate("addedBy", "userName role")
-      res.status(200).json({ message: "Expenses retrieved successfully", expenses });
-    } catch (error) {
-      console.error("Error fetching expenses:", error);
-      res.status(500).json({ message: "Internal server error" });
+  try {
+    const { date, id } = req.query;
+    let filter = {};
+
+    if (date) {
+      const givenDate = new Date(date);
+      const startOfMonth = new Date(givenDate.getFullYear(), givenDate.getMonth(), 1);
+      const endOfMonth = new Date(givenDate.getFullYear(), givenDate.getMonth() + 1, 0);
+      filter.date = { $gte: startOfMonth, $lte: endOfMonth };
     }
-  };
-  
+
+    if (id) {
+      filter.category = id;
+    }
+
+    const expenses = await Expense.find(filter)
+      .populate("category", "categoryName") // Only fetching categoryName
+      .populate("addedBy", "userName role");
+
+    res.status(200).json({ message: "Expenses retrieved successfully", expenses });
+  } catch (error) {
+    console.error("Error fetching expenses:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 
 
 
@@ -173,6 +189,45 @@ exports.deleteExpense = async (req, res, next) => {
     }
   };
   
+
+
+
+exports.getAllAccounts = async (req, res) => {
+  try {
+    
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        organizationId: process.env.ORGANIZATION_ID,
+        
+      },
+      process.env.NEX_JWT_SECRET,
+      { expiresIn: "12h" }
+    );
+    console.log(process.env.ORGANIZATION_ID);
+    console.log(process.env.NEX_JWT_SECRET);
+    
+    // API call to external service
+    const response = await axios.get(
+      "https://g8c39dlj-5001.inc1.devtunnels.ms/get-all-account-nexportal",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("Error fetching accounts:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
 
 // Logging operation middleware
 const logOperation = (req, status, operationId = null) => {

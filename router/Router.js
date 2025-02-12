@@ -110,6 +110,8 @@ router.get("/payroll/:year/:month",verifyToken,checkPermission('View Payroll'), 
 
 router.put("/payroll/:id",verifyToken,checkPermission('Edit Payroll'), payrollController.updatePayroll);
 
+router.get("/salaryInfo/:staffId",verifyToken,checkPermission('View Payroll'), payrollController.getSalaryInfo);
+
 
 // expense category
 router.post("/category",verifyToken,checkPermission('Add Category'), categoryController.addCategory,ActivityLogGeneration('Add Category'));
@@ -133,6 +135,6 @@ router.put("/expense/:id",verifyToken,checkPermission('Edit Expense'), expenseCo
 
 router.delete("/expense/:id",verifyToken,checkPermission('Delete Expense'), expenseController.deleteExpense,ActivityLogGeneration('Delete Expense'));
 
-
+router.get("/get-all-accounts",verifyToken,checkPermission('View Expense'), expenseController.getAllAccounts);
 
 module.exports = router

@@ -9,6 +9,7 @@ const SupportAgent = require("../database/model/supportAgent");
 const Leads = require("../database/model/leads");
 const ActivityLog = require("../database/model/activityLog");
 const User = require("../database/model/user");
+const RenewalLicenser = require("../database/model/renewLicenser");
 
 
 
@@ -284,6 +285,97 @@ exports.updatePayroll = async (req, res) => {
     await failActivity.save();
 
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+ 
+ 
+ 
+ 
+ 
+
+
+
+ 
+exports.getSalaryInfo = async (req, res) => {
+  try {
+      const { staffId } = req.params;
+ 
+      // Validate ObjectId
+      if (!mongoose.Types.ObjectId.isValid(staffId)) {
+          return res.status(400).json({ message: "Invalid staff ID" });
+      }
+ 
+      // Check which role the staff belongs to
+      let filter = null;
+ 
+      const isRegionManager = await RegionManager.findOne({ _id: staffId }).lean();
+      const isAreaManager = !isRegionManager ? await AreaManager.findOne({ _id: staffId }).lean() : null;
+      const isBda = !isRegionManager && !isAreaManager ? await Bda.findOne({ _id: staffId }).lean() : null;
+ 
+      if (isRegionManager) {
+          filter = { regionManager: staffId };
+      } else if (isAreaManager) {
+          filter = { areaManager: staffId };
+      } else if (isBda) {
+          filter = { bdaId: staffId };
+      } else {
+          return res.status(400).json({ message: "Invalid staff ID or role not found" });
+      }
+ 
+      // Find all licensers under the given staff
+      const licensers = await Leads.find({ ...filter, customerStatus: "Licenser" }).select("_id").lean();
+      let licenserCount = licensers.length;
+      let totalRenewalCount = 0;
+ 
+      if (licenserCount > 0) {
+          const licenserIds = licensers.map((licenser) => licenser._id);
+ 
+          // Sum up all the renewalCounts for these licensers
+          const renewalData = await RenewalLicenser.aggregate([
+              { $match: { licenser: { $in: licenserIds } } },
+              { $group: { _id: null, totalRenewalCount: { $sum: "$renewalCount" } } }
+          ]);
+ 
+          totalRenewalCount = renewalData.length ? renewalData[0].totalRenewalCount : 0;
+      }
+ 
+      // Find payroll records for the given staffId
+      const payrollRecords = await Payroll.find({ staffId })
+          .select("month totalSalary payRollStatus basicSalary")
+          .lean();
+ 
+      let basicSalary = 0;
+      if (payrollRecords.length > 0) {
+          basicSalary = payrollRecords[0].basicSalary || 0;
+      }
+ 
+      // Helper function to extract month name from YYYY-MM format
+      const getMonthName = (dateString) => {
+          const months = [
+              "January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"
+          ];
+          const monthNumber = parseInt(dateString.split("-")[1], 10);
+          return months[monthNumber - 1] || "Invalid Month";
+      };
+ 
+      // Transform payroll records
+      const payrollData = payrollRecords.map((record) => ({
+          month: getMonthName(record.month),
+          totalSalary: record.totalSalary,
+          payRollStatus: record.payRollStatus,
+      }));
+ 
+      res.json({
+          licenserCount,
+          totalRenewalCount,
+          basicSalary,
+          payrollRecords: payrollData
+      });
+  } catch (error) {
+      console.error("Error fetching salary info:", error);
+      res.status(500).json({ message: "Internal server error" });
   }
 };
 
