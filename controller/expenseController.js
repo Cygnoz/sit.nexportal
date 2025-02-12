@@ -77,16 +77,34 @@ exports.getAllExpenses = async (req, res) => {
       filter.category = id;
     }
 
+    // Fetch filtered expenses
     const expenses = await Expense.find(filter)
-      .populate("category", "categoryName") // Only fetching categoryName
+      .populate("category", "categoryName")
       .populate("addedBy", "userName role");
 
-    res.status(200).json({ message: "Expenses retrieved successfully", expenses });
+    // Calculate total and average expense amount
+    const allExpenses = await Expense.find();
+    const totalExpense = allExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+    const averageExpense = allExpenses.length ? totalExpense / allExpenses.length : 0;
+
+    // Count pending and rejected expenses
+    const pendingExpenses = await Expense.countDocuments({ status: "Pending Approval" });
+    const rejectedExpenses = await Expense.countDocuments({ status: "Rejected" });
+
+    res.status(200).json({
+      message: "Expenses retrieved successfully",
+      expenses,
+      totalExpense,
+      averageExpense,
+      pendingExpenses,
+      rejectedExpenses
+    });
   } catch (error) {
     console.error("Error fetching expenses:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 
