@@ -40,7 +40,8 @@ type ApiContextType = {
   businessCardData?: any;
   expenseCategories?: any;
   expenseViewDetails?: any;
-  refreshContext: (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean;expenseCategories?:boolean;expenseViewId?:any }) => Promise<void>;
+  payrollViewDetails?:any;
+  refreshContext: (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean;expenseCategories?:boolean;expenseViewId?:any;payrollViewId?:any }) => Promise<void>;
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -62,6 +63,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { request: getaSV } = useApi("get", 3003);
   const { request: getAllBusinessCard } = useApi("get", 3003);
   const { request: getExpenseView } = useApi("get", 3002);
+  const { request: getPayrollView } = useApi("get", 3002);
 
   // State variables
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
@@ -76,11 +78,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const [customersCounts, setTotalCustomersCounts] = useState<TotalCustomersCount>();
   const [businessCardData, setBusinessCardData] = useState<any>(null);
   const [expenseViewDetails,setExpenseViewDetails]=useState<any>(null)
+  const [payrollViewDetails,setPayrollViewDetails]=useState<any>(null)
   // Use a ref to store previous fetched data to prevent unnecessary API calls
   const prevDataRef = useRef<any>(null);
 
   // Fetching Data Function
-  const fetchData = useCallback(async (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean;expenseCategories?:boolean,expenseViewId?:any }) => {
+  const fetchData = useCallback(async (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean;expenseCategories?:boolean,expenseViewId?:any,payrollViewId?:any }) => {
     try {
       const fetchPromises = [];
 
@@ -119,6 +122,11 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       if ( options?.expenseViewId) {
         fetchPromises.push(getExpenseView(`${endPoints.EXPENSE}/${options?.expenseViewId}`).then(response => ({ expenseViewDetails: response?.response?.data || null })));
       }
+      if ( options?.payrollViewId) {
+        fetchPromises.push(getPayrollView(`${endPoints.PAYROLL}/${options?.payrollViewId}`).then(response => ({ payrollViewDetails: response?.response?.data || null })));
+      }
+
+      
 
       const results = await Promise.all(fetchPromises);
 
@@ -136,6 +144,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         if (newData.businessCards) setBusinessCardData(newData.businessCards);
         if (newData.expenseCategories) setExpenseCategories(newData.expenseCategories);
         if (newData.expenseViewDetails) setExpenseViewDetails(newData.expenseViewDetails);
+        if (newData.payrollViewDetails) setPayrollViewDetails(newData.payrollViewDetails);
         prevDataRef.current = newData;
       }
 
@@ -156,7 +165,6 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user]);
 
-  console.log("dsds",expenseViewDetails);
   
 
 
@@ -193,8 +201,9 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     businessCardData,
     expenseCategories,
     expenseViewDetails,
+    payrollViewDetails,
     refreshContext
-  }), [allRegions, allAreas, allCountries, dropdownApi, totalCounts, customersCounts, allTicketsCount, regionId, areaId, businessCardData,expenseCategories,expenseViewDetails, refreshContext]);
+  }), [allRegions, allAreas, allCountries, dropdownApi, totalCounts, customersCounts, allTicketsCount, regionId, areaId, businessCardData,expenseCategories,expenseViewDetails,payrollViewDetails, refreshContext]);
 
   return <ApiContext.Provider value={contextValue}>{children}</ApiContext.Provider>;
 };

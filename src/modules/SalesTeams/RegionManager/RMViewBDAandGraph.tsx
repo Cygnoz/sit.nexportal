@@ -44,7 +44,7 @@ const RMViewBDAandGraph = ({ getData, totalBdas, loading }: Props) => {
   const { request: TopPerformingAM } = useApi("get", 3002);
 
   const [chartData, setChartData] = useState([]);
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" }); // Get current month as name
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" }); // Get current month as name
   const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0]; // Find it in `months`
 
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);

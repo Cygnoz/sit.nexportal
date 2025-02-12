@@ -24,7 +24,7 @@ const ProgressBar = ({}: Props) => {
   });
 
   // Get current month and year
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" });
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
   const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
 
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
