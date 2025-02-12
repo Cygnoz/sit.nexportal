@@ -8,6 +8,7 @@ const Supervisor = require("../database/model/supervisor");
 const SupportAgent = require("../database/model/supportAgent");
 const Leads = require("../database/model/leads");
 const ActivityLog = require("../database/model/activityLog");
+const User = require("../database/model/user");
 
 
 
@@ -29,11 +30,11 @@ exports.generatePayroll = async (req, res , next) => {
 
     // Define staff roles & models
     const staffRoles = [
-      { model: RegionManager, role: "regionManager", hasCommission: true },
-      { model: AreaManager, role: "areaManager", hasCommission: true },
-      { model: Bda, role: "bdaId", hasCommission: true },
-      { model: Supervisor, role: "supervisor", hasCommission: false },
-      { model: SupportAgent, role: "supportAgent", hasCommission: false },
+      { model: RegionManager, role: "regionManager", hasCommission: true ,schema: "RegionManager" },
+      { model: AreaManager, role: "areaManager", hasCommission: true,schema: "AreaManager" },
+      { model: Bda, role: "bdaId", hasCommission: true,schema: "Bda" },
+      { model: Supervisor, role: "supervisor", hasCommission: false,schema: "Supervisor" },
+      { model: SupportAgent, role: "supportAgent", hasCommission: false,schema: "SupportAgent" },
     ];
 
     const payrollEntries = [];
@@ -44,7 +45,7 @@ exports.generatePayroll = async (req, res , next) => {
       nextId = lastId + 1;
     }
 
-    for (const { model, role, hasCommission } of staffRoles) {
+    for (const { model, role, hasCommission , schema } of staffRoles) {
       // Fetch only staff who joined ON or BEFORE the payrollMonth
       const staffList = await model.find({
         status: "Active",
@@ -55,7 +56,9 @@ exports.generatePayroll = async (req, res , next) => {
       });
 
       for (const staff of staffList) {
-        const { _id, dateOfJoining, salaryAmount, commission } = staff;
+        const { _id, dateOfJoining, salaryAmount, commission  } = staff;
+        
+        
         const joiningMonthYear = moment(dateOfJoining).format("YYYY-MM");
 
         // Skip staff if payrollMonth is before their joining month
@@ -92,7 +95,6 @@ exports.generatePayroll = async (req, res , next) => {
             customerStatus: "Licenser",
             licensorDate: { $gte: startDate, $lt: endDate },
           });
-          console.log("total license",totalLicenses);
           
           recurringLicenses = await Leads.countDocuments({
             [role]: _id,
@@ -124,9 +126,11 @@ exports.generatePayroll = async (req, res , next) => {
         const payRollId = `PAYROLL-${nextId.toString().padStart(4, "0")}`;
         nextId++;
 
+
         if (!existingPayrollEntry) {
           payrollEntries.push({
             staffId: _id,
+            staffType: schema,
             payRollId,
             payRollStatus: "Pending Generation",
             basicSalary: adjustedSalary,
@@ -199,7 +203,7 @@ exports.getPayrollById = async (req, res) => {
     .populate({
       path: "staffId",
       select: "user", // Only include `user` in staffId
-      populate: { path: "user", select: "userName employeeId role userImage -_id" } // Nested population, only `userName` and `role`
+      populate: { path: "user", select: "userName employeeId role userImage" } // Nested population, only `userName` and `role`
     })
   
       .populate("commissionProfile", "profileName commissionPoint recurringPoint thresholdLicense")
