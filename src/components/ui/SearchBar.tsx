@@ -5,14 +5,14 @@ type Props = {
   searchValue?: string;
   onSearchChange: (value: string) => void;
   placeholder?: string;
-  setDropdownVisible?:any;
+  setDropdownVisible?: React.Dispatch<React.SetStateAction<boolean>>;
   bg?:string
 };
 
 const SearchBar = ({ searchValue, onSearchChange, placeholder = "Search",bg,setDropdownVisible }: Props) => {
   const handleSearch = (e: ChangeEvent<HTMLInputElement>) => {
     onSearchChange(e.target.value);
-    setDropdownVisible(true)
+    setDropdownVisible?.(true)
   };
 
   return (
@@ -28,7 +28,7 @@ const SearchBar = ({ searchValue, onSearchChange, placeholder = "Search",bg,setD
         onChange={handleSearch}
         value={searchValue}
         onClick={()=>{ 
-          setDropdownVisible((prev:any)=>!prev)
+          setDropdownVisible?.((prev:any)=>!prev)
         }}
       />
     </div>
