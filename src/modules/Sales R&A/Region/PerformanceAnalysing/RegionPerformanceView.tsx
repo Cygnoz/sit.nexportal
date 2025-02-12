@@ -33,23 +33,24 @@ const RegionPerformanceView = ({regionId}: Props) => {
   
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
-  const [selectedData, setSelectedData] = useState<string>("");
-  
+  const [selectedData, setSelectedData] = useState<string>(
+    `${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`
+  );
   useEffect(() => {
-    if (selectedMonth && selectedYear) {
-      const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0"); // Ensure MM format
-      setSelectedData(`${selectedYear.value}-${monthIndex}`); // Format: YYYY-MM
-    }
+    // Convert month name to number (1-12) and ensure it's two digits
+    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
+    setSelectedData(`${selectedYear.value}-${monthIndex}`);
   }, [selectedMonth, selectedYear]);
-  const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
-      const formattedDate = `${selectedYear.value}-${monthIndex}`; // Ensure YYYY-MM format
+
+ 
   
   
   const getPerformers = async () => {
     try {
-      
-      const endPoint = `${endPoints.CONVERSION_RATE}/${regionId}?date=${formattedDate}`;
-      console.log("Fetching data for:", formattedDate); // ✅ Debugging
+      // const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
+      // const formattedDate = `${selectedYear.value}-${monthIndex}`; // Ensure YYYY-MM format
+      const endPoint = `${endPoints.CONVERSION_RATE}/${regionId}?date=${selectedData}`;
+    //  console.log("Fetching data for:", formattedDate); // ✅ Debugging
       console.log("API Endpoint:", endPoint); // ✅ Debugging
   
       const { response, error } = await LeadsConverted(endPoint);
@@ -184,8 +185,20 @@ const RegionPerformanceView = ({regionId}: Props) => {
     <div className="flex justify-between">
       <h1 className="text-lg font-bold">License Over Time By Area</h1>
       <div className="flex gap-1">
-        <SelectDropdown setSelectedValue={setSelectedYear} selectedValue={selectedYear} filteredData={years} searchPlaceholder="Search Years" width="w-44" />
-        <SelectDropdown setSelectedValue={setSelectedMonth} selectedValue={selectedMonth} filteredData={months} searchPlaceholder="Search Months" width="w-44" />
+        <SelectDropdown 
+        setSelectedValue={setSelectedYear} 
+        selectedValue={selectedYear}
+         filteredData={years} 
+         searchPlaceholder="Search Years" 
+         width="w-44" 
+         />
+        <SelectDropdown 
+        setSelectedValue={setSelectedMonth}
+         selectedValue={selectedMonth} 
+         filteredData={months} 
+         searchPlaceholder="Search Months" 
+         width="w-44" 
+         />
       </div>
     </div>
 
