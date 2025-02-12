@@ -26,23 +26,33 @@ const PayrollHome = ({ }: Props) => {
   const {loading,setLoading}=useResponse()
   type TabType = (typeof tabs)[number];
   const [activeTab, setActiveTab] = useState<TabType>("All Employees");
-  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
-   // Get current month as name
-   console.log("curre",currentMonthValue);
-  //  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
-    const currentMonth:any = months.find((m) => m.value === currentMonthValue) || months[0]; // Find it in `months`
-  
-    const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
-    const [selectedYear, setSelectedYear] = useState<any>(years[years.length - 1]);
-    // const [selectedData, setSelectedData] = useState<string>(
-    //   `${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`
-    // );
+  // Month Year proper way
+const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+const [newMonthList, setNewMonthList] = useState<any>([]);
+useEffect(() => {
+  setNewMonthList(
+    months.filter((m) =>
+      selectedYear.value === currentYear.value // If selected year is the current year
+        ? m.value <= currentMonthValue // Show months up to the current month
+        : true // Otherwise, show all months
+    )
+  );
+
+  setPayrollGenerated(false);
+  getPayrollDatas();
+}, [selectedMonth, selectedYear]);
+
     const {request:getPayroll}=useApi('get',3002)
     const {request:generatePayroll}=useApi('post',3002)
-      useEffect(() => {
-        setPayrollGenerated(false)
-        getPayrollDatas()
-      }, [selectedMonth, selectedYear]);
+    // Get current month as "MM" format (e.g., "03" for March)
+
+// Filter to get months from January to the current month
+
     const [payrollData, setPayrollData] = useState<any>([]);
  const [searchValue, setSearchValue] = useState<string>("");
  const [payrollGenerated,setPayrollGenerated]=useState(false)
@@ -129,7 +139,7 @@ const PayrollHome = ({ }: Props) => {
           <SelectDropdown
                   setSelectedValue={setSelectedMonth}
                   selectedValue={selectedMonth}
-                  filteredData={months}
+                  filteredData={newMonthList}
                     searchPlaceholder="Search Month"
                   width="w-32"
                 />
