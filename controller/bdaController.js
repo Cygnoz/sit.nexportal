@@ -567,8 +567,8 @@ exports.deleteBda = async (req, res, next) => {
 
 exports.deactivateBda = async (req, res, next) => {
   try {
-    const { id } = req.params; // Extract BDA ID from params
-    const { status } = req.body; // Extract status from the request body
+    const { id } = req.params;
+    const { status } = req.body;
  
     // Validate the status
     if (!["Active", "Deactive"].includes(status)) {
@@ -583,39 +583,35 @@ exports.deactivateBda = async (req, res, next) => {
       return res.status(404).json({ message: "BDA not found." });
     }
  
-    // If deactivating, validate lead statuses
+    // If deactivating, check lead association and status
     if (status === "Deactive") {
       const associatedLeads = await Leads.find({ bdaId: id });
  
-      if (associatedLeads.length === 0) {
-        return res.status(400).json({
-          message: "Cannot deactivate BDA: No associated leads found.",
-        });
-      }
+      // If leads exist, check their statuses
+      if (associatedLeads.length > 0) {
+        const nonWonLeads = associatedLeads.filter(lead => lead.leadStatus !== "Won");
  
-      const nonWonLeads = associatedLeads.filter(lead => lead.leadStatus !== "Won");
- 
-      if (nonWonLeads.length > 0) {
-        return res.status(400).json({
-          message:
-            "Cannot deactivate BDA: Some leads associated with this BDA do not have a 'Won' status.",
-          nonWonLeads: nonWonLeads.map(lead => ({
-            id: lead._id,
-            name: lead.fullName || `${lead.firstName} ${lead.lastName}`,
-            leadStatus: lead.leadStatus,
-          })),
-        });
+        if (nonWonLeads.length > 0) {
+          return res.status(400).json({
+            message: "Cannot deactivate BDA: Some leads associated with this BDA do not have a 'Won' status.",
+            nonWonLeads: nonWonLeads.map(lead => ({
+              id: lead._id,
+              name: lead.fullName || `${lead.firstName} ${lead.lastName}`,
+              leadStatus: lead.leadStatus,
+            })),
+          });
+        }
       }
     }
  
     // Update the BDA's status
     bda.status = status;
-    await bda.save(); // Mongoose will update the `updatedAt` timestamp
+    await bda.save();
  
-    // Use the `updatedAt` field for logging
-    const actionTime = bda.updatedAt.toLocaleString("en-US", {
-      timeZone: "Asia/Kolkata",
-    });
+    // Get action time safely
+    const actionTime = bda.updatedAt
+      ? bda.updatedAt.toLocaleString("en-US", { timeZone: "Asia/Kolkata" })
+      : new Date().toLocaleString("en-US", { timeZone: "Asia/Kolkata" });
  
     // Log the operation
     const activity = new ActivityLog({
@@ -629,16 +625,12 @@ exports.deactivateBda = async (req, res, next) => {
     });
     await activity.save();
  
-    // Return success response
     return res.status(200).json({
       message: `BDA status updated to ${status} successfully.`,
       bda,
     });
   } catch (error) {
     console.error("Error updating BDA status:", error);
- 
-    // Log the failure and respond with an error
-    logOperation(req, "Failed");
     return res.status(500).json({ message: "Internal server error." });
   }
 };

@@ -227,7 +227,7 @@ exports.getAllAccounts = async (req, res) => {
     
     // API call to external service
     const response = await axios.get(
-      "https://g8c39dlj-5001.inc1.devtunnels.ms/get-all-account-nexportal",
+      "https://billbizzapi.azure-api.net/staff-clone/get-all-account-nexportal",
       {
         headers: {
           Authorization: `Bearer ${token}`,
