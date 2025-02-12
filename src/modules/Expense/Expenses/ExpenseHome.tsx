@@ -2,7 +2,7 @@ import Boxes from "../../../assets/icons/Boxes";
 import CoinIcon from "../../../assets/icons/CoinIcon";
 // import HandCoinsIcon from "../../assets/icons/handCoinsIcon";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClockkIcon from "../../../assets/icons/ClockkIcon";
 import CopyIcon from "../../../assets/icons/CopyIcon";
@@ -20,6 +20,9 @@ import ExpenseTable from "./ExpenseTable";
 import ConfirmModal from "../../../components/modal/ConfirmModal";
 import toast from "react-hot-toast";
 import { useUser } from "../../../context/UserContext";
+import SearchBar from "../../../components/ui/SearchBar";
+import SelectDropdown from "../../../components/ui/SelectDropdown";
+import { months } from "../../../components/list/MonthYearList";
 
 interface LeadViewData {
   expenseName: string;
@@ -38,7 +41,13 @@ const ExpenseHome = ({}: Props) => {
   const {request:deleteExpense}=useApi('delete',3002)
   const {loading,setLoading}=useResponse()
   const [editId,setEditId]=useState<any>('')
+  const tabs = ["All Expenses","RM", "AM", "BDA","SV",'SA']
+  const [activeTab, setActiveTab] = useState<string>("All Expenses");
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonthValue);
+  const [searchValue, setSearchValue] = useState<string>("");
   const [allExpenses,setExpenses]=useState<any[]>([])
+  const [filteredExpenses,setFilteredExpenses]=useState<any[]>([])
   const {user}=useUser()
   const allowedRoles: any = ["Super Admin", "Sales Admin", "Support Admin"];
   const handleView = (id: any, status: any) => {
@@ -109,6 +118,35 @@ if (!allowedRoles.includes(user?.role) && !(status === "Rejected" || status === 
       getAllExpense()
     }
   };
+  const handleActiveTab = (tab: any) => {
+    setSearchValue('')
+    setActiveTab(tab);
+    if (tab === "All Expenses") {
+      setFilteredExpenses(allExpenses)
+    } else {
+      const roleMap: { [key: string]: string } = {
+        RM: "Region Manager",
+        AM: "Area Manager",
+        BDA: "BDA",
+        SV:'Supervisor',
+        SA:'Support Agent'
+      };
+  
+      if (roleMap[tab]) {
+        setFilteredExpenses(
+          allExpenses?.filter((payroll: any) => payroll?.role === roleMap[tab])
+        );
+      }
+    }
+  };
+
+   const filteredData: any = useMemo(() => {
+      return  filteredExpenses?.filter((row) =>
+        Object.values(row).some((value) =>
+          String(value).toLowerCase().includes(searchValue.toLowerCase())
+        )
+      );
+    }, [filteredExpenses, searchValue]);
 
 
 const homeCardData = [
@@ -167,6 +205,7 @@ const homeCardData = [
         category:expense?.category?.categoryName,
         addedBy:expense?.addedBy?.userName
       }))
+      setFilteredExpenses(filteredExpense)
       setExpenses(filteredExpense)
     }else{
       console.log(error?.response?.data)
@@ -196,6 +235,54 @@ const handleDeleteApi = async () => {
   useEffect(()=>{
     getAllExpense()
   },[])
+  const renderHeader = () => (
+    <div>
+      <div
+      className={`flex justify-between  items-center mb-3`}
+    >
+        <div className={`w-[440px]`}>
+          <SearchBar
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            placeholder="Search Expense"
+          />
+        </div>
+    
+        <div className="flex gap-4">
+        <SelectDropdown
+           setSelectedValue={setSelectedMonth}
+           selectedValue={selectedMonth}
+           filteredData={months}
+           searchPlaceholder="Search Month"
+           width="w-32"
+        />
+         <SelectDropdown
+           setSelectedValue={setSelectedMonth}
+           selectedValue={selectedMonth}
+           filteredData={months}
+           searchPlaceholder="Search Month"
+           width="w-32"
+        />
+        </div>
+    
+    </div>
+      <div className="flex gap-16 rounded-xl px-4 py-3 text-base font-bold  border-gray-200">
+          {tabs.map((tab) => (
+            <div
+              key={tab}
+              onClick={() => handleActiveTab(tab)}
+              className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
+                ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
+                : "text-gray-400"
+                }`}
+            >
+              {tab}
+            </div>
+          ))}
+        </div>
+    </div>
+    
+  );
 
 
   return (
@@ -245,8 +332,10 @@ const handleDeleteApi = async () => {
           ))}
         </div>
         <div>
+        <div className="bg-white rounded-lg p-3">
+          {renderHeader()}
         <ExpenseTable<LeadViewData>
-            data={allExpenses}
+            data={filteredData}
             columns={columns}
             headerContents={{
           
@@ -268,6 +357,7 @@ const handleDeleteApi = async () => {
             ]}
             loading={loading}
         />
+        </div>
     </div>
     </div>
     <Modal open={isModalOpen.addForm} onClose={() => handleModalToggle()} className="w-[60%]">

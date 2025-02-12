@@ -354,7 +354,7 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
       )}
     </div>
   </div>
-</div>;
+</div>
 
 
         {/* Modal controlled by state */}
