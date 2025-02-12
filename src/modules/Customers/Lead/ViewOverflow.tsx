@@ -23,17 +23,26 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
   const dropdownRef = useRef(null);
   const { request: leadEngagementOverTime } = useApi('get', 3001)
 
+ 
   const [chartData, setChartData] = useState<{ name: string; count: number }[]>([]);
-
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" }); // Get current month name
-  const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0]; // Find it in `months`
-  
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
-  const [selectedYear, setSelectedYear] = useState<any>(years[years.length - 1]);
+  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
   const [selectedData, setSelectedDate] = useState<string>("");
   
   // **Update `selectedData` whenever month/year changes**
   useEffect(() => {
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
     const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
     setSelectedDate(`${selectedYear.value}-${monthIndex}`);
   }, [selectedMonth, selectedYear]);
@@ -227,7 +236,7 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
       <SelectDropdown
         setSelectedValue={setSelectedMonth}
         selectedValue={selectedMonth}
-        filteredData={months}
+        filteredData={newMonthList}
         width="w-44"
       />
       <SelectDropdown

@@ -125,7 +125,7 @@ const ProgressBar = ({}: Props) => {
 
             {/* Floating Info Box */}
             <div
-              className="absolute top-[-135px] bg-[#FAFAFA] border shadow-md rounded text-center p-3 -ms-40 transform translate-x-1/2"
+              className="absolute top-[-135px] bg-[#FAFAFA] border shadow-md rounded text-center p-3 -ms-16 transform translate-x-1/2"
               style={{ left: `calc(${percentage}% - 20px)` }}
             >
               <p className="text-xs font-normal">Achieved Target</p>

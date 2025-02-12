@@ -27,16 +27,24 @@ const RegionPerformanceView = ({regionId}: Props) => {
   const [chartData, setChartData] = useState<any[]>([]);
   const [areaNames, setAreaNames] = useState<any[]>([]); // Store area names separately
   
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" });
-  const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
-  const currentYear = years[years.length - 1];
-  
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
   const [selectedData, setSelectedData] = useState<string>(
     `${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`
   );
   useEffect(() => {
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
     // Convert month name to number (1-12) and ensure it's two digits
     const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
     setSelectedData(`${selectedYear.value}-${monthIndex}`);
@@ -50,7 +58,7 @@ const RegionPerformanceView = ({regionId}: Props) => {
       // const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
       // const formattedDate = `${selectedYear.value}-${monthIndex}`; // Ensure YYYY-MM format
       const endPoint = `${endPoints.CONVERSION_RATE}/${regionId}?date=${selectedData}`;
-    //  console.log("Fetching data for:", formattedDate); // ✅ Debugging
+//    console.log("Fetching data for:", formattedDate); // ✅ Debugging
       console.log("API Endpoint:", endPoint); // ✅ Debugging
   
       const { response, error } = await LeadsConverted(endPoint);
@@ -101,81 +109,9 @@ const RegionPerformanceView = ({regionId}: Props) => {
     if (selectedData) {
       getPerformers();
     }
-  }, [selectedData]);
-
-  // const CustomLegend = () => {
-  //   return (
-  //     <div
-  //       className=""
-  //       style={{ display: "flex", justifyContent:'space-between', paddingLeft:'60px' }}
-  //     >
-  //       <p className='flex items-center gap-1 text-[#e2b0ff]'>Area1 <div className='w-2 h-2 bg-[#e2b0ff] rounded-full'></div></p>
-  //       <p className='flex items-center gap-1 text-[#8884d8]' >Area2 <div className='w-2 h-2 bg-[#8884d8] rounded-full'></div></p>
-  //       <p className='flex items-center gap-1 text-[#82ca9d]' >Area3 <div className='w-2 h-2 bg-[#82ca9d] rounded-full'></div></p>
-  //       <p className='flex items-center gap-1 text-[#d86a57]' >Area4 <div className='w-2 h-2 bg-[#d86a57] rounded-full'></div></p>
-  //       <p className='flex items-center gap-1 text-[#6ab6ff]'>Area5 <div className='w-2 h-2 bg-[#6ab6ff] rounded-full'></div></p>
-  //     </div>
-  //   );
-  // };
+  }, [selectedData,regionId]);
 
 
-
-  // const datas = [
-  //   {
-  //     name: "Jan 05",
-  //     Area1: 5673,
-  //     Area2: 5993,
-  //     Area3: 9466,
-  //     Area4: 2677,
-  //     Area5: 3778,
-  //     amt: 9000,
-  //   },
-  //   {
-  //     name: "Jan 10",
-  //     Area1: 4563,
-  //     Area2: 9467,
-  //     Area3: 6628,
-  //     Area4: 6738,
-  //     Area5: 3368,
-  //     amt: 9777,
-  //   },
-  //   {
-  //     name: "Jan 15",
-  //     Area1: 1298,
-  //     Area2: 3773,
-  //     Area3: 3783,
-  //     Area4: 4800,
-  //     Area5: 9367,
-  //     amt: 8000,
-  //   },
-  //   {
-  //     name: "Jan 20",
-  //     Area1: 1890,
-  //     Area2: 4098,
-  //     Area3: 9753,
-  //     Area4: 3667,
-  //     Area5: 3372,
-  //     amt: 6000,
-  //   },
-  //   {
-  //     name: "Jan 25",
-  //     Area1: 1890,
-  //     Area2: 2800,
-  //     Area3: 1890,
-  //     Area4: 4400,
-  //     Area5: 4800,
-  //     amt: 2181,
-  //   },
-  //   {
-  //     name: "Jan 30",
-  //     Area1: 1890,
-  //     Area2: 1800,
-  //     Area3: 1800,
-  //     Area4: 4800,
-  //     Area5: 4300,
-  //     amt: 2500,
-  //   },
-  // ];
 
   return (
     <div className='flex flex-col space-y-3 mt-2'>
@@ -195,7 +131,7 @@ const RegionPerformanceView = ({regionId}: Props) => {
         <SelectDropdown 
         setSelectedValue={setSelectedMonth}
          selectedValue={selectedMonth} 
-         filteredData={months} 
+         filteredData={newMonthList} 
          searchPlaceholder="Search Months" 
          width="w-44" 
          />

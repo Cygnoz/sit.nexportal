@@ -102,18 +102,28 @@ const AMView = ({ staffId }: Props) => {
 
 
   const { request: LeadsConverted } = useApi("get", 3002);
+  const { request: SalaryInfo } = useApi("get", 3002);
 
   const [chartData, setChartData] = useState<any[]>([]);
 
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" });
-  const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
-  const currentYear = years[years.length - 1];
-
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
   const [selectedData, setSelectedData] = useState<string>("");
+    const[salaryDetails,setSalaryDetails]=useState<any>('')
 
   useEffect(() => {
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
     const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
     setSelectedData(`${selectedYear.value}-${monthIndex}`);
   }, [selectedMonth, selectedYear]);
@@ -152,6 +162,35 @@ const AMView = ({ staffId }: Props) => {
       getPerformers();
     }
   }, [selectedData]);
+
+
+  
+  const getSalary = async () => {
+    try {
+      const { response, error } = await SalaryInfo(`${endPoints.SALARY_INFO}/${iId}`);
+      // console.log(response);
+      // console.log(error);
+      
+     // console.log(error);
+      if (response && !error) {
+       //console.log("Ss",response.data);
+       setSalaryDetails(response.data)
+      
+       
+       
+       // setChartData(response.data);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  useEffect(() => {
+  getSalary()
+  }, [iId]);
 
 
 
@@ -688,7 +727,7 @@ const AMView = ({ staffId }: Props) => {
         <SelectDropdown
           setSelectedValue={setSelectedMonth}
           selectedValue={selectedMonth}
-          filteredData={months}
+          filteredData={newMonthList}
           searchPlaceholder="Search Months"
           width="w-44"
         />
@@ -768,7 +807,7 @@ const AMView = ({ staffId }: Props) => {
         />
       </Modal>
       <Modal open={isModalOpen.salaryInfoAM} onClose={() => handleModalToggle()} className="w-[45%]">
-        <SalaryInfoModal onClose={() => handleModalToggle()} />
+        <SalaryInfoModal  salaryDetails={salaryDetails} onClose={() => handleModalToggle()} />
       </Modal>
 
       <Modal open={isModalOpen.commissionAM} onClose={() => handleModalToggle()} className="w-[45%]">

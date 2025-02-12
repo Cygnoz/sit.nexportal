@@ -81,7 +81,8 @@ const RMView = ({ staffId }: Props) => {
     }));
     getARM();
   };
-
+  const { request: SalaryInfo } = useApi("get", 3002);
+  const[salaryDetails,setSalaryDetails]=useState<any>('')
   const { request: getaRM } = useApi("get", 3002);
   const { request: deleteaRM } = useApi("delete", 3002)
   const { loading, setLoading } = useResponse()
@@ -179,6 +180,36 @@ const RMView = ({ staffId }: Props) => {
   const [totalAreaManagers, setTotalAreaManagers] = useState([]);
   const [totalBdas, setTotalBdas] = useState([]);
   const { request: deactivateRM } = useApi('put', 3002)
+ 
+
+  const getSalary = async () => {
+    try {
+      const { response, error } = await SalaryInfo(`${endPoints.SALARY_INFO}/${iId}`);
+      console.log(response);
+       console.log(error);
+      
+     // console.log(error);
+      if (response && !error) {
+       console.log("Ss",response.data);
+       setSalaryDetails(response.data)
+      
+       
+       
+       // setChartData(response.data);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  useEffect(() => {
+  getSalary()
+  }, [iId]);
+
+
 
   const getRMInsiIdes = async () => {
     try {
@@ -569,7 +600,7 @@ const RMView = ({ staffId }: Props) => {
         />
       </Modal>
       <Modal open={isModalOpen.salaryInfoRM} onClose={() => handleModalToggle()}>
-        <SalaryInfoModal onClose={() => handleModalToggle()} />
+        <SalaryInfoModal salaryDetails={salaryDetails} onClose={() => handleModalToggle()} />
       </Modal>
 
       <Modal open={isModalOpen.commissionRM} onClose={() => handleModalToggle()} className="w-[45%]">
