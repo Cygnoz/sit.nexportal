@@ -138,17 +138,7 @@ const SalaryInfoModal = ({ onClose }: Props) => {
           data={datas}
           columns={columns}
 
-          headerContents={{
-            search: { placeholder: "Search..." },
-            sort: [
-              {
-                sortHead: "Sort Year",
-                sortList: [
-                  { label: "Year", icon: <span></span>, action: () => { } },
-                ],
-              },
-            ],
-          }}
+          
           actionList={[
             { label: "view", function: handleView },
 
