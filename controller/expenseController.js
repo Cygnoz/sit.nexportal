@@ -15,35 +15,7 @@ exports.addExpense = async (req, res, next) => {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
 
-    // Generate JWT token
-    const token = jwt.sign(
-      {
-        organizationId: process.env.ORGANIZATION_ID,
-      },
-      process.env.NEX_JWT_SECRET,
-      { expiresIn: "12h" }
-    );
-
-    const requestBody = {
-      organizationName: cleanedData.companyName,
-      contactName: firstName,
-      contactNum: phone,
-      email: email,
-      password: cleanedData.password,
-    };
-
-    // API call to external service
-    const response = await axios.post(
-      "http://localhost:5008/add-category-nexportal",
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      },
-      requestBody
-    );
-    console.log("resr",response);
+   
     
 // Expense id
 let nextId = 1;
