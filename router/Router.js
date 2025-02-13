@@ -137,4 +137,6 @@ router.delete("/expense/:id",verifyToken,checkPermission('Delete Expense'), expe
 
 router.get("/get-all-accounts",verifyToken,checkPermission('View Expense'), expenseController.getAllAccounts);
 
+router.put("/pay-expense/:id",verifyToken,checkPermission('Pay Expense'), expenseController.payExpense,ActivityLogGeneration('Pay Expense'));
+
 module.exports = router

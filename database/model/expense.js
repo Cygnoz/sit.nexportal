@@ -7,7 +7,9 @@ const expenseSchema = new Schema(
     expenseName: { type: String},
     expenseId: { type: String},
     date: { type: Date },
+    paidThroughAccount: { type: String },
     expenseAccount: { type: String },
+    paymentMode: { type: String },
     amount: { type: Number },
     category: { type: Schema.Types.ObjectId, ref: "Category" }, // References the Category collection
     note: { type: String },

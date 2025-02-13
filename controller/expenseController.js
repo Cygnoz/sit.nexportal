@@ -238,7 +238,34 @@ exports.deleteExpense = async (req, res, next) => {
     }
   };
   
-
+  exports.payExpense = async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const userId = req.user.id;
+      const { status, ...data } = req.body; // Extract status separately
+      const actionDate = new Date().toISOString(); // Capture current date-time
+  
+      const updateFields = { ...data, status: "Paid" };
+  
+      // Update the expense with new values
+      const expense = await Expense.findByIdAndUpdate(id, updateFields, { new: true });
+  
+      if (!expense) {
+        return res.status(404).json({ message: "Expense not found" });
+      }
+  
+      res.status(200).json({ message: "Expense marked as Paid successfully", expense });
+  
+      logOperation(req, "successfully");
+      next();
+    } catch (error) {
+      console.error("Error updating expense:", error);
+      logOperation(req, "Failed");
+      res.status(500).json({ message: "Internal server error" });
+      next();
+    }
+  };
+  
 
 
   
