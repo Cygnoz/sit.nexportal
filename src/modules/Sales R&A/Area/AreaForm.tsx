@@ -153,13 +153,7 @@ const AreaForm: React.FC<NewAreaProps> = ({ onClose,editId,regionId }) => {
           error={errors.areaName?.message}
           {...register("areaName")}
         />
-        {/* <Input
-          required
-          placeholder="Enter Area Code"
-          label="Area Code"
-          error={errors.areaCode?.message}
-          {...register("areaCode")}
-        /> */}
+
     
         <Select
           required

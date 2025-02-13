@@ -52,6 +52,8 @@ type Props = {
 };
 
 const SuperVisorView = ({ staffId }: Props) => {
+  const { request: SalaryInfo } = useApi("get", 3002);
+  const[salaryDetails,setSalaryDetails]=useState<any>('')
   const { loading, setLoading } = useResponse()
   const topRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -90,10 +92,12 @@ const SuperVisorView = ({ staffId }: Props) => {
     getASV();
   };
 
+ 
   const { request: getInsideSv } = useApi('get', 3003);
   const [insideSvData, setInsideSvData] = useState<any>();
   const [supportAgentDetails, setSupportAgentDetails] = useState([]);
   const [ticketSummary, setTicketSummary] = useState<any>({});
+
 
   const { request: deleteaSV } = useApi('delete', 3003)
   const { request: deactivateSV } = useApi('put', 3003);
@@ -143,6 +147,34 @@ const SuperVisorView = ({ staffId }: Props) => {
       toast.error("Failed to delete the SuperVisor.");
     }
   };
+
+  
+  const getSalary = async () => {
+    try {
+      const { response, error } = await SalaryInfo(`${endPoints.SALARY_INFO}/${iId}`);
+      console.log(response);
+      // console.log(error);
+      
+     // console.log(error);
+      if (response && !error) {
+       console.log("Ss",response.data);
+       setSalaryDetails(response.data)
+      
+       
+       
+       // setChartData(response.data);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  useEffect(() => {
+  getSalary()
+  }, [iId]);
 
 
   const navigate = useNavigate()
@@ -639,7 +671,7 @@ const SuperVisorView = ({ staffId }: Props) => {
         />
       </Modal>
       <Modal open={isModalOpen.salarySv} onClose={()=>handleModalToggle()} >
-    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
+    <SalaryInfoModal salaryDetails={salaryDetails} onClose={()=>handleModalToggle()} />
   </Modal>
 
   <Modal open={isModalOpen.commissionSv} onClose={()=>handleModalToggle()} className="w-[45%]">

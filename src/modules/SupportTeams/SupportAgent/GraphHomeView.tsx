@@ -15,17 +15,25 @@ type Props = {
 const GraphHomeView = ({ id }: Props) => {
 
   const { request: getTicketOvertime } = useApi('get', 3003);
-  const [chartData, setChartData] = useState<any[]>([]);
-  
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" });
-  const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
-  const currentYear = years[years.length - 1];
-  
-  const [selectedMonth,setSelectedMonth] = useState<any>(currentMonth);
+  const [chartData, setChartData] = useState([]);
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
+
   const [selectedData, setSelectedData] = useState<string>("");
   
   useEffect(() => {
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
     const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
     setSelectedData(`${selectedYear.value}-${monthIndex}`);
   }, [selectedMonth, selectedYear]);
@@ -95,7 +103,7 @@ const GraphHomeView = ({ id }: Props) => {
           <SelectDropdown
             setSelectedValue={setSelectedMonth}
             selectedValue={selectedMonth}
-            filteredData={months}
+            filteredData={newMonthList}
             searchPlaceholder="Search Month"
             width="w-44"
           />

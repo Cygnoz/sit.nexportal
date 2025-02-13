@@ -16,15 +16,11 @@ import ResendActivity from "./RecentActivity";
 import TeamOverview from "./TeamOverview";
 import DeActivateIcon from "../../../assets/icons/DeActivateIcon";
 import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
-import Button from "../../../components/ui/Button";
-import TargetAddForm from "./TargetAddForm";
 import { useUser } from "../../../context/UserContext";
 
 type Props = {};
 
-const AreaView = ({ }: // status,
-  // salesManagers
-  //areaCode,region
+const AreaView = ({ }: 
   Props) => {
     const {user}=useUser()
   user?.role
@@ -210,22 +206,6 @@ const AreaView = ({ }: // status,
                 <p className="text-xs text-[#8F99A9]">Region</p>
                 <p onClick={() => navigate(`/regions/${area?.area?.region?._id}`)} className="text-xs underline cursor-pointer">{area?.area?.region?.regionCode}</p>
               </div>
-              <div className="border-r border-[#DADADA] h-10 me-4 "></div>
-              {user?.role === 'Super Admin' && (
-              <div className="text-center">
-                <p className="text-xs text-[#8F99A9]">Total Target</p>
-                <p  className="text-xs  cursor-pointer">10</p>
-              </div>
-               )}
-              {user?.role === 'Super Admin' && (
-           
-         
-             <div className="ms-2"  onClick={() => handleModalToggle(false, false, false,true)}>
-             <Button variant="tertiary" size="sm" className="text-[#565148] text-xs font-medium">
-                        <span className="font-bold text-xl"><UserIcon  color="#565148"/></span> Assign Target
-                      </Button>
-             </div>
-              )}
             </div>
           </div>
 
@@ -352,9 +332,6 @@ const AreaView = ({ }: // status,
           }
           onClose={() => handleModalToggle()}
         />
-      </Modal>
-      <Modal open={isModalOpen.AddTarget} onClose={() => handleModalToggle()} className="w-[35%]">
-        <TargetAddForm  onClose={() => handleModalToggle()} />
       </Modal>
 
     </>

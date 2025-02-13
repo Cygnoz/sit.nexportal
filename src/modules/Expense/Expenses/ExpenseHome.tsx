@@ -53,7 +53,7 @@ const ExpenseHome = ({}: Props) => {
  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
  const [newMonthList, setNewMonthList] = useState<any>([]);
  const [expenseCategoryList,setExpenseCategoryList]=useState<any[]>([])
- const [selectedCategory,setSelectedCategory]=useState<any>('')
+ const [selectedCategory,setSelectedCategory]=useState<any>(null)
  const [countExpense,setCountExpense]=useState<any>('')
  const [selectedDate, setSelectedDate] = useState<string>(`${selectedYear.value}-${currentMonth.value}-1`);
   const [searchValue, setSearchValue] = useState<string>("");
@@ -61,6 +61,8 @@ const ExpenseHome = ({}: Props) => {
   const [filteredExpenses,setFilteredExpenses]=useState<any[]>([])
   const {user}=useUser()
   const allowedRoles: any = ["Super Admin", "Sales Admin", "Support Admin"];
+
+
   const handleView = (id: any, status: any) => {
     let path = "/expense"; // Default path for "Paid"
     console.log(status);
@@ -130,11 +132,12 @@ if (!allowedRoles.includes(user?.role) && !(status === "Rejected" || status === 
     }
   };
   const handleActiveTab = (tab: any) => {
+    setActiveTab(tab)
     setSearchValue('')
-    setActiveTab(tab);
     if (tab === "All Expenses") {
       setFilteredExpenses(allExpenses)
     } else {
+      
       const roleMap: { [key: string]: string } = {
         RM: "Region Manager",
         AM: "Area Manager",
@@ -150,6 +153,9 @@ if (!allowedRoles.includes(user?.role) && !(status === "Rejected" || status === 
     }
   };
 
+
+  
+  
   useEffect(() => {
     setNewMonthList(
       months.filter((m) =>
@@ -162,10 +168,10 @@ if (!allowedRoles.includes(user?.role) && !(status === "Rejected" || status === 
     setSelectedDate(`${selectedYear.value}-${selectedMonth.value}-1`);
   
   }, [selectedMonth, selectedYear]);
+
+
   useEffect(()=>{
-    if(selectedDate){
-      getAllExpense()
-    }
+    getAllExpense()
   },[selectedDate,selectedCategory])
   
   useEffect(()=>{
@@ -189,7 +195,7 @@ if (!allowedRoles.includes(user?.role) && !(status === "Rejected" || status === 
     }, [filteredExpenses, searchValue]);
 
 
-const homeCardData = [
+    const homeCardData = [
     {
       icon: <CoinIcon size={30}/>,
       number: countExpense?.totalExpense,
@@ -219,7 +225,7 @@ const homeCardData = [
       iconFrameColor: "#FCB23E",
       iconFrameBorderColor: "#FDE3BBCC",
     },
-  ];
+    ];
 
   
     // Define the columns with strict keys
@@ -232,41 +238,46 @@ const homeCardData = [
     { key: "date", label: "Date" },
   ];
 
-  const getAllExpense = async() => {
-    // API call to get all expenses
-   try{
-    setLoading(true)
-    const end=`${endPoints.EXPENSE}/?date=${selectedDate}&id=${selectedCategory?.value}`
-    console.log("end",end);
-    const {response,error}=await getAllExpenses(end)
-    if(response && !error){
-      console.log("expense",response.data)
-     const filteredExpense= response.data.expenses.map((expense:any)=>({
-        ...expense,
-        date:new Date(expense.date).toLocaleDateString(),
-        category:expense?.category?.categoryName,
-        addedBy:expense?.addedBy?.userName
-      }))
-      const expenseCounts={
-        averageExpense:response?.data?.averageExpense 
-        ? response?.data?.averageExpense.toFixed(2) // Ensures two decimal places
-        : "0.00",
-        pendingExpenses:response?.data?.pendingExpenses,
-        rejectedExpenses:response?.data?.rejectedExpenses,
-        totalExpense:response?.data?.totalExpense
+  const getAllExpense = async () => {
+    try {
+      setLoading(true); // Ensures loading state before API call
+      const end = `${endPoints.EXPENSE}/?date=${selectedDate}${
+        selectedCategory?.value ? `&id=${selectedCategory.value}` : ""
+      }`;
+      
+      const { response, error } = await getAllExpenses(end);
+  
+      if (response && !error) {
+        console.log("expense", response.data);
+        const filteredExpense = response.data.expenses.map((expense: any) => ({
+          ...expense,
+          date: new Date(expense.date).toLocaleDateString(),
+          category: expense?.category?.categoryName || "Uncategorized",
+          addedBy: expense?.addedBy?.userName || "Unknown",
+        }));
+  
+        const expenseCounts = {
+          averageExpense: response?.data?.averageExpense
+            ? response?.data?.averageExpense.toFixed(2) // Ensures two decimal places
+            : "0.00",
+          pendingExpenses: response?.data?.pendingExpenses || 0,
+          rejectedExpenses: response?.data?.rejectedExpenses || 0,
+          totalExpense: response?.data?.totalExpense || 0,
+        };
+  
+        setCountExpense(expenseCounts);
+        setFilteredExpenses(filteredExpense);
+        setExpenses(filteredExpense);
+      } else {
+        console.log(error?.response?.data);
       }
-      setCountExpense(expenseCounts)
-      setFilteredExpenses(filteredExpense)
-      setExpenses(filteredExpense)
-    }else{
-      console.log(error?.response?.data)
-  }
-   }catch(err){
+    } catch (err) {
       console.error("Error fetching expenses", err);
-   }finally{
-    setLoading(false)
-   }
-}
+    } finally {
+      setLoading(false); // Ensures loading is reset even if API call fails
+    }
+  };
+
 
 const handleDeleteApi = async () => {
   try {
@@ -283,9 +294,7 @@ const handleDeleteApi = async () => {
   }
 }
 
-  useEffect(()=>{
-    getAllExpense()
-  },[])
+
   const renderHeader = () => (
     <div>
       <div
@@ -394,7 +403,7 @@ const handleDeleteApi = async () => {
         <div className="bg-white rounded-lg p-3 mt-2">
           {renderHeader()}
         <ExpenseTable<LeadViewData>
-            data={filteredData}
+            data={filteredData.reverse()}
             columns={columns}
             headerContents={{
           

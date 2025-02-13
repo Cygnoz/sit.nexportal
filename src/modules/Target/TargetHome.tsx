@@ -209,13 +209,12 @@ const TargetHome = () => {
 
           {isButtonVisible && (
             <div className="flex justify-end ml-auto">
-              <Button variant="primary" onClick={() => {
-                handleCreateTarget()
-                setEditId('')
-
-              }} className="w-36 h-10">
-                <span className="font-medium text-xs">+</span> Create Target
-              </Button>
+               <Button variant="primary" size="sm" onClick={()=>{
+                        handleCreateTarget()
+                        setEditId('')
+                      }}>
+                        <span className="font-bold text-xl">+</span> Create Target
+                      </Button>
             </div>
           )}
 

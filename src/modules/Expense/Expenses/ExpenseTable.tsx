@@ -73,8 +73,10 @@ const ExpenseTable = <T extends object>({
   // Paginate the filtered data
   const paginatedData: any = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return data?.reverse().slice(start, start + rowsPerPage);
+    return data?.slice(start, start + rowsPerPage);
   }, [data, currentPage, rowsPerPage]);
+
+  
 
   const totalPages = Math.ceil(data?.length / rowsPerPage);
 

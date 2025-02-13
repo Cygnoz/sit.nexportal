@@ -24,6 +24,8 @@ type Props = {
 }
 
 const ViewHeader = ({id}: Props) => {
+   const { request: SalaryInfo } = useApi("get", 3002);
+    const[salaryDetails,setSalaryDetails]=useState<any>('')
 
     const [isModalOpen, setIsModalOpen] = useState({
         editSA:false,
@@ -74,6 +76,35 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
   useEffect(()=>{
     getASA();
   },[id])
+
+  const getSalary = async () => {
+    try {
+      const { response, error } = await SalaryInfo(`${endPoints.SALARY_INFO}/${id}`);
+      console.log(response);
+      // console.log(error);
+      
+     // console.log(error);
+      if (response && !error) {
+       console.log("Ss",response.data);
+       setSalaryDetails(response.data)
+      
+       
+       
+       // setChartData(response.data);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  useEffect(() => {
+  getSalary()
+  }, [id]);
+
+
 
   const handleDelete = async () => {
     try {
@@ -278,7 +309,7 @@ const {response,error}= await getaSA(`${endPoints.SUPPORT_AGENT}/${id}`);
       </Modal>
 
       <Modal open={isModalOpen.salaryInfoSA} onClose={()=>handleModalToggle()} >
-    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
+    <SalaryInfoModal salaryDetails={salaryDetails}  onClose={()=>handleModalToggle()} />
   </Modal>
 
   <Modal open={isModalOpen.commissionSA} onClose={()=>handleModalToggle()} className="w-[45%]">
