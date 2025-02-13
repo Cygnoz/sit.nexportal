@@ -5,7 +5,9 @@ import ChevronRight from "../../../../assets/icons/ChevronRight";
 import cygnoz from "../../../../assets/image/cygnozzzz.png";
 import Button from "../../../../components/ui/Button";
 import { useRegularApi } from "../../../../context/ApiContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Modal from "../../../../components/modal/Modal";
+import PayModal from "../../Modal/PayModal";
 
 type Props = {};
 
@@ -18,7 +20,10 @@ const PayrollApproved = ({}: Props) => {
       refreshContext({ payrollViewId: id });
     }
   }, [id, refreshContext]);
-  console.log("dsddssdsd", payrollViewDetails);
+  const [isModalOpen,setIsModalOpen]=useState(false)
+      const handleModalToggle=()=>{
+          setIsModalOpen((prev)=>!prev)
+      }
   return (
     <div>
       <div>
@@ -63,7 +68,7 @@ const PayrollApproved = ({}: Props) => {
           <div className="w-full max-w-4xl bg-white shadow-md rounded-lg">
             <div className="bg-[#EFEFEF] p-4  shadow-md rounded-md">
               <div className="flex justify-between mt-5">
-                <p className="text-2xl font-semibold">Pay Slip</p>
+                <p className="text-2xl font-semibold">Salary Pay Slip</p>
                 <p className="font-normal text-xs text-[#5E6470] text-right">
                   CygnoNex Innovations Private Limited,
                   <br />
@@ -186,7 +191,7 @@ const PayrollApproved = ({}: Props) => {
                             Approved by
                           </p>
                           <p className="text-xs font-semibold text-[#1A1C21]">
-                            {payrollViewDetails?.approvedBy?.userName}
+                            {payrollViewDetails?.approvedBy?.userName ||'N/A'}
                           </p>
                           
                         </div>
@@ -233,11 +238,15 @@ const PayrollApproved = ({}: Props) => {
             variant="primary"
             size="md"
             className="h-10 w-32 justify-center"
+            onClick={handleModalToggle}
           >
             Pay
           </Button>
         </div>
       </div>
+      <Modal className="w-[30%]" align="center" open={isModalOpen} onClose={handleModalToggle}>
+                <PayModal from="Payroll" id={id} onClose={handleModalToggle}/>
+      </Modal>
     </div>
   );
 };

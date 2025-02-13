@@ -128,12 +128,15 @@ export const endPoints = {
 EXPENSE_CATEGORY:'/category',
 EXPENSE:'/expense',
 
-//Target
+ //Target
  TARGET_ACHEIVED:'/targetAchieved',
  YEARLY_TARGETS:'/yearlyTargets',
 
-//  Payroll
+ //  Payroll
   PAYROLL: "/payroll",
-  SALARY_INFO:'salaryInfo'
-
+  SALARY_INFO:'salaryInfo',
+  PAY_PAYROLL:'/pay-payrol',
+  // Expense 
+  EXPENSE_ALL_ACCOUNTS:'/get-all-accounts',
+  PAY_EXPENSE:'/pay-expense'
 };

@@ -102,19 +102,7 @@ const SalaryInfoModal: React.FC<Props> = ({ onClose, salaryDetails }) => {
           </div>
         ))}
       </div> */}
-
-      <div>
-        <PayrollTable
-          data={datas}
-          columns={columns}
-
-          
-          actionList={[
-            { label: "view", function: handleView },
-
-          ]}
-        />
-      </div>
+    </div>
     </div>
   );
 };

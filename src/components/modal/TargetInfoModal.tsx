@@ -112,8 +112,8 @@ const getDefaultTab = (): TabType => {
       const data = getDataByActiveTab(activeTab);
     
   return (
-    <div>
-         <div className="mb-4 p-1 flex justify-between">
+    <div className="p-3">
+         <div className="mb-4 p-1 flex justify-between items-center">
                   <p className="text-[#303F58] text-lg font-bold ms-2">Target Info</p>
                   <button
             type="button"
@@ -123,7 +123,7 @@ const getDefaultTab = (): TabType => {
             &times;
           </button>
                 </div>
-                <div className="flex gap-24 bg-[#FEFBF8] rounded-xl px-4 py-1 text-base font-bold border-b border-gray-200">
+                <div className="flex gap-24 bg-[#FEFBF8] rounded-xl mx-3 px-4 py-1 text-base font-bold border-b border-gray-200">
           {visibleTabs.map((tab) => (
             <div
               key={tab}
