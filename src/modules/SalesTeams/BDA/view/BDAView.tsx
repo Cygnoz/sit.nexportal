@@ -8,6 +8,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
+ 
   ResponsiveContainer,
   Tooltip,
   XAxis, YAxis
@@ -41,6 +42,7 @@ import SelectDropdown from "../../../../components/ui/SelectDropdown";
 import { useResponse } from "../../../../context/ResponseContext";
 import ProgressBar from "../../../../pages/Dashboard/Graphs/ProgressBar";
 import { useUser } from "../../../../context/UserContext";
+import { months, years } from "../../../../components/list/MonthYearList";
 
 
 
@@ -138,6 +140,87 @@ const BDAView = ({staffId}: Props) => {
   const  handleLicenserView=(id:any)=>{
     navigate(`/licenser/${id}`)
   }
+
+  const { request: SalaryInfo } = useApi("get", 3002);
+  const[salaryDetails,setSalaryDetails]=useState<any>('')
+  const { request: RenewalCount } = useApi("get", 3002);
+
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+
+  const [selectedMonth] = useState<any>(currentMonth);
+  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [selectedData, setSelectedData] = useState<string>("");
+  
+  useEffect(() => {
+    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
+    setSelectedData(`${selectedYear.value}-${monthIndex}`);
+  }, [selectedMonth, selectedYear]);
+  
+  const getPerformers = async () => {
+    try {
+      const endPoint = `${endPoints.RENEWAL_BDA}/${iId}/?year=${selectedData}`;
+      console.log("Fetching Data:", endPoint);
+      
+      const { response, error } = await RenewalCount(endPoint);
+  
+      if (response && response.data) {
+        console.log("API Data:", response.data);
+  
+        // Transform data to match the expected format
+        const transformedData = response.data.data.map((item: any) => ({
+
+          name: item.month,           // Month for X-axis
+          renewalCount: item.renewalCount,  // Y-axis values
+        }));
+  
+        setChartData(transformedData);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        setChartData([]); // Set empty chart if error
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  useEffect(() => {
+    if (selectedData) {
+      getPerformers();
+    }
+  }, [selectedData]);
+
+
+  const getSalary = async () => {
+    try {
+      const { response, error } = await SalaryInfo(`${endPoints.SALARY_INFO}/${iId}`);
+      console.log(response);
+       console.log(error);
+      
+     // console.log(error);
+      if (response && !error) {
+       console.log("Ss",response.data);
+       setSalaryDetails(response.data)
+      
+       
+       
+       // setChartData(response.data);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  useEffect(() => {
+  getSalary()
+  }, [iId]);
 
  
   // Data for the table
@@ -283,36 +366,36 @@ const BDAView = ({staffId}: Props) => {
   }, [iId]);
 
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
-  const retentionData = [
-    { name: 'Jan', uv: 4000, pv: 2400, amt: 2400 },
-    { name: 'Feb', uv: 3000, pv: 1398, amt: 2210 },
-    { name: 'Mar', uv: 2000, pv: 9800, amt: 2290 },
-    { name: 'Apr', uv: 2780, pv: 3908, amt: 2000 },
-    { name: 'May', uv: 1890, pv: 4800, amt: 2181 },
-    { name: 'Jun', uv: 4000, pv: 2400, amt: 2400 },
-    { name: 'Jul', uv: 3000, pv: 1398, amt: 2210 },
-    { name: 'Aug', uv: 2000, pv: 9800, amt: 2290 },
-    { name: 'Sep', uv: 2780, pv: 3908, amt: 2000 },
-    { name: 'Oct', uv: 1890, pv: 4800, amt: 2181 },
-    { name: 'Nov', uv: 2780, pv: 3908, amt: 2000 },
-    { name: 'Dec', uv: 1890, pv: 4800, amt: 2181 },
-  ]
+  // const retentionData = [
+  //   { name: 'Jan', uv: 4000, pv: 2400, amt: 2400 },
+  //   { name: 'Feb', uv: 3000, pv: 1398, amt: 2210 },
+  //   { name: 'Mar', uv: 2000, pv: 9800, amt: 2290 },
+  //   { name: 'Apr', uv: 2780, pv: 3908, amt: 2000 },
+  //   { name: 'May', uv: 1890, pv: 4800, amt: 2181 },
+  //   { name: 'Jun', uv: 4000, pv: 2400, amt: 2400 },
+  //   { name: 'Jul', uv: 3000, pv: 1398, amt: 2210 },
+  //   { name: 'Aug', uv: 2000, pv: 9800, amt: 2290 },
+  //   { name: 'Sep', uv: 2780, pv: 3908, amt: 2000 },
+  //   { name: 'Oct', uv: 1890, pv: 4800, amt: 2181 },
+  //   { name: 'Nov', uv: 2780, pv: 3908, amt: 2000 },
+  //   { name: 'Dec', uv: 1890, pv: 4800, amt: 2181 },
+  // ]
  
-  const normalizedData = retentionData.map(item => ({
-    ...item,
-    uv: item.uv / 160,
-  }))
-  const [selectedActivity, setSelectedActivity] = useState({ label: 'Current Month', value: '' });
-  const handleActivitySelection = (selectedOption: any) => {
-    setSelectedActivity(selectedOption);
-  };
+  // const normalizedData = retentionData.map(item => ({
+  //   ...item,
+  //   uv: item.uv / 160,
+  // }))
+  // const [selectedActivity, setSelectedActivity] = useState({ label: 'Current Month', value: '' });
+  // const handleActivitySelection = (selectedOption: any) => {
+  //   setSelectedActivity(selectedOption);
+  // };
  
-  const activityOptions = [
-    { label: 'Previous Month', value: 'previousMonth' },
-    { label: 'Q1', value: 'q1' },
-    { label: 'Q2', value: 'q2' },
-    { label: 'Q3', value: 'q3' },
-  ];
+  // const activityOptions = [
+  //   { label: 'Previous Month', value: 'previousMonth' },
+  //   { label: 'Q1', value: 'q1' },
+  //   { label: 'Q2', value: 'q2' },
+  //   { label: 'Q3', value: 'q3' },
+  // ];
  
  
 
@@ -567,43 +650,57 @@ const BDAView = ({staffId}: Props) => {
       </div>
 
       <div className="p-3 bg-white w-full space-y-2 rounded-lg mt-4">
-          <div className="flex justify-between">
-            <h2 className="font-bold p-2">License Retention Rate</h2>
-            <SelectDropdown
-              filteredData={activityOptions}
-              selectedValue={selectedActivity}
-              setSelectedValue={handleActivitySelection}
-              placeholder="Current Month"
-              searchPlaceholder="Search Month"
-              width="w-44" />
-          </div>
-          <div className="px-3 py-5">
-            <p className="text-[#4B5C79] text-sm font-normal">Average Retention</p>
-            <p className="text-[#272B3F] text-2xl font-normal">50%</p>
-          </div>
-          <div className="-ms-6 px-5">
-            <ResponsiveContainer width="100%" minHeight={300}>
-              <BarChart data={normalizedData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  ticks={[0, 5, 10, 15, 20, 25]}
-                  domain={[0, 25]}
-                  tickFormatter={(value) => `${value * 4}%`} // Convert to percentage
-                />
-                <Bar dataKey="uv" radius={[10, 10, 0, 0]}>
-                  {normalizedData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
- 
- 
+    <div className="flex justify-between">
+      <h2 className="font-bold p-2">License Renewal Count</h2>
+      <SelectDropdown
+        setSelectedValue={setSelectedYear}
+        selectedValue={selectedYear}
+        filteredData={years}
+        searchPlaceholder="Search Years"
+        width="w-44"
+      />
+    </div>
+
+    <div className="-ms-6 px-5">
+  {chartData.length > 0 && chartData.some((item) => item.renewalCount > 0) ? (
+    <ResponsiveContainer width="100%" minHeight={300}>
+      <BarChart data={chartData} margin={{ bottom: 50 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+
+        <XAxis 
+          dataKey="name"  
+          axisLine={false} 
+          tickLine={false} 
+          interval={0}  
+          angle={0}   
+          textAnchor="middle" 
+          dy={10} 
+        />
+
+        <YAxis 
+          axisLine={false} 
+          tickLine={false} 
+          ticks={[0, 5, 10, 15, 20, 25]} 
+          domain={[0, 25]} 
+        />
+
+        <Tooltip />
+
+        <Bar dataKey="renewalCount" radius={[10, 10, 0, 0]}>
+          {chartData.map((_, index) => (
+            <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+          ))}
+        </Bar>
+      </BarChart>
+    </ResponsiveContainer>
+  ) : (
+    // ✅ Show "No Leads Found" when there is no retention rate (all values are 0)
+    <NoRecords text="No Leads Found" parentHeight="320px" />
+  )}
+</div>
+
+
+  </div>
 
 
     </div>
@@ -648,7 +745,7 @@ const BDAView = ({staffId}: Props) => {
         />
       </Modal>   
       <Modal open={isModalOpen.salary} onClose={()=>handleModalToggle()} className="w-[45%]">
-    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
+    <SalaryInfoModal salaryDetails={salaryDetails} onClose={()=>handleModalToggle()} />
   </Modal>
 
   <Modal open={isModalOpen.commission} onClose={()=>handleModalToggle()} className="w-[45%]">

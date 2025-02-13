@@ -44,11 +44,13 @@ const RMViewBDAandGraph = ({ getData, totalBdas, loading }: Props) => {
   const { request: TopPerformingAM } = useApi("get", 3002);
 
   const [chartData, setChartData] = useState([]);
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" }); // Get current month as name
-  const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0]; // Find it in `months`
-
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
-  const [selectedYear, setSelectedYear] = useState<any>(years[years.length - 1]);
+  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
 
   const [selectedData, setSelectedData] = useState<string>(
     `${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`
@@ -56,6 +58,13 @@ const RMViewBDAandGraph = ({ getData, totalBdas, loading }: Props) => {
   const navigate = useNavigate()
 
   useEffect(() => {
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
     // Convert month name to number (1-12) and ensure it's two digits
     const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
     setSelectedData(`${selectedYear.value}-${monthIndex}`);
@@ -350,7 +359,7 @@ const RMViewBDAandGraph = ({ getData, totalBdas, loading }: Props) => {
                 <SelectDropdown
                   setSelectedValue={setSelectedMonth}
                   selectedValue={selectedMonth}
-                  filteredData={months}
+                  filteredData={newMonthList}
                   //   searchPlaceholder="Search Month"
                   width="w-32"
                 />

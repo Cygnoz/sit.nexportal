@@ -19,13 +19,14 @@ import NoRecords from "../../../components/ui/NoRecords"; // Import the NoRecord
 type Props = {};
 
 const TargetComparison: FC<Props> = () => {
-  const { request: TopPerformingAM } = useApi("get", 3004);
+  const { request: TopTarget } = useApi("get", 3004);
 
   const [chartData, setChartData] = useState<any[]>([]);
 
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" });
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
   const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
-  const currentYear = years[years.length - 1];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
 
   const [selectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
@@ -39,7 +40,7 @@ const TargetComparison: FC<Props> = () => {
   const getPerformers = async () => {
     try {
       const endPoint = `${endPoints.YEARLY_TARGETS}?year=${selectedData}`;
-      const { response, error } = await TopPerformingAM(endPoint);
+      const { response, error } = await TopTarget(endPoint);
 
       if (response && response.data) {
         const transformedData = response.data.data.map((item: any) => ({

@@ -24,6 +24,7 @@ import useApi from "../../../Hooks/useApi";
 import { endPoints } from "../../../services/apiEndpoints";
 import Calender from "./ViewModals/Calender";
 import { getStatusClass } from "../../../components/ui/GetStatusClass";
+import NoRecords from "../../../components/ui/NoRecords";
 type Props = {
   leadData: any;
   getLead: () => void;
@@ -32,8 +33,8 @@ type Props = {
 const ViewSidebar = ({ leadData, getLead }: Props) => {
   const { request: deleteLead } = useApi("delete", 3001);
   const { request: breakDownByRegion } = useApi('get', 3001);
-  const [breakDownData, setBreakDownData] = useState<Record<string, number> | null>(null);
-  const [pieData, setPieData] = useState<{ x: string; y: number; color: string }[]>([]);
+  const [breakDownData, setBreakDownData] = useState(null);
+  const [piechartData, setPiechartData] = useState<{ x: string; y: number; color: string }[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState({
     editLead: false,
@@ -99,26 +100,34 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
   const getBreakDownRegion = async () => {
     try {
       const { response, error } = await breakDownByRegion(`${endPoints.LEADS}/${leadData?._id}`);
+     // console.log("id", leadData?._id);
+      //console.log("response", response);
+     // console.log("err", error);
   
       if (response && !error) {
-        console.log(response.data);
+       // console.log(response.data);
+  
         setBreakDownData(response.data.engagementData);
   
         // Convert engagementData to pieData format
-        const formattedData = Object.entries(response.data.engagementData).map(([key, value], index) => ({
-          x: key,   
-          y: typeof value === "number" ? value : 0,  // Ensure 'y' is always a number
-          color: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"][index % 4] // Assign colors dynamically
-        }));
+        const transformedData = Object.entries(response.data.engagementData)
+          .map(([key, value], index) => ({
+            x: key,    
+            y: value as number, // Explicitly casting value as number
+            color: ["#FF6384", "#36A2EB", "#FFCE56", "#4CAF50"][index % 4], // Assign colors dynamically
+          }))
+          .filter((item) => item.y > 0); // Remove entries with 0 value
   
-        setPieData(formattedData);
+       // console.log("transformedData", transformedData);
+        setPiechartData(transformedData);
       } else {
-        console.log(error?.message?.data?.message || "Error fetching data");
+        console.log(error.message);
       }
     } catch (err) {
-      console.error("Error message:", err);
+      console.error("error message", err);
     }
   };
+  
   
   useEffect(() => {
     if (leadData) {
@@ -301,47 +310,54 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
         </div>
         {/* Graph */}
         <div>
-          <div className="bg-white h-fit pb-7  rounded-lg w-full -p-3">
-            <h1 className="text-[#303F58] text-lg font-bold p-3">
-              Top Break Down By Region
-            </h1>
-            <div className="-mt-3">
-              <VictoryPie
-                innerRadius={40}
-                padAngle={4}
-                width={300}
-                data={pieData}
-                theme={VictoryTheme.clean}
-                labels={({ datum }) => `${((datum.y / pieData.reduce((acc, item) => acc + item.y, 0)) * 100).toFixed(1)}%`}
-                labelComponent={
-                  <VictoryLabel
-                    style={{ fill: "#303F58", fontSize: 15 }}
-                  />
-                }
-                style={{
-                  data: {
-                    fill: ({ datum }) => datum.color,
-                  },
-                }}
-              />
+  <div className="bg-white h-fit pb-7 rounded-lg w-full p-3">
+    <h1 className="text-[#303F58] text-lg font-bold p-3">
+      Top Breakdown By Region
+    </h1>
+    <div className="-mt-3">
+      {piechartData.length > 0 ? (
+        <>
+          <VictoryPie
+            innerRadius={40}
+            padAngle={4}
+            width={300}
+            data={piechartData}
+            theme={VictoryTheme.clean}
+            labels={({ datum }) =>
+              `${((datum.y / piechartData.reduce((acc, item) => acc + item.y, 0)) * 100).toFixed(1)}%`
+            }
+            labelComponent={<VictoryLabel style={{ fill: "#303F58", fontSize: 15 }} />}
+            style={{
+              data: {
+                fill: ({ datum }) => datum.color,
+              },
+            }}
+          />
 
-              {/* Legend */}
-              <div className="flex justify-center">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 w-72 gap-3">
-                    {pieData.map((item:any) => (
-                      <div key={item.x} className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                        <span className="text-gray-800 font-medium text-xs">{item.x}</span>
-                        <span className="ml-auto text-gray-600 text-xs">{item.y}</span>
-                      </div>
-                    ))}
+          {/* Legend */}
+          <div className="flex justify-center">
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 w-72 gap-3">
+                {piechartData.map((item) => (
+                  <div key={item.x} className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                    <span className="text-gray-800 font-medium text-xs">{item.x}</span>
+                    <span className="ml-auto text-gray-600 text-xs">{item.y}</span>
                   </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
-        </div>
+        </>
+      ) : (
+        // Show this when no data is available
+        <NoRecords text="No Records Found" parentHeight="320px" />
+
+      )}
+    </div>
+  </div>
+</div>
+
 
         {/* Modal controlled by state */}
       </div>
