@@ -288,7 +288,63 @@ exports.updatePayroll = async (req, res) => {
   }
 };
 
- 
+exports.payPayroll = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+    const { status, ...data } = req.body; // Extract status separately
+    const actionDate = new Date().toISOString(); // Capture current date-time
+
+    const updateFields = { ...data, payRollStatus: "Paid" };
+
+    //  const requestBody = {
+    //       organizationId: process.env.ORGANIZATION_ID,
+    //       expenseCategory: categoryName,
+    //       description: description,
+    //     };
+    //     // Generate JWT token
+    //     const token = jwt.sign(
+    //       {
+    //         organizationId: process.env.ORGANIZATION_ID,
+    //       },
+    //       process.env.NEX_JWT_SECRET,
+    //       { expiresIn: "12h" }
+    //     );
+    //     // https://billbizzapi.azure-api.net/staff/add-category-nexportal
+    //     // API call to external service
+    //     const response = await axios.post(
+    //       "https://billbizzapi.azure-api.net/staff/add-category-nexportal",
+    //       requestBody, // <-- requestBody should be passed as the second argument (data)
+    //       {
+    //         headers: {
+    //           Authorization: `Bearer ${token}`,
+    //           "Content-Type": "application/json",
+    //         },
+    //       }
+    //     );
+
+    // const allAccounts = response.data;
+
+
+    // Update the expense with new values
+    const payroll = await Payroll.findByIdAndUpdate(id, updateFields, { new: true });
+
+    if (!payroll) {
+      return res.status(404).json({ message: "Expense not found" });
+    }
+
+    res.status(200).json({ message: "Expense marked as Paid successfully", payroll });
+
+    logOperation(req, "successfully");
+    next();
+  } catch (error) {
+    console.error("Error updating expense:", error);
+    logOperation(req, "Failed");
+    res.status(500).json({ message: "Internal server error" });
+    next();
+  }
+};
+
  
  
  

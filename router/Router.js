@@ -110,6 +110,8 @@ router.get("/payroll/:year/:month",verifyToken,checkPermission('View Payroll'), 
 
 router.put("/payroll/:id",verifyToken,checkPermission('Edit Payroll'), payrollController.updatePayroll);
 
+router.put("/pay-payrol/:id",verifyToken,checkPermission('Pay Payroll'), payrollController.payPayroll,ActivityLogGeneration('Pay Payroll'))
+
 router.get("/salaryInfo/:staffId",verifyToken,checkPermission('View Payroll'), payrollController.getSalaryInfo);
 
 
