@@ -141,15 +141,17 @@ const BDAView = ({staffId}: Props) => {
     navigate(`/licenser/${id}`)
   }
 
-
+  const { request: SalaryInfo } = useApi("get", 3002);
+  const[salaryDetails,setSalaryDetails]=useState<any>('')
   const { request: RenewalCount } = useApi("get", 3002);
 
   const [chartData, setChartData] = useState<any[]>([]);
-  
-  const currentMonthValue = new Date().toLocaleString("default", { month: "long" });
+
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
   const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
-  const currentYear = years[years.length - 1];
-  
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+
   const [selectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
   const [selectedData, setSelectedData] = useState<string>("");
@@ -193,6 +195,32 @@ const BDAView = ({staffId}: Props) => {
   }, [selectedData]);
 
 
+  const getSalary = async () => {
+    try {
+      const { response, error } = await SalaryInfo(`${endPoints.SALARY_INFO}/${iId}`);
+      console.log(response);
+       console.log(error);
+      
+     // console.log(error);
+      if (response && !error) {
+       console.log("Ss",response.data);
+       setSalaryDetails(response.data)
+      
+       
+       
+       // setChartData(response.data);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  useEffect(() => {
+  getSalary()
+  }, [iId]);
 
  
   // Data for the table
@@ -717,7 +745,7 @@ const BDAView = ({staffId}: Props) => {
         />
       </Modal>   
       <Modal open={isModalOpen.salary} onClose={()=>handleModalToggle()} className="w-[45%]">
-    <SalaryInfoModal  onClose={()=>handleModalToggle()} />
+    <SalaryInfoModal salaryDetails={salaryDetails} onClose={()=>handleModalToggle()} />
   </Modal>
 
   <Modal open={isModalOpen.commission} onClose={()=>handleModalToggle()} className="w-[45%]">

@@ -25,7 +25,8 @@ const TargetComparison: FC<Props> = () => {
 
   const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
   const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
-  const currentYear = years[years.length - 1];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
 
   const [selectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);

@@ -17,6 +17,7 @@ type Props = {
 };
 
 const SupportAgentView = ({staffId}: Props) => {
+ 
   const topRef = useRef<HTMLDivElement>(null);
     const {id}=useParams()
     const iId=staffId?staffId:id
@@ -56,6 +57,8 @@ const getInsideSA = async () => {
 useEffect(() => {
   getInsideSA();
 }, []);
+
+
 
 
 

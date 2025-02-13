@@ -134,5 +134,6 @@ EXPENSE:'/expense',
 
 //  Payroll
   PAYROLL: "/payroll",
+  SALARY_INFO:'salaryInfo'
 
 };
