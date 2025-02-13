@@ -52,11 +52,68 @@ const SalaryInfoModal: React.FC<Props> = ({ onClose, salaryDetails }) => {
           </p>
         </div>
       </div>
+
       <div className="mt-2">
         <PayrollTable 
         data={salaryDetails.payrollRecords} 
         columns={columns} 
         noAction />
+
+
+      {/* <div className="mt-4 flex justify-between">
+        <h2 className="text-sm font-bold mt-2 ms-2">Activity Timeline</h2>
+        <div className="relative">
+          <SearchBar
+            placeholder="Search Category"
+            searchValue=""
+            onSearchChange={() => { setSearch }}
+          />
+        </div>
+      </div> */}
+
+
+      {/* <div className="mt-4 pl-2 space-y-6 relative">
+        <div className="absolute left-7 top-0 bottom-0 w-1 bg-gray-200"></div>
+        {filteredActivities.map((activity) => (
+          <div key={activity.id} className="relative">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center gap-4">
+                <div
+                  className={`w-10 h-10 flex items-center justify-center rounded-full text-white text-lg z-10 ${activity.type === "salary" ? "bg-[#A7D2EF]" : "bg-[#A7EFAC]"
+                    }`}
+                >
+                  {activity.type === "salary" ? <CoinsIcon size={24} /> : <ClockIcon size={22} />}
+                </div>
+                <p className="font-semibold text-xs text-[#303F58]">{activity.title}</p>
+              </div>
+              <div className="flex items-center gap-4 text-gray-500">
+                <p className="font-semibold text-xs text-[#303F58]">{activity.date}, {activity.time}</p>
+                <button onClick={() => setExpanded(expanded === activity.id ? null : activity.id)}>
+                  <ChevronDown color="#303F58" />
+                </button>
+              </div>
+            </div>
+
+            {expanded === activity.id && (
+              <div className="mt-4 ml-2 p-3 bg-red-100 font-semibold text-xs text-[#303F58] rounded-lg w-full">
+                {activity.details}
+              </div>
+            )}
+          </div>
+        ))}
+      </div> */}
+
+      <div>
+        <PayrollTable
+          data={datas}
+          columns={columns}
+
+          
+          actionList={[
+            { label: "view", function: handleView },
+
+          ]}
+        />
       </div>
     </div>
   );

@@ -13,15 +13,13 @@ import React, { useMemo, useState } from "react";
 // import No_Data_found from "../../assets/image/NO_DATA.png";
 
 import ArrowRight from "../../../assets/icons/ArrowRight";
-import SearchBar from "../../../components/ui/SearchBar";
+import Eye from "../../../assets/icons/Eye";
+import NextIcon from "../../../assets/icons/NextIcon";
+import PencilLine from "../../../assets/icons/PencilLine";
+import PreviousIcon from "../../../assets/icons/PreviousIcon";
+import Trash from "../../../assets/icons/Trash";
 import UserIcon from "../../../assets/icons/UserIcon";
 import Button from "../../../components/ui/Button";
-import PencilLine from "../../../assets/icons/PencilLine";
-import Eye from "../../../assets/icons/Eye";
-import Trash from "../../../assets/icons/Trash";
-import PreviousIcon from "../../../assets/icons/PreviousIcon";
-import NextIcon from "../../../assets/icons/NextIcon";
-import SelectDropdown from "../../../components/ui/SelectDropdown";
 import NoRecords from "../../../components/ui/NoRecords";
 
 const ImageAndLabel = [
@@ -32,7 +30,7 @@ const ImageAndLabel = [
 ];
 
 interface TableProps<T> {
-  data: T[] | null;
+  data: T[] | null |any;
   columns: { key: keyof T; label: string }[];
   headerContents: {
     title?: string;
@@ -57,7 +55,6 @@ interface TableProps<T> {
 const ExpenseTable = <T extends object>({
   data,
   columns,
-  headerContents,
   actionList,
   noAction,
   noPagination,
@@ -65,41 +62,21 @@ const ExpenseTable = <T extends object>({
   skeltonCount = 5,
   loading,
 }: TableProps<T>) => {
-  const [searchValue, setSearchValue] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [rowsPerPage, setRowsPerPage] = useState<number>(10);
   // const [noDataFound, setNoDataFound] = useState(false);
   // Filter data based on the search value
-  const filteredData: any = useMemo(() => {
-    return data?.filter((row) =>
-      Object.values(row).some((value) =>
-        String(value).toLowerCase().includes(searchValue.toLowerCase())
-      )
-    );
-  }, [data, searchValue]);
+ 
 
-  const activityOptions = [
-    { label: 'Meeting', value: 'meeting' },
-    { label: 'Mail', value: 'email' },
-    { label: 'Note', value: 'note' },
-    { label: 'Task', value: 'task' },
-  ];
-
-  const periodOptions = [
-    { label: 'Today', value: 'today' },
-    { label: 'Tomorrow', value: 'tomorrow' },
-    { label: 'Yesterday', value: 'yesterday' },
-    { label: 'After 7 Days', value: 'after_7_days' },
-    { label: 'After 30 Days', value: 'after_30_days' },
-  ];
+  
 
   // Paginate the filtered data
   const paginatedData: any = useMemo(() => {
     const start = (currentPage - 1) * rowsPerPage;
-    return filteredData?.reverse().slice(start, start + rowsPerPage);
-  }, [filteredData, currentPage, rowsPerPage]);
+    return data?.reverse().slice(start, start + rowsPerPage);
+  }, [data, currentPage, rowsPerPage]);
 
-  const totalPages = Math.ceil(filteredData?.length / rowsPerPage);
+  const totalPages = Math.ceil(data?.length / rowsPerPage);
 
   const handleRowsPerPageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setRowsPerPage(Number(e.target.value));
@@ -168,46 +145,7 @@ const ExpenseTable = <T extends object>({
 
  
 
-  const renderHeader = () => (
-    <div
-      className={`flex ${headerContents.search && !headerContents.title && !headerContents.sort
-          ? "justify-start"
-          : "justify-between"
-        } items-center mb-3`}
-    >
-
-      {headerContents.search && (
-        <div className={`w-[440px] ${headerContents.title && " me-2"}`}>
-          <SearchBar
-            searchValue={searchValue}
-            onSearchChange={setSearchValue}
-            placeholder={headerContents.search.placeholder}
-          />
-        </div>
-      )}
-      {headerContents.sort && (
-        <div className="flex gap-4">
-          <SelectDropdown
-            filteredData={activityOptions}
-
-            placeholder="Select from & to date"
-            searchPlaceholder="Select from & to date"
-            width="w-60"
-          />
-
-          <SelectDropdown
-            filteredData={periodOptions}
-            placeholder="Select by category"
-
-            searchPlaceholder="Select by category"
-            width="w-60"
-          />
-
-
-        </div>
-      )}
-    </div>
-  );
+ 
 
 
 
@@ -275,32 +213,16 @@ const ExpenseTable = <T extends object>({
   //   return () => clearTimeout(timeout);
   // }, [data]);
 
-  const tabs = ["RM", "AM", "BDA"]
-  const [activeTab, setActiveTab] = useState<string>("RM");
+  
 
   return (
-    <div className="w-full  bg-white rounded-lg p-4">
-      {renderHeader()}
-
+    <div className="w-full   p-4">
       <div
         style={maxHeight ? { height: maxHeight, overflowY: "auto" } : {}}
         className={maxHeight ? "custom-scrollbar" : "hide-scrollbar"}
       >
 
-        <div className="flex gap-16 rounded-xl px-4 py-3 text-base font-bold border-b border-gray-200">
-          {tabs.map((tab) => (
-            <div
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
-                ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
-                : "text-gray-400"
-                }`}
-            >
-              {tab}
-            </div>
-          ))}
-        </div>
+        
 
 
 
