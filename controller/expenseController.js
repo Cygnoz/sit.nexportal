@@ -219,33 +219,33 @@ exports.deleteExpense = async (req, res, next) => {
   
       const updateFields = { ...data, status: "Paid" };
 
-      //  const requestBody = {
-      //       organizationId: process.env.ORGANIZATION_ID,
-      //       expenseCategory: categoryName,
-      //       description: description,
-      //     };
-      //     // Generate JWT token
-      //     const token = jwt.sign(
-      //       {
-      //         organizationId: process.env.ORGANIZATION_ID,
-      //       },
-      //       process.env.NEX_JWT_SECRET,
-      //       { expiresIn: "12h" }
-      //     );
-      //     // https://billbizzapi.azure-api.net/staff/add-category-nexportal
-      //     // API call to external service
-      //     const response = await axios.post(
-      //       "https://billbizzapi.azure-api.net/staff/add-category-nexportal",
-      //       requestBody, // <-- requestBody should be passed as the second argument (data)
-      //       {
-      //         headers: {
-      //           Authorization: `Bearer ${token}`,
-      //           "Content-Type": "application/json",
-      //         },
-      //       }
-      //     );
+       const requestBody = {
+            organizationId: process.env.ORGANIZATION_ID,
+            expenseCategory: categoryName,
+            description: description,
+          };
+          // Generate JWT token
+          const token = jwt.sign(
+            {
+              organizationId: process.env.ORGANIZATION_ID,
+            },
+            process.env.NEX_JWT_SECRET,
+            { expiresIn: "12h" }
+          );
+          // https://billbizzapi.azure-api.net/staff/add-category-nexportal
+          // API call to external service
+          const response = await axios.post(
+            "https://billbizzapi.azure-api.net/staff/add-category-nexportal",
+            requestBody, // <-- requestBody should be passed as the second argument (data)
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            }
+          );
   
-      // const allAccounts = response.data;
+      const allAccounts = response.data;
 
   
       // Update the expense with new values
@@ -255,7 +255,7 @@ exports.deleteExpense = async (req, res, next) => {
         return res.status(404).json({ message: "Expense not found" });
       }
   
-      res.status(200).json({ message: "Expense marked as Paid successfully", expense });
+      res.status(200).json({ message: "Expense Paid successfully", expense });
   
       logOperation(req, "successfully");
       next();

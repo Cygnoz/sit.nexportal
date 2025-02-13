@@ -333,7 +333,7 @@ exports.payPayroll = async (req, res, next) => {
       return res.status(404).json({ message: "Expense not found" });
     }
 
-    res.status(200).json({ message: "Expense marked as Paid successfully", payroll });
+    res.status(200).json({ message: "Payroll Paid successfully", payroll });
 
     logOperation(req, "successfully");
     next();
