@@ -1,5 +1,7 @@
 // controllers/categoryController.js
 const Category = require("../database/model/category");
+const axios = require("axios");
+const jwt = require("jsonwebtoken");
 
 // Add a new category
 exports.addCategory = async (req, res, next) => {
@@ -12,7 +14,36 @@ exports.addCategory = async (req, res, next) => {
     if (existingCategory) {
       return res.status(400).json({ message: "Category already exists" });
     }
-    const category = new Category({ categoryName, description });
+
+    const requestBody = {
+      organizationId: process.env.ORGANIZATION_ID,
+      expenseCategory: categoryName,
+      description: description,
+    };
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        organizationId: process.env.ORGANIZATION_ID,
+      },
+      process.env.NEX_JWT_SECRET,
+      { expiresIn: "12h" }
+    );
+    // https://billbizzapi.azure-api.net/staff/add-category-nexportal
+    // API call to external service
+    const response = await axios.post(
+      "https://billbizzapi.azure-api.net/staff/add-category-nexportal",
+      requestBody, // <-- requestBody should be passed as the second argument (data)
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log(response.data.newCategory._id);
+    const categoryId = response.data.newCategory._id;
+
+    const category = new Category({ categoryName, description ,categoryId});
     await category.save();
     res.status(201).json({ message: "Category added successfully", category });
     logOperation(req, "successfully", category._id);
@@ -44,7 +75,9 @@ exports.getCategory = async (req, res) => {
 exports.getAllCategories = async (req, res) => {
   try {
     const categories = await Category.find();
-    res.status(200).json({ message: "Categories retrieved successfully", categories });
+    res
+      .status(200)
+      .json({ message: "Categories retrieved successfully", categories });
   } catch (error) {
     console.error("Error fetching categories:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -68,7 +101,9 @@ exports.updateCategory = async (req, res, next) => {
     if (!category) {
       return res.status(404).json({ message: "Category not found" });
     }
-    res.status(200).json({ message: "Category updated successfully", category });
+    res
+      .status(200)
+      .json({ message: "Category updated successfully", category });
     logOperation(req, "successfully", category._id);
     next();
   } catch (error) {
@@ -100,13 +135,12 @@ exports.deleteCategory = async (req, res, next) => {
 
 // Logging operation middleware
 const logOperation = (req, status, operationId = null) => {
-    const { id, userName } = req.user || {};
-    const log = { id, userName, status };
-  
-    if (operationId) {
-      log.operationId = operationId;
-    }
-  
-    req.user = log;
-  };
-  
+  const { id, userName } = req.user || {};
+  const log = { id, userName, status };
+
+  if (operationId) {
+    log.operationId = operationId;
+  }
+
+  req.user = log;
+};

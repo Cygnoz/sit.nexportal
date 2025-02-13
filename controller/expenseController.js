@@ -15,6 +15,36 @@ exports.addExpense = async (req, res, next) => {
       return res.status(400).json({ message: "All required fields must be provided" });
     }
 
+    // Generate JWT token
+    const token = jwt.sign(
+      {
+        organizationId: process.env.ORGANIZATION_ID,
+      },
+      process.env.NEX_JWT_SECRET,
+      { expiresIn: "12h" }
+    );
+
+    const requestBody = {
+      organizationName: cleanedData.companyName,
+      contactName: firstName,
+      contactNum: phone,
+      email: email,
+      password: cleanedData.password,
+    };
+
+    // API call to external service
+    const response = await axios.post(
+      "http://localhost:5008/add-category-nexportal",
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+      requestBody
+    );
+    console.log("resr",response);
+    
 // Expense id
 let nextId = 1;
 const lastUser = await Expense.findOne().sort({ _id: -1 }); // Sort by creation date to find the last one
@@ -38,6 +68,7 @@ data.expenseId = expenseId
     next();
   }
 };
+
 
 // Get a specific expense
 exports.getExpense = async (req, res) => {
@@ -86,7 +117,7 @@ exports.getAllExpenses = async (req, res) => {
     const allExpenses = await Expense.find();
     const totalExpense = allExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
     const averageExpense = allExpenses.length ? totalExpense / allExpenses.length : 0;
-
+    
     // Count pending and rejected expenses
     const pendingExpenses = await Expense.countDocuments({ status: "Pending Approval" });
     const rejectedExpenses = await Expense.countDocuments({ status: "Rejected" });
@@ -222,12 +253,10 @@ exports.deleteExpense = async (req, res, next) => {
         { expiresIn: "12h" }
       );
   
-      console.log(process.env.ORGANIZATION_ID);
-      console.log(process.env.NEX_JWT_SECRET);
-  
+      // https://billbizzapi.azure-api.net/accounts/get-all-account-nexportal
       // API call to external service
       const response = await axios.get(
-        "http://localhost:5001/get-all-account-nexportal",
+        "https://billbizzapi.azure-api.net/accounts/get-all-account-nexportal",
         {
           headers: {
             Authorization: `Bearer ${token}`,

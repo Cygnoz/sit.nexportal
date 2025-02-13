@@ -4,7 +4,8 @@ const { Schema } = mongoose;
 const categorySchema = new Schema(
   {
     categoryName: { type: String },
-    description: { type: String }
+    description: { type: String },
+    categoryId:{type:String}
   },
   { timestamps: true }
 );
