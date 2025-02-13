@@ -275,7 +275,7 @@ const ExpenseTable = <T extends object>({
                   colSpan={columns?.length + 2}
                   className="text-center py-4 text-gray-500"
                 >
-                  <NoRecords imgSize={70} textSize="md" />
+                  <NoRecords text="No Expense Found" imgSize={70} textSize="md" />
                 </td>
               </tr>
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (

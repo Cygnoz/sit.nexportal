@@ -22,7 +22,8 @@ import toast from "react-hot-toast";
 import { useUser } from "../../../context/UserContext";
 import SearchBar from "../../../components/ui/SearchBar";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
-import { months } from "../../../components/list/MonthYearList";
+import { months, years } from "../../../components/list/MonthYearList";
+import { useRegularApi } from "../../../context/ApiContext";
 
 interface LeadViewData {
   expenseName: string;
@@ -37,14 +38,24 @@ type Props = {}
 const ExpenseHome = ({}: Props) => {
 
   const navigate = useNavigate()
+   const {refreshContext,expenseCategories}=useRegularApi()
   const {request:getAllExpenses}=useApi('get',3002)
   const {request:deleteExpense}=useApi('delete',3002)
   const {loading,setLoading}=useResponse()
   const [editId,setEditId]=useState<any>('')
   const tabs = ["All Expenses","RM", "AM", "BDA","SV",'SA']
   const [activeTab, setActiveTab] = useState<string>("All Expenses");
-  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
-  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonthValue);
+ const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+ const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+ const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+ const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+ const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+ const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+ const [newMonthList, setNewMonthList] = useState<any>([]);
+ const [expenseCategoryList,setExpenseCategoryList]=useState<any[]>([])
+ const [selectedCategory,setSelectedCategory]=useState<any>('')
+ const [countExpense,setCountExpense]=useState<any>('')
+ const [selectedDate, setSelectedDate] = useState<string>(`${selectedYear.value}-${currentMonth.value}-1`);
   const [searchValue, setSearchValue] = useState<string>("");
   const [allExpenses,setExpenses]=useState<any[]>([])
   const [filteredExpenses,setFilteredExpenses]=useState<any[]>([])
@@ -131,14 +142,43 @@ if (!allowedRoles.includes(user?.role) && !(status === "Rejected" || status === 
         SV:'Supervisor',
         SA:'Support Agent'
       };
-  
       if (roleMap[tab]) {
         setFilteredExpenses(
-          allExpenses?.filter((payroll: any) => payroll?.role === roleMap[tab])
+          allExpenses?.filter((expense: any) => expense?.addedBy?.role === roleMap[tab])
         );
       }
     }
   };
+
+  useEffect(() => {
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
+    setActiveTab("All Expenses")
+    setSelectedDate(`${selectedYear.value}-${selectedMonth.value}-1`);
+  
+  }, [selectedMonth, selectedYear]);
+  useEffect(()=>{
+    if(selectedDate){
+      getAllExpense()
+    }
+  },[selectedDate,selectedCategory])
+  
+  useEffect(()=>{
+    refreshContext({expenseCategories:true})
+    if(expenseCategories){
+      setExpenseCategoryList(
+        expenseCategories?.map((exp: any) => ({
+          value: exp?._id,
+          label: exp?.categoryName       
+        })) || []
+      );
+    }
+   },[expenseCategories])
 
    const filteredData: any = useMemo(() => {
       return  filteredExpenses?.filter((row) =>
@@ -152,7 +192,7 @@ if (!allowedRoles.includes(user?.role) && !(status === "Rejected" || status === 
 const homeCardData = [
     {
       icon: <CoinIcon size={30}/>,
-      number: 2345,
+      number: countExpense?.totalExpense,
       title: "Total Expense",
       
       iconFrameColor: "#51BFDA",
@@ -160,21 +200,21 @@ const homeCardData = [
     },
     {
       icon: <HandCoinsIcon/>,
-      number: 5233,
+      number: countExpense?.averageExpense,
       title: "Average Expense Amount",
       iconFrameColor: "#1A9CF9",
       iconFrameBorderColor: "#BBD8EDCC",
     },
     {
       icon: <ClockkIcon/>,
-      number: 5,
+      number: countExpense?.pendingExpenses,
       title: "Pending Expense",
       iconFrameColor: "#D786DD",
       iconFrameBorderColor: "#FADDFCCC",
     },
     {
       icon:  <CopyIcon />,
-      number: 8,
+      number: countExpense?.rejectedExpenses,
       title: "Rejected Expense",
       iconFrameColor: "#FCB23E",
       iconFrameBorderColor: "#FDE3BBCC",
@@ -196,15 +236,26 @@ const homeCardData = [
     // API call to get all expenses
    try{
     setLoading(true)
-    const {response,error}=await getAllExpenses(endPoints.EXPENSE)
+    const end=`${endPoints.EXPENSE}/?date=${selectedDate}&id=${selectedCategory?.value}`
+    console.log("end",end);
+    const {response,error}=await getAllExpenses(end)
     if(response && !error){
-      console.log(response.data)
+      console.log("expense",response.data)
      const filteredExpense= response.data.expenses.map((expense:any)=>({
         ...expense,
         date:new Date(expense.date).toLocaleDateString(),
         category:expense?.category?.categoryName,
         addedBy:expense?.addedBy?.userName
       }))
+      const expenseCounts={
+        averageExpense:response?.data?.averageExpense 
+        ? response?.data?.averageExpense.toFixed(2) // Ensures two decimal places
+        : "0.00",
+        pendingExpenses:response?.data?.pendingExpenses,
+        rejectedExpenses:response?.data?.rejectedExpenses,
+        totalExpense:response?.data?.totalExpense
+      }
+      setCountExpense(expenseCounts)
       setFilteredExpenses(filteredExpense)
       setExpenses(filteredExpense)
     }else{
@@ -250,19 +301,28 @@ const handleDeleteApi = async () => {
     
         <div className="flex gap-4">
         <SelectDropdown
-           setSelectedValue={setSelectedMonth}
-           selectedValue={selectedMonth}
-           filteredData={months}
-           searchPlaceholder="Search Month"
-           width="w-32"
-        />
+                  setSelectedValue={setSelectedMonth}
+                  selectedValue={selectedMonth}
+                  filteredData={newMonthList}
+                    searchPlaceholder="Search Month"
+                  width="w-32"
+                />
          <SelectDropdown
-           setSelectedValue={setSelectedMonth}
-           selectedValue={selectedMonth}
-           filteredData={months}
-           searchPlaceholder="Search Month"
-           width="w-32"
-        />
+                  setSelectedValue={setSelectedYear}
+                  selectedValue={selectedYear}
+                  filteredData={years}
+
+                  searchPlaceholder="Search Month"
+                  width="w-28"
+                />
+          <SelectDropdown
+                  setSelectedValue={setSelectedCategory}
+                  selectedValue={selectedCategory}
+                  filteredData={expenseCategoryList}
+                  placeholder="Select Category"
+                  searchPlaceholder="Search Category"
+                  width="w-48"
+                />
         </div>
     
     </div>
@@ -331,8 +391,7 @@ const handleDeleteApi = async () => {
             />
           ))}
         </div>
-        <div>
-        <div className="bg-white rounded-lg p-3">
+        <div className="bg-white rounded-lg p-3 mt-2">
           {renderHeader()}
         <ExpenseTable<LeadViewData>
             data={filteredData}
@@ -359,7 +418,7 @@ const handleDeleteApi = async () => {
         />
         </div>
     </div>
-    </div>
+    
     <Modal open={isModalOpen.addForm} onClose={() => handleModalToggle()} className="w-[60%]">
         <ExpenseForm editId={editId} onClose={() => handleModalToggle()} />
       </Modal>

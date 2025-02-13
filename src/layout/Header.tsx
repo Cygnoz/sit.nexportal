@@ -7,9 +7,9 @@ import SearchBar from "../components/ui/SearchBar";
 import UserModal from "./Logout/UserModal";
 import { useRegularApi } from "../context/ApiContext";
 import { useUser } from "../context/UserContext";
-// import { io } from "socket.io-client";
+import { io } from "socket.io-client";
 
-// const AGENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
+const AGENT_SOCKET_URL = import.meta.env.VITE_REACT_APP_TICKETS;
 
 interface HeaderProps {
   searchValue: string;
@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({
   scrollToActiveTab,
 }) => {
   const { allTicketsCount,
-    //  refreshContext 
+     refreshContext 
     } = useRegularApi();
   const { user } = useUser();
   const unassignedTickets = allTicketsCount?.allUnassigned ?? 0;
@@ -39,7 +39,6 @@ const Header: React.FC<HeaderProps> = ({
   useEffect(() => {
     const filtered = NavList.filter(
       (route) =>
-        route.key.trim().toLowerCase().includes(searchValue.toLowerCase()) ||
         route.label.trim().toLowerCase().includes(searchValue.toLowerCase())
     );
     setFilteredNavList(filtered);
@@ -97,16 +96,16 @@ const Header: React.FC<HeaderProps> = ({
   }, [focusedIndex]);
 
   useEffect(() => {
-    // const newSocket = io(AGENT_SOCKET_URL, {
-    //   path: "/nexsell-tickets/socket.io/",
-    //   transports: ["websocket", "polling"],
-    //   withCredentials: true,
-    // });
+    const newSocket = io(AGENT_SOCKET_URL, {
+      path: "/nexsell-tickets/socket.io/?EIO=4&transport=websocket",
+      transports: ["websocket", "polling"],
+      withCredentials: true,
+    });
 
-    // newSocket.on("ticketCount", (count: any) => {
-    //   console.log(count);
-    //   refreshContext({ tickets: true });
-    // });
+    newSocket.on("ticketCount", (count: any) => {
+      console.log(count);
+      refreshContext({ tickets: true });
+    });
 
     const handleClickOutside = (event: MouseEvent) => {
       if (

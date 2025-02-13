@@ -42,7 +42,7 @@ const GraphTable = ({ bdaData,loading }: Props) => {
   const [chartData, setChartData] = useState([]);
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
   const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
-  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1-1`);
+  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-${currentMonth}-1`);
 
   useEffect(() => {
     // Convert month name to number (1-12)
