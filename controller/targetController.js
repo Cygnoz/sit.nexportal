@@ -343,9 +343,18 @@ exports.deleteTarget = async (req, res, next) => {
         let targetFilter = {};
         let leadsFilter = {};
  
-        if (role === "Super Admin") {
-            targetFilter = { month: { $regex: monthName, $options: "i" }, region: { $exists: true } };
-            leadsFilter = { customerStatus: "Licenser", licensorDate: { $gte: startDate.toISOString(), $lt: endDate.toISOString() } };
+               if (role === "Super Admin") {
+            const targetRecords = await Target.find({
+                month: { $regex: monthName, $options: "i" },
+                region: { $exists: true }
+            });
+ 
+            totalTarget = targetRecords.reduce((acc, record) => acc + (record.target || 0), 0);
+ 
+            achievedTargets = await Leads.countDocuments({
+                customerStatus: "Licenser",
+                licensorDate: { $gte: startDate.toISOString(), $lt: endDate.toISOString() }
+            });
  
         } else if (role === "Region Manager") {
             const regionManager = await RegionManager.findOne({ user: userId }).select("region");
