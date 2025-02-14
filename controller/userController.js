@@ -1358,6 +1358,9 @@ const roles = [
 exports.getRegionsAreasBdas = async (req, res) => {
   try {
     // Fetch active regions
+   
+      
+
     const regions = await Region.find({ status: "Active" })
       .select("_id regionName");
 
