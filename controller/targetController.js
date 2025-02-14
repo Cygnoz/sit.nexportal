@@ -40,7 +40,7 @@ exports.addTarget = async (req, res) => {
           return res.status(404).json({ error: "User not found" });
       }
 
-      console.log(user.role);
+   
       
  
       let regionData = null;
