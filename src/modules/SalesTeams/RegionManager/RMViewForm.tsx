@@ -14,17 +14,17 @@ import { endPoints } from "../../../services/apiEndpoints";
 
 type Props = {
   onClose: () => void;
+  id?:string
 }
 
 
 
 
-const RMViewForm: React.FC<Props> = ({ onClose }) => {
+const RMViewForm: React.FC<Props> = ({ onClose,id }) => {
 
 
   const { request: getaRM } = useApi('get', 3002)
 
-  const { id } = useParams()
 
 
   const [data, setData] = useState<{
@@ -54,7 +54,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
   useEffect(() => {
     getARM();
   }, [id])
-  //console.log(data);
+  console.log(data);
 
 
 
@@ -138,7 +138,7 @@ const RMViewForm: React.FC<Props> = ({ onClose }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Email Address</h3>
               <div className="flex">
                 <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.personalEmail ? data.rmData?.regionManager?.personalEmail : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.rmData?.regionManager?.user?.email ? data.rmData?.regionManager?.user?.email : 'N/A'}</p>
 
               </div>
             </div>

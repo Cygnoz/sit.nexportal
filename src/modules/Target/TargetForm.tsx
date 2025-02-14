@@ -115,24 +115,51 @@ const TargetForm = ({ onClose, type,editId }: Props) => {
 
 
     // useEffect for updating areas
-useEffect(() => {
-  const filteredAreas = dropDownAreas?.map((area: any) => ({
-    value: String(area?._id),
-    label: area.areaName,
-  }));
-  setData((prevData: any) => ({
-    ...prevData,
-    areas: filteredAreas,
-  }));
-}, [dropDownAreas]);
+    useEffect(() => {
+      let filteredAreas:any = [];
+     const staffLocalityId= sessionStorage.getItem("staffLocalityId")
+      if (staffLocalityId) {
+        filteredAreas = dropDownAreas
+          ?.filter((area: any) => area?.region===staffLocalityId) // Ensure region exists
+          .map((area: any) => ({
+            value: String(area?._id),
+            label: area.areaName,
+          }));
+      } else {
+        filteredAreas = dropDownAreas?.map((area: any) => ({
+          value: String(area?._id),
+          label: area.areaName,
+        })) || [];
+      }
+    
+      setData((prevData: any) => ({
+        ...prevData,
+        areas: filteredAreas,
+      }));
+    }, [dropDownAreas]);
+
+
+    console.log("stafd",dropDownAreas);
+    
+    
 
 // useEffect for updating BDAs
 useEffect(() => {
-  const filteredBdas = dropDownBdas?.map((bda: any) => ({
+  let filteredBdas:any = [];
+  const staffLocalityId= sessionStorage.getItem("staffLocalityId")
+  if (staffLocalityId) {
+    filteredBdas = dropDownBdas
+    ?.filter((bda: any) => bda?.area===staffLocalityId) // Ensure region exists
+    .map((bda: any) => ({
+      value: String(bda?._id),
+      label: bda?.userName,
+    }));
+  }else{
+   filteredBdas = dropDownBdas?.map((bda: any) => ({
     value: String(bda?._id),
     label: bda?.userName,
   }));
-
+}
   
   setData((prevData: any) => ({
     ...prevData,

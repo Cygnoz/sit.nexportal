@@ -20,7 +20,7 @@ type Props = {
 
 const RegionAriaView = ({  regionAreaData,loading }: Props) => {
 
-  const navigate = useNavigate();
+  const navigate = useNavigate()
 
   const areaHandleView = (id: any) => {
     navigate(`/areas/${id}`);
@@ -132,6 +132,7 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
     y: role.count,
     color: role.color,
   }));
+
 
   return (
     <div>

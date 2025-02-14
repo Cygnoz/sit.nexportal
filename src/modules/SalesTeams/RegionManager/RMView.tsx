@@ -42,7 +42,6 @@ interface AreaData {
 
 const RMView = ({ staffId }: Props) => {
   const { user } = useUser()
-  user?.role
 
   const topRef = useRef<HTMLDivElement>(null);
 
@@ -96,16 +95,17 @@ const RMView = ({ staffId }: Props) => {
     try {
       setLoading(true)
       const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${iId}`);
+      console.log("dssd",response?.data);
       if (response && !error) {
-
+        sessionStorage.setItem("staffLocalityId",response?.data?.regionManager?.region?._id)
         setGetData((prevData) => ({
           ...prevData,
 
 
           rmData: response.data,
         }));
-        console.log(response.data);
-
+        
+        
 
       } else {
         console.error(error.response.data.message);
@@ -558,7 +558,7 @@ const RMView = ({ staffId }: Props) => {
       </div>
       {/* Modal controlled by state */}
       <Modal open={isModalOpen.viewRM} onClose={() => handleModalToggle()}>
-        <RMViewForm onClose={() => handleModalToggle()} />
+        <RMViewForm id={iId}  onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.editRM} onClose={() => handleModalToggle()}>
         <RMForm editId={iId} onClose={() => handleModalToggle()} />

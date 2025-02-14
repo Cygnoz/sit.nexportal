@@ -137,7 +137,7 @@ const PayrollAwApp = ({ }: Props) => {
                     <Timer color="#768294" />
                     Present days
                   </p>
-                  <p className="text-sm font-medium text-[#303F58]">
+                  <p className="text-sm font-bold text-[#303F58]">
                     232
                   </p>
                 </div>
@@ -147,7 +147,7 @@ const PayrollAwApp = ({ }: Props) => {
                     <Timer color="#768294" />
                     Leave Days
                   </p>
-                  <p className="text-sm font-medium text-[#303F58]">
+                  <p className="text-sm font-bold text-[#303F58]">
                     55
                   </p>
                 </div>

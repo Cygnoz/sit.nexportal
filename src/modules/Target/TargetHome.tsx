@@ -6,32 +6,25 @@ import Modal from "../../components/modal/Modal";
 import Button from "../../components/ui/Button";
 import { useUser } from "../../context/UserContext";
 import useApi from "../../Hooks/useApi";
-// import { useResponse } from "../../context/ResponseContext";
 import { endPoints } from "../../services/apiEndpoints";
 import toast from "react-hot-toast";
 import ConfirmModal from "../../components/modal/ConfirmModal";
 import { useRegularApi } from "../../context/ApiContext";
 import { useResponse } from "../../context/ResponseContext";
-// import ConfirmModal from "../../components/modal/ConfirmModal";
-
-
 
 type TabType = "Region" | "Area" | "Bda";
 
 const TargetHome = () => {
-  const { request: getAllTarget } = useApi('get', 3004)
+  const { request: getAllTarget } = useApi('get', 3004);
   const { request: deleteTarget } = useApi("delete", 3004);
-  const { refreshContext } = useRegularApi()
+  const { refreshContext } = useRegularApi();
   const { loading, setLoading } = useResponse();
   const [editId, setEditId] = useState('');
   const [allTargets, setAllTargets] = useState<any>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-
   const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
   const [modalType, setModalType] = useState<TabType>("Region");
-
-  const { user } = useUser()
-  user?.role
+  const { user } = useUser();
 
   const tabs: TabType[] = ["Region", "Area", "Bda"];
 
@@ -71,20 +64,19 @@ const TargetHome = () => {
   const handleCreateTarget = () => {
     setModalType(activeTab);
     setIsCreateModalOpen(true);
-    refreshContext({ customerCounts: true })
+    refreshContext({ customerCounts: true });
     getTargets();
   };
 
   const handleEdit = (id: any) => {
     setModalType(activeTab);
     setIsCreateModalOpen(true);
-    setEditId(id)
+    setEditId(id);
   };
 
   const openDeleteModal = (id: string) => {
     setDeleteId(id);
     setIsDeleteModalOpen(true);
-    handleDelete()
   };
 
   const closeDeleteModal = () => {
@@ -99,55 +91,37 @@ const TargetHome = () => {
       if (response && !error) {
         toast.success(response.data.message || "Target deleted successfully");
         getTargets(); // Refresh the list
-        //console.log(response.data);
-
       } else {
         console.error(error);
-        toast.error("Failed to delete commission");
+        toast.error("Failed to delete target");
       }
     } catch (err) {
-      console.error("Error deleting commission:", err);
-      toast.error("An error occurred while deleting commission");
+      console.error("Error deleting target:", err);
+      toast.error("An error occurred while deleting target");
     } finally {
       closeDeleteModal(); // Close delete modal after operation
     }
   };
 
-
-  //const targetType: any = user?.role === "Super Admin" ? 'Region' : user?.role === "Region Manager" ? 'Area' : 'Bda'
-  // useEffect(() => {
-
-  //   // if (targetType) {
-  //   //   getTargets()
-  //   // }
-
-  // }, [user])
   const getTargets = async () => {
     try {
-      setLoading(true)
-    
-       const endpoint = `${endPoints.TARGET}`
-      const { response, error } = await getAllTarget(endpoint)
-     // console.log(endpoint);
-      //console.log("res",response);
-     // console.log("err",error);
+      setLoading(true);
+      const endpoint = `${endPoints.TARGET}`;
+      const { response, error } = await getAllTarget(endpoint);
       if (response && !error) {
-        console.log("sss", response.data);
-
-        setAllTargets(response.data)
+        setAllTargets(response.data);
       }
     } catch (err) {
       console.log(err);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    getTargets()
-    refreshContext({ customerCounts: true })
-  }, [])
-
+    getTargets();
+    refreshContext({ customerCounts: true });
+  }, []);
 
   const Regioncolumns = [
     { key: "region.regionName", label: "Region" },
@@ -185,7 +159,8 @@ const TargetHome = () => {
   };
   const data = getDataByActiveTab(activeTab);
 
-
+  console.log("data",data);
+  
 
   return (
     <>
@@ -209,15 +184,14 @@ const TargetHome = () => {
 
           {isButtonVisible && (
             <div className="flex justify-end ml-auto">
-               <Button variant="primary" size="sm" onClick={()=>{
-                        handleCreateTarget()
-                        setEditId('')
-                      }}>
-                        <span className="font-bold text-xl">+</span> Create Target
-                      </Button>
+              <Button variant="primary" size="sm" onClick={() => {
+                handleCreateTarget();
+                setEditId('');
+              }}>
+                <span className="font-bold text-xl">+</span> Create Target
+              </Button>
             </div>
           )}
-
         </div>
 
         <div className="w-full p-4 h-fit bg-[#E3E6D5] my-4 rounded-2xl">
@@ -241,7 +215,6 @@ const TargetHome = () => {
                     : activeTab === "Area"
                       ? allTargets?.totalAreaTarget
                       : allTargets?.totalBdaTarget}
-
               </p>
             </div>
           </div>
@@ -249,7 +222,6 @@ const TargetHome = () => {
 
         <div>
           <TargetTable
-
             data={data}
             columns={
               activeTab === "Region"
@@ -289,12 +261,7 @@ const TargetHome = () => {
               )
             }
             loading={loading}
-
-
-          // loading={loading}
           />
-
-
         </div>
       </div>
 
@@ -315,15 +282,10 @@ const TargetHome = () => {
               : activeTab === 'Area'
                 ? 'Are you sure want to delete this Area Target?'
                 : 'Are you sure want to delete this Bda Target?'
-
           }
           onClose={closeDeleteModal}
         />
       </Modal>
-
-
-      {/* Edit Modal */}
-
     </>
   );
 };

@@ -364,6 +364,8 @@ const TargetTable = <T extends object>({
           </thead>
           <tbody>
             {loading ? (
+                renderSkeletonLoader()
+            ) : data?.length === 0 ? (
               <tr>
                 <td
                   colSpan={noAction?columns?.length+1:columns?.length + 2}
@@ -372,8 +374,6 @@ const TargetTable = <T extends object>({
                   <NoRecords imgSize={70} textSize="md"/>
                 </td>
               </tr>
-            ) : data?.length === 0 ? (
-              renderSkeletonLoader()
             ) : Array.isArray(paginatedData) && paginatedData.length > 0 ? (
               paginatedData.map((row: any, rowIndex: number) => (
                 <tr

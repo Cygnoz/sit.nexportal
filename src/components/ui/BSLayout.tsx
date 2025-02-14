@@ -12,7 +12,6 @@ import template2Back from '../../assets/image/template2-back.png'
 // import previewFront from '../../assets/image/preview-card-front.png'
 import idCardFront from '../../assets/image/idCard.png'
 import template1Front from '../../assets/image/template1-back.png'
-import '../../components/modal/IdBcardModal.css'
 
 interface LayoutProps {
     toggleState?: any;

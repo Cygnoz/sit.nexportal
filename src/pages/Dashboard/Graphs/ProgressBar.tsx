@@ -50,7 +50,9 @@ const ProgressBar = ({}: Props) => {
     try {
       const endPoint = `${endPoints.TARGET_ACHEIVED}/?month=${selectedData}`;
       const { response, error } = await AllTarget(endPoint);
-
+      console.log("res",response?.data);
+      console.log("err",response?.data);
+      
       if (response && !error) {
         const { totalTarget, achievedTargets, balanceTarget } = response.data;
 

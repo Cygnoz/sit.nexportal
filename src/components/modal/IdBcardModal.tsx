@@ -120,7 +120,7 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
         const pdf = new jsPDF({
             orientation: "portrait",
             unit: "px",
-            format: "a4"
+            format: [210, 297] // A4 size in pixels
         });
     
         // Auto-scale image based on page width
@@ -292,12 +292,14 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
                             <DownloadIcon size={13} color="#FFFFFF" />Download</Button>
                     </div>
                 </div>
-                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                <div className="bg-[#F5F9FC] flex flex-col justify-between  p-3 rounded-2xl">
+                    <div>
                     <p className="text-[#303F58] text-base font-bold">ID Card</p>
                     <div ref={idRef} className="p-3">
                         <IdCardLayout role={role} staffData={staffData} />
                     </div>
-                    <div className="flex gap-3 justify-end py-3">
+                    </div>
+                    <div className="gap-3 flex items-center justify-end  py-3">
                         <Button onClick={() => handleModalToggle(false, true)} variant="tertiary" size="sm"
                             className="text-xs text-[#565148] font-medium rounded-md">
                             <ViewIcon size="13" color="#565148" />

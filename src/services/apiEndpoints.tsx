@@ -14,7 +14,8 @@ export const endPoints = {
   REGION: "/region",
   GET_REGIONS: "/regions",
   AREA_PERFORMANCE:"/areaPerformance",
-  CONVERTION_RATE:'/conversion-rate',
+  TRIAL_CONVERTION_RATE:'/trial-conversion-rate',
+  LEAD_SOURCE:'/leadSource',
 
   // Area
   AREA: "/area",
@@ -88,7 +89,7 @@ export const endPoints = {
 
   // Dashboard
   TEAM_BREAK_DOWN:'/team-counts',
-  CONVERSION_RATE:'/conversion-rate',
+  CONVERSION_RATE:'/lead-conversion-rate',
   RESOLVED_TICKETS:'/tickets/solved-by-region',
 
   // Region Inside View 
