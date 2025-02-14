@@ -25,6 +25,7 @@ import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
 import IdBcardModal from "../../../components/modal/IdBcardModal";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
 // import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
 // import AMIdCardView from "../../../components/modal/IdCardView/AMIdCardView";
 
@@ -71,7 +72,7 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   editId
   , regionId
 }) => {
-  const { dropdownRegions, dropDownWC, allCountries,refreshContext } = useRegularApi();
+  const { dropdownRegions, allCountries,refreshContext } = useRegularApi();
   const { request: addSA } = useApi("post", 3003);
   const { request: editSA } = useApi("put", 3003);
   const { request: getSA } = useApi("get", 3003);
@@ -79,10 +80,9 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   const [regionData, setRegionData] = useState<any[]>([]);
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
-    wc: { label: string; value: string }[];
     country: { label: string; value: string }[];
     state: { label: string; value: string }[];
-  }>({ regions: [], wc: [], country: [], state: [] });
+  }>({ regions: [], country: [], state: [] });
 
   const {
     register,
@@ -95,11 +95,22 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
   } = useForm<SAData>({
     resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
   });
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [empId,setEmpId]=useState('')
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
+
+  const [isModalOpen, setIsModalOpen] = useState({
+    idCard: false,
+    region: false,
+   
+  });
+  
+  const handleModalToggle = (idCard = false, region = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      idCard: idCard,
+      region: region,
+     
+    }));
+    refreshContext({dropdown:true})
   };
 
   const [staffData, setStaffData] = useState<any>(null);
@@ -208,19 +219,6 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
     }
   }, [dropdownRegions, regionId])
 
-  // UseEffect for updating wc
-  useEffect(() => {
-    const filteredCommission = dropDownWC?.map((commission: any) => ({
-      label: commission.profileName,
-      value: String(commission._id),
-    }));
-
-    // Update wc
-    setData((prevData: any) => ({
-      ...prevData,
-      wc: filteredCommission,
-    }));
-  }, [dropDownWC]);
 
   // UseEffect for updating countries
   useEffect(() => {
@@ -526,18 +524,47 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                     error={errors.city?.message}
                     {...register("city")}
                   />
-                  <Input
+               <Input
                     label="Aadhaar No"
-                    type="number"
-                    placeholder="Enter Aadhar"
-                    error={errors.adhaarNo?.message}
-                    {...register("adhaarNo")}
+                    type="text"
+                    placeholder="Enter Aadhaar Number"
+                    {...register("adhaarNo", {
+                      required: "Aadhaar number is required",
+                      pattern: {
+                        value: /^[0-9]{12}$/, 
+                        message: "Aadhaar number must be exactly 12 digits",
+                      },
+                    })}
+
+                    maxLength={12} // Restrict input length to 12 digits
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.replace(/\D/g, ""); 
+                      setValue("adhaarNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
                   <Input
                     label="PAN No"
-                    placeholder="Enter Pan Number"
-                    error={errors.panNo?.message}
-                    {...register("panNo")}
+                    type="text"
+                    placeholder="Enter PAN Number"
+                    {...register("panNo", {
+                      required: "PAN number is required",
+                      pattern: {
+                        value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                        message: "Invalid PAN format (e.g., ABCDE1234F)",
+                      },
+                      validate: (value: any) => {
+                        if (/[^A-Z0-9]/.test(value)) {
+                          return "Special characters are not allowed!";
+                        }
+                        return true;
+                      },
+                    })}
+
+                    maxLength={10} 
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); 
+                      setValue("panNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
 
                   <Input
@@ -634,19 +661,13 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
                     }}
                     error={errors.region?.message}
                     options={regionData}
+                    addButtonLabel="Add Region"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={2}
+                    paramsPosition={2}
                   />
 
-                  <Select
-                    label="Choose Commission Profile"
-                    placeholder="Commission Profile"
-                    value={watch("commission")}
-                    onChange={(selectedValue) => {
-                      setValue("commission", selectedValue); // Manually update the commission value
-                      handleInputChange("commission");
-                    }}
-                    error={errors.commission?.message}
-                    options={data.wc}
-                  />
+               
                   <Input
                     placeholder="Enter Amount"
                     label="Salary Amount"
@@ -840,12 +861,15 @@ const SupportAgentForm: React.FC<AddSupportAgentProps> = ({
           </div>
         </form>
       </div>
-      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <Modal className="w-[60%]" open={isModalOpen.idCard} onClose={handleModalToggle}>
         <IdBcardModal
           parentOnClose={onClose}
           onClose={handleModalToggle}
           role="Support Agent"
           staffData={staffData} />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
       </Modal>
     </>
   );

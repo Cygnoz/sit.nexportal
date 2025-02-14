@@ -1,13 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Table from "../ui/Table";
 import { useUser } from "../../context/UserContext";
+import { endPoints } from "../../services/apiEndpoints";
+import { useRegularApi } from "../../context/ApiContext";
+import useApi from "../../Hooks/useApi";
+import { useResponse } from "../../context/ResponseContext";
 
-interface TargetData {
-    task: string;
-    dueDate: string;
-    target: string;
-    salary:string;
-  }
+
 
 type Props = {
   onClose: () => void;
@@ -15,7 +14,12 @@ type Props = {
 
 
 const TargetInfoModal = ({onClose}: Props) => {
- 
+  const { request: getAllTarget } = useApi('get', 3004)
+  const [allTargets, setAllTargets] = useState<any>(null);
+  const { refreshContext } = useRegularApi()
+    const { loading, setLoading } = useResponse();
+  
+
    const {user}=useUser()
    user?.role
    const tabs = ["Region", "Area", "BDA"] as const;
@@ -49,37 +53,68 @@ const getDefaultTab = (): TabType => {
  
   type TabType = (typeof tabs)[number];
   const [activeTab, setActiveTab] = useState<TabType>(getDefaultTab());
+  const getTargets = async () => {
+    try {
+      setLoading(true)
+    
+       const endpoint = `${endPoints.TARGET}`
+      const { response, error } = await getAllTarget(endpoint)
+     // console.log(endpoint);
+      //console.log("res",response);
+     // console.log("err",error);
+      if (response && !error) {
+        console.log("sss", response.data);
+
+        setAllTargets(response.data)
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    getTargets()
+    refreshContext({ customerCounts: true })
+  }, [])
 
     
-      const datas: TargetData[] = [
-        { task: "BDA12345", dueDate: "Anjela John",  target:"Pending Generation" ,salary:"100000"},
-        { task: "BDA12345", dueDate: "Kristin Watson", target:"Pending Generation" ,salary:"100000"},
-        { task: "BDA12345", dueDate: "Jacob Jones", target:"Draft Created",salary:"100000" },
-        { task: "BDA12345", dueDate: "Wade Warren", target: "Awaiting Approval" ,salary:"100000"},
-        { task: "BDA12345", dueDate: "Jacob Jones", target:"Paid",salary:"100000" },
-      ];
-    
-    
-      const Regioncolumns: { key: keyof TargetData; label: string }[] = [
-        { key: "task", label: "Region" },
-        { key: "dueDate", label: "Region Manager" },
+      const Regioncolumns = [
+        { key: "region.regionName", label: "Region" },
         { key: "target", label: "Target" },
       ];
-      const Areacolumns: { key: keyof TargetData; label: string }[] = [
-        { key: "task", label: "Area" },
-        { key: "dueDate", label: "Area Manager" },
+    
+      const Areacolumns = [
+        { key: "area.areaName", label: "Area" },
         { key: "target", label: "Target" },
-        
       ];
     
-      const BDAcolumns: { key: keyof TargetData; label: string }[] = [
-        { key: "dueDate", label: "BDA" },
+      const BDAcolumns = [
+        { key: "bda.user.userName", label: "BDA" }, // Update to match actual structure
         { key: "target", label: "Target" },
       ];
+      
+
+      const getDataByActiveTab = (tab: any) => {
+        switch (tab) {
+          case "Region":
+            return allTargets?.region || [];
+          case "Area":
+            return allTargets?.area || [];
+            case "BDA": // Change from "Bda" to "BDA"
+            return allTargets?.bda || [];
+          
+          default:
+            return [];
+        }
+      };
+      const data = getDataByActiveTab(activeTab);
+    
   return (
-    <div>
-         <div className="mb-4 p-2 flex justify-between">
-                  <p className="text-[#303F58] text-lg font-bold">Target Info</p>
+    <div className="p-3">
+         <div className="mb-4 p-1 flex justify-between items-center">
+                  <p className="text-[#303F58] text-lg font-bold ms-2">Target Info</p>
                   <button
             type="button"
             onClick={onClose}
@@ -88,7 +123,7 @@ const getDefaultTab = (): TabType => {
             &times;
           </button>
                 </div>
-                <div className="flex gap-24 bg-[#FEFBF8] rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
+                <div className="flex gap-24 bg-[#FEFBF8] rounded-xl mx-3 px-4 py-1 text-base font-bold border-b border-gray-200">
           {visibleTabs.map((tab) => (
             <div
               key={tab}
@@ -106,19 +141,19 @@ const getDefaultTab = (): TabType => {
         </div>
         <div>
           <Table
-            data={datas}
+            data={data}
             columns={
-           
-              activeTab === "Region" ? Regioncolumns :
-              activeTab === "Area" ? Areacolumns :
-              activeTab === "BDA" ? BDAcolumns :
-              []
+              activeTab === "Region"
+                ? Regioncolumns
+                : activeTab === "Area"
+                  ? Areacolumns
+                  : BDAcolumns
             }
             
             headerContents={{
               }}
             noAction
-            // loading={loading}
+            loading={loading}
           />
         </div>
     </div>

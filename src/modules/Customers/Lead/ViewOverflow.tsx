@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { BarChart, Bar, Cell, CartesianGrid, XAxis, YAxis, ResponsiveContainer, } from 'recharts';
 import SelectDropdown from "../../../components/ui/SelectDropdown";
 import { months, years } from "../../../components/list/MonthYearList";
+import NoRecords from "../../../components/ui/NoRecords";
 
 type Props = {
   leadData?: any;
@@ -21,21 +22,68 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
   const [lead, setLead] = useState<any>();
   const dropdownRef = useRef(null);
   const { request: leadEngagementOverTime } = useApi('get', 3001)
-  const [selectedMonth, setSelectedMonth] = useState<any>(months[0]);
-  const [selectedYear, setSelectedYear] = useState<any>(years[years.length - 1])
-  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1`);
-  const [chartData, setChartData] = useState<{ name: string; count: number }[]>([]);
 
+ 
+  const [chartData, setChartData] = useState<{ name: string; count: number }[]>([]);
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
+  const [selectedData, setSelectedDate] = useState<string>("");
+  
+  // **Update `selectedData` whenever month/year changes**
   useEffect(() => {
-    // Convert month name to number (1-12)
-    const monthIndex = months.findIndex((m) => m.value === selectedMonth.value) + 1;
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
+    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
     setSelectedDate(`${selectedYear.value}-${monthIndex}`);
   }, [selectedMonth, selectedYear]);
-  // const formatDate = (date: any) => {
-  //   // Convert "2024-08-05" to "Aug 05"
-  //   const options: any = { month: "short", day: "2-digit" };
-  //   return new Date(date).toLocaleDateString("en-US", options);
-  // };
+  
+  const getLeadEngagement = async () => {
+    try {
+      if (!leadData?._id || !selectedData) return; // Prevent API call if leadData is missing
+  
+      const endPoint = `${endPoints.LEAD_OVERTIME}/${leadData._id}?date=${selectedData}`;
+  
+      const { response, error } = await leadEngagementOverTime(endPoint);
+  
+      if (response && !error) {
+        const engagementData = response.data.engagementData || {};
+  
+        // **Ensure numeric conversion for counts**
+        const transformedData = Object.keys(engagementData).map((key) => ({
+          name: key,
+          count: Number(engagementData[key]) || 0,
+        }));
+  
+        setChartData(transformedData);
+      } else {
+        console.error("API Error:", error?.response?.data?.message || error);
+        setChartData([]); // Reset chart data on error
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setChartData([]); // Reset chart data on error
+    }
+  };
+  
+  // **Fetch data only after `selectedData` is updated**
+  useEffect(() => {
+    if (selectedData) {
+      getLeadEngagement();
+    }
+  }, [leadData, selectedData]);
+  
+  
+
 
   const getStatusClass = (status: string | undefined) => {
     const statusMap: { [key: string]: { bgColor: string; textColor: string } } = {
@@ -54,47 +102,6 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
   const selectStatus = (status: string) => {
     setLead((prev: any) => ({ ...prev, leadStatus: status }));
   };
-
-
-  const getLeadEngagement = async () => {
-    try {
-      const endPoint = `${endPoints.LEADS}/${leadData?._id}/engagement?date=${selectedData}`
-      console.log(endPoint);
-
-      const { response, error } = await leadEngagementOverTime(endPoint)
-      console.log('res', response);
-      console.log('err', error);
-      if (response && !error) {
-        console.log(response.data);
-        // const transformedData= response.data
-        // const { date, engagementData } = response.data;
-
-        // Transform `engagementData` object into an array for the chart
-        // const transformedData = Object.keys(engagementData).map((key) => ({
-        //   name: date[key], // X-axis labels (Mail, Meeting, Task, Note)
-        //   count: engagementData[key] as number, // Y-axis values
-        // }));
-
-        const transformedData = Object.keys(response.data.engagementData).map((key) => ({
-          name: key, // The key name (Mail, Meeting, Task, Note)
-          count: response.data.engagementData[key], // Corresponding value
-        }));
-
-        setChartData(transformedData);
-        console.log("data", transformedData);
-      }
-      else {
-        console.log(error.response.data.message);
-
-      }
-    }
-    catch (err) {
-      console.error('error', err)
-    }
-  }
-  useEffect(() => {
-    getLeadEngagement()
-  }, [leadData])
 
 
   const handleClickOutside = (event: any) => {
@@ -222,46 +229,44 @@ const ViewOverflow = ({ leadData, getOneLead }: Props) => {
             {renderStep(4, lead?.leadStatus == 'Lost' ? 'Lost' : 'Won', [lead?.leadStatus == 'Lost' ? 'Lost' : 'Won'])}
           </div>
         </div>
-
         <div className="p-3 bg-white w-full space-y-2 rounded-lg mt-4">
-          <div className="flex justify-between mb-6">
-            <h2 className="font-bold p-2">Lead Engagement Over Time</h2>
-            <div className="flex gap-1">
-              <label htmlFor="month-select"></label>
+  <div className="flex justify-between mb-6">
+    <h2 className="font-bold p-2">Lead Engagement Over Time</h2>
+    <div className="flex gap-1">
+      <SelectDropdown
+        setSelectedValue={setSelectedMonth}
+        selectedValue={selectedMonth}
+        filteredData={newMonthList}
+        width="w-44"
+      />
+      <SelectDropdown
+        setSelectedValue={setSelectedYear}
+        selectedValue={selectedYear}
+        filteredData={years}
+        width="w-44"
+      />
+    </div>
+  </div>
 
-              <SelectDropdown
-                setSelectedValue={setSelectedMonth}
-                selectedValue={selectedMonth}
-                filteredData={months}
-                // placeholder='Select Month'
-                // searchPlaceholder="Search Month"
-                width="w-44"
-              />
-              <SelectDropdown
-                setSelectedValue={setSelectedYear}
-                selectedValue={selectedYear}
-                filteredData={years}
-                // placeholder='Select Year'
-                // searchPlaceholder="Search Year"
-                width="w-44"
-              />
-            </div>
-          </div>
-          <div className="-ms-6">
-            <ResponsiveContainer width="100%" minHeight={300}>
-              <BarChart data={chartData}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} ticks={[0, 5, 10, 15, 20, 25]} domain={[0, 25]} />
-                <Bar dataKey="count" radius={[10, 10, 0, 0]}>
-                  {chartData.map((_, index) => (
-                    <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+  <div className="-ms-6">
+    {chartData.length === 0 || chartData.every((data) => data.count === 0) ? (
+      <NoRecords text="No Lead Found" parentHeight="320px" />
+    ) : (
+      <ResponsiveContainer width="100%" minHeight={300}>
+        <BarChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+          <XAxis dataKey="name" axisLine={false} tickLine={false} />
+          <YAxis axisLine={false} tickLine={false} ticks={[0, 5, 10, 15, 20, 25]} domain={[0, 25]} />
+          <Bar dataKey="count" radius={[10, 10, 0, 0]}>
+            {chartData.map((_, index) => (
+              <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    )}
+  </div>
+</div>
 
 
 

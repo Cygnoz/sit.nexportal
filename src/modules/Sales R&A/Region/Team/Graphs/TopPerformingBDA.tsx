@@ -14,6 +14,7 @@ function TopPerformingBDA({ graphData }: Props) {
     CR: data?.conversionRate,
     avatar: data?.userImage || profileImage, // Use a default avatar if not provided
   }));
+console.log("performingData",chartData);
 
   
   

@@ -14,51 +14,63 @@ type Props = {
 
 const GraphHomeView = ({ id }: Props) => {
 
-  const { request: getTicketOvertime } = useApi('get', 3003)
-  const [selectedMonth, setSelectedMonth] = useState<any>(months[0]);
-  const [selectedYear, setSelectedYear] = useState<any>(years[years.length - 1])
-  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1-1`);
+  const { request: getTicketOvertime } = useApi('get', 3003);
   const [chartData, setChartData] = useState([]);
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
 
+  const [selectedData, setSelectedData] = useState<string>("");
+  
   useEffect(() => {
-    // Convert month name to number (1-12)
-    const monthIndex = months.findIndex((m) => m.value === selectedMonth.value) + 1;
-    setSelectedDate(`${selectedYear.value}-${monthIndex}-1`);
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
+    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
+    setSelectedData(`${selectedYear.value}-${monthIndex}`);
   }, [selectedMonth, selectedYear]);
-  const formatDate = (date: any) => {
-    // Convert "2024-08-05" to "Aug 05"
-    const options: any = { month: "short", day: "2-digit" };
-    return new Date(date).toLocaleDateString("en-US", options);
-  };
-
+  
+  
   const getOvertime = async () => {
     try {
-      const endPoint = `${endPoints.GET_TICKETS}/overtime/${id}?date=${selectedData}`
-      const { response, error } = await getTicketOvertime(endPoint)
-      console.log('res', response);
-      console.log(endPoint);
+      const endPoint = `${endPoints.GET_TICKETS}/overtime/${id}?date=${selectedData}`;
+      
+      
+      const { response, error } = await getTicketOvertime(endPoint);
+      //console.log('API Response:', response);
+  
       if (response && !error) {
-        console.log(response.data);
-
+        //console.log(endPoint);
+        // Transform data to match chart format
         const transformedData = response.data.ticketsOverTime.map((item: any) => ({
-          name: formatDate(item.date),
-          TC: item.ticketCount,
-        }))
-        setChartData(transformedData)
-        console.log(transformedData);
-
+          
+          name: item.date, // X-axis label
+          count: item.ticketCount, // Y-axis value
+        }));
+  
+        setChartData(transformedData);
+      } else {
+        console.log(error.response.data.message);
+       // setChartData([]); // Reset if error
       }
-      else {
-        console.log(error.response.data.message)
-      }
+    } catch (err) {
+      console.error('Error:', err);
     }
-    catch (err) {
-      console.error('error message', err)
-    }
-  }
+  };
+  
+  
+  // Call API whenever selectedMonth or selectedYear changes
   useEffect(() => {
-    getOvertime()
-  }, [selectedMonth])
+    getOvertime();
+  }, [selectedData]);
 
 
   const Star = [
@@ -79,130 +91,54 @@ const GraphHomeView = ({ id }: Props) => {
 
   ];
 
-  // const datas = [
-  //   {
-  //     name: 'Jan 05',
-
-  //     Area1: 0,
-  //     amt: 9000,
-  //   },
-  //   {
-  //     name: 'Jan 10',
-  //     Area1: 2563,
-
-  //     amt: 9777,
-  //   },
-  //   {
-  //     name: 'Jan 15',
-  //     Area1: 1998,
-
-  //     amt: 8000,
-  //   },
-  //   {
-  //     name: 'Jan 20',
-  //     Area1: 3890,
-
-  //     amt: 6000,
-  //   },
-  //   {
-  //     name: 'Jan 25',
-  //     Area1: 2890,
-
-  //     amt: 2181,
-  //   },
-  //   {
-  //     name: 'Jan 30',
-  //     Area1: 5890,
-
-  //     amt: 2500,
-  //   },
-
-  // ];
-  // const [selectedYear, setSelectedYear]=useState({label:'Select Year',vale:''})
-  // const handleYearSelection=(selectedOption:any)=>{
-  //   setSelectedYear(selectedOption)
-  // }
-
-  // const yearOptions=[
-  //   {label:'2020', value:'2020'},
-  //   {label:'2021', value:'2021'},
-  //   {label:'2022', value:'2022'},
-  //   {label:'2023', value:'2023'},
-  //   {label:'2024', value:'2024'},
-  //   {label:'2025', value:'2025'},
-  // ]
 
   return (
     <div>
       <div className="grid grid-cols-12 gap-4 mb-4">
-        <div className="col-span-9">
-          <div className="py-1 bg-white mt-2  rounded-lg">
-            <div className="py-1 ms-2 flex justify-between mt-3 px-4 gap-4 m-2">
-              <h2 className='font-bold'>Tickets OverTime</h2>
-              <div className="flex gap-1">
-                <label htmlFor="month-select"></label>
-
-                <SelectDropdown
-                  setSelectedValue={setSelectedMonth}
-                  selectedValue={selectedMonth}
-                  filteredData={months}
-                  // placeholder='Select Month'
-                   searchPlaceholder="Search Month"
-                  width="w-44"
-                />
-                <SelectDropdown
-                  setSelectedValue={setSelectedYear}
-                  selectedValue={selectedYear}
-                  filteredData={years}
-                  // placeholder='Select Year'
-                   searchPlaceholder="Search Year"
-                  width="w-44"
-                />
-              </div>
-            </div>
-            <div className="mt-3 p-2 gap-4">
-              {chartData.length > 0 ? (
-                <ResponsiveContainer width="100%" minHeight={400}>
-                  <LineChart
-                    width={900}
-                    height={450}
-                    data={chartData}
-                    margin={{
-                      top: 5,
-                      right: 30,
-                      left: 20,
-                      bottom: 5,
-                    }}
-                  >
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis
-                      dataKey="name"
-                      axisLine={false}
-                      tickLine={false}
-                      padding={{ left: 20, right: 20 }}
-                    />
-                    <YAxis axisLine={false} tickLine={false}
-                      ticks={[0, 100, 200, 300, 400, 500]}
-                      domain={[0, 500]} />
-                    <Tooltip />
-
-                    <Line type="monotone" dataKey="Area1" stroke="#e2b0ff" strokeWidth={3} dot={false} />
-
-                  </LineChart>
-                </ResponsiveContainer>
-              )
-                :
-                (
-                  // <div className="flex justify-center flex-col items-center">
-                  //   <img width={70} src={No_Data_found} alt="No Data Found" />
-                  //   <p className="font-bold text-red-700">No Records Found!</p>
-                  // </div>
-                  <NoRecords imgSize={70} textSize='md' parentHeight='380px'/>
-                )
-              }
-            </div>
-          </div>
+      <div className="col-span-9">
+    <div className="py-1 bg-white mt-2 rounded-lg">
+      <div className="py-1 ms-2 flex justify-between mt-3 px-4 gap-4 m-2">
+        <h2 className='font-bold'>Tickets OverTime</h2>
+        <div className="flex gap-1">
+          <SelectDropdown
+            setSelectedValue={setSelectedMonth}
+            selectedValue={selectedMonth}
+            filteredData={newMonthList}
+            searchPlaceholder="Search Month"
+            width="w-44"
+          />
+          <SelectDropdown
+            setSelectedValue={setSelectedYear}
+            selectedValue={selectedYear}
+            filteredData={years}
+            searchPlaceholder="Search Year"
+            width="w-44"
+          />
         </div>
+      </div>
+
+      <div className="mt-3 p-2 gap-4">
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" minHeight={400}>
+            <LineChart
+              width={900}
+              height={450}
+              data={chartData}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" vertical={false} />
+              <XAxis dataKey="name" axisLine={false} tickLine={false} padding={{ left: 20, right: 20 }} />
+              <YAxis axisLine={false} tickLine={false} domain={[0, 'auto']} />
+              <Tooltip />
+              <Line type="monotone" dataKey="count" stroke="#e2b0ff" strokeWidth={3} dot={false} />
+            </LineChart>
+          </ResponsiveContainer>
+        ) : (
+          <NoRecords imgSize={70} textSize="md" parentHeight="380px" />
+        )}
+      </div>
+    </div>
+  </div>
 
         <div className="col-span-3">
           <div className="p-3 bg-[#FFFFFF] gap-4 mt-2 rounded-lg">

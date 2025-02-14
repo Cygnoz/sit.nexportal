@@ -1,23 +1,72 @@
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import PayrollTable from "./PayrollTable";
 import { useNavigate } from "react-router-dom";
+import SearchBar from "../../../components/ui/SearchBar";
+import SelectDropdown from "../../../components/ui/SelectDropdown";
+import { months, years } from "../../../components/list/MonthYearList";
+import useApi from "../../../Hooks/useApi";
+import { endPoints } from "../../../services/apiEndpoints";
+import { useResponse } from "../../../context/ResponseContext";
+import toast from "react-hot-toast";
 
 interface TargetData {
-  task: string;
-  dueDate: string;
+  staffName: string;
+  role: string;
   status: string;
-  salary: string;
+  basicSalary: string;
+  totalSalary:string
 }
 
 type Props = {};
 
 const PayrollHome = ({ }: Props) => {
-  const tabs = ["All Employees", "RM", "AM", "BDA"] as const;
+  const tabs = ["All Employees", "RM", "AM", "BDA","SV","SA"] as const;
   const navigate = useNavigate();
+  const {loading,setLoading}=useResponse()
   type TabType = (typeof tabs)[number];
-
   const [activeTab, setActiveTab] = useState<TabType>("All Employees");
+  // Month Year proper way
+const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+const [newMonthList, setNewMonthList] = useState<any>([]);
+useEffect(() => {
+  setNewMonthList(
+    months.filter((m) =>
+      selectedYear.value === currentYear.value // If selected year is the current year
+        ? m.value <= currentMonthValue // Show months up to the current month
+        : true // Otherwise, show all months
+    )
+  );
+  setActiveTab("All Employees")
+  setPayrollGenerated(false);
+  getPayrollDatas();
+}, [selectedMonth, selectedYear]);
+
+
+
+    const {request:getPayroll}=useApi('get',3002)
+    const {request:generatePayroll}=useApi('post',3002)
+    // Get current month as "MM" format (e.g., "03" for March)
+
+// Filter to get months from January to the current month
+
+    const [payrollData, setPayrollData] = useState<any>([]);
+    const [filteredPayroll,setfilteredPayroll]=useState<any>([])
+ const [searchValue, setSearchValue] = useState<string>("");
+ const [payrollGenerated,setPayrollGenerated]=useState(false)
+ const filteredData: any = useMemo(() => {
+  return filteredPayroll?.filter((row: any) =>
+    Object.values(row).some((value) =>
+      String(value).toLowerCase().includes(searchValue.toLowerCase())
+    )
+  );
+}, [filteredPayroll, searchValue]);
+
 
 
 
@@ -31,14 +80,11 @@ const PayrollHome = ({ }: Props) => {
       case "Pending Generation":
         path = "/payroll-view";
         break;
-      case "Draft Created":
-        path = "/payroll-view2";
-        break;
       case "Paid":
         path = "/payroll-slip";
         break;
       case "Awaiting Approval":
-        path = "/payroll";
+        path = "/payroll-view2";
         break;
       default:
         path = "/payroll-slip";
@@ -47,39 +93,142 @@ const PayrollHome = ({ }: Props) => {
     navigate(`${path}/${id}`)
   };
 
-  const datas: TargetData[] = [
-    { task: "BDA12345", dueDate: "Anjela John", status: "Approval Granted", salary: "100000" },
-    { task: "BDA12345", dueDate: "Kristin Watson", status: "Pending Generation", salary: "100000" },
-    { task: "BDA12345", dueDate: "Jacob Jones", status: "Draft Created", salary: "100000" },
-    { task: "BDA12345", dueDate: "Wade Warren", status: "Awaiting Approval", salary: "100000" },
-    { task: "BDA12345", dueDate: "Jacob Jones", status: "Paid", salary: "100000" },
-  ];
+  
 
   const Allcolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "task", label: "Name" },
-    { key: "dueDate", label: "Role" },
-    { key: "status", label: "Payslip Status" },
-    { key: "salary", label: "Total Salary" },
+    { key: "staffName", label: "Name" },
+    { key: "role", label: "Role" },
+    { key: "status", label: " Status" },
+    { key: "basicSalary", label: "Basic Salary" },
+    { key: "totalSalary", label: "Total Salary" },
   ];
-  const RMcolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "task", label: "Name" },
-    // { key: "dueDate", label: "Role" },
-    { key: "status", label: "Payslip Status" },
-    { key: "salary", label: "Total Salary" },
-  ];
-  const AMcolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "task", label: "Name" },
-    // { key: "dueDate", label: "Role" },
-    { key: "status", label: "Payslip Status" },
-    { key: "salary", label: "Total Salary" },
+  const StaffColumns: { key: keyof TargetData; label: string }[] = [
+    { key: "staffName", label: "Name" },
+    { key: "status", label: " Status" },
+    { key: "basicSalary", label: "Basic Salary" },
+    { key: "totalSalary", label: "Total Salary" },
   ];
 
-  const BDAcolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "task", label: "Name" },
-    // { key: "dueDate", label: "Role" },
-    { key: "status", label: "Payslip Status" },
-    { key: "salary", label: "Total Salary" },
-  ];
+
+  
+
+  const renderHeader = () => (
+    <div
+      className={`flex justify-between items-center mb-4`}
+    >
+      {/* {headerContents.title && (
+        <h2 className="text-lg font-bold">{headerContents.title}</h2>
+      )} */}
+      
+        <div className={`w-[440px]`}>
+          <SearchBar
+            searchValue={searchValue}
+            onSearchChange={setSearchValue}
+            placeholder='Search Payroll'
+          />
+        </div>
+      
+        <div className="flex gap-4">
+          <SelectDropdown
+                  setSelectedValue={setSelectedMonth}
+                  selectedValue={selectedMonth}
+                  filteredData={newMonthList}
+                    searchPlaceholder="Search Month"
+                  width="w-32"
+                />
+         <SelectDropdown
+                  setSelectedValue={setSelectedYear}
+                  selectedValue={selectedYear}
+                  filteredData={years}
+
+                  searchPlaceholder="Search Month"
+                  width="w-28"
+                />
+        </div>
+      
+    </div>
+  );
+
+  
+  
+
+ const getPayrollDatas=async()=>{
+  
+  try{
+    setLoading(true)
+    const endpoint=`${endPoints.PAYROLL}/${selectedYear.value}/${selectedMonth.value}`
+    
+    const {response,error}=await getPayroll(endpoint)
+    if(response && !error){
+      const filteredPayroll = response.data.map((res: any) => ({
+        ...res,
+        staffName: res?.staffId?.user?.userName,
+        role: res?.staffId?.user?.role,
+        status: res?.payRollStatus,
+        basicSalary: res?.basicSalary,
+        totalSalary: res?.totalSalary,
+      }));
+      setfilteredPayroll(filteredPayroll)
+      setPayrollData(filteredPayroll);
+    }else{
+      toast.error(error.response.data.message)
+      if(error.response.data.message=="Payroll not generated for this month."){
+        setPayrollGenerated(true)
+      }
+
+    }
+  }catch(error){
+    console.log(error)
+   } finally{
+    setLoading(false)
+   }
+ }
+
+ const generatePayrolls=async()=>{
+  const body={
+    month:selectedMonth.value,
+    year:selectedYear.value
+  }
+  try{
+    const {response,error}=await generatePayroll(endPoints.PAYROLL,body)
+    if(response && !error){
+      setPayrollGenerated(false)
+      getPayrollDatas()
+    }else{
+      console.log(error.response.data.message)
+    }
+  }catch(error){
+    console.log(error)
+   } 
+ }
+
+ useEffect(()=>{
+  getPayrollDatas()
+ },[])
+
+ const handleActiveTab = (tab: any) => {
+  setSearchValue('')
+  setActiveTab(tab);
+  if (tab === "All Employees") {
+    setfilteredPayroll(payrollData);
+  } else {
+    const roleMap: { [key: string]: string } = {
+      RM: "Region Manager",
+      AM: "Area Manager",
+      BDA: "BDA",
+      SV:'Supervisor',
+      SA:'Support Agent'
+    };
+
+    if (roleMap[tab]) {
+      setfilteredPayroll(
+        payrollData?.filter((payroll: any) => payroll?.role === roleMap[tab])
+      );
+    }
+  }
+};
+
+
 
   return (
     <>
@@ -96,7 +245,7 @@ const PayrollHome = ({ }: Props) => {
           {tabs.map((tab) => (
             <div
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleActiveTab(tab)}
               className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
                   ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
                   : "text-gray-400"
@@ -108,34 +257,23 @@ const PayrollHome = ({ }: Props) => {
 
         </div>
 
-        <div>
+        <div  className="w-full  bg-white rounded-lg p-4 mt-5">
+          
+            {renderHeader()}
+          
           <PayrollTable
-            data={datas}
+            data={filteredData}
             columns={
               activeTab === "All Employees" ? Allcolumns :
-                activeTab === "RM" ? RMcolumns :
-                  activeTab === "AM" ? AMcolumns :
-                    activeTab === "BDA" ? BDAcolumns :
-                      []
+                StaffColumns
             }
-
-            headerContents={{
-
-              search: { placeholder: "Search..." },
-              sort: [
-                {
-                  sortHead: "Sort by Month and Year",
-                  sortList: [
-                    { label: "Month", icon: <span></span>, action: () => { } },
-                    { label: "Year", icon: <span></span>, action: () => { } },
-                  ],
-                },
-              ],
-            }}
             actionList={[
               { label: "view", function: handleView },
 
             ]}
+            generatePayrollFunction={generatePayrolls}
+            payrollGenerated={payrollGenerated}
+            loading={loading}
           />
         </div>
       </div>

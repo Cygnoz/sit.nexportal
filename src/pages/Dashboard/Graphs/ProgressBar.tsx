@@ -1,116 +1,163 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SelectDropdown from "../../../components/ui/SelectDropdown";
-import { months } from "../../../components/list/MonthYearList";
+import { months, years } from "../../../components/list/MonthYearList";
 import TargetInfoModal from "../../../components/modal/TargetInfoModal";
 import Modal from "../../../components/modal/Modal";
 import { useUser } from "../../../context/UserContext";
+import CheckIcon from "../../../assets/icons/CheckIcon";
+import { endPoints } from "../../../services/apiEndpoints";
+import useApi from "../../../Hooks/useApi"; // Import NoRecords component
 
 type Props = {};
 
 const ProgressBar = ({}: Props) => {
-     const {user}=useUser()
-       user?.role
-  const [isModalOpen, setIsModalOpen] = useState({ addInfo: false });
-  const [achieved, setAchieved] = useState(28);
-  const goal = 100;
-  const balance = goal - achieved;
-  const percentage = (achieved / goal) * 100;
-  const [barHover, setBarHover] = useState(false);
-  
-  const tickMarks = [0, 10, 30, 60, 100];
+  const { request: AllTarget } = useApi("get", 3004);
+  const { user } = useUser();
 
-  const handleModalToggle = (addInfo = false) => {
-    setIsModalOpen((prevState) => ({ ...prevState, addInfo }));
+  // State for storing API response
+  const [chartData, setChartData] = useState({
+    achievedTarget: 0,
+    balanceTarget: 0,
+    totalTarget: 0,
+    percentage: 0,
+  });
+
+  console.log("sdfefe",chartData);
+  
+
+  // Get current month and year
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
+
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+  const [selectedYear] = useState<any>(years[0]);
+  // Format selected date as "YYYY-MM"
+  const [selectedData, setSelectedData] = useState<string>(
+    `${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`
+  );
+  useEffect(() => {
+    // Convert month name to number (1-12) and ensure it's two digits
+    setSelectedData(`${selectedYear.value}-${selectedMonth?.value}`);
+  }, [selectedMonth, selectedYear]);
+
+  const [isModalOpen, setIsModalOpen] = useState({ addInfo: false });
+
+  // Calculate percentage dynamically
+  const percentage = chartData.totalTarget ? (chartData.achievedTarget / chartData.totalTarget) * 100 : 0;
+
+  // API Call to fetch target data
+  const getTargets = async () => {
+    try {
+      const endPoint = `${endPoints.TARGET_ACHEIVED}/?month=${selectedData}`;
+      const { response, error } = await AllTarget(endPoint);
+      console.log("res",response?.data);
+      console.log("err",response?.data);
+      
+      if (response && !error) {
+        const { totalTarget, achievedTargets, balanceTarget } = response.data;
+
+        setChartData({
+          achievedTarget: achievedTargets,
+          balanceTarget: balanceTarget,
+          totalTarget: totalTarget,
+          percentage: totalTarget > 0 ? (achievedTargets / totalTarget) * 100 : 0,
+        });
+      } else {
+        console.error("Error:", error?.data || "Unknown error occurred");
+        setChartData({
+          achievedTarget: 0,
+          balanceTarget: 0,
+          totalTarget: 0,
+          percentage: 0,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
+
+  useEffect(() => {
+    if (selectedData) {
+      getTargets();
+    }
+  }, [selectedData]);
 
   return (
     <div className="p-6 mx-auto max-w-8xl bg-white rounded-lg w-full">
       <div className="p-2 flex justify-between">
-        <h1 className="text-lg font-bold">Target</h1>
+        <h1 className="text-lg font-bold -mt-4">Target</h1>
         <div className="flex gap-4">
-        {user?.role !== 'BDA' && (
+          {user?.role !== 'BDA' && (
             <h1
-              onClick={() => handleModalToggle(true)}
+              onClick={() => setIsModalOpen({ addInfo: true })}
               className="mt-1 underline cursor-pointer text-red-600"
             >
               View Target Info
             </h1>
           )}
-          <SelectDropdown placeholder="All Months" filteredData={months} searchPlaceholder="Search Months" width="w-44" />
+          <SelectDropdown setSelectedValue={setSelectedMonth}   selectedValue={selectedMonth} filteredData={months} searchPlaceholder="Search Months" width="w-44" />
         </div>
       </div>
 
       <div className='flex -mt-6 ms-2'>
-        <h1>Sep 12, 2024</h1>
-      </div>
-
-      <div className="mb-4 flex justify-between items-center mt-5">
-        <span className="text-gray-600">Achieved Target</span>
-        <span 
-          className="text-green-600 font-bold relative cursor-pointer"
-      
-        >
-          {achieved} License
-         
-           
-     
-        </span>
-      </div>
-
-      <h1 className="text-3xl font-medium text-[#22593F]">{percentage.toFixed(0)}%</h1>
-
-      <div 
-        className="relative w-full bg-gray-200 rounded-full h-4"
-      >
-        <div 
-          className="absolute top-0 left-0 bg-green-500 h-4 rounded-full" 
-          style={{ width: `${percentage}%` }}
-          onMouseEnter={() => setBarHover(true)}
-          onMouseLeave={() => setBarHover(false)}
-        >
-          {barHover && (
-            <div className="absolute top-[-30px] right-0 transform translate-x-1/2">
-              <div className="p-4 bg-[#FAFAFA] border shadow-md rounded text-center">
-                <p className="text-xs font-normal">Achieved</p>
-                <p className="text-base font-extrabold text-[#54B86D]"> {achieved} License</p>
-                <div className="bg-white flex gap-3">
-                <p className="text-xs font-normal">Balance</p>
-                <p className="text-xs font-semibold text-[#9B3230]"> {balance} License</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      <div className="flex justify-between mt-2 text-sm text-gray-500 w-full">
-  {tickMarks.map((value) => (
-    <div key={value} className="relative flex flex-col items-center">
-      <span className="text-green-700 font-semibold mb-1">
-        {value <= achieved ? "✔" : ""}
-      </span>
-      <span>{value}</span>
-    </div>
-  ))}
+  <h1>{new Date().toLocaleDateString("en-US", { day: "2-digit", month: "long", year: "numeric" })}</h1>
 </div>
 
+      {/* Show NoRecords if no target data */}
+      
+        <>
+          <div className="text-end">
+            <h1 className="text-[#B7B7B7] text-xl font-medium">Goal: {chartData.totalTarget} Target</h1>
+          </div>
 
-      <input
-        type="range"
-        min="0"
-        max={goal}
-        step="1"
-        value={achieved}
-        onChange={(e) => setAchieved(Number(e.target.value))}
-        className="mt-6 w-full h-1 bg-transparent appearance-none cursor-pointer"
-      />
+          <div className="mb-4 flex justify-between items-center mt-8">
+            <span className="text-gray-600 text-base font-medium">Achieved</span>
+            <span className="text-green-600 font-bold">{chartData.achievedTarget} License</span>
+          </div>
 
-      <p className="mt-4 text-end text-gray-700 font-medium">
-        Great progress! You’re {balance}% toward your goal.
-      </p>
+          <h1 className="text-3xl font-medium text-[#22593F]">{percentage.toFixed(2)}%</h1>
 
-      <Modal open={isModalOpen.addInfo} onClose={() => handleModalToggle()} className="w-[40%]">
-        <TargetInfoModal onClose={() => handleModalToggle()} />
+          {/* Progress Bar */}
+          <div className="relative w-full bg-gray-200 rounded-full h-4">
+            <div
+              className="absolute top-0 left-0 bg-[#22593F] h-4 rounded-full"
+              style={{ width: `${percentage.toFixed(2)}%` }}
+            ></div>
+
+            {/* Floating Info Box */}
+            <div
+              className="absolute top-[-135px] bg-[#FAFAFA] border shadow-md rounded text-center p-3 -ms-16 transform translate-x-1/2"
+              style={{ left: `calc(${percentage}% - 20px)` }}
+            >
+              <p className="text-xs font-normal">Achieved Target</p>
+              <p className="text-base font-extrabold text-[#54B86D]">{chartData.achievedTarget} Target</p>
+              <div className="flex bg-white p-3">
+                <p className="text-xs font-normal">Balance</p>
+                <p className="text-xs font-semibold text-[#9B3230]">{chartData.balanceTarget} Target</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Tick Marks */}
+          <div className="flex justify-between mt-2 text-sm text-gray-500 w-full relative">
+            {[0, 10, 30, 60, 100].map((value) => (
+              <div key={value} className="relative flex flex-col items-center -mt-12">
+                {value !== 0 && <CheckIcon />}
+                <div className="mt-10">
+                  <span>{value}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="mt-4 text-end text-gray-700 font-medium">
+            Great progress! You’re {chartData.balanceTarget} Targets away from your goal.
+          </p>
+        </>
+      
+
+      <Modal open={isModalOpen.addInfo} onClose={() => setIsModalOpen({ addInfo: false })} className="w-[40%] h-[700px]" >
+        <TargetInfoModal onClose={() => setIsModalOpen({ addInfo: false })} />
       </Modal>
     </div>
   );

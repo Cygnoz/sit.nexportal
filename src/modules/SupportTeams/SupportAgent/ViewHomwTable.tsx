@@ -30,8 +30,8 @@ const ViewHomwTable = ({ getData, tickets,id }: Props) => {
   const getAAward = async () => {
     try {
       const { response, error } = await getaAWARD(`${endPoints.GET_ONE_PRAISE}/${getData?.saData?.user?._id}`);
-      //   console.log(response);
-      //   console.log(error);
+        console.log("res",response);
+        console.log("err",error);
 
       if (response && !error) {
         console.log(response?.data?.praises);

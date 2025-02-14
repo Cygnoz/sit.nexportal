@@ -37,13 +37,25 @@ const GraphTable = ({ bdaData,loading }: Props) => {
 
   const navigate = useNavigate();
   // const id=bdaData?bdaData:id
-
+  
   const [chartData, setChartData] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState<any>('');
-  const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
-  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1-1`);
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
+  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-${currentMonth}-1`);
 
   useEffect(() => {
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
     // Convert month name to number (1-12)
     const monthIndex = months.findIndex((m) => m.value === selectedMonth.value) + 1;
     setSelectedDate(`${selectedYear.value}-${monthIndex}-1`);
@@ -192,7 +204,7 @@ const GraphTable = ({ bdaData,loading }: Props) => {
                 <SelectDropdown
                   setSelectedValue={setSelectedMonth}
                   selectedValue={selectedMonth}
-                  filteredData={months}
+                  filteredData={newMonthList}
                     searchPlaceholder="Search Month"
                   width="w-44"
                 />

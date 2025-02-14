@@ -29,7 +29,6 @@ interface Address {
     state?: string;
     country?:string
     region: string;
-    commission?:string;
     salaryAmount:string;
     bankDetails?: BankDetails;
     userImage?: string;  

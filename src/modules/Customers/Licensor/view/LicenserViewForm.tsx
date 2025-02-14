@@ -1,16 +1,15 @@
 import { useEffect, useState } from "react";
 import BuildingIcon from "../../../../assets/icons/BuildingIcon";
-import CalenderDays from "../../../../assets/icons/CalenderDays"
+import CalenderDays from "../../../../assets/icons/CalenderDays";
 import EmailIcon from "../../../../assets/icons/EmailIcon";
 import FileBadgeIcon from "../../../../assets/icons/FileBadgeIcon";
 import LocationIcon from "../../../../assets/icons/LocationIcon";
 import PhoneIcon from "../../../../assets/icons/PhoneIcon";
 
-import UserIcon from "../../../../assets/icons/UserIcon"
-import { endPoints } from "../../../../services/apiEndpoints";
-import { LicenserData } from "../../../../Interfaces/Licenser";
 import { useParams } from "react-router-dom";
+import UserIcon from "../../../../assets/icons/UserIcon";
 import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
 
 
 type Props = {
@@ -20,7 +19,7 @@ type Props = {
 const LicenserViewForm = ({onClose}: Props) => {
   const {request: getaLicenser}=useApi('get',3001)
   const { id } = useParams();
-  const [data, setData] = useState<LicenserData>()
+  const [data, setData] = useState<any>()
 
      const getOneLicenser = async () => {
           try {

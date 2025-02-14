@@ -12,42 +12,43 @@ import { endPoints } from "../../../services/apiEndpoints";
 
 type Props = {
   onClose: () => void;
-  id:any
+  id: any
 }
 
 
 
-const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
+const AMViewForm: React.FC<Props> = ({ onClose, id }) => {
 
-  const {request: getaAM}=useApi('get',3002)
+  const { request: getaAM } = useApi('get', 3002)
   const [data, setData] = useState<{
-    amData:any;}>
-    ({amData:[]})
+    amData: any;
+  }>
+    ({ amData: [] })
 
 
-    const getAAM = async()=>{
-      try{
-        const {response,error}= await getaAM(`${endPoints.GET_ALL_AM}/${id}`);
-        if(response && !error){
-          setData((prevData)=>({
-            ...prevData,
-            amData:response.data
-          }))
-        }
-        else{
-          console.error(error.response.data.message)
-        }
+  const getAAM = async () => {
+    try {
+      const { response, error } = await getaAM(`${endPoints.GET_ALL_AM}/${id}`);
+      if (response && !error) {
+        setData((prevData) => ({
+          ...prevData,
+          amData: response.data
+        }))
       }
-      catch(err){
-        console.error("Error fetching AM data:", err);
+      else {
+        console.error(error.response.data.message)
       }
     }
+    catch (err) {
+      console.error("Error fetching AM data:", err);
+    }
+  }
 
-    useEffect(()=>{
-      getAAM();
-    },[id])
-    console.log(data);
-    
+  useEffect(() => {
+    getAAM();
+  }, [id])
+  console.log(data);
+
   return (
     <div>
       <div className="p-5 bg-white rounded shadow-md  ">
@@ -57,12 +58,20 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
             <p className="text-xs mt-2 font-normal text-[#8F99A9]">Building strong connections, achieving regional goals.</p>
 
           </div>
-          <button
+          {/* <button
             type="button"
             onClick={onClose}
             className="text-gray-600 hover:text-gray-900 font-bold "
           >
             <p className="text-xl">&times;</p>
+          </button> */}
+
+          <button
+            type="button"
+            onClick={onClose}
+            className="text-gray-600 text-3xl cursor-pointer hover:text-gray-900"
+          >
+            &times;
           </button>
 
         </div>
@@ -77,7 +86,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Name</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.amData?.user?.userName ? data.amData?.user?.userName: 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.user?.userName ? data.amData?.user?.userName : 'N/A'}</p>
 
               </div>
 
@@ -88,7 +97,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
 
               <div className="flex">
                 <CalenderDays color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2 ">{data.amData?.age ? data.amData?.age: 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2 ">{data.amData?.age ? data.amData?.age : 'N/A'}</p>
 
               </div>
 
@@ -96,7 +105,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Blood Group</h3>
               <div className="flex">
                 <BloodGroupIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.bloodGroup ?data.amData?.bloodGroup:'N/A' }</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.bloodGroup ? data.amData?.bloodGroup : 'N/A'}</p>
 
               </div>
 
@@ -109,7 +118,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Address</h3>
               <div className="flex">
                 <LocationIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.address?.street1 ?data.amData?.address?.street1:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.address?.street1 ? data.amData?.address?.street1 : 'N/A'}</p>
 
               </div>
 
@@ -117,7 +126,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Phone</h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.user?.phoneNo ? data.amData?.user?.phoneNo:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.user?.phoneNo ? data.amData?.user?.phoneNo : 'N/A'}</p>
 
               </div>
 
@@ -125,7 +134,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Email Address</h3>
               <div className="flex">
                 <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.personalEmail ? data.amData?.personalEmail:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.user?.email ? data.amData?.user?.email: 'N/A'}</p>
 
               </div>
             </div>
@@ -138,7 +147,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Adhar Number</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.amData?.adhaarNo ? data.amData?.adhaarNo:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.adhaarNo ? data.amData?.adhaarNo : 'N/A'}</p>
 
               </div>
 
@@ -146,7 +155,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Pan Number</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.amData?.panNo ?data.amData?.panNo :'N/A' }</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.panNo ? data.amData?.panNo : 'N/A'}</p>
 
               </div>
               <hr />
@@ -154,7 +163,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
 
               <div className="flex">
                 <CalenderDays color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2 ">{data.amData?.dateOfJoining? new Date(data.amData.dateOfJoining).toLocaleDateString() : 'N/A'} </p>
+                <p className="text-sm font-semibold ms-2 ">{data.amData?.dateOfJoining ? new Date(data.amData.dateOfJoining).toLocaleDateString() : 'N/A'} </p>
 
               </div>
             </div>
@@ -172,7 +181,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Name</h3>
               <div className="flex">
                 <BankIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.bankDetails?.bankName ? data.amData?.bankDetails?.bankName:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.bankDetails?.bankName ? data.amData?.bankDetails?.bankName : 'N/A'}</p>
 
               </div>
 
@@ -180,14 +189,14 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Branch</h3>
               <div className="flex">
                 <BankIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.bankDetails?.bankBranch?data.amData?.bankDetails?.bankBranch:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.bankDetails?.bankBranch ? data.amData?.bankDetails?.bankBranch : 'N/A'}</p>
 
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">Bank Account number</h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.bankDetails?.bankAccountNo?data.amData?.bankDetails?.bankAccountNo:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.bankDetails?.bankAccountNo ? data.amData?.bankDetails?.bankAccountNo : 'N/A'}</p>
 
               </div>
 
@@ -195,7 +204,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]">IFSC Code</h3>
               <div className="flex">
                 <UserIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.amData?.bankDetails?.ifscCode?data.amData?.bankDetails?.ifscCode:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.bankDetails?.ifscCode ? data.amData?.bankDetails?.ifscCode : 'N/A'}</p>
 
               </div>
 
@@ -216,14 +225,14 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]" >Work Mail</h3>
               <div className="flex">
                 <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.workEmail?data.amData?.workEmail:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.workEmail ? data.amData?.workEmail : 'N/A'}</p>
 
               </div>
               <hr />
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Work Phone</h3>
               <div className="flex">
                 <PhoneIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.workPhone?data.amData?.workPhone:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.workPhone ? data.amData?.workPhone : 'N/A'}</p>
 
               </div>
               <hr />
@@ -238,7 +247,7 @@ const AMViewForm: React.FC<Props> = ({ onClose,id }) => {
 
               <div className="flex">
                 <AreaIcon color="#4B5C79" />
-                <p className="text-sm font-semibold ms-2">{data.amData?.area?.areaCode?data.amData?.area?.areaCode:'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.area?.areaCode ? data.amData?.area?.areaCode : 'N/A'}</p>
 
               </div>
             </div>

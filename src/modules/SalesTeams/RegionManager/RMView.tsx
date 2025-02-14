@@ -26,8 +26,12 @@ import UserRoundCheckIcon from "../../../assets/icons/UserRoundCheckIcon";
 import { useResponse } from "../../../context/ResponseContext";
 import ProgressBar from "../../../pages/Dashboard/Graphs/ProgressBar";
 import { useUser } from "../../../context/UserContext";
+import SalaryInfoModal from "../../../components/modal/SalaryInfoModal";
+import CommissionModal from "../../../components/modal/CommissionModal";
+import SalaryRoundIcon from "../../../assets/icons/SalaryRoundIcon";
+import CommissionRoundIcon from "../../../assets/icons/CommissionRoundIcon";
 type Props = {
-  staffId?:string
+  staffId?: string
 };
 interface AreaData {
   areaCode: string;
@@ -36,10 +40,9 @@ interface AreaData {
   areaManagers: string;
 }
 
-const RMView = ({staffId}: Props) => {
-     const {user}=useUser()
-     user?.role
-  
+const RMView = ({ staffId }: Props) => {
+  const { user } = useUser()
+
   const topRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,6 +56,8 @@ const RMView = ({staffId}: Props) => {
     awardRM: false,
     confirm: false,
     deactiveRM: false,
+    salaryInfoRM: false,
+    commissionRM: false,
   });
   const handleModalToggle = (
     editRM = false,
@@ -60,7 +65,8 @@ const RMView = ({staffId}: Props) => {
     awardRM = false,
     confirm = false,
     deactiveRM = false,
-
+    salaryInfoRM = false,
+    commissionRM = false,
   ) => {
     setIsModalOpen((prevState: any) => ({
       ...prevState,
@@ -69,15 +75,18 @@ const RMView = ({staffId}: Props) => {
       awardRM: awardRM,
       confirm: confirm,
       deactiveRM: deactiveRM,
+      salaryInfoRM: salaryInfoRM,
+      commissionRM: commissionRM
     }));
     getARM();
   };
-
+  const { request: SalaryInfo } = useApi("get", 3002);
+  const[salaryDetails,setSalaryDetails]=useState<any>('')
   const { request: getaRM } = useApi("get", 3002);
   const { request: deleteaRM } = useApi("delete", 3002)
-  const {loading,setLoading}=useResponse()
+  const { loading, setLoading } = useResponse()
   const { id } = useParams();
-  const iId=staffId?staffId:id
+  const iId = staffId ? staffId : id
   const [getData, setGetData] = useState<{
     rmData: any;
   }>({ rmData: [] });
@@ -86,30 +95,33 @@ const RMView = ({staffId}: Props) => {
     try {
       setLoading(true)
       const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${iId}`);
+      console.log("dssd",response?.data);
       if (response && !error) {
-       
+        if(staffId){
+          sessionStorage.setItem("staffLocalityId",response?.data?.regionManager?.region?._id)
+        }
         setGetData((prevData) => ({
           ...prevData,
-          
-          
+
+
           rmData: response.data,
         }));
-        console.log(response.data);
         
         
+
       } else {
         console.error(error.response.data.message);
       }
     } catch (err) {
       console.error("Error fetching AM data:", err);
-    }finally{
+    } finally {
       setLoading(false)
     }
   };
   useEffect(() => {
     getARM();
   }, [iId]);
- 
+
 
   const navigate = useNavigate();
 
@@ -165,11 +177,41 @@ const RMView = ({staffId}: Props) => {
   ];
 
 
-  const {request:getRMInsiIde}=useApi('get',3002)
+  const { request: getRMInsiIde } = useApi('get', 3002)
   const [totalAreaManaged, setTotalAreaManaged] = useState([]);
   const [totalAreaManagers, setTotalAreaManagers] = useState([]);
   const [totalBdas, setTotalBdas] = useState([]);
   const { request: deactivateRM } = useApi('put', 3002)
+ 
+
+  const getSalary = async () => {
+    try {
+      const { response, error } = await SalaryInfo(`${endPoints.SALARY_INFO}/${iId}`);
+      console.log(response);
+       console.log(error);
+      
+     // console.log(error);
+      if (response && !error) {
+       console.log("Ss",response.data);
+       setSalaryDetails(response.data)
+      
+       
+       
+       // setChartData(response.data);
+      } else {
+        console.error("Error:", error?.data || "Unknown error");
+        
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+  
+  useEffect(() => {
+  getSalary()
+  }, [iId]);
+
+
 
   const getRMInsiIdes = async () => {
     try {
@@ -216,9 +258,7 @@ const RMView = ({staffId}: Props) => {
     try {
       const { response, error } = await deactivateRM(`${endPoints.DEACTIVATE_RM}/${iId}`, body);
       console.log(response);
-      console.log(error, "error message");
-
-
+      console.log(error, "error message");  
       if (response) {
         toast.success(response.data.message);
         getARM()
@@ -265,7 +305,7 @@ const RMView = ({staffId}: Props) => {
               backgroundImage: `url(${BackgroundImage})`, // Use the imported image
             }}
           >
-            <div className="col-span-6">
+            <div className="col-span-4">
               <div>
                 {/* Left Section: Area Icon and Details */}
 
@@ -332,8 +372,9 @@ const RMView = ({staffId}: Props) => {
                 </div>
               </div>
             </div>
+            <div className="col-span01"></div>
 
-            <div className="col-span-6  m-2">
+            <div className="col-span-7 m-2">
               <div>
                 <div className="flex  justify-between  gap-4 -ms-14  text-[10px] py-2  text-white">
                   {/* Right Section: Managers and Actions */}
@@ -369,7 +410,7 @@ const RMView = ({staffId}: Props) => {
                   <div className="flex gap-3">
                     <div className="flex flex-col w-fit items-center space-y-1">
                       <div
-                        onClick={() => handleModalToggle(true, false, false, false, false)}
+                        onClick={() => handleModalToggle(true, false, false, false, false, false, false)}
                         className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                       >
                         <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -383,7 +424,7 @@ const RMView = ({staffId}: Props) => {
 
                     <div className="flex flex-col  items-center space-y-1">
                       <div
-                        onClick={() => handleModalToggle(false, true, false, false, false)}
+                        onClick={() => handleModalToggle(false, true, false, false, false, false, false)}
                         className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                       >
                         <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -397,7 +438,7 @@ const RMView = ({staffId}: Props) => {
 
                     <div className="flex flex-col   items-center space-y-1">
                       <div
-                        onClick={() => handleModalToggle(false, false, true, false, false)}
+                        onClick={() => handleModalToggle(false, false, true, false, false, false, false)}
                         className="w-8 h-8 mb-2 rounded-full cursor-pointer"
                       >
                         <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -409,30 +450,30 @@ const RMView = ({staffId}: Props) => {
                       <p className="text-center ms-3">Awards</p>
                     </div>
 
-                    <div onClick={() => handleModalToggle(false, false, false, false, true,)} className="flex flex-col -ms-2 items-center space-y-1">
-                    <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
-              {getData?.rmData?.regionManager?.status === "Active" ?
-                <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
-                  <div className="ms-2 mt-2">
-                      <DeActivateIcon size={18} color="#D52B1E4D" />
-                  </div>
-                </div>
-                :
-                <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
-                <div className="ms-2 mt-2">
-                    <UserRoundCheckIcon size={20} color="#D52B1E4D" />
-                </div>
-              </div>
+                    <div onClick={() => handleModalToggle(false, false, false, false, true, false, false)} className="flex flex-col -ms-2 items-center space-y-1">
+                      <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                        {getData?.rmData?.regionManager?.status === "Active" ?
+                          <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                            <div className="ms-2 mt-2">
+                              <DeActivateIcon size={18} color="#D52B1E4D" />
+                            </div>
+                          </div>
+                          :
+                          <div className="rounded-full bg-[#B6FFD7] h-9 w-9 border border-white">
+                            <div className="ms-2 mt-2">
+                              <UserRoundCheckIcon size={20} color="#D52B1E4D" />
+                            </div>
+                          </div>
 
-                  }
+                        }
 
-              </div>
-              <p className="text-center font-medium  text-xs ms-2">
-                {getData?.rmData?.regionManager?.status === "Active" ? "Deactivate" : "Activate"}
-              </p>
+                      </div>
+                      <p className="text-center ms-2">
+                        {getData?.rmData?.regionManager?.status === "Active" ? "Deactivate" : "Activate"}
+                      </p>
                     </div>
 
-                    <div onClick={() => handleModalToggle(false, false, false, true, false)} className="flex flex-col -ms-2 items-center space-y-1">
+                    <div onClick={() => handleModalToggle(false, false, false, true, false, false, false)} className="flex flex-col -ms-2 items-center space-y-1">
                       <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                         <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
                           <div className="ms-2 mt-2 ">
@@ -441,6 +482,26 @@ const RMView = ({staffId}: Props) => {
                         </div>
                       </div>
                       <p className="text-center ms-3">Delete</p>
+                    </div>
+                    <div onClick={() => handleModalToggle(false, false, false, false, false, true, false)} className="flex flex-col -ms-2 items-center space-y-1">
+                      <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                          <div className="ms-2 mt-2 ">
+                            <SalaryRoundIcon size={18} color="#B6D6FF" />
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-center ms-3">Saalry Info</p>
+                    </div>
+                    <div onClick={() => handleModalToggle(false, false, false, false, false, false ,true)} className="flex flex-col -ms-2 items-center space-y-1">
+                      <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
+                        <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
+                          <div className="ms-2 mt-2 ">
+                            <CommissionRoundIcon size={18} color="#B6FFFF" />
+                          </div>
+                        </div>
+                      </div>
+                      <p className="text-center ms-3">Commission</p>
                     </div>
                   </div>
                 </div>
@@ -466,10 +527,10 @@ const RMView = ({staffId}: Props) => {
             </div>
           </div>
         </div>
-<div className="mt-4">
-{user?.role === 'Region Manager' && <ProgressBar />}
-</div>
-     
+        <div className="mt-4">
+          {user?.role === 'Region Manager' && <ProgressBar />}
+        </div>
+
 
         <div className="grid grid-cols-12 gap-3">
           {/* Table Section */}
@@ -494,12 +555,12 @@ const RMView = ({staffId}: Props) => {
         </div>
 
         <div>
-          <RMViewBDAandGraph getData={getData.rmData} loading={loading}  totalBdas={totalBdas} />
+          <RMViewBDAandGraph getData={getData.rmData} loading={loading} totalBdas={totalBdas} />
         </div>
       </div>
       {/* Modal controlled by state */}
       <Modal open={isModalOpen.viewRM} onClose={() => handleModalToggle()}>
-        <RMViewForm onClose={() => handleModalToggle()} />
+        <RMViewForm id={iId}  onClose={() => handleModalToggle()} />
       </Modal>
       <Modal open={isModalOpen.editRM} onClose={() => handleModalToggle()}>
         <RMForm editId={iId} onClose={() => handleModalToggle()} />
@@ -534,11 +595,18 @@ const RMView = ({staffId}: Props) => {
           action={handleDeactivate}
           prompt={
             getData?.rmData?.regionManager?.status === "Active"
-              ? "Are you sure you want to deactivate this RM?"
-              : "Are you sure you want to activate this RM?"
+              ? "Are you sure want to deactivate this RM?"
+              : "Are you sure want to activate this RM?"
           }
           onClose={() => handleModalToggle()}
         />
+      </Modal>
+      <Modal open={isModalOpen.salaryInfoRM} onClose={() => handleModalToggle()}>
+        <SalaryInfoModal salaryDetails={salaryDetails} onClose={() => handleModalToggle()} />
+      </Modal>
+
+      <Modal open={isModalOpen.commissionRM} onClose={() => handleModalToggle()} className="w-[45%]">
+        <CommissionModal onClose={() => handleModalToggle()} />
       </Modal>
 
 

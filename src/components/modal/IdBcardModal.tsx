@@ -13,7 +13,6 @@ import Modal from "./Modal";
 // import { Layout1Front, Layout1Back, IdCardLayout } from "../ui/BSLayout";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-// import domtoimage from "dom-to-image-more";
 
 type Props = {
     onClose: () => void;
@@ -38,10 +37,10 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
         }));
     };
 
-    const {businessCardData,refreshContext}=useRegularApi()
-    useEffect(()=>{
-        refreshContext({businessCard:true})
-    },[])
+    const { businessCardData, refreshContext } = useRegularApi()
+    useEffect(() => {
+        refreshContext({ businessCard: true })
+    }, [])
     interface LayoutProps {
         toggleState?: Record<string, boolean>;
         role?: any;
@@ -83,28 +82,78 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
     }
     // console.log(businessCardData);
 
+    // const handleDownload = async () => {
+    //     const element = document.getElementById("idCard"); // ID of the card to capture
+    //     if (!element) return;
+
+    //     try {
+    //         const canvas = await html2canvas(element, { scale: 3 });
+    //         const imgData = canvas.toDataURL("image/png");
+
+    //         const pdf = new jsPDF({
+    //             orientation: "portrait",
+    //             unit: "px",
+    //             format: "a4", // Standard ID Card size (credit card size)
+    //         });
+    //         const imgProperties = pdf.getImageProperties(imgData)
+    //         const pdfWidth = pdf.internal.pageSize.getWidth();
+    //         const pdfHeight = (imgProperties.height * pdfWidth)/imgProperties.width 
+    //         pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
+    //         pdf.save("ID_Card.pdf");
+    //     } catch (error) {
+    //         console.error("Error generating PDF:", error);
+    //     }
+    // };
+
+    const idRef = React.useRef(null)
+
     const handleDownload = async () => {
-        const element = document.getElementById("idCard"); // ID of the card to capture
-        if (!element) return;
-
-        try {
-            const canvas = await html2canvas(element, { scale: 3 });
-            const imgData = canvas.toDataURL("image/png");
-
-            const pdf = new jsPDF({
-                orientation: "portrait",
-                unit: "px",
-                format: "a4", // Standard ID Card size (credit card size)
-            });
-            const imgProperties = pdf.getImageProperties(imgData)
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProperties.height * pdfWidth)/imgProperties.width 
-            pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-            pdf.save("ID_Card.pdf");
-        } catch (error) {
-            console.error("Error generating PDF:", error);
-        }
+        const content = idRef.current;
+        if (!content) return;
+    
+        // Reduce scale for smaller size but clear image
+        const canvas = await html2canvas(content, { scale: 10 });
+        
+        // Use JPEG format with compression to reduce size
+        const data = canvas.toDataURL("image/jpeg", 0.8);
+    
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "px",
+            format: [210, 297] // A4 size in pixels
+        });
+    
+        // Auto-scale image based on page width
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgProps = pdf.getImageProperties(data);
+        const pdfWidth = pageWidth - 40; // Leave some margin
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        const xPos = (pageWidth - pdfWidth) / 2; // Center horizontally
+        const yPos = 20; // Position it near the top
+    
+        pdf.addImage(data, "JPEG", xPos, yPos, pdfWidth, pdfHeight);
+        pdf.save("ID_CARD.pdf");
     };
+
+    // const handleDownload = () => {
+    //     setTimeout(async () => {
+    //         const content = document.getElementById("idCard");
+    //         if (!content) {
+    //             return
+    //         }
+    //         const canvas = await html2canvas(content, { scale: 2 });
+    //         const imgData = canvas.toDataURL("image/png");
+
+    //         const pdf = new jsPDF("p", "mm", "a4");
+    //         const imgWidth = 210;
+    //         const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    //         pdf.addImage(imgData, "PNG", 0, 10, imgWidth, imgHeight);
+    //         pdf.save("id_card.pdf");
+    //     }, 100); // Delay ensures Tailwind styles are applied
+    // };
+
 
     // const businessCardDownload = async () => {
     //     const content = document.getElementById('business-card')
@@ -128,28 +177,28 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
     //         console.error("Error generating PDF:", error);
     //     }
     //     }
-    
+
     // const businessCardDownload = async () => {
     //     const content = document.getElementById("business-card");
     //     if (!content) return;
-    
+
     //     try {
     //         const bCardData = await domtoimage.toPng(content, { quality: 1 }); // Higher quality image
-    
+
     //         const bCardPdf = new jsPDF({
     //             orientation: "portrait",
     //             unit: "px",
     //             format: "a4",
     //         });
-    
+
     //         const img = new Image();
     //         img.src = bCardData;
-    
+
     //         img.onload = () => {
     //             const bCardWidth = bCardPdf.internal.pageSize.getWidth();
     //             const aspectRatio = img.height / img.width;
     //             const bCardHeight = bCardWidth * aspectRatio; // Maintain aspect ratio
-    
+
     //             bCardPdf.addImage(bCardData, "PNG", 0, 10, bCardWidth, bCardHeight);
     //             bCardPdf.save("BusinessCard.pdf");
     //         };
@@ -157,28 +206,39 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
     //         console.error("Error generating PDF:", error);
     //     }
     // };
+
+    const printRef = React.useRef(null)
+
+    const businessCardDownload = async () => {
+        const content = printRef.current;
+        if (!content) return;
     
-    const printRef =React.useRef(null)
-
-    const businessCardDownload = async()=>{
-        const element = printRef.current
-        if(!element){
-            return
-        }        
-        const bCardCanvas = await html2canvas(element, {scale:3});
-            const bCardData= bCardCanvas.toDataURL('image/png')
-
-            const bCardPdf = new jsPDF({
-                orientation:'portrait',
-                unit:'px',
-                format:'a4'
-            });
-            const bcardProperties = bCardPdf.getImageProperties(bCardData)
-            const bcardWidth = bCardPdf.internal.pageSize.getWidth()
-            const bcardHeight = (bcardProperties.height* bcardWidth)/bcardProperties.width;
-            bCardPdf.addImage(bCardData,"PNG",0,0,bcardWidth,bcardHeight)
-            bCardPdf.save('BusinessCard.pdf')
-    }
+        // Reduce scale for smaller size but clear image
+        const canvas = await html2canvas(content, { scale: 10 });
+        
+        // Use JPEG format with compression to reduce size
+        const data = canvas.toDataURL("image/jpeg", 0.8);
+    
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "px",
+            format: "a4"
+        });
+    
+        // Auto-scale image based on page width
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgProps = pdf.getImageProperties(data);
+        const pdfWidth = pageWidth - 40; // Leave some margin
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        const xPos = (pageWidth - pdfWidth) / 2; // Center horizontally
+        const yPos = 20; // Position it near the top
+    
+        pdf.addImage(data, "JPEG", xPos, yPos, pdfWidth, pdfHeight);
+        pdf.save("BS_CARD.pdf");
+    };
+    
+    
 
     return (
         <div className="p-5 bg-white rounded shadow-md hide-scrollbar">
@@ -232,12 +292,14 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
                             <DownloadIcon size={13} color="#FFFFFF" />Download</Button>
                     </div>
                 </div>
-                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                <div className="bg-[#F5F9FC] flex flex-col justify-between  p-3 rounded-2xl">
+                    <div>
                     <p className="text-[#303F58] text-base font-bold">ID Card</p>
-                    <div id="idCard" className="p-3">
+                    <div ref={idRef} className="p-3">
                         <IdCardLayout role={role} staffData={staffData} />
                     </div>
-                    <div className="flex gap-3 justify-end py-3">
+                    </div>
+                    <div className="gap-3 flex items-center justify-end  py-3">
                         <Button onClick={() => handleModalToggle(false, true)} variant="tertiary" size="sm"
                             className="text-xs text-[#565148] font-medium rounded-md">
                             <ViewIcon size="13" color="#565148" />

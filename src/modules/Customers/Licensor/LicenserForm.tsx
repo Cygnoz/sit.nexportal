@@ -16,12 +16,16 @@ import toast from "react-hot-toast";
 import Trash from "../../../assets/icons/Trash";
 import { useUser } from "../../../context/UserContext";
 import InputPasswordEye from "../../../components/form/InputPasswordEye";
+import Modal from "../../../components/modal/Modal";
+import AreaForm from "../../Sales R&A/Area/AreaForm";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
+import BDAForm from "../../SalesTeams/BDA/BDAForm";
 
 type Props = {
   onClose: () => void;
   editId?: string;
-  regionId?:any
-  areaId?:any
+  regionId?: any
+  areaId?: any
 };
 
 interface RegionData {
@@ -29,35 +33,44 @@ interface RegionData {
   value: string;
 }
 
-const validationSchema = Yup.object({
+const baseSchema ={
   firstName: Yup.string().required("First name is required"),
   email: Yup.string()
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string().required("Phone is required"),
-   password: Yup.string()
-      .required("Password is required"),
-   confirmPassword: Yup.string()
-      .oneOf([Yup.ref("password")], "Passwords must match")
-      .required("Confirm Password is required"),
+ 
+ 
   companyName: Yup.string().required("Company Name  is required"),
   regionId: Yup.string().required("Region is required"),
   areaId: Yup.string().required("Area is required"),
   bdaId: Yup.string().required("Bda is required"),
   startDate: Yup.string().required("StartDate is required"),
   endDate: Yup.string().required("EndDate is required"),
+};
+
+const addValidationSchema = Yup.object().shape({
+  ...baseSchema,
+  password: Yup.string()
+  .required("Password is required"),
+  confirmPassword: Yup.string()
+  .oneOf([Yup.ref("password")], "Passwords must match")
+  .required("Confirm Password is required"),
 });
 
-function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
+const editValidationSchema = Yup.object().shape({
+  ...baseSchema,
+});
+function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
 
   const { user } = useUser();
   const { request: addLicenser } = useApi("post", 3001);
   const { request: editLicenser } = useApi("put", 3001);
   const { request: getLicenser } = useApi("get", 3001);
-      const [regionData, setRegionData] = useState<RegionData[]>([]);
-      const [areaData, setAreaData] = useState<any[]>([]);
+  const [regionData, setRegionData] = useState<RegionData[]>([]);
+  const [areaData, setAreaData] = useState<any[]>([]);
 
-  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries,refreshContext } =
+  const { dropdownRegions, dropDownAreas, dropDownBdas, allCountries, refreshContext } =
     useRegularApi();
   const [data, setData] = useState<{
     regions: { label: string; value: string }[];
@@ -79,11 +92,31 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
     watch,
     setValue,
   } = useForm<LicenserData>({
-    resolver: yupResolver(validationSchema),
+    resolver: yupResolver(editId ? editValidationSchema : addValidationSchema),
     defaultValues: {
       salutation: "Mr.", // Default value for salutation
     },
   });
+
+  const [isModalOpen, setIsModalOpen] = useState({
+
+    region: false,
+    area:false,
+    bda:false
+ 
+  });
+  
+  const handleModalToggle = ( region = false,area = false,bda = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      region: region,
+      area:area,
+      bda:bda
+    }));
+    refreshContext({dropdown:true})
+  };
+ 
+
 
   const onSubmit: SubmitHandler<LicenserData> = async (data: any, event) => {
     event?.preventDefault(); // Prevent default form submission
@@ -103,13 +136,13 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
       }
 
       console.log("Response:", response);
-      console.log("Error:", error);
+      console.log("Errors:", error);
 
       if (response && !error) {
         toast.success(response.data.message);
         onClose()
       } else {
-        toast.error(error.response?.data?.message || "An error occurred.");
+        toast.error(error.response?.data?.details?.message || "An error occurred.");
       }
     } catch (err) {
       console.error("Error submitting license data:", err);
@@ -152,39 +185,39 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
 
   useEffect(() => {
     // Map the regions into the required format for regions data
-    const filteredRegions:any = dropdownRegions?.map((region: any) => ({
+    const filteredRegions: any = dropdownRegions?.map((region: any) => ({
       label: region.regionName,
       value: String(region._id), // Ensure `value` is a string
     }));
 
 
-  setRegionData(filteredRegions)
- if(regionId){
-    setValue("regionId",regionId)
-    setValue("areaId",areaId)
-    
-  }
-},[dropdownRegions,regionId])
+    setRegionData(filteredRegions)
+    if (regionId) {
+      setValue("regionId", regionId)
+      setValue("areaId", areaId)
+
+    }
+  }, [dropdownRegions, regionId])
 
 
-   // UseEffect for updating areas based on selected region
-   useEffect(() => {
+  // UseEffect for updating areas based on selected region
+  useEffect(() => {
     const filteredAreas = dropDownAreas?.filter(
-      (area: any) => area?.region=== watch("regionId")
+      (area: any) => area?.region === watch("regionId")
     );
-    const transformedAreas:any = filteredAreas?.map((area: any) => ({
+    const transformedAreas: any = filteredAreas?.map((area: any) => ({
       label: area.areaName,
       value: String(area._id),
     }));
     setAreaData(transformedAreas)
-    if(regionId && areaId){
-      setValue("regionId",regionId)
-      setValue("areaId",areaId)
-      }
+    if (regionId && areaId) {
+      setValue("regionId", regionId)
+      setValue("areaId", areaId)
+    }
 
-  
-  }, [watch("regionId"), dropDownAreas,areaId,regionId]);
-  
+
+  }, [watch("regionId"), dropDownAreas, areaId, regionId]);
+
 
 
   // UseEffect for updating regions
@@ -204,17 +237,17 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
     }));
   }, [dropDownBdas, watch("areaId")]);
 
-  useEffect(()=>{
-    if(user?.role=="BDA"){
-      const filteredBDA:any = dropDownBdas?.find(
+  useEffect(() => {
+    if (user?.role == "BDA") {
+      const filteredBDA: any = dropDownBdas?.find(
         (bda: any) => bda?._id === user?.userId
       );
       setValue("areaId", filteredBDA?.area || "");
-        setValue("regionId", filteredBDA?.region || "");
-        setValue("bdaId", filteredBDA?._id || "");
-        
+      setValue("regionId", filteredBDA?.region || "");
+      setValue("bdaId", filteredBDA?._id || "");
+
     }
-  },[user,dropDownBdas])
+  }, [user, dropDownBdas])
 
   useEffect(() => {
     const filteredCountries = allCountries?.map((items: any) => ({
@@ -259,7 +292,9 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
         const Licenser = response.data; // Return the fetched data
         console.log("Fetched Licenser data:", Licenser);
         const { licensers, ...filteredLicencers } = Licenser;
+      //  console.log("sss",filteredLicencers);
         setFormValues(filteredLicencers);
+        
       } else {
         // Handle the error case if needed (for example, log the error)
         console.error("Error fetching Lead data:", error);
@@ -269,9 +304,12 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
     }
   };
 
+
+  
   useEffect(() => {
     getOneLicenser();
-    refreshContext({dropdown:true,countries:true})
+    refreshContext({ dropdown: true, countries: true })
+    
   }, [editId]);
 
   const handleInputChange = (field: keyof LicenserData) => {
@@ -326,7 +364,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
           </div>
           <div className="col-span-10">
             <div className="grid grid-cols-3 gap-2">
-            <PrefixInput
+              <PrefixInput
                 required
                 label="First Name"
                 selectName="salutation"
@@ -348,7 +386,7 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 placeholder="Enter Last Name"
                 error={errors.lastName?.message}
                 {...register("lastName")}
-                // onChange={() => handleInputChange("lastName")}
+              // onChange={() => handleInputChange("lastName")}
               />
               <CustomPhoneInput
                 required
@@ -362,6 +400,8 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                   setValue("phone", value); // Update the value of the phone field in React Hook Form
                 }}
               />
+              </div>
+               <div className={`grid ${editId?'grid-cols-2':'grid-cols-3'}  gap-2 mt-4`}>
               <Input
                 required
                 label="Email"
@@ -369,43 +409,41 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 placeholder="Enter Email"
                 error={errors.email?.message}
                 {...register("email")}
-                // onChange={() => handleInputChange("email")}
+              // onChange={() => handleInputChange("email")}
               />
+              {editId ? (
 
-             <InputPasswordEye
-             label="Password"
-             required
-             placeholder="Enter Password"
-             error={errors?.password?.message}
-                {...register("password")}
-             />
-             <InputPasswordEye
-             label="Confirm Password"
-             required
-             placeholder="Enter Password"
-             error={errors?.confirmPassword?.message}
-                {...register("confirmPassword")}
-             />
-            </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+                <InputPasswordEye
+                  label="Change Password"
+                 
+                  placeholder="Enter Password"
+                  error={errors?.password?.message}
+                  {...register("password")}
+
+                />
+              ) : (
+
+                <>
+                  <InputPasswordEye
+                    label="Password"
+                    required
+                    placeholder="Enter Password"
+                    error={errors?.password?.message}
+                    {...register("password")}
+                  />
+                  <InputPasswordEye
+                    label="Confirm Password"
+                    required
+                    placeholder="Enter Password"
+                    error={errors?.confirmPassword?.message}
+                    {...register("confirmPassword")}
+                  />
+                </>
+              )}
               
-
-              
-
-              <Input
-                label="Address"
-                placeholder="Address"
-                error={errors.address?.message}
-                {...register("address")}
-              />
-              <Input
-                label="City"
-                placeholder="Enter City Name"
-                error={errors.city?.message}
-                {...register("city")}
-              />
             </div>
-            <div className="grid grid-cols-2 gap-4 mt-4">
+        
+            <div className="grid grid-cols-3 gap-4 mt-4">
               <Select
                 placeholder="Select Country"
                 label="Country"
@@ -433,12 +471,32 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 options={data.state}
               />
               <Input
-                label="Company ID"
-                placeholder="Enter Company ID"
-                {...register("companyId")}
-                error={errors.companyId?.message}
+                label="City"
+                placeholder="Enter City Name"
+                error={errors.city?.message}
+                {...register("city")}
               />
+            </div>
+
+
+
+             
+             
+          
+           
+            <div className="grid grid-cols-2 gap-4 mt-4">
+              
+
+              
+
               <Input
+                label="Address"
+                placeholder="Address"
+                error={errors.address?.message}
+                {...register("address")}
+              />
+              
+               <Input
                 label="Company Name"
                 required
                 placeholder="Enter Company Name"
@@ -446,7 +504,8 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 {...register("companyName")}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4 my-4">
+           
+           {!editId &&<div className="grid grid-cols-2 gap-4 my-4">
               <Input
                 required
                 label="Start Date"
@@ -454,6 +513,11 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 placeholder="Select Start Date"
                 error={errors.startDate?.message}
                 {...register("startDate")}
+                value={
+                  watch("startDate")
+                    ? watch("startDate")
+                    : new Date().toISOString().split("T")[0]
+                } // Sets current date as defau
               />
               <Input
                 required
@@ -463,8 +527,14 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                 error={errors.endDate?.message}
                 {...register("endDate")}
               />
-              <div className="col-span-2 gap-3 grid grid-cols-3">
-                <Select
+              
+            </div>
+}
+            
+           
+              
+              <div className=" gap-3 grid grid-cols-3 my-4">
+              <Select
                   readOnly={regionId || user?.role === "BDA"}
 
                   required
@@ -479,9 +549,13 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                   }}
                   error={errors.regionId?.message}
                   options={regionData}
+                  addButtonLabel="Add Region"
+                  addButtonFunction={handleModalToggle}
+                  totalParams={1}
+                  paramsPosition={1}
                 />
                 <Select
-                readOnly={areaId || user?.role === "BDA"}
+                  readOnly={areaId || user?.role === "BDA"}
                   required
                   label="Select Area"
                   placeholder={
@@ -495,6 +569,10 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                   }}
                   error={errors.areaId?.message}
                   options={areaData}
+                  addButtonLabel="Add Area"
+                  addButtonFunction={handleModalToggle}
+                  totalParams={2}
+                  paramsPosition={2}
                 />
                 <Select
                   readOnly={user?.role == "BDA" ? true : false}
@@ -508,10 +586,14 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
                   }}
                   error={errors.bdaId?.message}
                   options={data.bdas}
+                  addButtonLabel="Add BDA"
+                  addButtonFunction={handleModalToggle}
+                  totalParams={3}
+                  paramsPosition={3}
                 />
-              </div>
+     
             </div>
-            <div className="bottom-0 left-0 w-full pt-2 ps-2 bg-white flex gap-2 justify-end">
+            <div className="bottom-0 left-0 w-full pt-3 ps-2  bg-white flex gap-2 justify-end">
               <Button
                 variant="tertiary"
                 className="h-8 text-sm border rounded-lg"
@@ -532,7 +614,15 @@ function LicenserForm({ onClose, editId ,regionId ,areaId}: Props) {
           </div>
         </form>
       </div>
-      
+      <Modal open={isModalOpen.area} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <AreaForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.bda} onClose={()=>handleModalToggle()} className="w-[55%]">
+        <BDAForm  onClose={()=>handleModalToggle()} />
+      </Modal>
     </>
   );
 }

@@ -145,7 +145,7 @@ const Tasks = ({leadData}: Props) => {
       <Modal open={deleteOpen} align="center" onClose={() => handledeleteToggle()} className="w-[30%]">
         <ConfirmModal
           action={handleDelete}
-          prompt="Are you sure you want to delete this note?"
+          prompt="Are you sure want to delete this note?"
           onClose={() => handledeleteToggle()}
         />
       </Modal>

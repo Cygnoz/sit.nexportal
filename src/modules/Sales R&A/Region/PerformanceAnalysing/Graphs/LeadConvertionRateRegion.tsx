@@ -22,7 +22,7 @@ function LeadConversionRate({}: Props) {
   const getConvertion = async () => {
     try {
       const endPoint =  `${endPoints.CONVERSION_RATE}/${id}` 
-      const { response, error } = await getConvertionRate(endPoint);
+      const { response, error } = await getConvertionRate(endPoint); 
           if (response && !error) {
         // Transform the response data to match chart format
         const {areas,regionConversionRate}=response.data
@@ -31,7 +31,6 @@ function LeadConversionRate({}: Props) {
           CR: parseFloat(area.conversionRate) || 0, // Ensure the conversionRate is a number
         }));
         const filteredData={transformedArea,regionConversionRate}
-      
       setChartData(filteredData)
       } else {
         // console.error(error.data);
@@ -41,7 +40,7 @@ function LeadConversionRate({}: Props) {
     }
   };
 
-
+  
   
 
   const handleFetchRegions = () => {
@@ -64,7 +63,7 @@ function LeadConversionRate({}: Props) {
   return (
     <>
       <div className="p-3 bg-white w-full space-y-2 rounded-lg">
-  <h2 className="font-bold">Lead Conversion Rate per Region</h2>
+  <h2 className="font-bold">Lead Conversion Rate</h2>
   <h3 className="text-sm">{getRegion?.country}</h3>
   <h1 className="text-2xl font-medium">
     {chartData?.regionConversionRate || "0"}

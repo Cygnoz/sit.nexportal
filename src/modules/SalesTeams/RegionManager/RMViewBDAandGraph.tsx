@@ -4,7 +4,7 @@ import {
   BarChart,
   CartesianGrid,
   Cell,
- 
+
   Legend,
   Line,
   LineChart,
@@ -33,63 +33,82 @@ interface BDAData {
 }
 type Props = {
 
-  totalBdas:Array<any>;
-  getData:any
-  loading?:boolean
+  totalBdas: Array<any>;
+  getData: any
+  loading?: boolean
 };
 
 
 
-const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
+const RMViewBDAandGraph = ({ getData, totalBdas, loading }: Props) => {
   const { request: TopPerformingAM } = useApi("get", 3002);
- 
-   const [chartData, setChartData] = useState([]);
-   const [selectedMonth, setSelectedMonth] = useState<any>('');
-   const [selectedYear,setSelectedYear]=useState<any>(years[years.length-1])
-  const [selectedData, setSelectedData] = useState<string>(`${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`);
 
-  const navigate=useNavigate()
+  const [chartData, setChartData] = useState([]);
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+  const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
+  const [selectedYear, setSelectedYear] = useState<any>(currentYear);
+  const [newMonthList, setNewMonthList] = useState<any>([]);
+
+  const [selectedData, setSelectedData] = useState<string>(
+    `${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`
+  );
+  const navigate = useNavigate()
 
   useEffect(() => {
+    setNewMonthList(
+      months.filter((m) =>
+        selectedYear.value === currentYear.value // If selected year is the current year
+          ? m.value <= currentMonthValue // Show months up to the current month
+          : true // Otherwise, show all months
+      )
+    );
     // Convert month name to number (1-12) and ensure it's two digits
-    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0');
+    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
     setSelectedData(`${selectedYear.value}-${monthIndex}`);
   }, [selectedMonth, selectedYear]);
-  
 
 
-  
-  const handleView = (id:any) => {
+
+
+  const handleView = (id: any) => {
     if (id) {
       navigate(`/bda/${id}`)
-       }
-        };
-        const getPerformers = async () => {
-          try {
-            const endPoint = `${endPoints.GET_ALL_RM}/${getData?.regionManager?._id}/areamanager?date=${selectedData}`;
-            const { response, error } = await TopPerformingAM(endPoint);
-          //  console.log("API Endpoint:", endPoint);
-        
-            if (response && !error) {
-              const transformedData = response.data.topPerformingAreaManagers.map((item: any) => ({
-                name: item.user.userName, 
-                CR: parseFloat(item.conversionRate.replace("%", "")) // Convert "100.00%" to 100.00
-              }));
-        
-            //  console.log("Transformed Data:", transformedData);
-              setChartData(transformedData);
-            } else {
-              console.error("Error:", error?.data || "Unknown error occurred");
-            }
-          } catch (err) {
-            console.error(err);
-          }
-        };
-        
-        useEffect(() => {
-          getPerformers();
-        }, [selectedData, getData]);
-        
+    }
+  };
+  const getPerformers = async () => {
+    try {
+      const endPoint = `${endPoints.GET_ALL_RM}/${getData?.regionManager?._id}/areamanager?date=${selectedData}`;
+      const { response, error } = await TopPerformingAM(endPoint);
+      console.log("API Endpoint:", endPoint);
+      console.log("response", response);
+      console.log("error", error);
+
+      if (response && !error) {
+        const transformedData = response.data.topPerformingAreaManagers.map((item: any) => ({
+          name: item.user.userName,
+          CR: parseFloat(item.conversionRate.replace("%", "")) // Convert "100.00%" to 100.00
+        }));
+
+        console.log("Transformed Data:", transformedData);
+        setChartData(transformedData);
+      } else {
+        console.error("Error:", error?.data || "Unknown error occurred");
+        setChartData([])
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedData) {
+      getPerformers();
+    }
+  }, [getData, selectedData]);
+
 
 
   const CustomLegend = () => {
@@ -107,9 +126,25 @@ const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
     );
   };
 
-  
 
-  
+  const conversionMonth = [
+    { label: 'January', value: 'january' },
+    { label: 'February', value: 'february' },
+    { label: 'March', value: 'march' },
+    { label: 'April', value: 'april' },
+    { label: 'May', value: 'may' },
+    { label: 'June', value: 'june' },
+  ]
+
+  const conversionYaer = [
+    { label: '2020', value: '2020' },
+    { label: '2021', value: '2021' },
+    { label: '2022', value: '2022' },
+    { label: '2023', value: '2023' },
+    { label: '2024', value: '2024' },
+    { label: '2025', value: '2025' },
+  ]
+
 
   const datas = [
     {
@@ -167,7 +202,7 @@ const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
       amt: 2500,
     },
   ];
- 
+
   // Define the columns with strict keys
   const columns: { key: keyof BDAData; label: string }[] = [
     { key: "employeeId", label: "Employee ID" },
@@ -186,22 +221,22 @@ const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
     phoneNo: bda.phoneNo || "N/A",
     emailAdrees: bda.email || "N/A",
     dateOfJoining: bda.dateOfJoining
-    ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
-    : "N/A",
+      ? new Date(bda.dateOfJoining).toLocaleDateString("en-GB")
+      : "N/A",
     totalLeads: bda.totalLeads || 0,
     leadsClosed: bda.leadsClosed || 0,
   }));
 
 
-  
-  
-  
-  
-  
+
+
+
+
+
   //console.log("BDA",bdaData);
   const colors = ['#FF9800', '#2196F3', '#4CAF50', '#9C27B0', '#F44336', '#FFC107', '#673AB7', '#3F51B5', '#00BCD4', '#8BC34A'];
 
-  
+
   return (
     <div>
       {/* Table Section */}
@@ -216,7 +251,7 @@ const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
                 "Search Invoice by client name, invoice number, or date",
             },
           }}
-          actionList={[{ label:"view", function: handleView }]}
+          actionList={[{ label: "view", function: handleView }]}
           loading={loading}
         />
       </div>
@@ -227,126 +262,145 @@ const RMViewBDAandGraph = ({getData,totalBdas,loading}: Props) => {
         <div className="col-span-7">
           <div className="py-3 bg-white p-2">
             <div className="py-1 ms-2 flex justify-between">
-              <h2 className="font-bold">Lead Conversion Rate per Region</h2>
-              
+              <h2 className="font-bold">Monthly Sales Growth by Area</h2>
+              <div className="flex gap-1">
+                <label htmlFor="month-select"></label>
+
+                <SelectDropdown
+                  // setSelectedValue={setSelectedMonth}
+                  selectedValue={conversionMonth}
+                  filteredData={conversionMonth}
+                  //   searchPlaceholder="Search Month"
+                  width="w-32"
+                />
+                <SelectDropdown
+                  // setSelectedValue={setSelectedYear}
+                  selectedValue={conversionYaer}
+                  filteredData={conversionYaer}
+
+                  searchPlaceholder="Search Month"
+                  width="w-28"
+                />
+              </div>
+
             </div>
             <div className="mt-5">
-                <ResponsiveContainer width="100%" minHeight={345}>
-              <LineChart
-                width={720}
-                height={400}
-                data={datas}
-                margin={{
-                  top: 5,
-                  right: 30,
-                  left: 20,
-                  bottom: 5,
-                }}
-              >
-                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                <YAxis axisLine={false} tickLine={false} />
-                <Tooltip />
-                <Legend content={<CustomLegend />} />
-                <Line
-                  type="monotone"
-                  dataKey="Area1"
-                  stroke="#e2b0ff"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area2"
-                  stroke="#8884d8"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area3"
-                  stroke="#82ca9d"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area4"
-                  stroke="#d86a57"
-                  strokeWidth={3}
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="Area5"
-                  stroke="#6ab6ff"
-                  strokeWidth={3}
-                  dot={false}
-                />
-              </LineChart>
+              <ResponsiveContainer width="100%" minHeight={345}>
+                <LineChart
+                  width={720}
+                  height={400}
+                  data={datas}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
+                  }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                  <YAxis axisLine={false} tickLine={false} />
+                  <Tooltip />
+                  <Legend content={<CustomLegend />} />
+                  <Line
+                    type="monotone"
+                    dataKey="Area1"
+                    stroke="#e2b0ff"
+                    strokeWidth={3}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="Area2"
+                    stroke="#8884d8"
+                    strokeWidth={3}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="Area3"
+                    stroke="#82ca9d"
+                    strokeWidth={3}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="Area4"
+                    stroke="#d86a57"
+                    strokeWidth={3}
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="Area5"
+                    stroke="#6ab6ff"
+                    strokeWidth={3}
+                    dot={false}
+                  />
+                </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
         </div>
         <div className="col-span-5">
-       <div className="p-3 bg-white w-full space-y-2 rounded-lg ">
-        <div className="flex justify-between">
-        <div>
-           <p className="text-[#303F58] text-lg font-bold">
-            Top performing Area Managers
-          </p>
-          <p className="text-[#4B5C79] text-xs font-normal">
-            Based on lead Conversion Performance Metric
-          </p>
-          </div>
-          <div className="flex gap-1">
+          <div className="p-3 bg-white w-full space-y-2 rounded-lg ">
+            <div className="flex justify-between">
+              <div>
+                <p className="text-[#303F58] text-lg font-bold">
+                  Top performing Area Managers
+                </p>
+                <p className="text-[#4B5C79] text-xs font-normal mt-3">
+                  Based on lead Conversion Performance Metric
+                </p>
+              </div>
+              <div className="flex gap-1">
                 <label htmlFor="month-select"></label>
 
                 <SelectDropdown
                   setSelectedValue={setSelectedMonth}
                   selectedValue={selectedMonth}
-                  filteredData={months}
+                  filteredData={newMonthList}
                   //   searchPlaceholder="Search Month"
-                  width="w-44"
+                  width="w-32"
                 />
-                 <SelectDropdown
+                <SelectDropdown
                   setSelectedValue={setSelectedYear}
                   selectedValue={selectedYear}
-                 filteredData={years}
-        
-                 searchPlaceholder="Search Month"
+                  filteredData={years}
+
+                  searchPlaceholder="Search Month"
                   width="w-28"
                 />
               </div>
-        </div>
-         
-           
-           <div className="mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
-             {/* Wrapper for dynamic width */}
-             <div style={{ width: '100%' }} className="-ms-4 mt-3">
-             {chartData.length > 0 ? (
-               <ResponsiveContainer minWidth="100%"  minHeight={320}>
-               <BarChart
-                 height={280}
-                 data={chartData}
-               >
-                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                 <XAxis dataKey="name" axisLine={false} tickLine={false} />
-                 <YAxis tickFormatter={(value) => `${value}%`}  axisLine={false} tickLine={false} domain={[0, 100]} />
-                 <Tooltip />
-                 <Bar barSize={30} dataKey="CR" radius={10}>
-                   {chartData?.map((entry: any, index: any) => (
-                     <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
-                   ))}
-                 </Bar>
-               </BarChart>
-               </ResponsiveContainer>
-               ) : (
-                <NoRecords parentHeight="320px"/>
-              )}
-             </div>
-           </div>
-         </div>
+            </div>
+
+
+            <div className="mt-2 custom-scrollbar" style={{ overflowX: 'auto' }}>
+              {/* Wrapper for dynamic width */}
+              <div style={{ width: '100%' }} className="-ms-4 mt-3">
+                {chartData.length > 0 ? (
+                  <ResponsiveContainer minWidth="100%" minHeight={320}>
+                    <BarChart
+                      height={280}
+                      data={chartData}
+                    >
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} />
+                      <YAxis tickFormatter={(value) => `${value}%`} axisLine={false} tickLine={false} domain={[0, 100]} />
+                      <Tooltip />
+                      <Bar barSize={30} dataKey="CR" radius={10}>
+                        {chartData?.map((entry: any, index: any) => (
+                          <Cell key={`cell-${entry.name}`} fill={colors[index % colors.length]} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <NoRecords parentHeight="320px" />
+                )}
+              </div>
+            </div>
+          </div>
 
         </div>
       </div>

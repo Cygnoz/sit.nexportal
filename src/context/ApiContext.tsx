@@ -38,7 +38,11 @@ type ApiContextType = {
   areaId?: any;
   dropDownWC?: DropdownApi["commissions"];
   businessCardData?: any;
-  refreshContext: (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean }) => Promise<void>;
+  expenseCategories?: any;
+  expenseViewDetails?: any;
+  payrollViewDetails?:any;
+  accountsList?:any;
+  refreshContext: (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean;expenseCategories?:boolean;expenseViewId?:any;payrollViewId?:any, accountsList?:boolean }) => Promise<void>;
 };
 
 const ApiContext = createContext<ApiContextType | undefined>(undefined);
@@ -50,6 +54,7 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { request: getAllRegion } = useApi("get", 3003);
   const { request: getAllArea } = useApi("get", 3003);
   const { request: getAllCounts } = useApi("get", 3003);
+  const {request:getAllCategory}=useApi('get',3002)
   const { request: getAllCustomersCounts } = useApi("get", 3001);
   const { request: getAllCountries } = useApi("get", 3003);
   const { request: getAllDropdown } = useApi("get", 3003);
@@ -58,6 +63,9 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const { request: getaAM } = useApi("get", 3002);
   const { request: getaSV } = useApi("get", 3003);
   const { request: getAllBusinessCard } = useApi("get", 3003);
+  const { request: getExpenseView } = useApi("get", 3002);
+  const { request: getPayrollView } = useApi("get", 3002);
+  const {request:getAllAcc}=useApi('get',3002)
 
   // State variables
   const [dropdownApi, setDropdownApi] = useState<DropdownApi | null>(null);
@@ -66,16 +74,19 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
   const [allCountries, setAllCountries] = useState<[]>([]);
   const [regionId, setRegionId] = useState<any>(null);
   const [areaId, setAreaId] = useState<any>(null);
+  const [expenseCategories, setExpenseCategories] = useState<any>(null);
   const [allTicketsCount, setAllTicketsCount] = useState<TicketsCountBell>();
   const [totalCounts, setTotalCounts] = useState<TotalCounts>();
   const [customersCounts, setTotalCustomersCounts] = useState<TotalCustomersCount>();
   const [businessCardData, setBusinessCardData] = useState<any>(null);
-
+  const [expenseViewDetails,setExpenseViewDetails]=useState<any>(null)
+  const [payrollViewDetails,setPayrollViewDetails]=useState<any>(null)
+  const [accountsList,setAccountsList]=useState<any>(null)
   // Use a ref to store previous fetched data to prevent unnecessary API calls
   const prevDataRef = useRef<any>(null);
 
   // Fetching Data Function
-  const fetchData = useCallback(async (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean }) => {
+  const fetchData = useCallback(async (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean;expenseCategories?:boolean,expenseViewId?:any,payrollViewId?:any,accountsList?:boolean }) => {
     try {
       const fetchPromises = [];
 
@@ -108,6 +119,19 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
       if (!options || options.businessCard) {
         fetchPromises.push(getAllBusinessCard(endPoints.GET_ALL_BUSINESSCARD).then(response => ({ businessCards: response?.response?.data.businessCard || null })));
       }
+      if (!options || options.expenseCategories) {
+        fetchPromises.push(getAllCategory(endPoints.EXPENSE_CATEGORY).then(response => ({ expenseCategories: response?.response?.data?.categories || null })));
+      }
+      if ( options?.expenseViewId) {
+        fetchPromises.push(getExpenseView(`${endPoints.EXPENSE}/${options?.expenseViewId}`).then(response => ({ expenseViewDetails: response?.response?.data || null })));
+      }
+      if ( options?.payrollViewId) {
+        fetchPromises.push(getPayrollView(`${endPoints.PAYROLL}/${options?.payrollViewId}`).then(response => ({ payrollViewDetails: response?.response?.data || null })));
+      }
+      if (!options || options.accountsList) {
+        fetchPromises.push(getAllAcc(endPoints.EXPENSE_ALL_ACCOUNTS).then(response => ({ accountsList: response?.response?.data || null })));
+      }
+      
 
       const results = await Promise.all(fetchPromises);
 
@@ -123,6 +147,10 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
         if (newData.counts) setTotalCounts(newData.counts);
         if (newData.customerCounts) setTotalCustomersCounts(newData.customerCounts);
         if (newData.businessCards) setBusinessCardData(newData.businessCards);
+        if (newData.expenseCategories) setExpenseCategories(newData.expenseCategories);
+        if (newData.expenseViewDetails) setExpenseViewDetails(newData.expenseViewDetails);
+        if (newData.payrollViewDetails) setPayrollViewDetails(newData.payrollViewDetails);
+        if (newData.accountsList) setAccountsList(newData.accountsList);
         prevDataRef.current = newData;
       }
 
@@ -143,7 +171,10 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user]);
 
-  const refreshContext = useCallback(async (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean }) => {
+  
+
+
+  const refreshContext = useCallback(async (options?: { dropdown?: boolean; regions?: boolean; areas?: boolean; countries?: boolean; tickets?: boolean; counts?: boolean; customerCounts?: boolean; businessCard?: boolean,expenseCategories?:boolean,expenseViewId?:any, accountsList?:any}) => {
     try {
       await fetchData(options);
     } catch (error) {
@@ -174,8 +205,12 @@ export const ApiProvider = ({ children }: { children: React.ReactNode }) => {
     areaId,
     dropDownWC: dropdownApi?.commissions || [],
     businessCardData,
+    expenseCategories,
+    expenseViewDetails,
+    payrollViewDetails,
+    accountsList,
     refreshContext
-  }), [allRegions, allAreas, allCountries, dropdownApi, totalCounts, customersCounts, allTicketsCount, regionId, areaId, businessCardData, refreshContext]);
+  }), [allRegions, allAreas, allCountries, dropdownApi, totalCounts, customersCounts, allTicketsCount, regionId, areaId, businessCardData,expenseCategories,expenseViewDetails,payrollViewDetails,accountsList, refreshContext]);
 
   return <ApiContext.Provider value={contextValue}>{children}</ApiContext.Provider>;
 };

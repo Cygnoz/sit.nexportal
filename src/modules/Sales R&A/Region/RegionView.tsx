@@ -129,6 +129,10 @@ function RegionView({}: Props) {
     }));
     getARegion();
     getAllTeam()
+    if(!addArea){
+      navigate('/regions')
+    }
+
   };
 
   const countryLogoObject = countyLogo.find(
@@ -462,7 +466,7 @@ function RegionView({}: Props) {
           <div style={{zIndex:2}}  className="absolute w-full ">
             {activeTab === "Area" && <RegionAriaView loading={loading} regionAreaData={data.regionAreaData}  regionData={data.regionData} />}
             {activeTab === "Team" && <RegionTeamView teamData={teamData} handleModalToggle={handleModalToggle} setData={setData}  />}
-            {activeTab === "Performance Analytics" && <RegionPerformanceView />}
+            {activeTab === "Performance Analytics" && <RegionPerformanceView  regionId={id}/>}
           </div>
         </div>
       </div>
@@ -508,8 +512,8 @@ function RegionView({}: Props) {
           action={handleDeactivate}
           prompt={
             data?.regionData?.region?.status === "Active"
-              ? "Are you sure you want to deactivate this Region?"
-              : "Are you sure you want to activate this Region?"
+              ? "Are you sure want to deactivate this Region?"
+              : "Are you sure want to activate this Region?"
           }
           onClose={() => handleModalToggle()}
         />

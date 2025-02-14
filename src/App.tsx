@@ -36,18 +36,18 @@ import PraiseHome from './modules/Awards/Praise/PraiseHome';
 import TicketsView from './modules/Tickets/LiveChat';
 import SettingsHome from './modules/Settings/SettingsHome';
 import PayrollHome from './modules/Expense/Payroll/PayrollHome';
-import PayrollSlip from './modules/Expense/Payroll/PayrollSlip';
-import PayrollView from './modules/Expense/Payroll/PayrollView';
-import PayrollView2 from './modules/Expense/Payroll/PayrollView2';
+import PayrollSlip from './modules/Expense/Payroll/view/PayrollPaySlip';
+import PayrollView from './modules/Expense/Payroll/view/PayrollPgView';
+import PayrollView2 from './modules/Expense/Payroll/view/PayrollAwApp';
 import BusinessCard from './modules/Settings/BusinessCard';
 import { roles } from './components/ui/Roles';
-import ExpenseHome from './modules/Expense/ExpenseHome';
+import ExpenseHome from './modules/Expense/Expenses/ExpenseHome';
 import TargetHome from './modules/Target/TargetHome';
-import PayrollView3 from './modules/Expense/Payroll/PayrollView3';
-import ExpenseView from './modules/Expense/ExpenseView';
-import ExpenseViewReject from './modules/Expense/ExpenseViewReject';
-import ExpenseViewPaid from './modules/Expense/Expenses/ExpenseViewPaid';
-import ExpenseViewGranted from './modules/Expense/Expenses/ExpenseViewGranted';
+import PayrollView3 from './modules/Expense/Payroll/view/PayrollApproved';
+import ExpenseView from './modules/Expense/Expenses/view/ExpenseView';
+import ExpenseViewReject from './modules/Expense/Expenses/view/ExpenseViewReject';
+import ExpenseViewPaid from './modules/Expense/Expenses/view/ExpenseViewPaid';
+import ExpenseViewGranted from './modules/Expense/Expenses/view/ExpenseViewGranted';
 // import ExpenseHome from './modules/Expense/ExpenseHome';
 
 

@@ -177,7 +177,7 @@ useEffect(()=>{
                   <UserIcon color="white" size={16} />
                 </p>
               )}            </div>
-            <p className="text-[#303F58] text-xs font-semibold ">{leadData?.email}</p>
+            <p className="text-black text-xs font-semibold ">{leadData?.email}</p>
 
           </div>
         </div>

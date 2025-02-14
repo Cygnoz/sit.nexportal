@@ -26,6 +26,8 @@ import InputPasswordEye from "../../../components/form/InputPasswordEye";
 import { StaffTabsList } from "../../../components/list/StaffTabsList";
 import Modal from "../../../components/modal/Modal";
 import IdBcardModal from "../../../components/modal/IdBcardModal";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
+import WCommissionForm from "../../Users/WorkerCommision/WCommissionForm";
 // import { get } from "lodash";
 // import Modal from "../../../components/modal/Modal";
 // import AMViewBCard from "../../../components/modal/IdCardView/AMViewBCard";
@@ -105,11 +107,24 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
   // console.log("watch",watch());
   
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
+ 
   const [empId,setEmpId]=useState('')
-  const handleModalToggle = () => {
-    setIsModalOpen((prev) => !prev);
+  const [isModalOpen, setIsModalOpen] = useState({
+    idCard: false,
+    region: false,
+    commission: false
+  });
+  
+  const handleModalToggle = (idCard = false, region = false,commission = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      idCard: idCard,
+      region: region,
+      commission: commission
+    }));
+    refreshContext({dropdown:true})
   };
+  
 
   const [staffData, setStaffData] = useState<any>(null);
   const onSubmit: SubmitHandler<RMData> = async (data, event) => {
@@ -139,7 +154,7 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
         setStaffData(staffDetails)
         //  console.log("staff",staffData);       
         toast.success(response.data.message); // Show success toast
-        handleModalToggle()
+        handleModalToggle(true,false)
       } else if (error) {
         console.error("Error:", error.response || error.message);
         const errorMessage =
@@ -567,17 +582,46 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     {...register("city")}
                   />
                   <Input
-                    label="Aadhaar Number"
-                    placeholder="Enter Aadhar"
-                    type="number"
-                    error={errors.adhaarNo?.message}
-                    {...register("adhaarNo")}
+                    label="Aadhaar No"
+                    type="text"
+                    placeholder="Enter Aadhaar Number"
+                    {...register("adhaarNo", {
+                      required: "Aadhaar number is required",
+                      pattern: {
+                        value: /^[0-9]{12}$/, 
+                        message: "Aadhaar number must be exactly 12 digits",
+                      },
+                    })}
+
+                    maxLength={12} // Restrict input length to 12 digits
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.replace(/\D/g, ""); 
+                      setValue("adhaarNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
                   <Input
-                    label="PAN Number"
-                    placeholder="Enter Pan Number"
-                    error={errors.panNo?.message}
-                    {...register("panNo")}
+                    label="PAN No"
+                    type="text"
+                    placeholder="Enter PAN Number"
+                    {...register("panNo", {
+                      required: "PAN number is required",
+                      pattern: {
+                        value: /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/,
+                        message: "Invalid PAN format (e.g., ABCDE1234F)",
+                      },
+                      validate: (value: any) => {
+                        if (/[^A-Z0-9]/.test(value)) {
+                          return "Special characters are not allowed!";
+                        }
+                        return true;
+                      },
+                    })}
+
+                    maxLength={10} 
+                    onChange={(e) => {
+                      const filteredValue = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""); 
+                      setValue("panNo", filteredValue, { shouldValidate: true });
+                    }}
                   />
 
                   <Input
@@ -679,6 +723,10 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     }}
                     error={errors.region?.message}
                     options={data.regions}
+                    addButtonLabel="Add Region "
+                    addButtonFunction={handleModalToggle}
+                    totalParams={2}
+                    paramsPosition={2}
                   />
 
                   <Select
@@ -691,6 +739,10 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
                     }}
                     error={errors.commission?.message}
                     options={data.wc}
+                    addButtonLabel="Add Commission"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={3}
+                    paramsPosition={3}
                   />
                   <Input
                       placeholder="Enter Amount"
@@ -903,13 +955,19 @@ const RMForm: React.FC<RMProps> = ({ onClose, editId }) => {
       >
         <AMIdCardView onClose={() => handleModalToggle()} />
       </Modal> */}
-      <Modal className="w-[60%]" open={isModalOpen} onClose={handleModalToggle}>
+      <Modal className="w-[60%]" open={isModalOpen.idCard} onClose={()=>handleModalToggle()}>
       <IdBcardModal
         parentOnClose={onClose}
-        onClose={handleModalToggle}
+        onClose={()=>handleModalToggle()}
         role="Region Manager"
         staffData={staffData}
         />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.commission} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <WCommissionForm  onClose={()=>handleModalToggle()} />
       </Modal>
     </>
   );

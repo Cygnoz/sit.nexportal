@@ -15,6 +15,11 @@ import toast from "react-hot-toast";
 import { LeadData } from "../../../Interfaces/Lead";
 import { useRegularApi } from "../../../context/ApiContext";
 import { useUser } from "../../../context/UserContext";
+import Modal from "../../../components/modal/Modal";
+import RegionForm from "../../Sales R&A/Region/RegionForm";
+import AreaForm from "../../Sales R&A/Area/AreaForm";
+import BDAForm from "../../SalesTeams/BDA/BDAForm";
+
 
 type Props = {
   onClose: () => void;
@@ -37,6 +42,7 @@ const validationSchema = Yup.object({
   regionId:Yup.string().required('Region is required'),
   areaId:Yup.string().required('Area is required'),
   bdaId:Yup.string().required('Bda is required'),
+  leadSource:Yup.string().required('LeadSource is required'),
 });
 
 function LeadForm({ onClose ,editId,regionId,areaId}: Props) {
@@ -70,6 +76,24 @@ function LeadForm({ onClose ,editId,regionId,areaId}: Props) {
       salutation: "Mr.", // Default value for salutation
     },
   });
+  const [isModalOpen, setIsModalOpen] = useState({
+
+    region: false,
+    area:false,
+    bda:false
+ 
+  });
+  
+  const handleModalToggle = ( region = false,area = false,bda = false) => {
+    setIsModalOpen((prev) => ({
+      ...prev,
+      region: region,
+      area:area,
+      bda:bda
+    }));
+    refreshContext({dropdown:true})
+  };
+ 
 
   const onSubmit: SubmitHandler<LeadData> = async (data, event) => {
     console.log("eded",data);
@@ -254,6 +278,7 @@ const salutation = [
   
 
   return (
+    <>
     <div className="px-5 py-3 space-y-6 text-[#4B5C79]">
        <div className="flex justify-between items-center mb-4">
         <div>
@@ -352,10 +377,22 @@ const salutation = [
               placeholder="Enter Website URL"
               {...register("website")}
             />
-             <Input
+             <Select
+             required
               label="Lead Source"
               placeholder="Enter Lead Source"
-              {...register("leadSource")}
+              value={watch("leadSource")}
+              onChange={(selectedValue) => {
+                setValue("leadSource", selectedValue);
+                handleInputChange("leadSource");
+              }}
+              options={[
+                { label: "Social Media", value: "socialmedia" },
+                { label: "Website", value: "website" },
+                { label: "Refferal", value: "refferal" },
+                { label: "Events", value: "events" },
+                { label: "Others", value: "Others" },
+              ]}
             />
           </div>
           <div className="grid grid-cols-3 gap-4 mt-4">
@@ -374,6 +411,10 @@ const salutation = [
             }}
             error={errors.regionId?.message}
             options={regionData}
+            addButtonLabel="Add Region"
+                    addButtonFunction={handleModalToggle}
+                    totalParams={1}
+                    paramsPosition={1}
             />
             <Select
                  readOnly={areaId || user?.role === "BDA"}
@@ -389,6 +430,10 @@ const salutation = [
                   }}
                   error={errors.areaId?.message}
                   options={areaData}
+                  addButtonLabel="Add Area"
+                  addButtonFunction={handleModalToggle}
+                  totalParams={2}
+                  paramsPosition={2}
             />
             <Select
               readOnly={user?.role=="BDA"?true:false}
@@ -402,6 +447,10 @@ const salutation = [
                   }}
                   error={errors.bdaId?.message}
                   options={data.bdas}
+                  addButtonLabel="Add BDA"
+                  addButtonFunction={handleModalToggle}
+                  totalParams={3}
+                  paramsPosition={3}
             />
           </div>
         </div>
@@ -463,6 +512,16 @@ const salutation = [
         </div>
       </form>
     </div>
+    <Modal open={isModalOpen.area} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <AreaForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.region} onClose={()=>handleModalToggle()} className="w-[35%]">
+        <RegionForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      <Modal open={isModalOpen.bda} onClose={()=>handleModalToggle()} className="w-[55%]">
+        <BDAForm  onClose={()=>handleModalToggle()} />
+      </Modal>
+      </>
   );
 }
 

@@ -5,20 +5,28 @@ import TargetForm from "./TargetForm";
 import Modal from "../../components/modal/Modal";
 import Button from "../../components/ui/Button";
 import { useUser } from "../../context/UserContext";
+import useApi from "../../Hooks/useApi";
+import { endPoints } from "../../services/apiEndpoints";
+import toast from "react-hot-toast";
+import ConfirmModal from "../../components/modal/ConfirmModal";
+import { useRegularApi } from "../../context/ApiContext";
+import { useResponse } from "../../context/ResponseContext";
 
-interface TargetData {
-  task: string;
-  dueDate: string;
-  bda: string;
-}
-
-type TabType = "Region" | "Area" | "BDA";
+type TabType = "Region" | "Area" | "Bda";
 
 const TargetHome = () => {
-  const {user}=useUser()
-  user?.role
+  const { request: getAllTarget } = useApi('get', 3004);
+  const { request: deleteTarget } = useApi("delete", 3004);
+  const { refreshContext } = useRegularApi();
+  const { loading, setLoading } = useResponse();
+  const [editId, setEditId] = useState('');
+  const [allTargets, setAllTargets] = useState<any>(null);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+  const [modalType, setModalType] = useState<TabType>("Region");
+  const { user } = useUser();
 
-  const tabs: TabType[] = ["Region", "Area", "BDA"];
+  const tabs: TabType[] = ["Region", "Area", "Bda"];
 
   const getVisibleTabs = (): TabType[] => {
     switch (user?.role) {
@@ -27,7 +35,7 @@ const TargetHome = () => {
       case "Region Manager":
         return tabs.filter((tab) => tab !== "Region");
       case "Area Manager":
-        return tabs.filter((tab) => tab === "BDA");
+        return tabs.filter((tab) => tab === "Bda");
       default:
         return [];
     }
@@ -40,15 +48,14 @@ const TargetHome = () => {
       case "Region Manager":
         return "Area";
       case "Area Manager":
-        return "BDA";
+        return "Bda";
       default:
         return "Region"; // Fallback in case user role is undefined
     }
   };
 
   const [activeTab, setActiveTab] = useState<TabType>(getDefaultTab());
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
-  const [modalType, setModalType] = useState<TabType>("Region");
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   useEffect(() => {
     setActiveTab(getDefaultTab());
@@ -57,53 +64,104 @@ const TargetHome = () => {
   const handleCreateTarget = () => {
     setModalType(activeTab);
     setIsCreateModalOpen(true);
+    refreshContext({ customerCounts: true });
+    getTargets();
   };
 
-  const handleEdit = () => {
+  const handleEdit = (id: any) => {
     setModalType(activeTab);
     setIsCreateModalOpen(true);
+    setEditId(id);
   };
 
-  const handleDelete = () => {
-    // Placeholder for delete logic
+  const openDeleteModal = (id: string) => {
+    setDeleteId(id);
+    setIsDeleteModalOpen(true);
   };
 
-  const regionData: TargetData[] = [
-    { task: "Region001", dueDate: "John Doe", bda: "100" },
-    { task: "Region002", dueDate: "Jane Smith", bda: "200" },
+  const closeDeleteModal = () => {
+    setDeleteId(null);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const { response, error } = await deleteTarget(`${endPoints.TARGET}/${deleteId}`);
+      if (response && !error) {
+        toast.success(response.data.message || "Target deleted successfully");
+        getTargets(); // Refresh the list
+      } else {
+        console.error(error);
+        toast.error("Failed to delete target");
+      }
+    } catch (err) {
+      console.error("Error deleting target:", err);
+      toast.error("An error occurred while deleting target");
+    } finally {
+      closeDeleteModal(); // Close delete modal after operation
+    }
+  };
+
+  const getTargets = async () => {
+    try {
+      setLoading(true);
+      const endpoint = `${endPoints.TARGET}`;
+      const { response, error } = await getAllTarget(endpoint);
+      if (response && !error) {
+        setAllTargets(response.data);
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getTargets();
+    refreshContext({ customerCounts: true });
+  }, []);
+
+  const Regioncolumns = [
+    { key: "region.regionName", label: "Region" },
+    { key: "target", label: "Target" },
   ];
 
-  const areaData: TargetData[] = [
-    { task: "Area001", dueDate: "Michael Brown", bda: "150" },
-    { task: "Area002", dueDate: "Emily Davis", bda: "250" },
+  const Areacolumns = [
+    { key: "area.areaName", label: "Area" },
+    { key: "target", label: "Target" },
   ];
 
-  const bdaData: TargetData[] = [
-    { task: "BDA001", dueDate: "Daniel Lee", bda: "300" },
-    { task: "BDA002", dueDate: "Sophia Wilson", bda: "400" },
-  ];
-
-  const Regioncolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "dueDate", label: "Region" },
-    { key: "bda", label: "Target" },
-  ];
-
-  const Areacolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "dueDate", label: "Area" },
-    { key: "bda", label: "Target" },
-  ];
-
-  const BDAcolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "dueDate", label: "BDA" },
-    { key: "bda", label: "Target" },
+  const BDAcolumns = [
+    { key: "bda.user.userName", label: "BDA" },
+    { key: "target", label: "Target" },
   ];
 
   const isButtonVisible = (() => {
     if (user?.role === "Super Admin" && activeTab === "Region") return true;
     if (user?.role === "Region Manager" && activeTab === "Area") return true;
-    if (user?.role === "Area Manager" && activeTab === "BDA") return true;
+    if (user?.role === "Area Manager" && activeTab === "Bda") return true;
     return false;
   })();
+
+  const getDataByActiveTab = (tab: any) => {
+    switch (tab) {
+      case "Region":
+        return allTargets?.region || [];
+      case "Area":
+        return allTargets?.area || [];
+      case "Bda":
+        return allTargets?.bda || [];
+      default:
+        return [];
+    }
+  };
+  const data = getDataByActiveTab(activeTab);
+
+  console.log("data",data);
+  
+
   return (
     <>
       <div>
@@ -111,28 +169,29 @@ const TargetHome = () => {
           <p className="text-[#303F58] text-lg font-bold">Target</p>
         </div>
         <div className="flex gap-24 bg-[#FEFBF8] rounded-xl px-4 py-2 text-base font-bold border-b border-gray-200">
-        {getVisibleTabs().map((tab) => (
+          {getVisibleTabs().map((tab) => (
             <div
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`cursor-pointer py-2 px-[16px] ${
-                activeTab === tab
+              className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
                   ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
                   : "text-gray-400"
-              }`}
+                }`}
             >
               {tab}
             </div>
           ))}
-         
-         {isButtonVisible && (
-      <div className="flex justify-end ml-auto">
-        <Button variant="primary" onClick={handleCreateTarget} className="w-36 h-10">
-          <span className="font-medium text-xs">+</span> Create Target
-        </Button>
-      </div>
-    )}
- 
+
+          {isButtonVisible && (
+            <div className="flex justify-end ml-auto">
+              <Button variant="primary" size="sm" onClick={() => {
+                handleCreateTarget();
+                setEditId('');
+              }}>
+                <span className="font-bold text-xl">+</span> Create Target
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="w-full p-4 h-fit bg-[#E3E6D5] my-4 rounded-2xl">
@@ -145,64 +204,64 @@ const TargetHome = () => {
                 <p className="text-lg font-semibold text-[#4B5C79]">Total Target</p>
                 <p className="text-xs font-normal text-[#4B5C79]">
                   Total License targets Should Achieve
-                                </p>
+                </p>
               </div>
             </div>
             <div className="p-2 text-lg font-semibold">
-              <p className="text-[#820000] text-2xl font-bold">20</p>
+              <p className="text-[#820000] text-2xl font-bold">
+                {
+                  activeTab === "Region"
+                    ? allTargets?.totalRegionTarget
+                    : activeTab === "Area"
+                      ? allTargets?.totalAreaTarget
+                      : allTargets?.totalBdaTarget}
+              </p>
             </div>
           </div>
         </div>
 
         <div>
-        <TargetTable
-  data={
-    activeTab === "Region"
-      ? regionData
-      : activeTab === "Area"
-      ? areaData
-      : bdaData
-  }
-  columns={
-    activeTab === "Region"
-      ? Regioncolumns
-      : activeTab === "Area"
-      ? Areacolumns
-      : BDAcolumns
-  }
-  headerContents={{
-    title: activeTab + "'s Target",
-    search: { placeholder: "Search..." },
-    sort: [
-      {
-        sortHead: "Sort by Month and Year",
-        sortList: [
-          { label: "Month", icon: <span></span>, action: () => {} },
-          { label: "Year", icon: <span></span>, action: () => {} },
-        ],
-      },
-    ],
-  }}
-  actionList={
-    (user?.role === "Super Admin" && activeTab === "Region") ||
-    (user?.role === "Region Manager" && activeTab === "Area") ||
-    (user?.role === "Area Manager" && activeTab === "BDA")
-      ? [
-          { label: "edit", function: handleEdit },
-          { label: "delete", function: handleDelete },
-        ]
-      : []
-  }
-  noAction={
-    !(
-      (user?.role === "Super Admin" && activeTab === "Region") ||
-      (user?.role === "Region Manager" && activeTab === "Area") ||
-      (user?.role === "Area Manager" && activeTab === "BDA")
-    )
-  }
-/>
-
-
+          <TargetTable
+            data={data}
+            columns={
+              activeTab === "Region"
+                ? Regioncolumns
+                : activeTab === "Area"
+                  ? Areacolumns
+                  : BDAcolumns
+            }
+            headerContents={{
+              title: activeTab + "'s Target",
+              search: { placeholder: "Search..." },
+              sort: [
+                {
+                  sortHead: "Sort by Month and Year",
+                  sortList: [
+                    { label: "Month", icon: <span></span>, action: () => { } },
+                    { label: "Year", icon: <span></span>, action: () => { } },
+                  ],
+                },
+              ],
+            }}
+            actionList={
+              (user?.role === "Super Admin" && activeTab === "Region") ||
+                (user?.role === "Region Manager" && activeTab === "Area") ||
+                (user?.role === "Area Manager" && activeTab === "Bda")
+                ? [
+                  { label: "edit", function: handleEdit },
+                  { label: "delete", function: openDeleteModal },
+                ]
+                : []
+            }
+            noAction={
+              !(
+                (user?.role === "Super Admin" && activeTab === "Region") ||
+                (user?.role === "Region Manager" && activeTab === "Area") ||
+                (user?.role === "Area Manager" && activeTab === "Bda")
+              )
+            }
+            loading={loading}
+          />
         </div>
       </div>
 
@@ -212,11 +271,21 @@ const TargetHome = () => {
         onClose={() => setIsCreateModalOpen(false)}
         className="w-[35%]"
       >
-        <TargetForm onClose={() => setIsCreateModalOpen(false)} type={modalType} />
+        <TargetForm onClose={() => { setIsCreateModalOpen(false); getTargets(); }} editId={editId} type={modalType} />
       </Modal>
-
-      {/* Edit Modal */}
-     
+      <Modal open={isDeleteModalOpen} className="w-[30%]" onClose={closeDeleteModal}>
+        <ConfirmModal
+          action={handleDelete}
+          prompt={
+            activeTab === 'Region'
+              ? 'Are you sure want to delete this Region Target?'
+              : activeTab === 'Area'
+                ? 'Are you sure want to delete this Area Target?'
+                : 'Are you sure want to delete this Bda Target?'
+          }
+          onClose={closeDeleteModal}
+        />
+      </Modal>
     </>
   );
 };

@@ -9,10 +9,13 @@ export const endPoints = {
 
   // Activity Logs
   GET_ACTIVITY_LOGS: "/get-activity-logs",
-
-  // Region
-  REGION: "/region",
-  GET_REGIONS: "/regions",
+  
+// Region
+REGION: "/region",
+GET_REGIONS: "/regions",
+AREA_PERFORMANCE:"/areaPerformance",
+TRIAL_CONVERTION_RATE:'/trial-conversion-rate',
+LEAD_SOURCE:'/leadSource',
 
   // Area
   AREA: "/area",
@@ -34,6 +37,7 @@ export const endPoints = {
   AM: "/area-manager",
   CHECK_AM:'/area-manager-check',
   DEACTIVATE_AM:'/deactivateAm',
+  LEADS_CONVERTED:'/area-managerOvertime',
 
   //Worker Commission
   WC: "/commissions",
@@ -45,6 +49,7 @@ export const endPoints = {
   CHECK_BDA:'/bda-check',
   BDA_DETAILS:'/bda-details',
   DEACTIVATE_BDA:'/deactivateBda',
+  RENEWAL_BDA:'/renewalBda',
 //  CONVERTED_BDA:'/bda/67852f3fe76c8b4af14ec3dd/trial-conversions?date=2025-1-24',
 
   //SuperVisor
@@ -59,6 +64,7 @@ export const endPoints = {
   // Lead
   LEADS: "/leads",
   LEAD: "/lead",
+  LEAD_OVERTIME:'/leadEngagementOverTime',
 
   // All Counts
   COUNTS:'/counts',
@@ -83,7 +89,7 @@ export const endPoints = {
 
   // Dashboard
   TEAM_BREAK_DOWN:'/team-counts',
-  CONVERSION_RATE:'/conversion-rate',
+  CONVERSION_RATE:'/lead-conversion-rate',
   RESOLVED_TICKETS:'/tickets/solved-by-region',
 
   // Region Inside View 
@@ -111,5 +117,27 @@ export const endPoints = {
   GET_ALL_BUSINESSCARD:'/business-card',
   // Chat History
   CHAT_HISTORY:'/history',
-  CHATS_LEAD:'/chats/lead'
+  CHATS_LEAD:'/chats/lead',
+
+  RENEW:'/renew',
+
+
+ TARGET:'/targets',
+ GET_ONE_TARGET:'/target',
+
+//  Expense Category
+EXPENSE_CATEGORY:'/category',
+EXPENSE:'/expense',
+
+ //Target
+ TARGET_ACHEIVED:'/targetAchieved',
+ YEARLY_TARGETS:'/yearlyTargets',
+
+ //  Payroll
+  PAYROLL: "/payroll",
+  SALARY_INFO:'salaryInfo',
+  PAY_PAYROLL:'/pay-payrol',
+  // Expense 
+  EXPENSE_ALL_ACCOUNTS:'/get-all-accounts',
+  PAY_EXPENSE:'/pay-expense'
 };
