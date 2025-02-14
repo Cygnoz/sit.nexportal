@@ -197,7 +197,7 @@ useEffect(() => {
         onClose(); // Close the form after success
       } else {
         console.log("API Error:", error);
-        toast.error(error?.response?.data?.message || "Failed to submit data");
+        toast.error(error?.response?.data?.error || "Failed to submit data");
       }
     } catch (err) {
       console.error("Unexpected Error:", err);

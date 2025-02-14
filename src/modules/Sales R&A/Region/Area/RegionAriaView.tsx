@@ -32,9 +32,7 @@ const RegionAriaView = ({ regionAreaData, loading }: Props) => {
   
   const navigate = useNavigate()
   const { request: getLeadSource } = useApi("get", 3003);
-  const [leadSourceData, setLeadSourceData] = useState<Record<string, number> | null>(null);
   const [pieData, setPieData] = useState<{ x: string; y: number; color: string }[]>([]);
-  const [roles, setRoles] = useState<{ name: string; count: number; color: string }[]>([]);
 
 
   const areaHandleView = (id: any) => {

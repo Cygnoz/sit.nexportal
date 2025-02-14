@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import BankIcon from "../../../assets/icons/BankIcon";
 import BloodGroupIcon from "../../../assets/icons/BloodGroupIcon";
-import CalenderDays from "../../../assets/icons/CalenderDays"
+import CalenderDays from "../../../assets/icons/CalenderDays";
 import EmailIcon from "../../../assets/icons/EmailIcon";
 import LocationIcon from "../../../assets/icons/LocationIcon";
 import PhoneIcon from "../../../assets/icons/PhoneIcon";
-import RegionIcon from "../../../assets/icons/RegionIcon"
-import UserIcon from "../../../assets/icons/UserIcon"
+import RegionIcon from "../../../assets/icons/RegionIcon";
+import UserIcon from "../../../assets/icons/UserIcon";
 import useApi from "../../../Hooks/useApi";
-import { useParams } from "react-router-dom";
 import { endPoints } from "../../../services/apiEndpoints";
 
 
