@@ -39,7 +39,6 @@ const Header: React.FC<HeaderProps> = ({
   useEffect(() => {
     const filtered = NavList.filter(
       (route) =>
-        route.key.trim().toLowerCase().includes(searchValue.toLowerCase()) ||
         route.label.trim().toLowerCase().includes(searchValue.toLowerCase())
     );
     setFilteredNavList(filtered);

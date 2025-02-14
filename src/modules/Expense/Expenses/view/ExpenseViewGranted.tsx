@@ -4,8 +4,10 @@ import ChevronRight from "../../../../assets/icons/ChevronRight";
 // import VectorIcon from "../../../../assets/icons/VectorIcon";
 import Button from "../../../../components/ui/Button";
 import cygnoz from "../../../../assets/image/cygnozzzz.png";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRegularApi } from "../../../../context/ApiContext";
+import Modal from "../../../../components/modal/Modal";
+import PayModal from "../../Modal/PayModal";
 
 type Props = {};
 
@@ -13,14 +15,16 @@ const ExpenseViewGranted = ({}: Props) => {
     const { id } = useParams();
     const { refreshContext, expenseViewDetails } = useRegularApi();
     const navigate = useNavigate();
-
+    const [isModalOpen,setIsModalOpen]=useState(false)
+    const handleModalToggle=()=>{
+        setIsModalOpen((prev)=>!prev)
+    }
     useEffect(() => {
         if (id) {
             refreshContext({ expenseViewId: id });
         }
     }, [id, refreshContext]);
- console.log("ddf",expenseViewDetails );
- 
+    
     return (
         <div>
             <div>
@@ -35,20 +39,6 @@ const ExpenseViewGranted = ({}: Props) => {
                 {/* Header Section */}
                 <header className="flex justify-between items-center border-b pb-4 bg-white p-3 rounded-lg">
                     <h1 className="text-xl font-semibold">{expenseViewDetails?.expenseName || "Expense Details"}</h1>
-                    {/* <div className="flex gap-2">
-                        <button className="border px-4 py-2 rounded-md bg-[#FEFDFA] flex items-center">
-                            <span className="p-1">
-                                <EmailIcon size={16} />
-                            </span>
-                            Send Mail
-                        </button>
-                        <button className="border px-4 py-2 rounded-md bg-[#FEFDFA] flex items-center">
-                            <span className="p-1">
-                                <VectorIcon size={16} />
-                            </span>
-                            Print
-                        </button>
-                    </div> */}
                 </header>
 
                 {/* Expense Slip Section */}
@@ -156,11 +146,14 @@ const ExpenseViewGranted = ({}: Props) => {
                     <Button variant="tertiary" size="md" className="h-10 w-32 justify-center" onClick={() => navigate('/expense')}>
                         Cancel
                     </Button>
-                    <Button variant="primary" size="md" className="h-10 w-32 justify-center">
+                    <Button onClick={handleModalToggle} variant="primary" size="md" className="h-10 w-32 justify-center">
                         Pay
                     </Button>
                 </div>
             </div>
+            <Modal className="w-[30%]" align="center" open={isModalOpen} onClose={handleModalToggle}>
+                <PayModal from="Expense" id={id} onClose={handleModalToggle}/>
+                </Modal>
         </div>
     );
 };

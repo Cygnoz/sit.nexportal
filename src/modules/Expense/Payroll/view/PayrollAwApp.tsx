@@ -161,7 +161,7 @@ const PayrollAwApp = ({ }: Props) => {
                   </div>
 
                   {/* Amount */}
-                  <p className="text-xl font-bold text-center">₹ {payrollViewDetails?.totalSalary ||'N/A'}</p>
+                  <p className="text-xl font-bold text-center">₹ {payrollViewDetails?.totalSalary}</p>
 
                   {/* Description */}
                   <p className="text-sm text-gray-300 mt-1">Basic Salary + Commission</p>
@@ -188,7 +188,7 @@ const PayrollAwApp = ({ }: Props) => {
                 <IndianRupeeIcon size={16} />
               </div>
               <p className="text-sm text-gray-600 font-medium">Basic Salary</p>
-              <p className="text-2xl font-bold">₹ {payrollViewDetails?.basicSalary ||'N/A'}</p>
+              <p className="text-2xl font-bold">₹ {payrollViewDetails?.basicSalary}</p>
             </div>
           </div>
 
@@ -206,16 +206,16 @@ const PayrollAwApp = ({ }: Props) => {
 
               <div className="border-r">
                 <p className="text-xs text-[#4B5C79]">Threshold Licenses</p>
-                <p className="font-bold text-sm text-[#303F58]">{payrollViewDetails?.commissionProfile?.thresholdLicense ||'N/A'}</p>
+                <p className="font-bold text-sm text-[#303F58]">{payrollViewDetails?.commissionProfile?.thresholdLicense ||'0'}</p>
               </div>
               <div className="border-r">
                 <p className="text-xs text-[#4B5C79]">Commission Point</p>
-                <p className="font-bold text-sm text-[#303F58]">{payrollViewDetails?.commissionProfile?.commissionPoint ||'N/A'
+                <p className="font-bold text-sm text-[#303F58]">{payrollViewDetails?.commissionProfile?.commissionPoint ||'0'
                 }</p>
               </div>
               <div>
                 <p className="text-xs text-[#4B5C79]">Recurring Point</p>
-                <p className="font-bold text-sm text-[#303F58]">{payrollViewDetails?.commissionProfile?.recurringPoint ||'N/A'
+                <p className="font-bold text-sm text-[#303F58]">{payrollViewDetails?.commissionProfile?.recurringPoint ||'0'
                 }</p>
               </div>
             </div>
@@ -228,7 +228,7 @@ const PayrollAwApp = ({ }: Props) => {
                 <UserIcon color="#768294" />
               </div>
               <p className="text-xs text-[#303F58] font-medium my-1">Total Licenses</p>
-              <p className="text-sm text-[#303F58] font-bold">{payrollViewDetails?.totalLicenses ||'N/A'}</p>
+              <p className="text-sm text-[#303F58] font-bold">{payrollViewDetails?.totalLicenses ||'0'}</p>
             </div>
           </div>
 
@@ -241,7 +241,7 @@ const PayrollAwApp = ({ }: Props) => {
               <p className="text-xs text-[#303F58] font-medium my-1">
                 Total Recurring Licenses
               </p>
-              <p className="text-sm text-[#303F58] font-bold">{payrollViewDetails?.recurringLicenses ||'N/A'}</p>
+              <p className="text-sm text-[#303F58] font-bold">{payrollViewDetails?.recurringLicenses ||'0'}</p>
             </div>
           </div>
         </div>
@@ -338,23 +338,8 @@ const PayrollAwApp = ({ }: Props) => {
 
             </div>
             <div className="flex justify-end gap-2 mt-3 pb-2 h-64">
-                <Button
-                    variant="tertiary"
-                    className="h-8 text-sm border rounded-lg"
-                    size="lg"
-                  onClick={()=>navigate('/payroll')}
-                >
-                    Cancel
-                </Button>
-                <Button
-                    variant="primary"
-                    className="h-8 text-sm border rounded-lg"
-                    size="lg"
-                    type="submit"
-                    onClick={handleModalToggle}
-                >
-                    Approve
-                </Button>
+                <Button onClick={()=>navigate('/payroll')} variant="tertiary" className="w-36 h-10 justify-center text-sm rounded-lg text-[#565148] font-medium">Cancel</Button>
+                 <Button onClick={handleModalToggle} variant="primary" className="w-36 h-10 justify-center text-sm rounded-lg text-[#FEFDF9] font-medium">Approve</Button>
             </div>
             <Modal className="w-[30%]" align="center" open={isModalOpen} onClose={ handleModalToggle}>
     <ConfirmModal

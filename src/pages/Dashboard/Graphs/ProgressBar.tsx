@@ -6,8 +6,7 @@ import Modal from "../../../components/modal/Modal";
 import { useUser } from "../../../context/UserContext";
 import CheckIcon from "../../../assets/icons/CheckIcon";
 import { endPoints } from "../../../services/apiEndpoints";
-import useApi from "../../../Hooks/useApi";
-import NoRecords from "../../../components/ui/NoRecords"; // Import NoRecords component
+import useApi from "../../../Hooks/useApi"; // Import NoRecords component
 
 type Props = {};
 
@@ -23,20 +22,22 @@ const ProgressBar = ({}: Props) => {
     percentage: 0,
   });
 
+  console.log("sdfefe",chartData);
+  
+
   // Get current month and year
   const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
   const currentMonth = months.find((m) => m.value === currentMonthValue) || months[0];
 
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
-  const [selectedYear] = useState<any>(years[years.length - 1]);
+  const [selectedYear] = useState<any>(years[0]);
   // Format selected date as "YYYY-MM"
   const [selectedData, setSelectedData] = useState<string>(
     `${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`
   );
   useEffect(() => {
     // Convert month name to number (1-12) and ensure it's two digits
-    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
-    setSelectedData(`${selectedYear.value}-${monthIndex}`);
+    setSelectedData(`${selectedYear.value}-${selectedMonth?.value}`);
   }, [selectedMonth, selectedYear]);
 
   const [isModalOpen, setIsModalOpen] = useState({ addInfo: false });
@@ -101,9 +102,7 @@ const ProgressBar = ({}: Props) => {
 </div>
 
       {/* Show NoRecords if no target data */}
-      {chartData.totalTarget === 0 ? (
-        <NoRecords text="No Target Found" parentHeight="320px" />
-      ) : (
+      
         <>
           <div className="text-end">
             <h1 className="text-[#B7B7B7] text-xl font-medium">Goal: {chartData.totalTarget} Target</h1>
@@ -153,7 +152,7 @@ const ProgressBar = ({}: Props) => {
             Great progress! You’re {chartData.balanceTarget} Targets away from your goal.
           </p>
         </>
-      )}
+      
 
       <Modal open={isModalOpen.addInfo} onClose={() => setIsModalOpen({ addInfo: false })} className="w-[40%] h-[700px]" >
         <TargetInfoModal onClose={() => setIsModalOpen({ addInfo: false })} />
