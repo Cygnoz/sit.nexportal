@@ -39,12 +39,15 @@ exports.addTarget = async (req, res) => {
       if (!user) {
           return res.status(404).json({ error: "User not found" });
       }
+
+      console.log(user.role);
+      
  
       let regionData = null;
       let parentTarget = 0;
  
       // Determine role and fetch corresponding region & parent target
-      if (user.role === "SuperAdmin") {
+      if (user.role === "Super Admin") {
           // SuperAdmin can set targets freely
           parentTarget = target;
       } else if (user.role === "Region Manager") {
