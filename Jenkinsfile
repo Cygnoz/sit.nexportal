@@ -1,20 +1,18 @@
 pipeline {
     agent any
- 
     environment {
         // Define environment variables for AWS ECR and ECS
         AWS_REGION = 'ap-south-1'
-        ECR_REPOSITORY = 'nexsell/frontend'
+        ECR_REPOSITORY = 'sit-frontend'
         IMAGE_NAME = 'nexsell/frontend'
         AWS_CREDENTIALS_ID = '2157424a-b8a7-45c0-90c2-bc0d407f6cea'
         AWS_ACCOUNT_ID = '654654462146' // Add your AWS account ID here
-        SONARQUBE_PROJECT_KEY = 'nexsell-leads'
-        SONARQUBE_SCANNER_CREDENTIALS_ID = 'cb3a1e6c-1d83-4c58-ad71-17b4515c3a4f' // Jenkins credentials ID for SonarQube token
-        ECS_CLUSTER_NAME = 'nexsell' // Replace with your ECS cluster name
-        ECS_SERVICE_NAME = 'nexsell-frontendd' // Replace with your ECS service name
-        ECS_TASK_DEFINITION_NAME = 'nexsell-frontend' // Replace with your ECS task definition name
+        SONARQUBE_PROJECT_KEY = 'sit-nexsell-frontend'
+        SONARQUBE_SCANNER_CREDENTIALS_ID = 'ce2ea3b8-f868-46f0-81ab-1b7fd4820ebd' // Jenkins credentials ID for SonarQube token
+        ECS_CLUSTER_NAME = 'sit-nexsell' // Replace with your ECS cluster name
+        ECS_SERVICE_NAME = 'sit-nexsell-frontend1' // Replace with your ECS service name
+        ECS_TASK_DEFINITION_NAME = 'sit-nexsell-frontend1' // Replace with your ECS task definition name
     }
- 
     stages {
         stage('SonarQube Analysis') {
             steps {
@@ -22,10 +20,14 @@ pipeline {
                     // Set up SonarQube Scanner
                     scannerHome = tool 'sonarqube' // Replace with your SonarQube Scanner tool name
                 }
-                withSonarQubeEnv('APIND_Sonarqube') { // Replace with your SonarQube server name
-                    // Use the SonarQube Scanner
-                    withCredentials([string(credentialsId: "${SONARQUBE_SCANNER_CREDENTIALS_ID}", variable: 'SONAR_TOKEN')]) {
-                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} -Dsonar.sources=. -Dsonar.login=${SONAR_TOKEN}"
+               withSonarQubeEnv('APIND_Sonarqube') { // Replace with your SonarQube server name
+    // Use the SonarQube Scanner with exclusions for specified files
+    withCredentials([string(credentialsId: "${SONARQUBE_SCANNER_CREDENTIALS_ID}", variable: 'SONAR_TOKEN')]) {
+        sh "${scannerHome}/bin/sonar-scanner \
+            -Dsonar.projectKey=${SONARQUBE_PROJECT_KEY} \
+            -Dsonar.sources=. \
+            -Dsonar.exclusions=**/dependency-check-report.html,**/trivyfs.txt,**/trivyimage.txt \
+            -Dsonar.login=${SONAR_TOKEN}"
                     }
                 }
             }
@@ -48,7 +50,6 @@ pipeline {
                 }
             }
         }
- 
         stage('Login to ECR') {
             steps {
                 script {
@@ -61,7 +62,6 @@ pipeline {
                 }
             }
         }
- 
         stage('Push Docker Image') {
             steps {
                 script {
@@ -71,7 +71,6 @@ pipeline {
                 }
             }
         }
- 
         stage('Update ECS Service') {
             steps {
                 script {
@@ -83,13 +82,11 @@ pipeline {
                                 --task-definition ${ECS_TASK_DEFINITION_NAME} \
                                 --query 'taskDefinition.taskDefinitionArn' \
                                 --output text)
- 
                             # Check if the task definition was fetched successfully
                             if [ -z "$LATEST_TASK_DEFINITION" ]; then
                                 echo "Error: Could not fetch the task definition ARN."
                                 exit 1
                             fi
- 
                             # Update ECS Service to use the latest task definition
                             aws ecs update-service \
                                 --region ${AWS_REGION} \
@@ -103,7 +100,6 @@ pipeline {
             }
         }
     }
- 
     post {
         success {
             echo 'Pipeline completed successfully!'

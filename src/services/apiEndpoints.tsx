@@ -89,7 +89,7 @@ LEAD_SOURCE:'/leadSource',
 
   // Dashboard
   TEAM_BREAK_DOWN:'/team-counts',
-  CONVERSION_RATE:'/conversion-rate',
+  CONVERSION_RATE:'/lead-conversion-rate',
   RESOLVED_TICKETS:'/tickets/solved-by-region',
 
   // Region Inside View 

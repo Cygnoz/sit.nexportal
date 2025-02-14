@@ -37,18 +37,18 @@ const SalaryInfoModal: React.FC<Props> = ({ onClose, salaryDetails }) => {
       
         <div>
           <p className="text-[#8F99A9] text-xs font-medium">Salary Amount</p>
-          <p className="font-bold text-xs text-[#303F58]">₹ {salaryDetails.basicSalary}</p>
+          <p className="font-bold text-xs text-[#303F58]">₹ {salaryDetails?.basicSalary ||"0"}</p>
         </div>
         <div>
           <p className="text-[#8F99A9] text-xs font-medium">No of License</p>
-          <p className="font-bold text-xs text-[#303F58]">{salaryDetails.licenserCount}</p>
+          <p className="font-bold text-xs text-[#303F58]">{salaryDetails?.licenserCount ||"0"}</p>
         </div>
         <div>
           <p className="text-[#8F99A9] text-xs font-medium">
             No of Recurring Licenses
           </p>
           <p className="font-bold text-xs text-[#303F58]">
-     {salaryDetails.totalRenewalCount}
+     {salaryDetails?.totalRenewalCount||"0"}
           </p>
         </div>
       </div>
