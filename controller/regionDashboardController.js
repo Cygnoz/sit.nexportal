@@ -4,7 +4,9 @@ const AreaManager = require("../database/model/areaManager");
 const Bda = require("../database/model/bda");
 const Leads = require("../database/model/leads");
 const mongoose = require("mongoose");
+const { ObjectId } = require("mongoose").Types;
 
+ 
 // Controller function to get all areas under a region
 exports.getAreasByRegion = async (req, res) => {
     try {
@@ -227,19 +229,48 @@ exports.getPerformanceByArea = async (req, res) => {
 };
  
 
+
 exports.getLeadSourceGraph = async (req, res) => {
   try {
-    // Use an aggregation pipeline to group by leadSource and count documents
+    const { regionId } = req.params;
+    const { date } = req.query; // Expecting full date like "2025-02-14"
+ 
+    if (!regionId) {
+      return res.status(400).json({ error: "regionId is required as a URL parameter." });
+    }
+ 
+    if (!ObjectId.isValid(regionId)) {
+      return res.status(400).json({ error: "Invalid regionId format." });
+    }
+ 
+    if (!date) {
+      return res.status(400).json({ error: "Date query parameter is required." });
+    }
+ 
+    // Extract only the year and month from the date (YYYY-MM-DD → YYYY-MM)
+    const [year, month] = date.split("-").map(Number);
+    const startDate = new Date(year, month - 1, 1); // First day of the given month
+    const endDate = new Date(year, month, 1); // First day of the next month
+ 
+    const regionObjectId = new ObjectId(regionId);
+ 
+    // Aggregation pipeline to filter by regionId and date range, then group by leadSource
     const graphData = await Leads.aggregate([
       {
+        $match: {
+          regionId: regionObjectId,
+          createdAt: { $gte: startDate, $lt: endDate } // Filter by month
+        }
+      },
+      {
         $group: {
-          _id: "$leadSource",  // Group by the leadSource field
-          count: { $sum: 1 }    // Count the number of leads for each group
+          _id: "$leadSource",
+          count: { $sum: 1 }
         }
       }
     ]);
  
-    // Initialize an object with the expected keys and default 0 counts
+    // Default structure with zero counts
     const result = {
       "Social Media": 0,
       "Website": 0,
@@ -247,9 +278,8 @@ exports.getLeadSourceGraph = async (req, res) => {
       "Events": 0
     };
  
-    // Populate the result object with the counts from the aggregation
+    // Populate result with actual data
     graphData.forEach(item => {
-      // Ensure that only the defined lead sources are updated.
       if (result.hasOwnProperty(item._id)) {
         result[item._id] = item.count;
       }
@@ -257,13 +287,15 @@ exports.getLeadSourceGraph = async (req, res) => {
  
     return res.status(200).json({
       message: "Lead source graph data retrieved successfully",
+      date: `${year}-${month.toString().padStart(2, "0")}`, // Ensuring YYYY-MM format in response
       data: result
     });
   } catch (error) {
     console.error("Error retrieving lead source graph data:", error);
-    return res.status(500).json({ message: "Internal server error" });
+    return res.status(500).json({ message: "Internal server error." });
   }
 };
+ 
 
 
 exports.getConversionRate = async (req, res) => {
