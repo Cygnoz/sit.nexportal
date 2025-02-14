@@ -32,40 +32,41 @@ function createNewTarget(data) {
 exports.addTarget = async (req, res) => {
   try {
       const userId = req.user.id;
-      const { month, target, targetType, region, area } = req.body;
+      const { month, target, targetType, region, area, bda } = req.body; //Added bda
  
       // Fetch user details
       const user = await User.findById(userId);
       if (!user) {
           return res.status(404).json({ error: "User not found" });
       }
-
-   
-      
  
-      let regionData = null;
       let parentTarget = 0;
  
-      // Determine role and fetch corresponding region & parent target
       if (user.role === "Super Admin") {
-          // SuperAdmin can set targets freely
-          parentTarget = target;
-      } else if (user.role === "Region Manager") {
-          // Get the region assigned to this region manager
-          regionData = await RegionManager.findOne({ user: userId }).populate("region");
+          if (targetType === "Region") {
+              parentTarget = target;
+          } else {
+              return res.status(403).json({ error: "SuperAdmin can only set Region targets" });
+          }
+      }
+     
+      else if (user.role === "Region Manager") {
+          const regionData = await RegionManager.findOne({ user: userId }).populate("region");
           if (!regionData || !regionData.region) {
               return res.status(400).json({ error: "Region not assigned to this user." });
           }
-         
-          // Get the existing region target set by SuperAdmin
+ 
           const regionTarget = await Target.findOne({ region: regionData.region._id, targetType: "Region", month });
           if (!regionTarget) {
               return res.status(400).json({ error: "Region target not set by SuperAdmin." });
           }
  
-          parentTarget = regionTarget.target; // SuperAdmin-set region target
+          parentTarget = regionTarget.target;
  
-          // Get total assigned area targets under this region
+          if (targetType !== "Area") {
+              return res.status(403).json({ error: "Region Manager can only set Area targets" });
+          }
+ 
           const assignedAreaTargets = await Target.aggregate([
               { $match: { region: regionData.region._id, targetType: "Area", month } },
               { $group: { _id: null, total: { $sum: "$target" } } }
@@ -75,22 +76,25 @@ exports.addTarget = async (req, res) => {
           if (totalAssigned + target > parentTarget) {
               return res.status(400).json({ error: "Target exceeds allocated region limit." });
           }
-      } else if (user.role === "Area Manager") {
-          // Get the area assigned to this area manager
+      }
+     
+      else if (user.role === "Area Manager") {
           const areaData = await AreaManager.findOne({ user: userId }).populate("area");
           if (!areaData || !areaData.area) {
               return res.status(400).json({ error: "Area not assigned to this user." });
           }
  
-          // Get the existing area target set by Region Manager
           const areaTarget = await Target.findOne({ area: areaData.area._id, targetType: "Area", month });
           if (!areaTarget) {
               return res.status(400).json({ error: "Area target not set by Region Manager." });
           }
  
-          parentTarget = areaTarget.target; // Region Manager-set area target
+          parentTarget = areaTarget.target;
  
-          // Get total assigned BDA targets under this area
+          if (targetType !== "BDA") {
+              return res.status(403).json({ error: "Area Manager can only set BDA targets" });
+          }
+ 
           const assignedBDATargets = await Target.aggregate([
               { $match: { area: areaData.area._id, targetType: "BDA", month } },
               { $group: { _id: null, total: { $sum: "$target" } } }
@@ -100,14 +104,17 @@ exports.addTarget = async (req, res) => {
           if (totalAssigned + target > parentTarget) {
               return res.status(400).json({ error: "Target exceeds allocated area limit." });
           }
-      } else {
+      }
+     
+      else {
           return res.status(403).json({ error: "Unauthorized role" });
       }
  
-      // Create and save the target
+      // ✅ **Include BDA when targetType is BDA**
       const newTarget = new Target({
-          region: region || (regionData ? regionData.region._id : null),
-          area,
+          region: region || null,
+          area: area || null,
+          bda: targetType === "BDA" ? bda : null, // ✅ Fix applied here
           month,
           target,
           targetType
