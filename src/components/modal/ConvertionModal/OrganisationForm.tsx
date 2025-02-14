@@ -87,7 +87,7 @@ const OrganisationForm = ({ onClose, type, orgData }: Props) => {
         onClose?.();
       } else {
         toast.error(
-          error?.response?.data?.message ||
+          error?.response?.data?.error?.message ||
             "An unexpected error occurred."
         );
       }

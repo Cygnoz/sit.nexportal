@@ -1,10 +1,10 @@
 import EmailIcon from "../../assets/icons/EmailIcon";
 import LocationIcon from "../../assets/icons/LocationIcon";
 import PhoneIcon from "../../assets/icons/PhoneIcon";
- import c from '../../assets/image/card-c.png'
+import c from '../../assets/image/card-c.png'
 import cygnoz from '../../assets/image/cygnoz.com.png'
 import profile from '../../assets/image/AvatarImg.png'
- import busniessIcon from '../../assets/image/businesscardLogo.png'
+import busniessIcon from '../../assets/image/businesscardLogo.png'
 import previewBack from '../../assets/image/preview-card-back.png'
 // import polygon from '../../assets/image/polygon.png'
 // import template2 from '../../assets/image/preview-template2.png'
@@ -728,28 +728,26 @@ export const IdCardLayout: React.FC<LayoutProps> = ({ role, staffData }) => {
         </div>
         <div className="px-2 py-4">
             <div className="grid grid-cols-1 gap-2">
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 flex items-center justify-center">
                         <EmailIcon size={11} color="#FFFFFF" />
                     </div>
-                    <p className="text-[#FFFFFF] font-light text-xs text-center">{staffData?.email ? staffData?.email : 'john.doe@example.com'}</p>
+                    <p className="text-[#FFFFFF] font-light text-xs flex-1">{staffData?.email ? staffData?.email : 'john.doe@example.com'}</p>
                 </div>
-                <div className="flex gap-2">
-                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                <div className="flex gap-2 items-center">
+                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1 flex items-center justify-center">
                         <PhoneIcon size={11} color="#FFFFFF" />
                     </div>
-                    <p className="text-[#FFFFFF] font-light text-xs">{staffData?.phoneNo ? staffData?.phoneNo : '+919633564547'}</p>
+                    <p className="text-[#FFFFFF] font-light text-xs flex-1">{staffData?.phoneNo ? staffData?.phoneNo : '+919633564547'}</p>
                 </div>
-                <div className="flex gap-2">
-                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1">
+                <div className="flex gap-2 items-center">
+                    <div className="bg-gradient-to-l from-[#87D2FE] to-[#248DE5] rounded-full w-5 h-5 p-1 flex items-center justify-center">
                         <LocationIcon size={12} color="#FFFFFF" />
                     </div>
-
-                    <p className="text-[#FFFFFF] font-light text-xs leading-tight">
+                    <p className="text-[#FFFFFF] font-light text-xs flex-1 leading-tight">
                         {staffData?.address?.street1 ? staffData?.address?.street1 : 'Mythripuram Road, Near AIR, NGO Quarters,Thrikkakara PO, Kochi, Kerala, India - 682021'}
                     </p>
                 </div>
-
             </div>
         </div>
         <div className="flex justify-center">

@@ -136,13 +136,13 @@ function LicenserForm({ onClose, editId, regionId, areaId }: Props) {
       }
 
       console.log("Response:", response);
-      console.log("Error:", error);
+      console.log("Errors:", error);
 
       if (response && !error) {
         toast.success(response.data.message);
         onClose()
       } else {
-        toast.error(error.response?.data?.message || "An error occurred.");
+        toast.error(error.response?.data?.details?.message || "An error occurred.");
       }
     } catch (err) {
       console.error("Error submitting license data:", err);

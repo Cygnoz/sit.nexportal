@@ -270,7 +270,9 @@ const AMView = ({ staffId }: Props) => {
       setLoading(true)
       const { response, error } = await getInsideAM(`${endPoints.AM}/${iId}/details`);
       if (response && !error) {
-        sessionStorage.setItem("staffLocalityId",response?.data?.areaManagerDetails?.areaId)        
+        if(staffId){
+          sessionStorage.setItem("staffLocalityId",response?.data?.areaManagerDetails?.areaId)  
+        }      
         setInsideAmData(response.data);
         // Extract bdaDetails and licenserDetails separately
         setBdaDetails(response.data.bdaDetails || []);

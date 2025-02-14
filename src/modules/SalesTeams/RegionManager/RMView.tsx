@@ -97,7 +97,9 @@ const RMView = ({ staffId }: Props) => {
       const { response, error } = await getaRM(`${endPoints.GET_ALL_RM}/${iId}`);
       console.log("dssd",response?.data);
       if (response && !error) {
-        sessionStorage.setItem("staffLocalityId",response?.data?.regionManager?.region?._id)
+        if(staffId){
+          sessionStorage.setItem("staffLocalityId",response?.data?.regionManager?.region?._id)
+        }
         setGetData((prevData) => ({
           ...prevData,
 
