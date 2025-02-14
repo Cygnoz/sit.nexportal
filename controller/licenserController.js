@@ -11,7 +11,7 @@ const filterByRole = require("../services/filterByRole");
 const axios = require('axios');
 const AreaManager = require("../database/model/areaManager");
 const RegionManager = require("../database/model/regionManager");
-
+const jwt = require("jsonwebtoken");
 
 const Ticket = require("../database/model/ticket");
 const SupportAgent = require("../database/model/supportAgent");
@@ -59,14 +59,7 @@ exports.addLicenser = async (req, res, next) => {
     if (!validateRegionAndArea(regionExists, areaExists, bdaExists, res)) return;
     if (!validateInputs(cleanedData, regionExists, areaExists, bdaExists, res)) return;
 
-    // Configure the request with timeout
-    const axiosConfig = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      timeout: 5000, // 5 seconds timeout
-    };
-
+    
     // Body for the POST request
     const requestBody = {
       organizationName: cleanedData.companyName,
@@ -76,11 +69,25 @@ exports.addLicenser = async (req, res, next) => {
       password: cleanedData.password,
     };
 
+    
+    // Generate JWT token
+        const token = jwt.sign(
+          {
+            organizationId: process.env.ORGANIZATION_ID,
+          },
+          process.env.NEX_JWT_SECRET,
+          { expiresIn: "12h" }
+        );
     // Send POST request to external API
     const response = await axios.post(
       'https://billbizzapi.azure-api.net/organization/create-client',
-      requestBody,
-      axiosConfig
+      requestBody, // <-- requestBody should be passed as the second argument (data)
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
     );
 
     const [regionManager, areaManager] = await Promise.all([
