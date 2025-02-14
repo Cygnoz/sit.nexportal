@@ -35,22 +35,22 @@ import CommissionRoundIcon from "../../../assets/icons/CommissionRoundIcon";
 import SalaryRoundIcon from "../../../assets/icons/SalaryRoundIcon";
 import CommissionModal from "../../../components/modal/CommissionModal";
 import SalaryInfoModal from "../../../components/modal/SalaryInfoModal";
-
-
-
+ 
+ 
+ 
 interface SupervisorData {
   memberID: string;
   supervisorName: string;
   ticketsResolved: string;
   time: string | number;
-
+ 
   rating: string;
 }
-
+ 
 type Props = {
   staffId?: string
 };
-
+ 
 const SuperVisorView = ({ staffId }: Props) => {
   const { request: SalaryInfo } = useApi("get", 3002);
   const[salaryDetails,setSalaryDetails]=useState<any>('')
@@ -91,14 +91,14 @@ const SuperVisorView = ({ staffId }: Props) => {
     }));
     getASV();
   };
-
+ 
  
   const { request: getInsideSv } = useApi('get', 3003);
   const [insideSvData, setInsideSvData] = useState<any>();
   const [supportAgentDetails, setSupportAgentDetails] = useState([]);
   const [ticketSummary, setTicketSummary] = useState<any>({});
-
-
+ 
+ 
   const { request: deleteaSV } = useApi('delete', 3003)
   const { request: deactivateSV } = useApi('put', 3003);
   const { request: getaSV } = useApi("get", 3003);
@@ -107,7 +107,7 @@ const SuperVisorView = ({ staffId }: Props) => {
   const [getData, setGetData] = useState<{
     svData: any;
   }>({ svData: [] });
-
+ 
   const getASV = async () => {
     try {
       setLoading(true)
@@ -132,7 +132,7 @@ const SuperVisorView = ({ staffId }: Props) => {
     getASV();
     getInsideViewSV();
   }, [iId]);
-
+ 
   const handleDelete = async () => {
     try {
       const { response, error } = await deleteaSV(`${endPoints.SUPER_VISOR}/${iId}`);
@@ -147,38 +147,38 @@ const SuperVisorView = ({ staffId }: Props) => {
       toast.error("Failed to delete the SuperVisor.");
     }
   };
-
-  
+ 
+ 
   const getSalary = async () => {
     try {
       const { response, error } = await SalaryInfo(`${endPoints.SALARY_INFO}/${iId}`);
       console.log(response);
       // console.log(error);
-      
+     
      // console.log(error);
       if (response && !error) {
        console.log("Ss",response.data);
        setSalaryDetails(response.data)
-      
+     
        
        
        // setChartData(response.data);
       } else {
         console.error("Error:", error?.data || "Unknown error");
-        
+       
       }
     } catch (err) {
       console.error(err);
     }
   };
-  
+ 
   useEffect(() => {
   getSalary()
   }, [iId]);
-
-
+ 
+ 
   const navigate = useNavigate()
-
+ 
   const handleDeactivate = async () => {
     const body = {
       status: getData.svData?.status === "Active" ? 'Deactive' : 'Active'
@@ -187,8 +187,8 @@ const SuperVisorView = ({ staffId }: Props) => {
       const { response, error } = await deactivateSV(`${endPoints.DEACTIVATE_SV}/${iId}`, body);
       console.log(response);
       console.log(error, "error message");
-
-
+ 
+ 
       if (response) {
         toast.success(response.data.message);
         navigate("/supervisor");
@@ -201,16 +201,16 @@ const SuperVisorView = ({ staffId }: Props) => {
       toast.error("Failed to Deactivate the supervisor.");
     }
   };
-
-
+ 
+ 
   const getInsideViewSV = async () => {
     try {
       const { response, error } = await getInsideSv(`${endPoints.SUPER_VISOR}/${iId}/details`);
-
+ 
       if (response && !error) {
         console.log(response.data);
         setInsideSvData(response.data);
-
+ 
         if (response.data) {
           setSupportAgentDetails(response.data.supportAgentDetails || []);
           setTicketSummary(response.data.ticketSummary || {});
@@ -222,9 +222,9 @@ const SuperVisorView = ({ staffId }: Props) => {
       console.error("Error fetching SV data:", err);
     }
   };
-
-
-
+ 
+ 
+ 
   // Data for HomeCards
   const SuperVisorCardData = [
     {
@@ -242,22 +242,22 @@ const SuperVisorView = ({ staffId }: Props) => {
     {
       icon: <UserIcon size={24} />,
       number: insideSvData?.supervisorDetails?.overallResolutionRate || 0,
-
+ 
       title: " Tasks completed by the team",
       subTitle: "Mission accomplished",
     },
-
+ 
   ];
-
-
-
+ 
+ 
+ 
   // Define the columns with strict keys
   const columns: { key: any; label: string }[] = [
     { key: "employeeId", label: "Member ID" },
     { key: "supportAgentName", label: " Name" },
     { key: "resolvedTicketsCount", label: "Tickets Resolved" },
     // { key: "time", label: "Avg.Resolution Time" },
-
+ 
   ];
   const SVData = supportAgentDetails.map((support: any) => ({
     ...support,
@@ -265,8 +265,8 @@ const SuperVisorView = ({ staffId }: Props) => {
     supportAgentName: support.supportAgentName, // or any unique identifier
     resolvedTicketsCount: support.resolvedTicketsCount || 0, // Adjust according to your data structure
   }));
-
-
+ 
+ 
   return (
     <>
       <div ref={topRef}>
@@ -287,9 +287,9 @@ const SuperVisorView = ({ staffId }: Props) => {
                 Assigned Team Overview
               </h1>
             </div>
-
+ 
             {/* HomeCards Section */}
-
+ 
             <div className="flex gap-3 py-2 justify-between mt-4">
               {SuperVisorCardData.map((card, index) => (
                 <SuperVisorCards
@@ -298,11 +298,11 @@ const SuperVisorView = ({ staffId }: Props) => {
                   title={card.title}
                   subTitle={card.subTitle}
                   images={card.images}
-
+ 
                 />
               ))}
             </div>
-
+ 
             {/* Table Section */}
             <div>
               <Table<SupervisorData>
@@ -342,7 +342,7 @@ const SuperVisorView = ({ staffId }: Props) => {
               />
             </div>
           </div>
-
+ 
           <div
             className="col-span-4 bg-slate-200  p-2 mx-2 h-fit  mt-[72px] rounded-lg bg-cover bg-center"
             style={{
@@ -367,14 +367,14 @@ const SuperVisorView = ({ staffId }: Props) => {
                     ? getData.svData?.user?.userName
                     : "N/A"}
                 </h2>
-
+ 
               </div>
               <p className="font-medium text-xs bg-[#D5DCB3] h-8 w-20 p-2 mt-4 rounded-2xl ml-40">
                 Supervisor
               </p>
             </div>
             <hr />
-
+ 
             <div className="p-3">
               <div className="flex py-3  text-white ">
                 <EmailIcon color="#FFFFFF" size={20} />
@@ -388,7 +388,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                   ? getData.svData?.user?.email
                   : "N/A"}
               </p>
-
+ 
               <hr />
               <div className="flex py-3">
                 <PhoneIcon size={20} />
@@ -441,7 +441,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                   : "N/A"}
               </p>
               <hr />
-
+ 
               {/* <div className="flex py-2 mt-24 space-x-6">
                 <div className="flex flex-col items-center ">
                   <div
@@ -458,7 +458,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                     Edit Profile
                   </p>
                 </div>
-
+ 
                 <div className="flex flex-col  items-center ">
                   <div
                     onClick={() => handleModalToggle(false, true, false, false, false)}
@@ -474,7 +474,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                     View Details
                   </p>
                 </div>
-
+ 
                 <div className="flex flex-col   items-center ">
                   <div
                     onClick={() => handleModalToggle(false, false, true,false,false)}
@@ -490,7 +490,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                     Awards
                   </p>
                 </div>
-
+ 
                 <div onClick={() => handleModalToggle(false, false, false, false, true)} className="flex flex-col  items-center ">
                 <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
               {getData.svData?.status === "Active" ?
@@ -505,15 +505,15 @@ const SuperVisorView = ({ staffId }: Props) => {
                     <UserRoundCheckIcon size={20} color="#D52B1E4D" />
                 </div>
               </div>
-
+ 
                   }
-
+ 
               </div>
               <p className="text-center font-medium text-[#D4D4D4] text-xs ms-2">
                 {getData.svData?.status === "Active" ? "Deactivate" : "Activate"}
               </p>
                 </div>
-
+ 
                 <div className="flex flex-col  items-center">
                 <div onClick={() => handleModalToggle(false, false, false, true,false)} className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                   <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -536,7 +536,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                   </div>
                   <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium" >Edit Profile</p>
                 </div>
-
+ 
                 <div onClick={() => handleModalToggle(false, true, false, false, false, false, false)} className="flex flex-col cursor-pointer  items-center space-y-1">
                   <div className="w-8 h-8 mb-2 rounded-full">
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -547,7 +547,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                   </div>
                   <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">View Details</p>
                 </div>
-
+ 
                 <div onClick={() => handleModalToggle(false, false, true, false, false, false, false)} className="flex flex-col cursor-pointer items-center space-y-1">
                   <div className="w-8 h-8 mb-2 rounded-full">
                     <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -558,7 +558,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                   </div>
                   <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Awards</p>
                 </div>
-
+ 
                 <div onClick={() => handleModalToggle(false, false, false, false, true, false, false)} className="flex flex-col  items-center space-y-1">
                   <div className="w-8 h-8 mb-2 rounded-full cursor-pointer">
                     {getData.svData?.status === "Active" ?
@@ -573,7 +573,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                           <UserRoundCheckIcon size={20} color="#D52B1E4D" />
                         </div>
                       </div>
-
+ 
                     }
                   </div>
                   <p className="text-center text-[#D4D4D4] text-xs font-medium ms-2">
@@ -592,7 +592,7 @@ const SuperVisorView = ({ staffId }: Props) => {
                     </div>
                     <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Delete</p>
                   </div>
-
+ 
                   <div onClick={() => handleModalToggle(false, false, false, false, false, true, false)} className="flex flex-col cursor-pointer  items-center space-y-1">
                     <div className="w-8 h-8 mb-2 rounded-full">
                       <div className="rounded-full bg-[#C4A25D4D] h-9 w-9 border border-white">
@@ -614,11 +614,11 @@ const SuperVisorView = ({ staffId }: Props) => {
                     <p className="text-center ms-3 text-[#D4D4D4] text-xs font-medium">Commission</p>
                   </div>
                 </div>
-
+ 
             </div>
           </div>
         </div>
-
+ 
         {/* <SuperVisorTicketsOverview ticketSummary={ticketSummary} /> */}
         <SuperVisorTicketsOverview
           loading={loading}
@@ -626,7 +626,7 @@ const SuperVisorView = ({ staffId }: Props) => {
           supportAgentDetails={supportAgentDetails}
           insideSvData={insideSvData} />
       </div>
-
+ 
       {/* Modal controlled by state */}
       <Modal open={isModalOpen.viewSV} onClose={() => handleModalToggle()}>
         <SuperVisorViewForm id={iId} onClose={() => handleModalToggle()} />
@@ -673,14 +673,14 @@ const SuperVisorView = ({ staffId }: Props) => {
       <Modal open={isModalOpen.salarySv} onClose={()=>handleModalToggle()} >
     <SalaryInfoModal salaryDetails={salaryDetails} onClose={()=>handleModalToggle()} />
   </Modal>
-
+ 
   <Modal open={isModalOpen.commissionSv} onClose={()=>handleModalToggle()} className="w-[45%]">
     <CommissionModal  onClose={()=>handleModalToggle()} />
   </Modal>
-
-
+ 
+ 
     </>
   );
 };
-
+ 
 export default SuperVisorView;
