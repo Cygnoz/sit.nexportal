@@ -134,8 +134,10 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
       getBreakDownRegion();
     }
   }, [leadData]);
-  console.log(breakDownData);
   
+
+  console.log(breakDownData);
+
 
   return (
     <>
@@ -151,9 +153,9 @@ const ViewSidebar = ({ leadData, getLead }: Props) => {
           >
             <div
               className={`w-2 h-2 -mt-[2px] ${leadData?.leadStatus == "In progress" ||
-                  leadData?.leadStatus == "Proposal"
-                  ? "bg-black"
-                  : "bg-white"
+                leadData?.leadStatus == "Proposal"
+                ? "bg-black"
+                : "bg-white"
                 } rounded-full`}
             ></div>
             <p className="text-sm">{leadData?.leadStatus}</p>

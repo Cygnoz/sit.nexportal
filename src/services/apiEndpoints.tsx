@@ -9,12 +9,13 @@ export const endPoints = {
 
   // Activity Logs
   GET_ACTIVITY_LOGS: "/get-activity-logs",
-
-  // Region
-  REGION: "/region",
-  GET_REGIONS: "/regions",
-  AREA_PERFORMANCE:"/areaPerformance",
-  CONVERTION_RATE:'/conversion-rate',
+  
+// Region
+REGION: "/region",
+GET_REGIONS: "/regions",
+AREA_PERFORMANCE:"/areaPerformance",
+TRIAL_CONVERTION_RATE:'/trial-conversion-rate',
+LEAD_SOURCE:'/leadSource',
 
   // Area
   AREA: "/area",

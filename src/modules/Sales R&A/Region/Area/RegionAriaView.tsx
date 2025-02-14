@@ -6,21 +6,35 @@ import LicenserCardIcon from "../../../../assets/icons/LicenserCardIcon";
 import UserIcon from "../../../../assets/icons/UserIcon";
 import HomeCard from "../../../../components/ui/HomeCards";
 import Table from "../../../../components/ui/Table";
-import { regionAreaData, RegionView,regionLicenserData } from "../../../../Interfaces/RegionView";
+import { regionAreaData, RegionView, regionLicenserData } from "../../../../Interfaces/RegionView";
 import RRecentActivityView from "./RecentActivityView";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import useApi from "../../../../Hooks/useApi";
+import { endPoints } from "../../../../services/apiEndpoints";
+import { useEffect, useState } from "react";
+import { months, years } from "../../../../components/list/MonthYearList";
 
 
 
 type Props = {
   regionData?: any;
   regionAreaData?: RegionView;
-  loading?:boolean
+  loading?: boolean
 };
 
-const RegionAriaView = ({  regionAreaData,loading }: Props) => {
+const RegionAriaView = ({ regionAreaData, loading }: Props) => {
 
-  const navigate = useNavigate();
+  const currentMonthValue = new Date().toLocaleString("default", { month: "2-digit" });
+  const currentMonth: any = months.find((m) => m.value === currentMonthValue) || months[0];
+  const currentYearValue = String(new Date().getFullYear()); // Ensure it's a string
+  const currentYear: any = years.find((y) => y.value === currentYearValue) || years[0];
+  
+  const navigate = useNavigate()
+  const { request: getLeadSource } = useApi("get", 3003);
+  const [leadSourceData, setLeadSourceData] = useState<Record<string, number> | null>(null);
+  const [pieData, setPieData] = useState<{ x: string; y: number; color: string }[]>([]);
+  const [roles, setRoles] = useState<{ name: string; count: number; color: string }[]>([]);
+
 
   const areaHandleView = (id: any) => {
     navigate(`/areas/${id}`);
@@ -72,7 +86,7 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
     },
   ];
 
-  
+
   const columns1: { key: any; label: string }[] = [
     { key: "customerId", label: "Licenser ID" },
     { key: "firstName", label: "Licenser Name" },
@@ -120,18 +134,52 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
     </text>
   );
 
-  const roles = [
-    { name: "Social Media", count: 50, color: "#1B6C75" }, // Updated color
-    { name: "WebSite", count: 30, color: "#30B777" }, // Updated color
-    { name: "Refferal", count: 80, color: "#6ABAF3" }, // Updated color
-    { name: "Events", count: 78, color: "#7CD5AB" }, // Updated color
-  ];
+  
+  const { id } = useParams()
+  const getLeadSourceGraph = async () => {
+    try {
+      const { response, error } = await getLeadSource(
+        `${endPoints.LEAD_SOURCE}/${id}?date=${currentYear.value}-${currentMonth.value}`
+      );
+      console.log("id", id);
 
-  const pieData = roles.map((role) => ({
-    x: role.name,
-    y: role.count,
-    color: role.color,
-  }));
+      console.log("res", response);
+      console.log("err", error);
+
+      if (response && !error && response.data?.data) {
+        const leadData: Record<string, number> = response.data.data; // Explicitly type the response
+
+        setLeadSourceData(leadData);
+
+        // Convert API data into pie chart format
+        const formattedPieData = Object.keys(leadData).map((key, index) => ({
+          x: key,
+          y: leadData[key],
+          color: ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0"][index % 4], // Assign colors dynamically
+        }));
+
+        setPieData(formattedPieData);
+
+        // Convert API data into roles array
+        const formattedRoles = Object.keys(leadData).map((key, index) => ({
+          name: key,
+          count: leadData[key],
+          color: ["#ff6384", "#36a2eb", "#ffce56", "#4bc0c0"][index % 4],
+        }));
+
+        setRoles(formattedRoles);
+      } else {
+        console.log(error?.response?.data?.message || "Error fetching data");
+      }
+    } catch (err) {
+      console.error("Error message", err);
+    }
+  };
+
+  useEffect(() => {
+    getLeadSourceGraph();
+  }, []);
+
 
   return (
     <div>
@@ -179,44 +227,44 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
 
       <div className="grid grid-cols-12 gap-2 mt-5">
         <div className="col-span-8">
-        <div className="bg-white rounded-lg w-full">
+          <div className="bg-white rounded-lg w-full">
             <div className="p-4 space-y-2">
               <h1 className="text-lg font-bold">Revenue By Area</h1>
               <h2 className="text-md">Area 0234</h2>
               <h2 className="text-md font-medium text-2xl">₹ 76,789,87</h2>
             </div>
             <div className="ms-1">
-               <ResponsiveContainer width="100%" minHeight={400}>
-          <BarChart
-                          width={670}
-                          height={400}
-                          data={AreaRevData}
-                          margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                          layout="vertical"
-                        >
-                          <YAxis
-                            type="category"
-                            dataKey="name"
-                            tick={<CustomizedAxisTick />}
-                            tickLine={false}
-                            axisLine={{ stroke: '#000' }} // Y axis line
-                          />
-                          <XAxis
-                            type="number"
-                            tick={{ fontSize: 10 }}
-                            axisLine={{ stroke: 'transparent' }} // Remove X axis line
-                            tickLine={false} // Remove ticks on the X axis
-                          />
-                          <Tooltip />
-                          <Bar dataKey="pv" radius={[5, 5, 5, 5]} barSize={20} label={<CustomLabel />}>
-                            {AreaRevData.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry?.color} />
-                            ))}
-                          </Bar>
-                        </BarChart>
-                        </ResponsiveContainer>
-                        </div>
-                        </div>
+              <ResponsiveContainer width="100%" minHeight={400}>
+                <BarChart
+                  width={670}
+                  height={400}
+                  data={AreaRevData}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                  layout="vertical"
+                >
+                  <YAxis
+                    type="category"
+                    dataKey="name"
+                    tick={<CustomizedAxisTick />}
+                    tickLine={false}
+                    axisLine={{ stroke: '#000' }} // Y axis line
+                  />
+                  <XAxis
+                    type="number"
+                    tick={{ fontSize: 10 }}
+                    axisLine={{ stroke: 'transparent' }} // Remove X axis line
+                    tickLine={false} // Remove ticks on the X axis
+                  />
+                  <Tooltip />
+                  <Bar dataKey="pv" radius={[5, 5, 5, 5]} barSize={20} label={<CustomLabel />}>
+                    {AreaRevData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry?.color} />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
         </div>
 
         <div className="col-span-4 mb-4">
@@ -224,9 +272,13 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
             <h1 className="text-[#303F58] text-lg font-bold p-3">
               Leads Generated by Area by Source
             </h1>
-            <div className="-mt-3 relative ">
+            <div className="-mt-3 relative">
               <div className="absolute top-[27%] left-[39%] z-50 text-center">
-                <p className="text-2xl font-bold">3456</p>
+                <p className="text-2xl font-bold">
+                  {leadSourceData
+                    ? Object.values(leadSourceData).reduce((acc, val) => acc + val, 0)
+                    : 0}
+                </p>
                 <p className="text-md">Total Leads</p>
               </div>
 
@@ -241,11 +293,13 @@ const RegionAriaView = ({  regionAreaData,loading }: Props) => {
                   }}
                   theme={VictoryTheme.clean}
                   labels={({ datum }) =>
-                    `${(
-                      (datum.y /
-                        roles.reduce((acc, role) => acc + role.count, 0)) *
-                      100
-                    ).toFixed(1)}%`
+                    leadSourceData
+                      ? `${(
+                        (datum.y /
+                          Object.values(leadSourceData).reduce((acc, val) => acc + val, 0)) *
+                        100
+                      ).toFixed(1)}%`
+                      : "0%"
                   }
                   labelComponent={
                     <VictoryLabel
