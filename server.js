@@ -53,13 +53,14 @@ const httpServer = http.createServer(server);
 // });
 
 const io = new Server(httpServer, {
+    path: "/nexsell-tickets/socket.io/", // Ensure this matches frontend
     cors: {
-        origin: "*", // Change this to your frontend's URL in production
+        origin: "*", // Update this with your frontend URL in production
         methods: ["GET", "POST"],
         allowedHeaders: ["Content-Type", "Authorization"],
     },
-    transports: ["websocket", "polling"], // Force WebSocket first
-});
+    transports: ["websocket", "polling"], // Ensure WebSocket first
+ });
  
 // Pass io and socket to the Socket service to handle events
 io.on('connection', (socket) => {
