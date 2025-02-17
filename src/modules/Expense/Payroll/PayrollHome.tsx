@@ -21,7 +21,7 @@ interface TargetData {
 type Props = {};
 
 const PayrollHome = ({ }: Props) => {
-  const tabs = ["All Employees", "RM", "AM", "BDA"] as const;
+  const tabs = ["All Employees", "RM", "AM", "BDA","SV","SA"] as const;
   const navigate = useNavigate();
   const {loading,setLoading}=useResponse()
   type TabType = (typeof tabs)[number];
@@ -42,10 +42,12 @@ useEffect(() => {
         : true // Otherwise, show all months
     )
   );
-
+  setActiveTab("All Employees")
   setPayrollGenerated(false);
   getPayrollDatas();
 }, [selectedMonth, selectedYear]);
+
+
 
     const {request:getPayroll}=useApi('get',3002)
     const {request:generatePayroll}=useApi('post',3002)
@@ -54,15 +56,18 @@ useEffect(() => {
 // Filter to get months from January to the current month
 
     const [payrollData, setPayrollData] = useState<any>([]);
+    const [filteredPayroll,setfilteredPayroll]=useState<any>([])
  const [searchValue, setSearchValue] = useState<string>("");
  const [payrollGenerated,setPayrollGenerated]=useState(false)
-   const filteredData: any = useMemo(() => {
-      return payrollData?.filter((row:any) =>
-        Object.values(row).some((value) =>
-          String(value).toLowerCase().includes(searchValue.toLowerCase())
-        )
-      );
-    }, [payrollData, searchValue]);
+ const filteredData: any = useMemo(() => {
+  return filteredPayroll?.filter((row: any) =>
+    Object.values(row).some((value) =>
+      String(value).toLowerCase().includes(searchValue.toLowerCase())
+    )
+  );
+}, [filteredPayroll, searchValue]);
+
+
 
 
   const handleView = (id: any, status: any) => {
@@ -97,25 +102,13 @@ useEffect(() => {
     { key: "basicSalary", label: "Basic Salary" },
     { key: "totalSalary", label: "Total Salary" },
   ];
-  const RMcolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "staffName", label: "Name" },
-    { key: "status", label: " Status" },
-    { key: "basicSalary", label: "Basic Salary" },
-    { key: "totalSalary", label: "Total Salary" },
-  ];
-  const AMcolumns: { key: keyof TargetData; label: string }[] = [
+  const StaffColumns: { key: keyof TargetData; label: string }[] = [
     { key: "staffName", label: "Name" },
     { key: "status", label: " Status" },
     { key: "basicSalary", label: "Basic Salary" },
     { key: "totalSalary", label: "Total Salary" },
   ];
 
-  const BDAcolumns: { key: keyof TargetData; label: string }[] = [
-    { key: "staffName", label: "Name" },
-    { key: "status", label: " Status" },
-    { key: "basicSalary", label: "Basic Salary" },
-    { key: "totalSalary", label: "Total Salary" },
-  ];
 
   
 
@@ -175,7 +168,7 @@ useEffect(() => {
         basicSalary: res?.basicSalary,
         totalSalary: res?.totalSalary,
       }));
-      
+      setfilteredPayroll(filteredPayroll)
       setPayrollData(filteredPayroll);
     }else{
       toast.error(error.response.data.message)
@@ -213,6 +206,30 @@ useEffect(() => {
   getPayrollDatas()
  },[])
 
+ const handleActiveTab = (tab: any) => {
+  setSearchValue('')
+  setActiveTab(tab);
+  if (tab === "All Employees") {
+    setfilteredPayroll(payrollData);
+  } else {
+    const roleMap: { [key: string]: string } = {
+      RM: "Region Manager",
+      AM: "Area Manager",
+      BDA: "BDA",
+      SV:'Supervisor',
+      SA:'Support Agent'
+    };
+
+    if (roleMap[tab]) {
+      setfilteredPayroll(
+        payrollData?.filter((payroll: any) => payroll?.role === roleMap[tab])
+      );
+    }
+  }
+};
+
+
+
   return (
     <>
       <div>
@@ -228,7 +245,7 @@ useEffect(() => {
           {tabs.map((tab) => (
             <div
               key={tab}
-              onClick={() => setActiveTab(tab)}
+              onClick={() => handleActiveTab(tab)}
               className={`cursor-pointer py-2 px-[16px] ${activeTab === tab
                   ? "text-[#303F58] text-sm font-bold border-b-2 shadow-lg rounded-md border-[#97998E]"
                   : "text-gray-400"
@@ -248,10 +265,7 @@ useEffect(() => {
             data={filteredData}
             columns={
               activeTab === "All Employees" ? Allcolumns :
-                activeTab === "RM" ? RMcolumns :
-                  activeTab === "AM" ? AMcolumns :
-                    activeTab === "BDA" ? BDAcolumns :
-                      []
+                StaffColumns
             }
             actionList={[
               { label: "view", function: handleView },
