@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+@media print {
+  .flex, .grid {
+      display: block !important; /* Override flex/grid for print */
+  }
+  img {
+      max-width: 100% !important; /* Ensure images don't overflow */
+  }
+  p, div {
+      margin: 0 !important; /* Remove unnecessary margins */
+      padding: 0 !important;
+  }
+}
+
 * {
     margin: 0;
     padding: 0;

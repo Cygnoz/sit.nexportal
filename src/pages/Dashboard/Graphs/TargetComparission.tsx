@@ -30,11 +30,10 @@ const TargetComparison: FC<Props> = () => {
 
   const [selectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
-  const [selectedData, setSelectedData] = useState<string>("");
+  const [selectedData, setSelectedData] = useState<string>(`${currentYear.value}-${currentMonth.value}`);
 
   useEffect(() => {
-    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
-    setSelectedData(`${selectedYear.value}-${monthIndex}`);
+    setSelectedData(`${selectedYear.value}-${selectedMonth.value}`);
   }, [selectedMonth, selectedYear]);
 
   const getPerformers = async () => {
@@ -66,7 +65,7 @@ const TargetComparison: FC<Props> = () => {
   }, [selectedData]);
 
   return (
-    <div className="bg-white rounded-lg w-full">
+    <div className="bg-white p-3 rounded-lg w-full">
       <div className="p-2 space-y-2 flex justify-between">
         <h1 className="text-lg font-bold">Target Comparison Chart</h1>
         <SelectDropdown

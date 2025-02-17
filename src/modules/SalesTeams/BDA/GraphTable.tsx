@@ -46,7 +46,7 @@ const GraphTable = ({ bdaData,loading }: Props) => {
   const [selectedMonth, setSelectedMonth] = useState<any>(currentMonth);
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
   const [newMonthList, setNewMonthList] = useState<any>([]);
-  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-1-1`);
+  const [selectedData, setSelectedDate] = useState<string>(`${selectedYear.value}-${currentMonth}-1`);
 
   useEffect(() => {
     setNewMonthList(

@@ -9,12 +9,13 @@ export const endPoints = {
 
   // Activity Logs
   GET_ACTIVITY_LOGS: "/get-activity-logs",
-
-  // Region
-  REGION: "/region",
-  GET_REGIONS: "/regions",
-  AREA_PERFORMANCE:"/areaPerformance",
-  CONVERTION_RATE:'/conversion-rate',
+  
+// Region
+REGION: "/region",
+GET_REGIONS: "/regions",
+AREA_PERFORMANCE:"/areaPerformance",
+TRIAL_CONVERTION_RATE:'/trial-conversion-rate',
+LEAD_SOURCE:'/leadSource',
 
   // Area
   AREA: "/area",
@@ -88,7 +89,7 @@ export const endPoints = {
 
   // Dashboard
   TEAM_BREAK_DOWN:'/team-counts',
-  CONVERSION_RATE:'/conversion-rate',
+  CONVERSION_RATE:'/lead-conversion-rate',
   RESOLVED_TICKETS:'/tickets/solved-by-region',
 
   // Region Inside View 
@@ -128,12 +129,15 @@ export const endPoints = {
 EXPENSE_CATEGORY:'/category',
 EXPENSE:'/expense',
 
-//Target
+ //Target
  TARGET_ACHEIVED:'/targetAchieved',
  YEARLY_TARGETS:'/yearlyTargets',
 
-//  Payroll
+ //  Payroll
   PAYROLL: "/payroll",
-  SALARY_INFO:'salaryInfo'
-
+  SALARY_INFO:'salaryInfo',
+  PAY_PAYROLL:'/pay-payrol',
+  // Expense 
+  EXPENSE_ALL_ACCOUNTS:'/get-all-accounts',
+  PAY_EXPENSE:'/pay-expense'
 };

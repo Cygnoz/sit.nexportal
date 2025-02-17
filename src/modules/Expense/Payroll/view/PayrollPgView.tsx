@@ -100,7 +100,7 @@ const PayrollPgView = ({ }: Props) => {
 
    
         <div
-          className="flex justify-between items-center gap-3 px-3 rounded-xl w-full bg-no-repeat"
+          className="flex justify-between items-center gap-3 px-3 bg-cover rounded-xl w-full bg-no-repeat"
           style={{
 
             backgroundImage: `url(${bg})`, // Use the imported image
@@ -164,7 +164,7 @@ const PayrollPgView = ({ }: Props) => {
                     <Timer color="#768294" />
                     Present days
                   </p>
-                  <p className="text-sm font-medium text-[#303F58]">
+                  <p className="text-sm font-bold text-[#303F58]">
                     232
                   </p>
                 </div>
@@ -174,7 +174,7 @@ const PayrollPgView = ({ }: Props) => {
                     <Timer color="#768294" />
                     Leave Days
                   </p>
-                  <p className="text-sm font-medium text-[#303F58]">
+                  <p className="text-sm font-bold text-[#303F58]">
                     55
                   </p>
                 </div>

@@ -108,29 +108,33 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
     const idRef = React.useRef(null)
 
     const handleDownload = async () => {
-        const content = idRef.current
-        if (!content) {
-            return
-        }
-        const canvas = await html2canvas(content, { scale: 3 })
-        const data = canvas.toDataURL('image/png')
-
+        const content = idRef.current;
+        if (!content) return;
+    
+        // Reduce scale for smaller size but clear image
+        const canvas = await html2canvas(content, { scale: 10 });
+        
+        // Use JPEG format with compression to reduce size
+        const data = canvas.toDataURL("image/jpeg", 0.8);
+    
         const pdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'px',
-            format: 'a4'
-        })
-        // const imgProperties = pdf.getImageProperties(data)
-        // const pdfWidth = pdf.internal.pageSize.getWidth();
-        // const pdfHeight = (imgProperties.height * pdfWidth) / imgProperties.width
-        const pdfWidth = 300
-        const pdfHeight=350
+            orientation: "portrait",
+            unit: "px",
+            format: [210, 297] // A4 size in pixels
+        });
+    
+        // Auto-scale image based on page width
         const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgProps = pdf.getImageProperties(data);
+        const pdfWidth = pageWidth - 40; // Leave some margin
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
         const xPos = (pageWidth - pdfWidth) / 2; // Center horizontally
         const yPos = 20; // Position it near the top
-        pdf.addImage(data, "PNG", xPos, yPos, pdfWidth, pdfHeight);
-        pdf.save("ID_Card.pdf");
-    }
+    
+        pdf.addImage(data, "JPEG", xPos, yPos, pdfWidth, pdfHeight);
+        pdf.save("ID_CARD.pdf");
+    };
 
     // const handleDownload = () => {
     //     setTimeout(async () => {
@@ -206,29 +210,32 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
     const printRef = React.useRef(null)
 
     const businessCardDownload = async () => {
-        const element = printRef.current;
-        if (!element) {
-            return;
-        }
-        
-        const bCardCanvas = await html2canvas(element, { scale: 3 });
-        const bCardData = bCardCanvas.toDataURL('image/png');
+        const content = printRef.current;
+        if (!content) return;
     
-        const bCardPdf = new jsPDF({
-            orientation: 'portrait',
-            unit: 'px',
-            format: 'a4'
+        // Reduce scale for smaller size but clear image
+        const canvas = await html2canvas(content, { scale: 10 });
+        
+        // Use JPEG format with compression to reduce size
+        const data = canvas.toDataURL("image/jpeg", 0.8);
+    
+        const pdf = new jsPDF({
+            orientation: "portrait",
+            unit: "px",
+            format: "a4"
         });
     
-        const pageWidth = bCardPdf.internal.pageSize.getWidth();
-        const bcardWidth = 300;
-        const bcardHeight = 350;
-    
-        const xPos = (pageWidth - bcardWidth) / 2; // Center horizontally
+        // Auto-scale image based on page width
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const imgProps = pdf.getImageProperties(data);
+        const pdfWidth = pageWidth - 40; // Leave some margin
+        const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+        
+        const xPos = (pageWidth - pdfWidth) / 2; // Center horizontally
         const yPos = 20; // Position it near the top
     
-        bCardPdf.addImage(bCardData, "PNG", xPos, yPos, bcardWidth, bcardHeight);
-        bCardPdf.save('BusinessCard.pdf');
+        pdf.addImage(data, "JPEG", xPos, yPos, pdfWidth, pdfHeight);
+        pdf.save("BS_CARD.pdf");
     };
     
     
@@ -285,12 +292,14 @@ const IdBcardModal = ({ onClose, parentOnClose, role, staffData }: Props) => {
                             <DownloadIcon size={13} color="#FFFFFF" />Download</Button>
                     </div>
                 </div>
-                <div className="bg-[#F5F9FC] p-3 rounded-2xl">
+                <div className="bg-[#F5F9FC] flex flex-col justify-between  p-3 rounded-2xl">
+                    <div>
                     <p className="text-[#303F58] text-base font-bold">ID Card</p>
                     <div ref={idRef} className="p-3">
                         <IdCardLayout role={role} staffData={staffData} />
                     </div>
-                    <div className="flex gap-3 justify-end py-3">
+                    </div>
+                    <div className="gap-3 flex items-center justify-end  py-3">
                         <Button onClick={() => handleModalToggle(false, true)} variant="tertiary" size="sm"
                             className="text-xs text-[#565148] font-medium rounded-md">
                             <ViewIcon size="13" color="#565148" />
