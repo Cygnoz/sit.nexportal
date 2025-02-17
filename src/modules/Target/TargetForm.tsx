@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
-import { months } from "../../components/list/MonthYearList";
+import { months, years } from "../../components/list/MonthYearList";
 import Button from "../../components/ui/Button";
 import { useRegularApi } from "../../context/ApiContext";
  import useApi from "../../Hooks/useApi";
@@ -22,6 +22,7 @@ type Props = {
 const getValidationSchema = (type: string) => {
   return Yup.object().shape({
     month: Yup.string().required("Month is required"),
+    year: Yup.string().required("Year is required"),
     target: Yup.number()
       .typeError("Target must be a number")
       .required("Target is required"),
@@ -76,6 +77,7 @@ const TargetForm = ({ onClose, type,editId }: Props) => {
           if (response && !error) {
             const target = response.data.target;
             setValue("month", target.month);
+            setValue("year", target.year);
             setValue("target", target.target);
             if (type === "Region") {
               setValue("region", target.region?._id);
@@ -291,6 +293,20 @@ useEffect(() => {
         // Update the country value and clear the state when country changes
         setValue("month", selectedValue);
         handleInputChange("month");
+      }}
+    />
+      <Select
+      required
+      label="Year"
+      options={years}
+      placeholder="Select Year"
+      error={errors.year?.message}
+      {...register("year")}
+      value={watch("year")}
+      onChange={(selectedValue) => {
+        // Update the country value and clear the state when country changes
+        setValue("year", selectedValue);
+        handleInputChange("year");
       }}
     />
     <Input

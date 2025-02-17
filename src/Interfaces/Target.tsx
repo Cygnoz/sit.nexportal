@@ -1,5 +1,6 @@
 interface BaseTargetData {
     month: string;
+    year:string;
     target: number;
     targetType?:string;
     region?: string;
