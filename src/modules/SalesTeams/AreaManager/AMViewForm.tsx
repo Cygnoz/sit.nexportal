@@ -134,7 +134,7 @@ const AMViewForm: React.FC<Props> = ({ onClose, id }) => {
               <h3 className="text-xs font-semibold my-2 text-[#8F99A9]"> Email Address</h3>
               <div className="flex">
                 <EmailIcon size={20} />
-                <p className="text-sm font-semibold ms-2">{data.amData?.personalEmail ? data.amData?.personalEmail : 'N/A'}</p>
+                <p className="text-sm font-semibold ms-2">{data.amData?.user?.email ? data.amData?.user?.email: 'N/A'}</p>
 
               </div>
             </div>

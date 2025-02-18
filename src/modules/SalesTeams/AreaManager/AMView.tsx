@@ -270,6 +270,9 @@ const AMView = ({ staffId }: Props) => {
       setLoading(true)
       const { response, error } = await getInsideAM(`${endPoints.AM}/${iId}/details`);
       if (response && !error) {
+        if(staffId){
+          sessionStorage.setItem("staffLocalityId",response?.data?.areaManagerDetails?.areaId)  
+        }      
         setInsideAmData(response.data);
         // Extract bdaDetails and licenserDetails separately
         setBdaDetails(response.data.bdaDetails || []);
@@ -325,7 +328,8 @@ const AMView = ({ staffId }: Props) => {
         setPieData(pieChartData);
 
 
-
+          console.log("das",pieChartData);
+          
 
 
 
@@ -610,9 +614,9 @@ const AMView = ({ staffId }: Props) => {
       <div className="grid grid-cols-12 mb-5 gap-4">
         <div className="col-span-4 h-full">
           <div className="bg-white rounded-lg w-full h-full  p-3">
-            <h1 className="text-[#303F58] text-lg font-bold p-3">Lead status distribution</h1>
-            {roles.filter(role => role.count > 0).length > 0 ? (
-              <div className="-mt-3 relative">
+            <h1 className="text-[#303F58] text-lg font-bold z-10">Lead status distribution</h1>
+            {roles.filter(role => role.Count > 0).length > 0 ? (
+              <div className="-mt-1 relative">
 
                 <div className='absolute top-[35%] left-[38%] z-20 text-center -mt-7'>
                   <p className='text-xl font-semibold ms-4'>{insideAmData?.totalLeads || 0}</p>

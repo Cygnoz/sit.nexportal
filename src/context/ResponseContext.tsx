@@ -17,7 +17,6 @@ const ResponseContext = createContext<ResponseContextType | undefined>(undefined
 export const ResponseProvider = ({ children }: { children: ReactNode }) => {
   const [customerData, setCustomerData] = useState<LeadData | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
-
   return (
     <ResponseContext.Provider value={{ customerData, setCustomerData,loading,setLoading }}>
       {children}

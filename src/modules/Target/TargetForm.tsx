@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Input from "../../components/form/Input";
 import Select from "../../components/form/Select";
-import { months } from "../../components/list/MonthYearList";
+import { months, years } from "../../components/list/MonthYearList";
 import Button from "../../components/ui/Button";
 import { useRegularApi } from "../../context/ApiContext";
  import useApi from "../../Hooks/useApi";
@@ -22,6 +22,7 @@ type Props = {
 const getValidationSchema = (type: string) => {
   return Yup.object().shape({
     month: Yup.string().required("Month is required"),
+    year: Yup.string().required("Year is required"),
     target: Yup.number()
       .typeError("Target must be a number")
       .required("Target is required"),
@@ -76,6 +77,7 @@ const TargetForm = ({ onClose, type,editId }: Props) => {
           if (response && !error) {
             const target = response.data.target;
             setValue("month", target.month);
+            setValue("year", target.year);
             setValue("target", target.target);
             if (type === "Region") {
               setValue("region", target.region?._id);
@@ -115,24 +117,51 @@ const TargetForm = ({ onClose, type,editId }: Props) => {
 
 
     // useEffect for updating areas
-useEffect(() => {
-  const filteredAreas = dropDownAreas?.map((area: any) => ({
-    value: String(area?._id),
-    label: area.areaName,
-  }));
-  setData((prevData: any) => ({
-    ...prevData,
-    areas: filteredAreas,
-  }));
-}, [dropDownAreas]);
+    useEffect(() => {
+      let filteredAreas:any = [];
+     const staffLocalityId= sessionStorage.getItem("staffLocalityId")
+      if (staffLocalityId) {
+        filteredAreas = dropDownAreas
+          ?.filter((area: any) => area?.region===staffLocalityId) // Ensure region exists
+          .map((area: any) => ({
+            value: String(area?._id),
+            label: area.areaName,
+          }));
+      } else {
+        filteredAreas = dropDownAreas?.map((area: any) => ({
+          value: String(area?._id),
+          label: area.areaName,
+        })) || [];
+      }
+    
+      setData((prevData: any) => ({
+        ...prevData,
+        areas: filteredAreas,
+      }));
+    }, [dropDownAreas]);
+
+
+    console.log("stafd",dropDownAreas);
+    
+    
 
 // useEffect for updating BDAs
 useEffect(() => {
-  const filteredBdas = dropDownBdas?.map((bda: any) => ({
+  let filteredBdas:any = [];
+  const staffLocalityId= sessionStorage.getItem("staffLocalityId")
+  if (staffLocalityId) {
+    filteredBdas = dropDownBdas
+    ?.filter((bda: any) => bda?.area===staffLocalityId) // Ensure region exists
+    .map((bda: any) => ({
+      value: String(bda?._id),
+      label: bda?.userName,
+    }));
+  }else{
+   filteredBdas = dropDownBdas?.map((bda: any) => ({
     value: String(bda?._id),
     label: bda?.userName,
   }));
-
+}
   
   setData((prevData: any) => ({
     ...prevData,
@@ -170,7 +199,7 @@ useEffect(() => {
         onClose(); // Close the form after success
       } else {
         console.log("API Error:", error);
-        toast.error(error?.response?.data?.message || "Failed to submit data");
+        toast.error(error?.response?.data?.error || "Failed to submit data");
       }
     } catch (err) {
       console.error("Unexpected Error:", err);
@@ -264,6 +293,20 @@ useEffect(() => {
         // Update the country value and clear the state when country changes
         setValue("month", selectedValue);
         handleInputChange("month");
+      }}
+    />
+      <Select
+      required
+      label="Year"
+      options={years}
+      placeholder="Select Year"
+      error={errors.year?.message}
+      {...register("year")}
+      value={watch("year")}
+      onChange={(selectedValue) => {
+        // Update the country value and clear the state when country changes
+        setValue("year", selectedValue);
+        handleInputChange("year");
       }}
     />
     <Input

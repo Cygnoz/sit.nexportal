@@ -23,7 +23,7 @@ type Props = {
 const RegionPerformanceView = ({regionId}: Props) => {
   //const { id } = useParams()
 
-  const { request: LeadsConverted } = useApi("get", 3003);
+  const { request: TrialConverted } = useApi("get", 3003);
   const [chartData, setChartData] = useState<any[]>([]);
   const [areaNames, setAreaNames] = useState<any[]>([]); // Store area names separately
   
@@ -35,7 +35,7 @@ const RegionPerformanceView = ({regionId}: Props) => {
   const [selectedYear, setSelectedYear] = useState<any>(currentYear);
   const [newMonthList, setNewMonthList] = useState<any>([]);
   const [selectedData, setSelectedData] = useState<string>(
-    `${selectedYear.value}-${String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, '0')}`
+    `${currentYear.value}-${currentMonth.value}`
   );
   useEffect(() => {
     setNewMonthList(
@@ -46,8 +46,7 @@ const RegionPerformanceView = ({regionId}: Props) => {
       )
     );
     // Convert month name to number (1-12) and ensure it's two digits
-    const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
-    setSelectedData(`${selectedYear.value}-${monthIndex}`);
+    setSelectedData(`${selectedYear.value}-${selectedMonth.value}`);
   }, [selectedMonth, selectedYear]);
 
  
@@ -57,16 +56,16 @@ const RegionPerformanceView = ({regionId}: Props) => {
     try {
       // const monthIndex = String(months.findIndex((m) => m.value === selectedMonth.value) + 1).padStart(2, "0");
       // const formattedDate = `${selectedYear.value}-${monthIndex}`; // Ensure YYYY-MM format
-      const endPoint = `${endPoints.CONVERSION_RATE}/${regionId}?date=${selectedData}`;
+      const endPoint = `${endPoints.TRIAL_CONVERTION_RATE}/${regionId}?date=${selectedData}`;
 //    console.log("Fetching data for:", formattedDate); // ✅ Debugging
       console.log("API Endpoint:", endPoint); // ✅ Debugging
   
-      const { response, error } = await LeadsConverted(endPoint);
+      const { response, error } = await TrialConverted(endPoint);
   
       if (response && response.data) {
         console.log("API Response:", response.data); // ✅ Debugging API response
   
-        const trialConvertedOverTime = response.data.trialConvertedOverTime || {};
+        const trialConvertedOverTime = response.data. trialConvertedOverTime|| {};
         const areaNames = Object.keys(trialConvertedOverTime);
         setAreaNames(areaNames);
   
@@ -103,6 +102,8 @@ const RegionPerformanceView = ({regionId}: Props) => {
   };
   
   
+
+  
   
   
   useEffect(() => {
@@ -119,7 +120,7 @@ const RegionPerformanceView = ({regionId}: Props) => {
     <LeadConvertionRateRegion/>
     <div className="bg-white w-full p-2">
     <div className="flex justify-between">
-      <h1 className="text-lg font-bold">License Over Time By Area</h1>
+      <h1 className="text-lg font-bold">Trial converted over time</h1>
       <div className="flex gap-1">
         <SelectDropdown 
         setSelectedValue={setSelectedYear} 

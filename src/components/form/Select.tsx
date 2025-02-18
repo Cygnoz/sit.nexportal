@@ -104,7 +104,7 @@ const Select: React.FC<SelectProps> = ({
 
   const handleOptionSelect = (selectedValue: string) => {
     setIsOpen(false);
-    if (onChange) onChange(selectedValue);
+    if (onChange) onChange(selectedValue === placeholder ? "" : selectedValue);
   };
 
   return (
@@ -119,13 +119,13 @@ const Select: React.FC<SelectProps> = ({
         onClick={() => !readOnly && setIsOpen((prev) => !prev)}
       >
         <div
-          className={`block w-full h-9 ${from=="ticket" ?'pt-1':'pt-2'} bg-white border text-sm px-2 pr-8 items-center  rounded-md leading-tight 
-                      ${error ? "border-red-500" : "border-gray-300"}`}
-        >
-          {value
-            ? options.find((option) => option.value === value)?.label || placeholder
-            : placeholder || "Select an option"}
-        </div>
+  className={`block w-full h-9 ${from=="ticket" ?'pt-1':'pt-2'} bg-white border text-sm px-2 pr-8 items-center rounded-md leading-tight 
+              ${error ? "border-red-500" : "border-gray-300"}`}
+>
+  {value !== undefined
+    ? options.find((option) => option.value === value)?.label || placeholder
+    : placeholder || "Select an option"}
+</div>
         <div className="absolute inset-y-0 right-0 flex items-center px-2">
           <ChevronDown color="gray" />
         </div>
