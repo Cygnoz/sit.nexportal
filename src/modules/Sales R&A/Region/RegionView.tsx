@@ -114,7 +114,7 @@ function RegionView({}: Props) {
     addArea: false,
     deleteRegion:false,
     editAm:false,
-  deactivateRegion:false,
+    deactivateRegion:false,
   });
 
   // Function to toggle modal visibility
@@ -129,10 +129,6 @@ function RegionView({}: Props) {
     }));
     getARegion();
     getAllTeam()
-    if(!addArea){
-      navigate('/regions')
-    }
-
   };
 
   const countryLogoObject = countyLogo.find(
