@@ -52,7 +52,6 @@ const SalaryInfoModal: React.FC<Props> = ({ onClose, salaryDetails }) => {
           </p>
         </div>
       </div>
-
       <div className="mt-2">
         <PayrollTable 
         data={salaryDetails.payrollRecords} 
