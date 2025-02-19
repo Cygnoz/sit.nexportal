@@ -335,7 +335,7 @@ exports.convertLeadToTrial = async (req, res, next) => {
             );
         // Send POST request to external API
         const response = await axios.post(
-          'https://billbizzapi.azure-api.net/organization/create-client',
+          'https://billbizzapi.azure-api.net/sit.organization/create-billbizz-client',
           requestBody, // <-- requestBody should be passed as the second argument (data)
           {
             headers: {
@@ -458,17 +458,26 @@ exports.getClientDetails = async (req, res) => {
       return res.status(400).json({ message: "ID is required in the request parameters." });
     }
 
-    // Configure Axios GET request
-    const axiosConfig = {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    };
+      // Generate JWT token
+            const token = jwt.sign(
+              {
+                organizationId: process.env.ORGANIZATION_ID,
+              },
+              process.env.NEX_JWT_SECRET,
+              { expiresIn: "12h" }
+            );
 
-    // Make a GET request to the external API with the ID in the URL
-    const apiUrl = `https://dev.billbizz.cloud:5004/get-one-organization-nex/${id}`;
-    const response = await axios.get(apiUrl, axiosConfig);
+    const response = await axios.get(
+          `https://billbizzapi.azure-api.net/sit.organization/get-one-organization-nex/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
+    
     // Check response and handle errors
     if (response.status !== 200) {
       return res.status(response.status).json({ message: response.statusText });
