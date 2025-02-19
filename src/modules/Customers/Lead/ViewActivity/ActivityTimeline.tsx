@@ -50,7 +50,7 @@ const ActivityTimeline = () => {
     };
   
     fetchTimelineData();
-  }, [id, getAllActivityTimeline]);
+  }, [id]);
 
   // Format date for display
   const formatDate = (date: Date, label: string) => {
